@@ -1,8 +1,13 @@
 import 'package:everything_about_youth/app/app.dart';
+import 'package:everything_about_youth/core/auth/auth_mode.dart';
+import 'package:everything_about_youth/core/auth/auth_providers.dart';
+import 'package:everything_about_youth/core/auth/sso.dart';
+import 'package:everything_about_youth/core/auth/token_store.dart';
 import 'package:everything_about_youth/core/bootstrap/bootstrap_controller.dart';
 import 'package:everything_about_youth/core/bootstrap/bootstrap_task.dart';
 import 'package:everything_about_youth/core/feature/feature_flags.dart';
 import 'package:everything_about_youth/core/feature/feature_module.dart';
+import 'package:everything_about_youth/core/network/api_client.dart';
 import 'package:everything_about_youth/core/providers/core_providers.dart';
 import 'package:everything_about_youth/core/security/cipher_key_store.dart';
 import 'package:everything_about_youth/core/security/field_cipher.dart';
@@ -14,7 +19,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'fake_app_update.dart';
+import 'fake_auth_server.dart';
 import 'fake_feature_config.dart';
+import 'fake_sso_launcher.dart';
 import 'fixtures.dart';
 
 /// 기기의 시스템 영역을 흉내 낸다. (devicePixelRatio 1 이라 값이 곧 논리 픽셀)
@@ -37,6 +44,9 @@ void setSystemInsets(WidgetTester tester, EdgeInsets system, {double keyboard = 
 /// - [tasks]: 코어 시작 작업. 기본은 없음.
 /// - [disabled]: 서버가 꺼 둔 서비스 id. ([remote] 를 직접 넘기면 무시한다)
 /// - [remote]/[cache]: 서버 설정과 기기에 남은 직전 설정 가짜
+/// - [authMode]: 로그인 상태. 기본은 비회원이라 로그인 화면 없이 바로 앱이 열린다. AuthMode.none 이면 로그인 화면이 뜬다.
+/// - [authServer]: 주면 로그인·세션 요청이 이 가짜 서버로 간다. (토큰은 메모리에 보관)
+/// - [launcher]: 소셜 로그인 창을 대신하는 가짜
 /// - [settle]: false 면 로딩 중인 상태에서 멈춘다. (로딩 표시를 확인할 때)
 ///   스플래시나 로딩처럼 계속 도는 스피너가 있으면 pumpAndSettle 이 끝나지 않기 때문이다.
 Future<ProviderContainer> pumpApp(
@@ -54,8 +64,11 @@ Future<ProviderContainer> pumpApp(
   MemoryFeatureConfigCache? cache,
   FakeAppUpdateRemote? update,
   FieldCipher? cipher,
+  AuthMode authMode = AuthMode.guest,
+  FakeAuthServer? authServer,
+  SsoLauncher? launcher,
 }) async {
-  SharedPreferences.setMockInitialValues({});
+  SharedPreferences.setMockInitialValues({if (authMode != AuthMode.none) AuthModeStore.key: authMode.name});
   final prefs = await SharedPreferences.getInstance();
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -77,6 +90,21 @@ Future<ProviderContainer> pumpApp(
         // 진짜 보안 저장소(플랫폼 채널) 대신 메모리 키를 쓴다.
         fieldCipherProvider.overrideWithValue(cipher ?? AesGcmFieldCipher(MemoryCipherKeyStore())),
         appUpdateRemoteProvider.overrideWithValue(update ?? FakeAppUpdateRemote()),
+        ssoRedirectUriProvider.overrideWithValue('everythingaboutyouth://auth'),
+        // 진짜 로그인 창(플랫폼 채널)은 테스트에서 열 수 없다. 서버를 흉내 낼 때는 로그인에 성공하는 창이 기본이다.
+        if (launcher != null || authServer != null)
+          ssoLauncherProvider.overrideWithValue(launcher ?? FakeSsoLauncher.succeeding()),
+        if (authServer != null) ...[
+          // 로그인·세션 요청을 가짜 서버로 보내고, 토큰은 보안 저장소 대신 메모리에 둔다.
+          tokenStoreProvider.overrideWithValue(MemoryTokenStore()),
+          plainApiClientProvider.overrideWith(
+            (ref) => ApiClient(baseUrl: 'http://test', httpClient: authServer.client),
+          ),
+          apiClientProvider.overrideWith(
+            (ref) =>
+                ApiClient(baseUrl: 'http://test', httpClient: authServer.client, auth: ref.watch(authSessionProvider)),
+          ),
+        ],
         bootstrapTasksProvider.overrideWithValue(tasks),
         featureModulesProvider.overrideWithValue(modules),
         featureConfigRemoteProvider.overrideWithValue(

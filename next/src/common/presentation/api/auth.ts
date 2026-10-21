@@ -1,10 +1,26 @@
 import { AuthError, InvalidTokenError, type AuthService, type SessionTokens, type TokenService } from "@/common/application/auth";
+import { SSO_PROVIDER_IDS, type SsoProviderId } from "@/common/application/sso";
 import { ApiError, type ErrorCode } from "./errors";
 import type { ApiResult } from "./respond";
 import { apiPath } from "./version";
 
-/** 세션을 얻는 입구. 토큰이 있을 수 없어서 토큰 없이 부를 수 있다. */
-export const AUTH_ENTRY_PATHS: readonly string[] = [apiPath("/auth/session"), apiPath("/auth/refresh")];
+/** 로그인 업체가 로그인 뒤에 돌아오는 서버 주소. 업체마다 하나씩 업체 콘솔에 등록한다. */
+export function ssoCallbackPath(provider: SsoProviderId): string {
+  return apiPath(`/auth/sso/callback/${provider}`);
+}
+
+/**
+ * 세션을 얻는 입구(비회원 시작, 갱신, SSO 로그인). 토큰이 있을 수 없어서 토큰 없이 부를 수 있다.
+ * 로그아웃과 회원 탈퇴는 여기에 없다. 세션이 있어야 하는 요청이다.
+ */
+export const AUTH_ENTRY_PATHS: readonly string[] = [
+  apiPath("/auth/session"),
+  apiPath("/auth/refresh"),
+  apiPath("/auth/providers"),
+  apiPath("/auth/sso/start"),
+  apiPath("/auth/sso/exchange"),
+  ...SSO_PROVIDER_IDS.map(ssoCallbackPath),
+];
 
 /** 앱이 가장 먼저 부르는 설정. 세션보다 먼저 확인할 수 있어야 해서 공개다. */
 export const APP_CONFIG_PATH = apiPath("/app-config");
@@ -69,9 +85,10 @@ export interface SessionDto {
   accessExpiresIn: number;
   refreshToken: string;
   refreshExpiresIn: number;
+  member: boolean;
 }
 
-function toDto(t: SessionTokens): SessionDto {
+export function toDto(t: SessionTokens): SessionDto {
   return { ...t };
 }
 

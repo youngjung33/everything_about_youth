@@ -24,13 +24,16 @@ class AppLogo extends StatelessWidget {
         children: [
           _Mark(size: size),
           const SizedBox(width: 10),
-          Text(
-            name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: AppFonts.bold, color: AppColors.textPrimary),
+          // 좁은 화면에서 큰 글꼴이면 헤더의 다른 버튼에 밀려 이름이 잘린다. 넘치지 않고 말줄임으로 줄어든다.
+          Flexible(
+            child: Text(
+              name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: AppFonts.bold, color: AppColors.textPrimary),
+            ),
           ),
         ],
       ),

@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/auth/auth_mode.dart';
 import '../core/feature/feature_flags.dart';
 import '../core/feature/feature_module.dart';
 import '../core/layout/app_scaffold.dart';
 import '../core/layout/app_top_bar.dart';
 import '../core/layout/centered_scroll_view.dart';
 import '../features/home/home_page.dart';
+import '../features/login/login_page.dart';
 import '../features/splash/splash_page.dart';
 import '../features/unavailable/unavailable_page.dart';
 import '../features/update_required/update_required_page.dart';
+import 'paths.dart';
 import 'shell/app_shell.dart';
+
+export 'paths.dart' show loginLocation, loginPath;
 
 /// 앱을 업데이트해야만 쓸 수 있을 때 앱 전체를 대신하는 화면
 const updateRequiredPath = '/update-required';
@@ -51,12 +56,32 @@ String? bootstrapRedirect({required bool ready, required Uri uri}) {
   return null;
 }
 
+/// 로그인 가드. 순수 함수라 따로 테스트한다.
+///
+/// - 아직 로그인도 비회원 시작도 하지 않았으면: 어디로 오든 로그인 화면으로 보낸다. (원래 주소는 `from` 으로 들고 간다)
+/// - 회원이면: 로그인 화면에 머물 이유가 없으므로 `from`(없으면 홈)으로 보낸다.
+/// - 비회원은 로그인 화면을 열 수 있다. (헤더의 "로그인"으로 회원이 되려는 경우)
+String? authRedirect({required AuthMode mode, required Uri uri}) {
+  final atLogin = uri.path == loginPath;
+
+  if (mode == AuthMode.none) {
+    return atLogin ? null : loginLocation(from: uri.toString());
+  }
+  if (mode.isMember && atLogin) return _safeInternalPath(uri.queryParameters['from']) ?? '/';
+  return null;
+}
+
 /// 앱 안의 경로만 허용한다. (`//evil.com`, `https://..` 같은 값으로 밖으로 빠져나가지 못하게)
 String? _safeInternalPath(String? from) {
   if (from == null || !from.startsWith('/') || from.startsWith('//')) return null;
-  if (from == splashPath || from.startsWith('$splashPath?')) return null;
+  for (final special in [splashPath, loginPath]) {
+    if (from == special || from.startsWith('$special?')) return null;
+  }
   return from;
 }
+
+/// 로그인 화면이 로그인(또는 비회원 시작) 뒤에 갈 곳. 앱 안의 주소가 아니면 홈이다.
+String afterLoginPath(Uri loginUri) => _safeInternalPath(loginUri.queryParameters['from']) ?? '/';
 
 /// 서비스 가드. 꺼졌거나 장애인 서비스의 경로로 들어오면 안내 화면으로 보낸다. 순수 함수라 따로 테스트한다.
 ///
@@ -89,6 +114,7 @@ GoRouter buildRouter({
   required Listenable refresh,
   required bool Function() isReady,
   required bool Function() isUpdateRequired,
+  required AuthMode Function() authMode,
   required List<FeatureModule> modules,
   required FeatureAvailability Function(String id) availabilityOf,
   String initialLocation = '/',
@@ -99,15 +125,20 @@ GoRouter buildRouter({
   return GoRouter(
     initialLocation: initialLocation,
     refreshListenable: refresh,
-    // 순서가 중요하다: 강제 업데이트 > 시작 작업 > 서비스 켜짐/꺼짐
+    // 순서가 중요하다: 강제 업데이트 > 시작 작업 > 로그인 > 서비스 켜짐/꺼짐
     redirect: (context, state) =>
         updateRedirect(required: isUpdateRequired(), uri: state.uri) ??
         bootstrapRedirect(ready: isReady(), uri: state.uri) ??
+        authRedirect(mode: authMode(), uri: state.uri) ??
         featureRedirect(uri: state.uri, modules: modules, availabilityOf: availabilityOf),
     routes: [
-      // 스플래시와 업데이트 안내는 헤더·푸터 없이 전체 화면이다.
+      // 스플래시, 업데이트 안내, 로그인은 헤더·푸터 없이 전체 화면이다.
       GoRoute(path: splashPath, builder: (context, state) => const SplashPage()),
       GoRoute(path: updateRequiredPath, builder: (context, state) => const UpdateRequiredPage()),
+      GoRoute(
+        path: loginPath,
+        builder: (context, state) => LoginPage(afterLogin: afterLoginPath(state.uri)),
+      ),
       // 그 밖의 모든 화면은 공통 틀(헤더·푸터·서랍 메뉴) 안에서 바뀐다.
       ShellRoute(
         builder: (context, state, child) => AppShell(location: state.uri.path, child: child),

@@ -3,6 +3,7 @@ import { AuthError, AuthService, InvalidTokenError } from "@/common/application/
 import type { Clock } from "@/common/application/system";
 import { openSqlite, runMigrations } from "../persistence/sqlite/client";
 import { SqliteAuthClientStore } from "../persistence/sqlite/sqlite-auth-client-store";
+import { SqliteUserStore } from "../persistence/sqlite/sqlite-user-store";
 import { JoseTokenService } from "./jwt-token-service";
 
 const config = {
@@ -23,7 +24,7 @@ function setup() {
   const store = new SqliteAuthClientStore(conn.db);
   let n = 0;
   const auth = new AuthService(tokens, store, clock, () => `device-${++n}`);
-  return { auth, tokens, store, advance: (sec: number) => (now = new Date(now.getTime() + sec * 1000)) };
+  return { auth, tokens, store, conn, advance: (sec: number) => (now = new Date(now.getTime() + sec * 1000)) };
 }
 
 describe("AuthService + 실제 JWT/SQLite", () => {
@@ -34,7 +35,8 @@ describe("AuthService + 실제 JWT/SQLite", () => {
     expect(s.accessExpiresIn).toBe(900);
     expect(s.refreshExpiresIn).toBe(3600);
     expect((await tokens.verify(s.accessToken, "access")).sub).toBe("device-1");
-    expect(await store.find("device-1")).toEqual({ id: "device-1", revoked: false });
+    expect(await store.find("device-1")).toEqual({ id: "device-1", revoked: false, userId: null });
+    expect(s.member).toBe(false);
 
     const s2 = await auth.startSession();
     expect((await tokens.verify(s2.accessToken, "access")).sub).toBe("device-2");
@@ -70,6 +72,19 @@ describe("AuthService + 실제 JWT/SQLite", () => {
     expect(await auth.revoke("device-1")).toBe(true);
     await expect(auth.refresh(s.refreshToken)).rejects.toBeInstanceOf(AuthError);
     expect(await auth.revoke("nobody")).toBe(false);
+  });
+
+  it("회원 세션은 member 로 표시되고, 갱신해도 회원으로 유지된다", async () => {
+    const { auth, store, conn, advance } = setup();
+    const userId = await new SqliteUserStore(conn.db).findOrCreate("google", "g1", "2026-10-18T00:00:00Z", () => "user-1");
+
+    const s = await auth.startUserSession(userId);
+    expect(s.member).toBe(true);
+    expect(await store.find("device-1")).toEqual({ id: "device-1", revoked: false, userId: "user-1" });
+
+    advance(1000);
+    const next = await auth.refresh(s.refreshToken);
+    expect(next.member).toBe(true);
   });
 
   it("서버가 모르는 기기(DB 초기화 등)의 토큰은 갱신이 거절된다", async () => {

@@ -7,7 +7,7 @@ import { APP_CONFIG_PATH, OPERATOR_API_PATHS, authorizeApiRequest } from "./auth
 import { corsHeaders } from "./cors";
 import { errorResponse, type ErrorCode } from "./errors";
 import { chooseRateLimit, clientIp, rateLimitHeaders } from "./rate-limit-policy";
-import { REQUEST_ID_HEADER } from "./respond";
+import { CLIENT_ID_HEADER, REQUEST_ID_HEADER } from "./respond";
 import { SUPPORTED_API_VERSIONS, splitApiPath } from "./version";
 
 export interface GatewayDeps {
@@ -92,8 +92,11 @@ export async function runGateway(request: NextRequest, deps: GatewayDeps): Promi
   if (!auth.ok) return fail(auth.code, { headers: { ...limitHeaders, "WWW-Authenticate": auth.wwwAuthenticate } });
 
   // 7. 통과. 라우트가 오류 응답에 같은 요청 번호를 쓸 수 있게 요청 헤더에도 넣는다.
+  //    세션 id 도 검증된 값만 넣는다. 바깥에서 보낸 같은 이름의 헤더는 위조일 수 있으니 먼저 지운다.
   const forwarded = new Headers(request.headers);
   forwarded.set(REQUEST_ID_HEADER, requestId);
+  forwarded.delete(CLIENT_ID_HEADER);
+  if (auth.ok && auth.clientId) forwarded.set(CLIENT_ID_HEADER, auth.clientId);
   const response = NextResponse.next({ request: { headers: forwarded } });
   for (const [name, value] of Object.entries({ ...common, ...limitHeaders })) response.headers.set(name, value);
   return response;

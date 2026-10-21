@@ -17,6 +17,16 @@ export function requestIdOf(request: Request): string | null {
   return request.headers.get(REQUEST_ID_HEADER);
 }
 
+/**
+ * 검증된 세션 id. gateway 가 JWT 를 확인한 뒤에만 채우고, 바깥에서 들어온 같은 이름의 헤더는 항상 지운다.
+ * (라우트가 토큰을 다시 풀지 않고 "이 요청이 누구의 세션인가"를 알 수 있다)
+ */
+export const CLIENT_ID_HEADER = "x-client-id";
+
+export function clientIdOf(request: Request): string | null {
+  return request.headers.get(CLIENT_ID_HEADER);
+}
+
 /** 성공 응답. 기본은 캐시하지 않는다. (서비스 켜짐/버전 같은 값이 바로 반영되어야 해서) */
 export function respond<T>(result: ApiResult<T>, headers: Record<string, string> = {}): Response {
   return Response.json(result.body, { status: result.status, headers: { "Cache-Control": "no-store", ...headers } });

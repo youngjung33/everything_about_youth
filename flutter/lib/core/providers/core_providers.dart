@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../auth/auth_mode.dart';
 import '../auth/auth_session.dart';
 import '../auth/token_store.dart';
 import '../config/app_config.dart';
@@ -36,9 +37,32 @@ ApiClient _newClient(Ref ref, {AuthTokenSource? auth}) {
 /// 토큰을 붙이지 않는 클라이언트. 세션을 얻는 `/auth/*` 와 앱 설정 확인 전용이다. 서비스는 쓰지 않는다.
 final plainApiClientProvider = Provider<ApiClient>((ref) => _newClient(ref));
 
+/// 사용자가 앱을 어떤 상태로 쓰는지(로그인 전 / 비회원 / 회원). 로그인 화면을 보일지, 계정 메뉴를 뭐로 보일지 정한다.
+/// 바꾸는 일(로그인, 로그아웃, 탈퇴)은 `authActionsProvider` 가 한다. 화면은 읽기만 한다.
+final authModeProvider = NotifierProvider<AuthModeNotifier, AuthMode>(AuthModeNotifier.new);
+
+class AuthModeNotifier extends Notifier<AuthMode> {
+  @override
+  AuthMode build() => AuthModeStore(ref.watch(sharedPreferencesProvider)).read();
+
+  /// 바꾸고 기기에 저장한다. 라우터가 곧바로 로그인 화면/앱 화면을 맞춘다.
+  Future<void> set(AuthMode mode) async {
+    state = mode;
+    await AuthModeStore(ref.read(sharedPreferencesProvider)).write(mode);
+  }
+}
+
 /// JWT 세션. 토큰 발급/갱신/보관을 맡는다.
+///
+/// 회원의 세션을 되살리지 못하면(다른 기기에서 탈퇴, 장기간 미사용, 서버 DB 초기화) 비회원으로 바꿔 놓지 않고
+/// 로그인 전 상태로 돌려보낸다.
 final authSessionProvider = Provider<AuthSession>(
-  (ref) => AuthSession(plainApi: ref.watch(plainApiClientProvider), store: ref.watch(tokenStoreProvider)),
+  (ref) => AuthSession(
+    plainApi: ref.watch(plainApiClientProvider),
+    store: ref.watch(tokenStoreProvider),
+    isMember: () => ref.read(authModeProvider).isMember,
+    onMemberLost: () => ref.read(authModeProvider.notifier).set(AuthMode.none),
+  ),
 );
 
 /// 서버 JSON API 클라이언트. 서비스의 data 레이어가 이것으로 자기 API 를 호출한다.

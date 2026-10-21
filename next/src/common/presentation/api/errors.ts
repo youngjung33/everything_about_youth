@@ -24,6 +24,11 @@ export const ERROR_CODES = {
   AUTH_TOKEN_EXPIRED: { status: 401, message: "인증이 만료되었습니다. 다시 시도해 주세요." },
   AUTH_TOKEN_INVALID: { status: 401, message: "인증 정보가 올바르지 않습니다." },
   AUTH_REFRESH_INVALID: { status: 401, message: "세션이 유효하지 않습니다. 다시 시작해 주세요." },
+  SSO_TICKET_INVALID: {
+    status: 401,
+    message: "로그인 정보가 만료되었거나 올바르지 않습니다. 다시 로그인해 주세요.",
+  },
+  LOGIN_REQUIRED: { status: 403, message: "로그인한 회원만 사용할 수 있습니다." },
   FORBIDDEN: { status: 403, message: "허용되지 않은 요청입니다." },
   OPERATOR_DISABLED: { status: 403, message: "운영 환경에서는 웹 수집이 비활성화되어 있습니다." },
 
@@ -37,6 +42,7 @@ export const ERROR_CODES = {
   // 제한과 장애
   RATE_LIMITED: { status: 429, message: "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요." },
   SERVICE_DISABLED: { status: 503, message: "이 서비스는 현재 사용할 수 없습니다." },
+  SSO_PROVIDER_UNAVAILABLE: { status: 503, message: "이 로그인 방법은 아직 사용할 수 없습니다." },
   INTERNAL_ERROR: { status: 500, message: "서버에 문제가 생겼습니다. 잠시 후 다시 시도해 주세요." },
 } as const satisfies Record<string, { status: number; message: string }>;
 

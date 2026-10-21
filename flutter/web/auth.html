@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="referrer" content="no-referrer">
+  <title>청년의 모든 것 로그인</title>
+</head>
+<body>
+<p>로그인이 끝났습니다. 창이 자동으로 닫히지 않으면 닫아 주세요.</p>
+<script>
+  // 서버가 로그인 결과(?ticket=… 또는 ?error=…)를 이 주소로 돌려보낸다.
+  // 이 주소를 열어 준 앱 창에 전달하고 닫는다. 앱(flutter_web_auth_2)이 이 메시지를 기다린다.
+  (function () {
+    var message = { 'flutter-web-auth-2': window.location.href };
+
+    if (window.opener) {
+      window.opener.postMessage(message, window.location.origin);
+      window.close();
+    } else if (window.parent && window.parent !== window) {
+      window.parent.postMessage(message, window.location.origin);
+    } else {
+      localStorage.setItem('flutter-web-auth-2', window.location.href);
+      window.close();
+    }
+  })();
+</script>
+</body>
+</html>

@@ -18,6 +18,13 @@ class AppColors {
   static const textPrimary = Color(0xFF111827);
   static const textSecondary = Color(0xFF4B5563);
 
+  // 소셜 로그인 버튼. 각 업체의 브랜드 가이드가 정한 색이라 앱의 다른 색과 맞추지 않는다.
+  static const ColorPair brandGoogle = (background: Color(0xFFFFFFFF), foreground: Color(0xFF1F1F1F));
+  static const brandGoogleBorder = Color(0xFF747775);
+  static const ColorPair brandApple = (background: Color(0xFF000000), foreground: Color(0xFFFFFFFF));
+  static const ColorPair brandNaver = (background: Color(0xFF03C75A), foreground: Color(0xFFFFFFFF));
+  static const ColorPair brandKakao = (background: Color(0xFFFEE500), foreground: Color(0xD9000000));
+
   // 상태 (공고 상태, 자격 판정 배지)
   static const ColorPair success = (background: Color(0xFFDCFCE7), foreground: Color(0xFF166534));
   static const ColorPair info = (background: Color(0xFFDBEAFE), foreground: Color(0xFF1E40AF));

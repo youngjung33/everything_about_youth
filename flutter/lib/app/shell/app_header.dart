@@ -5,6 +5,7 @@ import '../../core/layout/app_top_bar.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_fonts.dart';
 import '../../core/widgets/app_logo.dart';
+import 'account_menu.dart';
 import 'menu_items.dart';
 
 /// 이 너비 이상이면 메뉴를 헤더에 펼쳐 보여주고, 그보다 좁으면 왼쪽에서 열리는 서랍 메뉴로 보여준다.
@@ -22,6 +23,7 @@ class AppHeader extends AppTopBar {
         titleSpacing: inlineMenu ? 24 : 0,
         leading: inlineMenu ? null : const _DrawerToggle(),
         title: _HeaderTitle(items: items, location: location, inlineMenu: inlineMenu),
+        actions: [AccountMenu(location: location, compact: !inlineMenu)],
       );
 }
 
@@ -51,11 +53,13 @@ class _HeaderTitle extends StatelessWidget {
     return Row(
       children: [
         // 로고를 누르면 홈으로
-        InkWell(
-          key: const ValueKey('header-logo'),
-          borderRadius: BorderRadius.circular(8),
-          onTap: () => context.go(AppMenuItem.homePath),
-          child: const Padding(padding: EdgeInsets.symmetric(vertical: 6, horizontal: 2), child: AppLogo()),
+        Flexible(
+          child: InkWell(
+            key: const ValueKey('header-logo'),
+            borderRadius: BorderRadius.circular(8),
+            onTap: () => context.go(AppMenuItem.homePath),
+            child: const Padding(padding: EdgeInsets.symmetric(vertical: 6, horizontal: 2), child: AppLogo()),
+          ),
         ),
         if (inlineMenu) ...[
           const SizedBox(width: 24),

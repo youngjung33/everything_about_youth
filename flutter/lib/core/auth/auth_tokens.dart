@@ -16,12 +16,16 @@ class AuthTokens {
     required this.accessExpiresAt,
     required this.refreshToken,
     required this.refreshExpiresAt,
+    this.member = false,
   });
 
   final String accessToken;
   final DateTime accessExpiresAt;
   final String refreshToken;
   final DateTime refreshExpiresAt;
+
+  /// 소셜 로그인으로 만든 회원 세션인가. false 면 비회원 세션이다.
+  final bool member;
 
   /// 만료 직전에 보낸 요청이 서버에서 만료되지 않도록 여유를 둔다.
   static const skew = Duration(seconds: 30);
@@ -48,6 +52,7 @@ class AuthTokens {
       accessExpiresAt: now.add(Duration(seconds: accessIn.toInt())),
       refreshToken: refresh,
       refreshExpiresAt: now.add(Duration(seconds: refreshIn.toInt())),
+      member: json['member'] == true,
     );
   }
 
@@ -56,6 +61,7 @@ class AuthTokens {
     'ax': accessExpiresAt.millisecondsSinceEpoch,
     'r': refreshToken,
     'rx': refreshExpiresAt.millisecondsSinceEpoch,
+    'm': member,
   });
 
   /// 저장된 문자열을 읽는다. 깨져 있으면 null (= 저장된 게 없는 것으로 보고 새로 발급받는다).
@@ -71,6 +77,8 @@ class AuthTokens {
         accessExpiresAt: DateTime.fromMillisecondsSinceEpoch(ax),
         refreshToken: r,
         refreshExpiresAt: DateTime.fromMillisecondsSinceEpoch(rx),
+        // 로그인 기능이 생기기 전에 저장된 토큰에는 없다. 그때는 모두 비회원이었다.
+        member: map['m'] == true,
       );
     } on FormatException {
       return null;

@@ -77,6 +77,15 @@ describe("authorizeApiRequest", () => {
     expect((await authorizeApiRequest(req(apiPath("/auth/refresh"), null, "POST"), tokens)).ok).toBe(true);
     expect((await authorizeApiRequest(req(apiPath("/app-config")), tokens)).ok).toBe(true);
     expect((await authorizeApiRequest(req(apiPath("/housing/notices"), null, "OPTIONS"), tokens)).ok).toBe(true);
+    // SSO: 로그인 화면, 시작, 티켓 교환, 4곳의 콜백(브라우저가 토큰 없이 돌아온다)
+    for (const p of [
+      apiPath("/auth/providers"),
+      apiPath("/auth/sso/start"),
+      apiPath("/auth/sso/exchange"),
+      ...["google", "apple", "naver", "kakao"].map((id) => apiPath(`/auth/sso/callback/${id}`)),
+    ]) {
+      expect((await authorizeApiRequest(req(p), tokens)).ok, p).toBe(true);
+    }
     expect((await authorizeApiRequest(req(apiPath("/housing/sync"), null, "POST"), tokens)).ok).toBe(true);
   });
 
@@ -87,6 +96,12 @@ describe("authorizeApiRequest", () => {
       apiPath("/auth/sessions"),
       apiPath("/app-config/x"),
       apiPath("/housing/sync/x"),
+      apiPath("/auth/sso/callback/other"), // 모르는 업체
+      apiPath("/auth/sso/callback/google/x"),
+      apiPath("/auth/sso/start/x"),
+      // 로그아웃과 회원 탈퇴는 세션이 있어야 한다 (공개가 아니다)
+      apiPath("/auth/logout"),
+      apiPath("/auth/account/delete"),
       "/API/v1/features",
       "/api/auth/session", // 버전 없는 옛 경로
     ]) {
@@ -101,6 +116,7 @@ const sessionTokens: SessionTokens = {
   accessExpiresIn: 900,
   refreshToken: "r",
   refreshExpiresIn: 3600,
+  member: false,
 };
 
 function fakeAuth(overrides: Partial<Record<"startSession" | "refresh", () => Promise<SessionTokens>>> = {}) {

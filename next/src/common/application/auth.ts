@@ -32,14 +32,18 @@ export interface TokenService {
 export interface AuthClient {
   id: string;
   revoked: boolean;
+  /** SSO 로 로그인한 세션이면 그 회원의 id, 비회원이면 null */
+  userId: string | null;
 }
 
-/** 서버가 발급한 기기 식별자 저장소. 폐기(revoke)한 기기는 리프레시가 거절된다. */
+/** 서버가 발급한 세션(기기) 식별자 저장소. 폐기(revoke)한 세션은 리프레시가 거절된다. */
 export interface AuthClientStore {
-  create(id: string, at: string): Promise<void>;
+  create(id: string, at: string, userId?: string): Promise<void>;
   find(id: string): Promise<AuthClient | null>;
   touch(id: string, at: string): Promise<void>;
   revoke(id: string): Promise<boolean>;
+  /** 한 회원의 모든 세션을 폐기한다. (회원 탈퇴) */
+  revokeByUser(userId: string): Promise<number>;
 }
 
 export interface SessionTokens {
@@ -49,6 +53,8 @@ export interface SessionTokens {
   accessExpiresIn: number;
   refreshToken: string;
   refreshExpiresIn: number;
+  /** 로그인한 회원의 세션이면 true, 비회원이면 false. 앱이 "내 세션이 비회원으로 바뀌었는가"를 알아채는 데 쓴다. */
+  member: boolean;
 }
 
 export type AuthErrorCode = "invalid_refresh";
@@ -62,9 +68,10 @@ export class AuthError extends Error {
 /**
  * 세션 발급/갱신.
  *
- * 지금은 로그인이 없으므로 서버가 기기마다 식별자(sub)를 새로 만들어 토큰을 준다. (익명 식별)
- * 로그인(2차, Supabase Auth 등)이 생기면 [startSession] 만 "로그인 확인 후 발급"으로 바꾸고,
- * 토큰 검증과 앱의 토큰 처리는 그대로 쓴다.
+ * 세션은 두 가지다. 토큰의 `sub` 는 항상 서버가 만든 세션 id 이고, 회원이면 그 세션이 회원 id 에 묶여 있다.
+ * - 비회원: [startSession]. 로그인 없이 시작하고 조회만 한다.
+ * - 회원:   [startUserSession]. SSO 로 확인된 회원에게 새 세션을 준다. (확인은 `SsoService` 가 한다)
+ * 토큰 검증과 갱신은 둘이 같다.
  */
 export class AuthService {
   constructor(
@@ -74,10 +81,18 @@ export class AuthService {
     private readonly newId: () => string,
   ) {}
 
+  /** 비회원 세션 */
   async startSession(): Promise<SessionTokens> {
     const id = this.newId();
     await this.clients.create(id, this.now());
-    return this.issuePair(id);
+    return this.issuePair(id, false);
+  }
+
+  /** 회원 세션. 호출하는 쪽이 SSO 로 회원을 확인한 뒤에만 불러야 한다. */
+  async startUserSession(userId: string): Promise<SessionTokens> {
+    const id = this.newId();
+    await this.clients.create(id, this.now(), userId);
+    return this.issuePair(id, true);
   }
 
   /** 리프레시 토큰으로 새 토큰 쌍을 받는다. 폐기됐거나 서버가 모르는 기기면 [AuthError]. */
@@ -88,7 +103,7 @@ export class AuthService {
       throw new AuthError("invalid_refresh", "세션이 유효하지 않습니다. 다시 시작해 주세요.");
     }
     await this.clients.touch(client.id, this.now());
-    return this.issuePair(client.id);
+    return this.issuePair(client.id, client.userId !== null);
   }
 
   /** 기기를 폐기한다. 이미 받은 액세스 토큰은 만료(기본 15분)까지 유효하고, 이후 갱신이 거절된다. */
@@ -96,7 +111,7 @@ export class AuthService {
     return this.clients.revoke(id);
   }
 
-  private async issuePair(sub: string): Promise<SessionTokens> {
+  private async issuePair(sub: string, member: boolean): Promise<SessionTokens> {
     const [access, refresh] = await Promise.all([this.tokens.issue("access", sub), this.tokens.issue("refresh", sub)]);
     return {
       tokenType: "Bearer",
@@ -104,6 +119,7 @@ export class AuthService {
       accessExpiresIn: access.expiresIn,
       refreshToken: refresh.token,
       refreshExpiresIn: refresh.expiresIn,
+      member,
     };
   }
 

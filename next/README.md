@@ -5,7 +5,7 @@
 - Next.js 16 (App Router) + TypeScript
 - 클린 아키텍처 + **섹션(feature) 단위 폴더 구조**
 - 1차 DB는 SQLite(Drizzle + better-sqlite3), 2차에 Supabase(Postgres) 전환 예정
-- 로그인 없음 (개인용)
+- 로그인은 **소셜 로그인(SSO)만** — Google · Apple · 네이버 · 카카오. 자체 회원가입/로그인(아이디·비밀번호)은 없고, 로그인하지 않은 **비회원도 조회**할 수 있습니다. (아래 "소셜 로그인")
 
 ## 폴더 구조
 
@@ -89,6 +89,19 @@ DB 마이그레이션은 앱/스크립트 시작 시 자동 적용됩니다(`npm
 | `JWT_ISSUER` / `JWT_AUDIENCE` | 발급자/대상 검증값 (기본 `everything-about-youth` / `everything-about-youth-app`) |
 | `JWT_ACCESS_TTL_SEC` / `JWT_REFRESH_TTL_SEC` | 액세스 토큰(기본 900=15분) / 리프레시 토큰(기본 2592000=30일) 유효 시간 |
 
+소셜 로그인 (SSO) — **값이 모두 있는 업체만 켜집니다.** 나머지는 앱 로그인 화면에 "준비 중"으로 보입니다. 아무것도 없어도 서버는 정상이고 비회원 조회만 됩니다.
+
+| 변수 | 설명 |
+| --- | --- |
+| `SSO_PUBLIC_BASE_URL` | 로그인 업체 콘솔에 등록한 **서버 주소**(예: `https://api.example.com`, 끝의 `/` 는 무시). 없으면 요청의 origin 을 씁니다. 운영에서는 꼭 넣으세요. (프록시 뒤에서는 origin 이 내부 주소가 될 수 있습니다) |
+| `SSO_ALLOWED_REDIRECTS` | 로그인이 끝나고 **앱으로 돌아올 주소**의 허용 목록(콤마 구분). 앱(Android/iOS)용 `everythingaboutyouth://auth` 는 항상 허용입니다. **Flutter 웹**을 배포하면 `https://<웹 주소>/auth.html` 을 넣어야 합니다. 개발(`NODE_ENV!=production`)에는 `http://localhost:<아무 포트>/auth.html` 도 허용합니다. |
+| `SSO_GOOGLE_CLIENT_ID` · `SSO_GOOGLE_CLIENT_SECRET` | Google Cloud Console → OAuth 클라이언트(웹 애플리케이션) |
+| `SSO_APPLE_CLIENT_ID` · `SSO_APPLE_TEAM_ID` · `SSO_APPLE_KEY_ID` · `SSO_APPLE_PRIVATE_KEY` | Apple Developer → **Services ID**, Team ID, Sign in with Apple 키의 Key ID, 그 키의 `.p8` 내용(줄바꿈은 `\n` 로 한 줄에). Apple 은 **HTTPS 도메인**이 필요합니다. |
+| `SSO_NAVER_CLIENT_ID` · `SSO_NAVER_CLIENT_SECRET` | 네이버 개발자센터 → 네이버 로그인 |
+| `SSO_KAKAO_CLIENT_ID` · `SSO_KAKAO_CLIENT_SECRET` | 카카오 디벨로퍼스 → **REST API 키**. Client Secret 은 콘솔에서 켰을 때만 넣습니다. |
+
+업체 콘솔에는 **콜백(Redirect) URL** 로 `<SSO_PUBLIC_BASE_URL>/api/v1/auth/sso/callback/<google|apple|naver|kakao>` 를 등록합니다. 한 업체의 값이 **일부만** 있으면(예: Google ID 만 있고 SECRET 이 없음) 그 업체는 켜지지 않고 서버 시작 로그에 빠진 환경변수 이름이 경고로 남습니다. 키 값은 로그에 남기지 않습니다.
+
 앱 버전 · 요청 제한 · 암호화 · CORS
 
 | 변수 | 설명 |
@@ -151,9 +164,15 @@ API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등�
 | `GET /features` | 서비스 켜짐/꺼짐 `{ "features": [{ "id": "housing", "enabled": true }] }`. 앱이 시작할 때 받아 꺼진 서비스를 숨깁니다. 캐시하지 않습니다. |
 | `GET /app-config` | **토큰 없이** 호출. `{ api: { version }, update: { status: none｜optional｜required, minVersion, latestVersion, storeUrl, message } }`. 앱이 시작할 때 강제 업데이트인지 묻습니다. |
 | `POST /auth/session` | **토큰 없이** 호출. 서버가 기기 id 를 만들어 토큰 쌍을 줍니다. `{ tokenType, accessToken, accessExpiresIn, refreshToken, refreshExpiresIn }` (만료는 남은 초) |
-| `POST /auth/refresh` | **토큰 없이** 호출. 본문 `{ "refreshToken": "..." }` → 새 토큰 쌍. 만료·위조·폐기·모르는 기기는 모두 401 `AUTH_REFRESH_INVALID` |
+| `POST /auth/refresh` | **토큰 없이** 호출. 본문 `{ "refreshToken": "..." }` → 새 토큰 쌍. 만료·위조·폐기·모르는 기기는 모두 401 `AUTH_REFRESH_INVALID`. 응답의 `member` 는 회원이면 `true` |
+| `GET /auth/providers` | **토큰 없이** 호출. 로그인 화면용 `{ providers: [{ id, name, enabled }] }`. Google·Apple·네이버·카카오 **네 곳을 항상** 주고, 서버에 설정이 있는 곳만 `enabled: true` |
+| `POST /auth/sso/start` | **토큰 없이** 호출. `{ provider, redirectUri, codeChallenge }` → `{ authorizationUrl }`. 설정 없는 업체는 503 `SSO_PROVIDER_UNAVAILABLE`, 허용 목록에 없는 `redirectUri` 는 400 |
+| `GET /auth/sso/callback/:provider` | 로그인 업체가 브라우저를 되돌려 보내는 곳. JSON 이 아니라 **앱 주소로 302** (`?ticket=…`, 취소는 `?error=cancelled`, 실패는 `?error=failed`) |
+| `POST /auth/sso/exchange` | **토큰 없이** 호출. `{ ticket, verifier }` → **회원** 토큰 쌍(`member: true`). 티켓이 없거나 만료·사용됨·verifier 불일치는 401 `SSO_TICKET_INVALID` |
+| `POST /auth/logout` | 토큰 필요. 이 세션을 폐기합니다. (비회원 세션도 가능) |
+| `POST /auth/account/delete` | 토큰 필요. **회원 탈퇴**. 로그인 정보와 그 회원의 모든 세션을 지웁니다. 비회원 세션이면 403 `LOGIN_REQUIRED` |
 
-`/auth/*` 와 `/app-config` 를 뺀 나머지는 모두 `Authorization: Bearer <accessToken>` 이 있어야 합니다.
+`/auth/session`, `/auth/refresh`, `/auth/providers`, `/auth/sso/*` 와 `/app-config` 를 뺀 나머지는 모두 `Authorization: Bearer <accessToken>` 이 있어야 합니다. (`/auth/logout`, `/auth/account/delete` 도 토큰이 필요합니다)
 
 ### 요청이 지나는 순서 (`src/proxy.ts` → `runGateway`)
 
@@ -187,13 +206,16 @@ API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등�
 | --- | --- | --- |
 | `BAD_REQUEST` | 400 | 요청이 올바르지 않음 |
 | `AUTH_REQUIRED` · `AUTH_TOKEN_EXPIRED` · `AUTH_TOKEN_INVALID` | 401 | 토큰 없음 · 만료(앱이 갱신 후 재시도) · 위조/종류 불일치. `WWW-Authenticate: Bearer` 동반 |
-| `AUTH_REFRESH_INVALID` | 401 | 리프레시 토큰 거절 (앱은 새 세션을 받음) |
+| `AUTH_REFRESH_INVALID` | 401 | 리프레시 토큰 거절 (비회원 앱은 새 세션을 받고, **회원은 로그인 화면으로** 돌아감) |
+| `SSO_TICKET_INVALID` | 401 | 로그인 티켓이 없거나 만료(2분)·이미 사용·verifier 불일치 → 앱은 처음부터 다시 로그인 |
 | `FORBIDDEN` · `OPERATOR_DISABLED` | 403 | 허용되지 않음 · 운영 환경에서 웹 수집 비활성 |
+| `LOGIN_REQUIRED` | 403 | 회원만 할 수 있는 일(회원 탈퇴)을 비회원 세션으로 요청 |
 | `NOT_FOUND` · `NOTICE_NOT_FOUND` | 404 | 없는 주소 · 없는 공고 |
 | `API_VERSION_UNSUPPORTED` | 410 | 닫힌(또는 없는) API 버전 → 앱은 업데이트 화면 |
 | `APP_UPDATE_REQUIRED` | 426 | 앱 버전이 최소 버전 미만. `details: { minVersion, storeUrl }` → 앱은 업데이트 화면 |
 | `RATE_LIMITED` | 429 | 요청 제한 초과. `Retry-After` 헤더와 `details.retryAfterSeconds` |
 | `SERVICE_DISABLED` | 503 | 운영자가 끈 서비스 |
+| `SSO_PROVIDER_UNAVAILABLE` | 503 | 서버에 이 로그인 방법의 설정이 아직 없음 |
 | `INTERNAL_ERROR` | 500 | 예상 못한 오류. **내부 문구는 숨기고** 요청 번호만 알려 줍니다. 상세는 서버 로그에서 `requestId` 로 찾습니다. |
 
 - `message` 는 사용자에게 그대로 보여줘도 되는 한글 문장입니다. 앱은 `code` 로 분기하고 `message` 를 화면에 씁니다.
@@ -212,7 +234,7 @@ API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등�
 | 대상 | 기준 | 한도 |
 | --- | --- | --- |
 | 앱용 API (토큰이 맞음) | **기기별** (JWT 의 기기 id) | 120회/분 |
-| `/auth/session`, `/auth/refresh` | IP 별 | 30회/분 |
+| `/auth/session`, `/auth/refresh`, `/auth/providers`, `/auth/sso/*` (로그인 전 호출) | IP 별 | 30회/분 |
 | `/app-config` | IP 별 | 60회/분 |
 | 운영자 수집 트리거 | IP 별 | 3회/분 |
 | 토큰이 없거나 틀린 요청 | IP 별 | 30회/분 |
@@ -233,17 +255,51 @@ API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등�
 
 ### 인증 (JWT)
 
-- **모든 `/api/*` 는 `src/proxy.ts` 한 곳에서 검사**합니다(Next 16 의 proxy). 새 API 를 추가해도 따로 붙일 것이 없고, 토큰이 없으면 라우트에 닿기 전에 401 입니다. 예외는 `src/common/presentation/api/auth.ts` 의 `PUBLIC_API_PATHS`(세션 발급/갱신, 앱 설정)와 `OPERATOR_API_PATHS`(수집 트리거), 그리고 CORS 사전 요청(`OPTIONS`)뿐이며 테스트가 우회 경로(`/api/v1/auth/session/x` 등)까지 확인합니다.
+- **모든 `/api/*` 는 `src/proxy.ts` 한 곳에서 검사**합니다(Next 16 의 proxy). 새 API 를 추가해도 따로 붙일 것이 없고, 토큰이 없으면 라우트에 닿기 전에 401 입니다. 예외는 `src/common/presentation/api/auth.ts` 의 `PUBLIC_API_PATHS`(세션 발급/갱신, 로그인 업체 목록·시작·교환·콜백, 앱 설정)와 `OPERATOR_API_PATHS`(수집 트리거), 그리고 CORS 사전 요청(`OPTIONS`)뿐이며 테스트가 우회 경로(`/api/v1/auth/session/x`, `/api/v1/auth/sso/start/x` 등)까지 확인합니다. 로그아웃과 회원 탈퇴는 공개 경로가 **아닙니다.**
 - 토큰은 HS256 JWT 이고 알고리즘을 고정해 검증합니다(`alg: none`·다른 알고리즘 거절). 서명, 발급자, 대상, 만료, **토큰 종류(access/refresh)** 를 모두 봅니다. 리프레시 토큰으로 데이터 API 를 부르거나 그 반대는 안 됩니다.
 - 401 응답의 `code`: `AUTH_REQUIRED`(토큰 없음) · `AUTH_TOKEN_EXPIRED`(만료, 앱이 갱신해서 다시 시도) · `AUTH_TOKEN_INVALID`(위조·종류 불일치). `WWW-Authenticate: Bearer` 헤더도 함께 줍니다.
-- **식별**: 서버가 기기마다 id(JWT `sub`)를 만들어 `auth_clients` 테이블에 저장합니다. 앱이 id 를 보내서 서버와 맞추는 방식이 아니라, **서버가 토큰에 넣은 값을 서버가 읽습니다.** 폐기(`AuthService.revoke`)한 기기는 갱신이 거절됩니다.
-- 코드 위치: 유스케이스·포트 `src/common/application/auth.ts`, JWT 구현(jose) `src/common/infrastructure/auth/`, 요청 검사·핸들러 `src/common/presentation/api/auth.ts`. 로그인(2차)이 생기면 `AuthService.startSession` 만 "로그인 확인 후 발급"으로 바꾸면 되고 검증과 앱의 토큰 처리는 그대로입니다.
+- **식별**: 서버가 세션마다 id(JWT `sub`)를 만들어 `auth_clients` 테이블에 저장합니다. 앱이 id 를 보내서 서버와 맞추는 방식이 아니라, **서버가 토큰에 넣은 값을 서버가 읽습니다.** 폐기(`AuthService.revoke`)한 세션은 갱신이 거절됩니다. 비회원 세션은 `user_id` 가 비어 있고, 로그인한 **회원 세션**은 `user_id` 로 회원과 이어집니다. gateway 는 검증된 세션 id 를 `x-client-id` 요청 헤더로 라우트에 넘기고, **바깥에서 보낸 같은 이름의 헤더는 먼저 지웁니다.**
+- 코드 위치: 유스케이스·포트 `src/common/application/auth.ts`, JWT 구현(jose) `src/common/infrastructure/auth/`, 요청 검사·핸들러 `src/common/presentation/api/auth.ts`.
+
+### 소셜 로그인 (SSO)
+
+자체 로그인은 **없습니다.** Google · Apple · 네이버 · 카카오만 열려 있고, 서버에 설정이 있는 곳만 켜집니다. 로그인하지 않아도(비회원) 조회는 모두 됩니다.
+
+```
+앱                             서버                              로그인 업체
+ │ POST /auth/sso/start         │                                    │
+ │  {provider, redirectUri,     │ state(서명 JWT, 10분)에             │
+ │   codeChallenge}             │ provider·nonce·돌아올 주소·challenge │
+ │─────────────────────────────▶│ 를 담아 인증 주소를 만든다           │
+ │◀── authorizationUrl ─────────│                                    │
+ │ 시스템 브라우저(커스텀 탭/ASWebAuthenticationSession/팝업)로 연다 ──▶│ 사용자가 로그인
+ │                              │◀── GET callback/<provider>?code&state
+ │                              │ state 검증 → 코드를 토큰으로 교환(TLS)
+ │                              │ → 고유 번호(sub/id) 확인 → 회원 찾기/만들기
+ │                              │ → 일회용 티켓(2분)을 해시로 저장
+ │◀── 302 앱주소?ticket=… ───────│
+ │ POST /auth/sso/exchange      │ 티켓을 한 번만 꺼내고,
+ │  {ticket, verifier}          │ sha256(verifier) == challenge 확인
+ │─────────────────────────────▶│
+ │◀── 회원 토큰 쌍(member:true) ──│
+```
+
+- **서버가 로그인 업체와 통신합니다(BFF).** 앱은 업체의 코드나 토큰을 보지 못하고, 서버가 준 일회용 티켓만 받습니다. 업체의 토큰은 고유 번호를 확인한 직후 버리고 저장하지 않으며, 로그에도 남기지 않습니다(오류 문구에는 상태 코드와 업체의 오류 코드만).
+- **PKCE(S256)**: 앱이 무작위 `verifier` 를 만들어 해시(`codeChallenge`)만 먼저 보냅니다. 앱으로 돌아오는 커스텀 스킴은 다른 앱도 받을 수 있으므로, 티켓을 가로채도 `verifier` 가 없으면 교환할 수 없습니다. 틀린 `verifier` 로 시도해도 티켓은 소모됩니다.
+- **돌아올 주소 허용 목록**: `redirectUri` 가 `SSO_ALLOWED_REDIRECTS`(+ 앱 기본 주소)에 **정확히** 있어야 합니다. 쿼리·해시·사용자 정보가 붙은 주소는 거절합니다. (open redirect 방지) `state` 가 위조·만료·다른 업체 것이면 앱으로 보내지 않고 안내 페이지(400)만 보여 줍니다.
+- **nonce**: Google·Apple 은 `id_token` 의 발급자·대상·만료·nonce 를 모두 확인합니다. (토큰 엔드포인트에서 TLS 로 직접 받았으므로 서명 검사는 생략합니다 — OIDC 가 허용하는 방식)
+- **개인정보 최소화**: 이메일·이름·프로필 사진을 **요청하지도, 저장하지도 않습니다.** 저장하는 것은 `users`(내부 id, 가입/마지막 로그인 시각)와 `user_identities`(업체, 업체가 준 고유 번호) 뿐입니다. 업체가 다르면 같은 사람이어도 **다른 회원**입니다(계정 연결 없음).
+- **회원 탈퇴**(`POST /auth/account/delete`): 회원과 로그인 정보, 남은 티켓을 지우고 그 회원의 모든 세션을 폐기합니다. 세션 기록은 `user_id` 만 비워져 남습니다. 같은 계정으로 다시 로그인하면 새 회원입니다.
+- **세션 만료**: 회원의 리프레시 토큰이 거절되면(다른 기기에서 탈퇴, 장기간 미사용, DB 초기화) 앱은 **비회원으로 바꾸지 않고** 로그인 화면으로 돌려보냅니다.
+- 코드: 흐름 `src/common/application/sso-service.ts`(+ `sso.ts` 의 규칙·포트), 업체별 어댑터 `src/common/infrastructure/auth/sso/`(`google.ts`·`apple.ts`·`naver.ts`·`kakao.ts`, 새 업체는 `SsoProvider` 하나를 구현), 설정 `src/common/infrastructure/config/sso-config.ts`, 핸들러 `src/common/presentation/api/sso.ts`, 테이블 `users`·`user_identities`·`sso_tickets`(`drizzle/0003_sso_login.sql`).
 
 한계(의도한 범위)
 
-- 로그인이 없으므로 `POST /auth/session` 은 누구나 호출할 수 있습니다. 즉 지금의 JWT 는 **누구인지 증명(인증)하는 것이 아니라 기기를 식별하고 토큰 없는 호출을 막는 것**입니다. 남용은 IP 별 요청 제한(30회/분)으로 줄이지만, 기기 id 를 계속 새로 받아 기기별 한도를 우회할 수는 있습니다. 로그인이 붙으면 발급 조건이 생깁니다.
+- **실제 업체 계정으로는 확인하지 못했습니다.** 흐름·검증·실패 처리는 가짜 업체로 테스트했고(`sso-service.test.ts`, `providers.test.ts`), 업체 어댑터는 각 업체 문서의 요청/응답 모양을 따랐지만 업체 콘솔에 앱을 등록하고 실제로 로그인해 보는 확인은 필요합니다. Apple 은 HTTPS 도메인과 Services ID 가 있어야 시험할 수 있습니다.
+- 비회원 세션(`POST /auth/session`)은 누구나 받을 수 있습니다. 비회원 JWT 는 **누구인지 증명하는 것이 아니라 세션을 식별하고 토큰 없는 호출을 막는 것**입니다. 남용은 IP 별 요청 제한(30회/분)으로 줄이지만, 세션을 계속 새로 받아 세션별 한도를 우회할 수는 있습니다. 회원 세션은 업체 로그인을 거치므로 이 한계가 덜합니다.
+- 비회원으로 쓰던 서버 쪽 데이터는 없으므로(내 조건은 기기에만 저장) 로그인할 때 합칠 것이 없습니다. 기기 간 동기화 같은 회원 기능은 아직 없습니다.
 - proxy 의 검증은 서명·만료만 보는 무상태 방식이라 DB 를 열지 않습니다. 그래서 폐기한 기기도 이미 받은 액세스 토큰은 만료(기본 15분)까지 유효하고, 그 뒤 갱신에서 막힙니다. 리프레시 토큰은 사용해도 이전 것이 즉시 무효가 되지는 않습니다(회전·재사용 탐지 없음).
-- **`POST /api/v1/housing/sync` 는 JWT 대상이 아닙니다.** (앱 버전 확인과 CORS 도 적용하지 않고, 요청 제한(3회/분)만 받습니다.) 앱용 API 가 아니라 운영자용 수집 트리거이고, 앱 토큰(누구나 받을 수 있는)으로 열면 오히려 보호가 약해집니다. production 에서는 `ALLOW_WEB_SYNC=true` 가 아니면 403 이며, 운영자 인증은 로그인(2차)에서 추가합니다. 수집은 가능하면 CLI(`npm run housing:sync`)로 하세요.
+- **`POST /api/v1/housing/sync` 는 JWT 대상이 아닙니다.** (앱 버전 확인과 CORS 도 적용하지 않고, 요청 제한(3회/분)만 받습니다.) 앱용 API 가 아니라 운영자용 수집 트리거이고, 앱 토큰(누구나 받을 수 있는)으로 열면 오히려 보호가 약해집니다. production 에서는 `ALLOW_WEB_SYNC=true` 가 아니면 403 입니다. 운영자 인증은 아직 없습니다. (소셜 로그인은 일반 회원용이고 운영자 권한을 구분하지 않습니다) 수집은 가능하면 CLI(`npm run housing:sync`)로 하세요.
 
 - **서비스 켜기/끄기**: 서비스별 기본값은 코드(`src/features/<id>/feature.ts`, 목록은 `src/features/registry.ts`)에 두고, 운영자가 바꾼 값만 DB(`feature_flags`)에 저장합니다. 값은 CLI 로 바꾸며 서버를 다시 시작할 필요가 없습니다.
 
@@ -254,7 +310,7 @@ API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등�
   npm run features -- reset housing # 운영자 설정을 지우고 기본값으로
   ```
 
-  꺼진 서비스의 API 만 막히고 다른 서비스에는 영향이 없습니다. DB 를 읽지 못하면 서버는 멈추지 않고 기본값으로 동작합니다. 웹으로 바꾸는 API 는 로그인(2차) 전까지 만들지 않았습니다. 새 서비스를 추가하면 같은 id 로 앱에도 등록합니다(앱의 `FeatureModule.id`).
+  꺼진 서비스의 API 만 막히고 다른 서비스에는 영향이 없습니다. DB 를 읽지 못하면 서버는 멈추지 않고 기본값으로 동작합니다. 서비스 켜기/끄기를 웹 API 로 바꾸는 기능은 만들지 않았습니다. (운영자 인증이 없으므로) 새 서비스를 추가하면 같은 id 로 앱에도 등록합니다(앱의 `FeatureModule.id`).
 - **내 조건**(`age, home, married, newlywed, student, income`)을 쿼리로 보내면 응답의 `eligibility`(판정·사유·안내)가 채워집니다. 서버는 조건을 저장하지 않고, 앱은 기기에만 저장합니다. 보내지 않으면 `eligibility: null`.
 - 응답은 값(코드)과 한글 라벨을 함께 주고, 금액은 원, 면적은 ㎡, 날짜는 `YYYY-MM-DD`(KST)입니다. 원본(raw) 응답은 노출하지 않습니다.
 - **CORS**: gateway 가 모든 응답에 한 곳에서 붙입니다(`cors.ts`). `GET, POST, OPTIONS` 와 헤더 `Authorization`, `Content-Type`, `X-App-Version`, `X-App-Platform` 을 허용하고, 앱이 읽는 `Retry-After`, `RateLimit-*`, `X-Request-Id` 를 노출합니다. 토큰은 쿠키가 아니라 헤더로 보내므로 `*` 출처여도 자격 증명이 새지 않지만, 허용 출처는 `API_CORS_ORIGIN`(기본 `*`)으로 배포할 때 Flutter 웹 주소로 좁히세요. 동기화(`POST /api/v1/housing/sync`)에는 CORS 를 열지 않습니다.
@@ -268,7 +324,7 @@ API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등�
 2. **리포지토리**: 각 섹션의 `NoticeRepository`, `SyncRunRepository` 등 Postgres 구현 추가. 계약 테스트(`sqlite-repositories.test.ts`)를 공용화해 두 구현에 모두 적용.
 3. **조립**: `common/infrastructure/container.ts` 의 `DB_DRIVER=supabase` 분기에서 Postgres 연결을 만들고, 각 섹션 `container.ts` 가 그 연결로 리포지토리를 조립하도록 분기 (현재는 "2차 개발 범위" 에러).
 4. **수집 실행**: 웹 요청이 아닌 Supabase Edge Function / cron / GitHub Actions 로 `scripts/housing/sync.ts` 를 주기 실행.
-5. **사용자 기능**: 로그인(Supabase Auth), 프로필·저장 공고·알림 테이블 + RLS. 로그인/사용자 관련 코드는 모든 섹션이 쓰므로 `src/common` 에 둡니다. 현재 localStorage 의 "내 조건"은 `ApplicantProfile` 기준으로 서버 저장으로 이전. 공고 테이블은 읽기 전용 공개, 쓰기는 service role 만 허용.
+5. **사용자 기능**: 프로필·저장 공고·알림 테이블 + RLS. 소셜 로그인은 이미 서버에 직접 구현되어 있으므로(`users`·`user_identities`·`sso_tickets` 테이블을 Postgres 로 옮기고 `UserStore`/`SsoTicketStore` 의 Postgres 구현을 추가), Supabase Auth 로 바꿀지는 그때 정합니다. 로그인/사용자 관련 코드는 모든 섹션이 쓰므로 `src/common` 에 둡니다. 현재 localStorage 의 "내 조건"은 `ApplicantProfile` 기준으로 서버 저장으로 이전. 공고 테이블은 읽기 전용 공개, 쓰기는 service role 만 허용.
 6. **`.env.example`**: 2차에서 환경변수가 안정되면 추가합니다.
 
 ## 알려진 한계

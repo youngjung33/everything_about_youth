@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../core/bootstrap/bootstrap_controller.dart';
 import '../core/feature/feature_flags.dart';
+import '../core/providers/core_providers.dart';
 import '../core/theme/app_text_scale.dart';
 import '../core/theme/app_theme.dart';
 import '../core/update/update_gate.dart';
@@ -36,6 +37,7 @@ class _EveryThingAboutYouthAppState extends ConsumerState<EveryThingAboutYouthAp
       // 라우터는 Riverpod 을 모르고, 아래 세 가지만 우리에게 묻는다.
       isReady: () => ref.read(bootstrapProvider) is AsyncData,
       isUpdateRequired: () => ref.read(updateGateProvider) != null,
+      authMode: () => ref.read(authModeProvider),
       modules: ref.read(featureModulesProvider),
       // 값이 바뀐 직후에 불리므로 파생 provider 가 아니라 원본 상태를 직접 읽는다.
       availabilityOf: (id) => featureAvailabilityOf(
@@ -51,6 +53,8 @@ class _EveryThingAboutYouthAppState extends ConsumerState<EveryThingAboutYouthAp
     ref.listenManual(featureFlagsProvider, (previous, next) => _refresh.notify());
     // 실행 중에 서버가 업데이트를 요구해도(최소 버전을 올림) 바로 업데이트 화면으로 간다.
     ref.listenManual(updateGateProvider, (previous, next) => _refresh.notify());
+    // 로그인·로그아웃·탈퇴·세션 만료로 상태가 바뀌면 로그인 화면과 앱 화면 사이를 바로 오간다.
+    ref.listenManual(authModeProvider, (previous, next) => _refresh.notify());
   }
 
   @override

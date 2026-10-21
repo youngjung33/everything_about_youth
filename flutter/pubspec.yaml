@@ -43,6 +43,7 @@ dependencies:
   flutter_secure_storage: ^11.2.0
   package_info_plus: ^10.2.2
   cryptography: ^2.9.0
+  flutter_web_auth_2: ^5.1.0
 
 dev_dependencies:
   flutter_test:

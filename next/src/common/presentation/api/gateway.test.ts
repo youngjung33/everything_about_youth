@@ -220,6 +220,41 @@ describe("7. 통과", () => {
     expect(res.headers.get("ratelimit-remaining")).toBe(String(RATE_LIMITS.api.limit - 1));
   });
 
+  it("검증된 세션 id 만 x-client-id 로 넘긴다. 바깥에서 보낸 값은 쓰지 않는다", async () => {
+    const { deps } = setup();
+    const res = await runGateway(request(apiPath("/auth/logout"), { method: "POST", headers: authed("real", { "x-client-id": "victim" }) }), deps);
+    expect(pass(res)).toBe(true);
+    expect(res.headers.get("x-middleware-request-x-client-id")).toBe("real");
+  });
+
+  it("토큰이 필요 없는 공개 경로에서는 위조된 x-client-id 를 지우고 넘기지 않는다", async () => {
+    const { deps } = setup();
+    const res = await runGateway(request(apiPath("/auth/providers"), { headers: { "x-client-id": "victim" } }), deps);
+    expect(pass(res)).toBe(true);
+    expect(res.headers.get("x-middleware-request-x-client-id")).toBeNull();
+    expect(res.headers.get("x-middleware-override-headers")).not.toContain("x-client-id");
+  });
+
+  it("로그아웃과 회원 탈퇴는 토큰이 있어야 한다 (공개 경로가 아니다)", async () => {
+    const { deps } = setup();
+    for (const p of ["/auth/logout", "/auth/account/delete"]) {
+      const res = await runGateway(request(apiPath(p), { method: "POST" }), deps);
+      expect(res.status, p).toBe(401);
+    }
+  });
+
+  it("로그인 시작·교환·콜백과 업체 목록은 토큰 없이 부를 수 있다 (로그인 전이므로)", async () => {
+    const { deps } = setup();
+    for (const [method, p] of [
+      ["GET", "/auth/providers"],
+      ["POST", "/auth/sso/start"],
+      ["POST", "/auth/sso/exchange"],
+      ["GET", "/auth/sso/callback/google"],
+    ] as const) {
+      expect(pass(await runGateway(request(apiPath(p), { method }), deps)), p).toBe(true);
+    }
+  });
+
   it("라우트가 같은 요청 번호를 쓸 수 있도록 요청 헤더로 넘긴다", async () => {
     const res = await runGateway(request(apiPath("/features"), { headers: authed() }), setup().deps);
     expect(res.headers.get("x-middleware-request-x-request-id")).toBe("req-1");

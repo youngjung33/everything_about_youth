@@ -13,6 +13,16 @@ abstract final class ApiErrorCode {
   static const authTokenExpired = 'AUTH_TOKEN_EXPIRED';
   static const authTokenInvalid = 'AUTH_TOKEN_INVALID';
   static const authRefreshInvalid = 'AUTH_REFRESH_INVALID';
+
+  /// 일회용 로그인 티켓이 없거나 만료됐거나 이미 썼다. (처음부터 다시 로그인)
+  static const ssoTicketInvalid = 'SSO_TICKET_INVALID';
+
+  /// 회원만 할 수 있는 일을 비회원 세션으로 요청했다. (회원 탈퇴)
+  static const loginRequired = 'LOGIN_REQUIRED';
+
+  /// 서버에 이 로그인 방법의 설정이 아직 없다.
+  static const ssoProviderUnavailable = 'SSO_PROVIDER_UNAVAILABLE';
+
   static const forbidden = 'FORBIDDEN';
   static const operatorDisabled = 'OPERATOR_DISABLED';
 
