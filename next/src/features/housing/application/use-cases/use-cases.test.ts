@@ -144,7 +144,10 @@ describe("SearchNotices", () => {
     const repo = new FakeRepo();
     await repo.upsertMany([createNotice(draft())]);
     const uc = new SearchNotices(repo, clock);
-    const out = await uc.execute({ filters: {}, profile: { age: 30, isHomeless: true, incomeRatioPercent: 80 } });
+    const out = await uc.execute({
+      filters: {},
+      profile: { age: 30, isHomeless: true, householdSize: 1, monthlyIncomeWon: 3_000_000, totalAssetWon: 50_000_000, carValueWon: 0 },
+    });
     expect(repo.lastQuery?.today).toBe("2026-10-12");
     expect(out.items[0]).toMatchObject({ status: "open" });
     expect(out.items[0]!.eligibility?.verdict).toBe("eligible");
@@ -159,10 +162,18 @@ describe("SearchNotices", () => {
     const uc = new SearchNotices(repo, clock);
     const out = await uc.execute({
       filters: {},
-      profile: { age: 30, isHomeless: true, incomeRatioPercent: 85 },
+      // 3인 가구 월 650만원: 행복주택(100%, 월 816만원 이하)은 가능, 국민임대(70%, 월 571만원 이하)는 초과
+      profile: {
+        age: 30,
+        isHomeless: true,
+        householdSize: 3,
+        monthlyIncomeWon: 6_500_000,
+        totalAssetWon: 50_000_000,
+        carValueWon: 0,
+      },
       verdicts: ["eligible"],
     });
-    // 국민임대는 소득 70% 이하라 불가, 행복주택만 남는다
+    // 국민임대는 소득 초과로 불가, 행복주택만 남는다
     expect(out.total).toBe(1);
     expect(out.items[0]!.notice.title).toBe("A 행복주택");
     expect(repo.lastQuery?.limit).toBeUndefined();

@@ -123,20 +123,20 @@ describe("evaluateEligibility", () => {
   it("청년매입임대: 모두 충족하면 가능", () => {
     const r = evaluateEligibility(
       { supplyType: "youth_purchase_rental", ...open },
-      { age: 28, isHomeless: true, isMarried: false, incomeRatioPercent: 60 },
+      { age: 28, isHomeless: true, isMarried: false, incomeRatioPercent: 60, totalAssetWon: 50_000_000, carValueWon: 0 },
       today,
     );
     expect(r.verdict).toBe("eligible");
   });
   it("행복주택: 청년이면 소득 100% 이하 가능, 초과는 불가", () => {
-    const base = { age: 30, isHomeless: true };
+    const base = { age: 30, isHomeless: true, totalAssetWon: 50_000_000, carValueWon: 0 };
     expect(evaluateEligibility({ supplyType: "happy_housing", ...open }, { ...base, incomeRatioPercent: 90 }, today).verdict).toBe("eligible");
     expect(evaluateEligibility({ supplyType: "happy_housing", ...open }, { ...base, incomeRatioPercent: 110 }, today).verdict).toBe("ineligible");
   });
   it("행복주택: 연령 초과여도 신혼부부면 대상, 신혼 소득 120%까지", () => {
     const r = evaluateEligibility(
       { supplyType: "happy_housing", ...open },
-      { age: 42, isHomeless: true, isNewlywed: true, incomeRatioPercent: 115 },
+      { age: 42, isHomeless: true, isNewlywed: true, incomeRatioPercent: 115, totalAssetWon: 100_000_000, carValueWon: 0 },
       today,
     );
     expect(r.verdict).toBe("eligible");

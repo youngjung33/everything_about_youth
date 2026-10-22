@@ -163,7 +163,7 @@ features/
 
 ### 개인정보 암호화
 
-- 기기에 저장하는 개인정보("내 조건": 나이·소득·무주택 등)는 **AES-256-GCM 으로 암호화**해서 저장합니다. 규격은 `core/security/field_cipher.dart`(`FieldCipher`, `AesGcmFieldCipher`)이고 서비스는 `fieldCipherProvider` 를 받아 씁니다. 개인정보를 기기에 저장하는 새 기능은 평문 SharedPreferences 에 직접 쓰지 말고 이것을 거치세요.
+- 기기에 저장하는 개인정보("내 조건": 나이·가구원수·소득·자산·무주택 등)는 **AES-256-GCM 으로 암호화**해서 저장합니다. 규격은 `core/security/field_cipher.dart`(`FieldCipher`, `AesGcmFieldCipher`)이고 서비스는 `fieldCipherProvider` 를 받아 씁니다. 개인정보를 기기에 저장하는 새 기능은 평문 SharedPreferences 에 직접 쓰지 말고 이것을 거치세요.
 - **키는 암호문과 다른 곳에** 둡니다. 암호문은 SharedPreferences, 키는 보안 저장소(iOS Keychain, Android Keystore; `core/security/cipher_key_store.dart`)입니다. 앱 저장소 파일만 유출돼도 읽을 수 없습니다.
 - `context`(예 `housing.profile`)가 암호문에 묶여 있어 다른 값의 암호문을 끼워 넣어도 읽히지 않고, 변조나 다른 키는 복호화 실패입니다. **복호화 실패는 예외가 아니라 "값 없음"** 으로 처리되어 앱이 죽지 않고 사용자가 다시 입력하게 됩니다. (앱을 지웠다 다시 깔면 키를 잃어 옛 값은 못 읽습니다 — 의도한 동작입니다.)
 - 암호화 이전 버전이 저장한 평문 값은 처음 읽을 때 암호화해서 다시 저장합니다.

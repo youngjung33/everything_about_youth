@@ -104,6 +104,12 @@ Map<String, dynamic> metaJson() => {
     {'value': 'latest', 'label': '최신 공고순'},
   ],
   'sidos': ['서울특별시', '경기도'],
+  'standards': {
+    'year': 2026,
+    'maxHouseholdSize': 8,
+    'urbanWorkerIncome': [3813363, 5866270, 8168429, 8802202, 9326985, 9906263, 10485541, 11064819],
+    'medianIncome': [2564238, 4199292, 5359036, 6494738, 7556719, 8555952, 9515150, 10474348],
+  },
 };
 
 NoticeSummary sampleSummary({String id = 'n1', String title = '청년 행복주택 입주자 모집'}) =>

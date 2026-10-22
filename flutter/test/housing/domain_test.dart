@@ -132,26 +132,111 @@ void main() {
     });
 
     test('쿼리 왕복', () {
-      const p = ApplicantProfile(
-        age: 29,
-        isHomeless: true,
-        isMarried: false,
-        isNewlywed: false,
-        isStudent: true,
-        incomeRatioPercent: 80,
-      );
-      expect(p.toQuery(), {'age': '29', 'home': 'y', 'married': 'n', 'newlywed': 'n', 'student': 'y', 'income': '80'});
+      const p = ApplicantProfile(age: 29, isHomeless: true, isMarried: false, isNewlywed: false, isStudent: true);
+      expect(p.toQuery(), {'age': '29', 'home': 'y', 'married': 'n', 'newlywed': 'n', 'student': 'y'});
       expect(ApplicantProfile.fromQuery(p.toQuery()), p);
+    });
+
+    test('소득·자산·청약통장도 쿼리로 왕복한다 (금액은 만원 단위)', () {
+      const p = ApplicantProfile(
+        householdSize: 3,
+        monthlyIncomeMan: 650,
+        isDualIncome: true,
+        totalAssetMan: 12000,
+        carValueMan: 0,
+        hasSubscriptionAccount: false,
+      );
+      expect(p.toQuery(), {
+        'household': '3',
+        'monthly': '650',
+        'dual': 'y',
+        'asset': '12000',
+        'car': '0',
+        'account': 'n',
+      });
+      expect(ApplicantProfile.fromQuery(p.toQuery()), p);
+      expect(p.isEmpty, isFalse);
+    });
+
+    test('자동차 0 은 "입력 안 함"이 아니라 "없음"이다', () {
+      const p = ApplicantProfile(carValueMan: 0);
+      expect(p.isEmpty, isFalse);
+      expect(p.toQuery(), {'car': '0'});
     });
 
     test('범위를 벗어난 값은 버린다', () {
       final p = ApplicantProfile.fromQuery({'age': '200', 'income': '-1', 'home': 'maybe'});
       expect(p.isEmpty, isTrue);
+
+      final q = ApplicantProfile.fromQuery({
+        'household': '9',
+        'monthly': '-5',
+        'asset': '99999999999',
+        'car': 'abc',
+        'dual': 'x',
+      });
+      expect(q.isEmpty, isTrue);
+      expect(ApplicantProfile.fromQuery({'household': '0'}).householdSize, isNull);
+      expect(ApplicantProfile.fromQuery({'household': '8'}).householdSize, 8);
+    });
+
+    test('예전 버전이 저장한 소득 비율(income)은 읽지 않는다', () {
+      final p = ApplicantProfile.fromQuery({'age': '30', 'income': '80'});
+      expect(p, const ApplicantProfile(age: 30));
     });
 
     test('요약 문구', () {
-      const p = ApplicantProfile(age: 29, isHomeless: true, incomeRatioPercent: 80);
-      expect(p.summary, '만 29세 · 무주택 · 소득 80%');
+      const p = ApplicantProfile(age: 29, isHomeless: true);
+      expect(p.summary, '만 29세 · 무주택');
+
+      const full = ApplicantProfile(
+        age: 29,
+        isHomeless: true,
+        householdSize: 1,
+        monthlyIncomeMan: 300,
+        totalAssetMan: 12000,
+        carValueMan: 0,
+        hasSubscriptionAccount: true,
+      );
+      expect(full.summary, '만 29세 · 무주택 · 1인 가구 · 월 300만원 · 자산 1억 2,000만원 · 자동차 없음 · 청약통장 있음');
+    });
+
+    test('copyWith 로 새 항목을 null 로 되돌린다', () {
+      const p = ApplicantProfile(householdSize: 2, monthlyIncomeMan: 400);
+      expect(p.copyWith(householdSize: () => null).householdSize, isNull);
+      expect(p.copyWith(householdSize: () => null).monthlyIncomeMan, 400);
+    });
+  });
+
+  group('EligibilityStandards', () {
+    test('메타에서 기준표를 읽는다', () {
+      final s = HousingMeta.fromJson(metaJson()).standards!;
+      expect(s.year, 2026);
+      expect(s.urbanWorkerIncomeFor(1), 3813363);
+      expect(s.urbanWorkerIncomeFor(8), 11064819);
+      expect(s.urbanWorkerIncomeFor(0), isNull);
+      expect(s.urbanWorkerIncomeFor(9), isNull);
+    });
+
+    test('월 소득(만원)이 도시근로자 월평균소득의 몇 %인지 계산한다', () {
+      final s = HousingMeta.fromJson(metaJson()).standards!;
+      // 3인 가구 기준 8,168,429원. 월 650만원 → 약 80%
+      expect(s.urbanWorkerRatioPercent(householdSize: 3, monthlyIncomeMan: 650), 80);
+      expect(s.urbanWorkerRatioPercent(householdSize: 1, monthlyIncomeMan: 0), 0);
+      expect(s.urbanWorkerRatioPercent(householdSize: 9, monthlyIncomeMan: 300), isNull);
+    });
+
+    test('서버가 기준표를 주지 않으면 null 이다 (오래된 서버와도 호환)', () {
+      final json = metaJson()..remove('standards');
+      expect(HousingMeta.fromJson(json).standards, isNull);
+    });
+
+    test('숫자가 아닌 항목은 건너뛴다', () {
+      final s = EligibilityStandards.fromJson({
+        'year': 2026,
+        'urbanWorkerIncome': [100, 'x', 300],
+      });
+      expect(s.urbanWorkerIncome, [100, 300]);
     });
   });
 
@@ -177,13 +262,18 @@ void main() {
 
     test('기기에는 평문이 남지 않는다', () async {
       final (prefs, cipher) = await open();
-      await ProfileStore(prefs, cipher).save(const ApplicantProfile(age: 31, isHomeless: true, incomeRatioPercent: 77));
+      await ProfileStore(
+        prefs,
+        cipher,
+      ).save(const ApplicantProfile(age: 31, isHomeless: true, monthlyIncomeMan: 777, totalAssetMan: 4321));
 
       final raw = prefs.getString(ProfileStore.storageKey)!;
       expect(AesGcmFieldCipher.looksEncrypted(raw), isTrue);
-      expect(raw, isNot(contains('31')));
-      expect(raw, isNot(contains('77')));
+      // 암호문은 매번 무작위 base64 라서 두 글자짜리 값은 우연히 들어 있을 수 있다. 충분히 긴 값으로만 확인한다.
+      expect(raw, isNot(contains('777')));
+      expect(raw, isNot(contains('4321')));
       expect(raw, isNot(contains('age')));
+      expect(raw, isNot(contains('asset')));
     });
 
     test('읽는 도중에 저장하면, 늦게 끝난 읽기가 새 값을 덮어쓰지 않는다', () async {

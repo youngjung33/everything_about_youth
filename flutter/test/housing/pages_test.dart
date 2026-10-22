@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:everything_about_youth/core/network/api_client.dart';
 import 'package:everything_about_youth/core/widgets/state_views.dart';
 import 'package:everything_about_youth/features/housing/domain/applicant_profile.dart';
+import 'package:everything_about_youth/features/housing/domain/housing_meta.dart';
 import 'package:everything_about_youth/features/housing/domain/notice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,6 +13,9 @@ import '../support/fixtures.dart';
 import '../support/pump_app.dart';
 
 NoticePage onePage(List<Map<String, dynamic>> items) => NoticePage.fromJson(pageJson(items: items));
+
+/// '내 조건' 입력 화면의 세로 스크롤. (입력 칸마다 자체 Scrollable 이 있어서 첫 번째 Scrollable 은 맞지 않는다)
+Finder get _formScrollable => find.descendant(of: find.byType(ListView), matching: find.byType(Scrollable)).first;
 
 /// 상세 응답을 원하는 시점에 내려주는 저장소 (로딩 표시 확인용)
 class _SlowDetailRepository extends FakeHousingRepository {
@@ -187,6 +191,7 @@ void main() {
 
     await tester.enterText(find.widgetWithText(TextField, '만 나이'), '29');
     await tester.tap(find.text('무주택'));
+    await tester.scrollUntilVisible(find.text('저장'), 300, scrollable: _formScrollable);
     await tester.tap(find.text('저장'));
     await tester.pumpAndSettle();
 
@@ -194,6 +199,114 @@ void main() {
     expect(find.text('자격 판정으로 거르기'), findsOneWidget);
     expect(repo.searchCalls.last.profile.age, 29);
     expect(repo.searchCalls.last.profile.isHomeless, isTrue);
+  });
+
+  testWidgets('내 조건: 가구원수·월 소득·자산을 입력하면 소득 수준을 안내하고 서버 쿼리에 실린다', (tester) async {
+    final repo = FakeHousingRepository(
+      pages: [
+        onePage([summaryJson()]),
+      ],
+    );
+    // 입력 칸이 많아서, 화면 밖 칸은 아직 만들어지지 않는다. 전체가 한 화면에 들어오는 높이로 연다.
+    await pumpApp(tester, repo, location: '/housing/profile', size: const Size(600, 3200));
+    final scrollable = _formScrollable;
+
+    // 가구원수를 고르기 전에는 소득 수준 안내가 없다
+    await tester.scrollUntilVisible(find.byKey(const ValueKey('household-3')), 300, scrollable: scrollable);
+    await tester.enterText(find.widgetWithText(TextField, '가구 월 소득 (세전, 가구원 전체 합계)'), '650');
+    await tester.pump();
+    expect(find.byKey(const ValueKey('income-hint')), findsNothing);
+
+    await tester.tap(find.byKey(const ValueKey('household-3')));
+    await tester.pump();
+    // 3인 가구 도시근로자 월평균소득 8,168,429원의 80%
+    expect(find.byKey(const ValueKey('income-hint')), findsOneWidget);
+    expect(find.textContaining('2026년 기준 3인 가구'), findsOneWidget);
+    expect(find.textContaining('약 80%'), findsOneWidget);
+
+    // 선택한 칩을 다시 누르면 입력 안 함으로 돌아간다
+    await tester.tap(find.byKey(const ValueKey('household-3')));
+    await tester.pump();
+    expect(find.byKey(const ValueKey('income-hint')), findsNothing);
+    await tester.tap(find.byKey(const ValueKey('household-3')));
+    await tester.pump();
+
+    await tester.scrollUntilVisible(find.widgetWithText(TextField, '총자산 (부채를 뺀 금액)'), 300, scrollable: scrollable);
+    await tester.enterText(find.widgetWithText(TextField, '총자산 (부채를 뺀 금액)'), '5000');
+    await tester.enterText(find.widgetWithText(TextField, '자동차 가액'), '0');
+
+    await tester.scrollUntilVisible(find.text('저장'), 300, scrollable: scrollable);
+    await tester.tap(find.text('저장'));
+    await tester.pumpAndSettle();
+
+    final saved = repo.searchCalls.last.profile;
+    expect(saved.householdSize, 3);
+    expect(saved.monthlyIncomeMan, 650);
+    expect(saved.totalAssetMan, 5000);
+    expect(saved.carValueMan, 0);
+    expect(saved.toQuery(), containsPair('household', '3'));
+  });
+
+  testWidgets('내 조건: 신혼부부로 답했을 때만 맞벌이를 묻는다', (tester) async {
+    final repo = FakeHousingRepository(
+      pages: [
+        onePage([summaryJson()]),
+      ],
+    );
+    // 입력 칸이 많아서, 화면 밖 칸은 아직 만들어지지 않는다. 전체가 한 화면에 들어오는 높이로 연다.
+    await pumpApp(tester, repo, location: '/housing/profile', size: const Size(600, 3200));
+    final scrollable = _formScrollable;
+
+    expect(find.textContaining('맞벌이'), findsNothing);
+    await tester.scrollUntilVisible(find.text('신혼부부 (혼인 7년 이내)'), 300, scrollable: scrollable);
+    await tester.tap(find.text('해당').first);
+    await tester.pump();
+    await tester.scrollUntilVisible(find.textContaining('맞벌이 (본인과 배우자'), 300, scrollable: scrollable);
+    expect(find.textContaining('맞벌이 (본인과 배우자'), findsOneWidget);
+  });
+
+  testWidgets('내 조건: 서버가 기준표를 주지 않아도 입력 화면은 동작한다', (tester) async {
+    final meta = metaJson()..remove('standards');
+    final repo = FakeHousingRepository(
+      meta: HousingMeta.fromJson(meta),
+      pages: [
+        onePage([summaryJson()]),
+      ],
+    );
+    // 입력 칸이 많아서, 화면 밖 칸은 아직 만들어지지 않는다. 전체가 한 화면에 들어오는 높이로 연다.
+    await pumpApp(tester, repo, location: '/housing/profile', size: const Size(600, 3200));
+    final scrollable = _formScrollable;
+
+    await tester.scrollUntilVisible(find.byKey(const ValueKey('household-2')), 300, scrollable: scrollable);
+    await tester.enterText(find.widgetWithText(TextField, '가구 월 소득 (세전, 가구원 전체 합계)'), '300');
+    await tester.tap(find.byKey(const ValueKey('household-2')));
+    await tester.pump();
+
+    expect(find.byKey(const ValueKey('income-hint')), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('내 조건: 작은 폰과 최대 글꼴에서도 넘치지 않고, 맨 아래 저장 버튼까지 닿을 수 있다', (tester) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 3;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+    final repo = FakeHousingRepository(
+      pages: [
+        onePage([summaryJson()]),
+      ],
+    );
+    await pumpApp(tester, repo, location: '/housing/profile', size: const Size(320, 480));
+    expect(tester.takeException(), isNull);
+
+    // 가구원수 칩(8개)이 여러 줄로 감겨도 넘치지 않는다
+    await tester.dragUntilVisible(find.byKey(const ValueKey('household-8')), _formScrollable, const Offset(0, -200));
+    expect(tester.takeException(), isNull);
+
+    await tester.dragUntilVisible(find.text('저장'), _formScrollable, const Offset(0, -200));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text('저장'), findsOneWidget);
+    expect(find.text('모두 지우기'), findsOneWidget);
   });
 
   testWidgets('판정이 있는 공고는 배지를 보여준다', (tester) async {

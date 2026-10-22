@@ -4,6 +4,12 @@ import { formatDday } from "@/common/presentation/format";
 import type { EligibilityResult } from "@/features/housing/domain/eligibility/evaluate";
 import { VERDICT_LABELS } from "@/features/housing/domain/eligibility/evaluate";
 import {
+  MAX_HOUSEHOLD_SIZE,
+  MEDIAN_INCOME_100,
+  STANDARDS_YEAR,
+  URBAN_WORKER_INCOME_100,
+} from "@/features/housing/domain/eligibility/standards";
+import {
   HOUSING_TYPE_LABELS,
   HOUSING_TYPES,
   NOTICE_STATUS_LABELS,
@@ -110,6 +116,17 @@ export interface OptionDto {
   label: string;
 }
 
+/** 자격 판정에 쓰는 기준표(참고용). 앱이 입력 화면에서 소득 수준을 안내할 때 쓴다. */
+export interface EligibilityStandardsDto {
+  /** 기준표 적용 연도 */
+  year: number;
+  maxHouseholdSize: number;
+  /** 전년도 도시근로자 가구원수별 월평균소득 100% (원). 인덱스 0 = 1인 가구 */
+  urbanWorkerIncome: number[];
+  /** 기준 중위소득 100% (원). 인덱스 0 = 1인 가구 */
+  medianIncome: number[];
+}
+
 export interface HousingMetaDto {
   supplyTypes: OptionDto[];
   housingTypes: OptionDto[];
@@ -117,6 +134,7 @@ export interface HousingMetaDto {
   verdicts: OptionDto[];
   sorts: OptionDto[];
   sidos: string[];
+  standards: EligibilityStandardsDto;
 }
 
 function toEligibilityDto(result: EligibilityResult | null): EligibilityDto | null {
@@ -215,5 +233,11 @@ export function buildMeta(): HousingMetaDto {
       { value: "latest", label: "최신 공고순" },
     ],
     sidos: [...SIDO_LIST],
+    standards: {
+      year: STANDARDS_YEAR,
+      maxHouseholdSize: MAX_HOUSEHOLD_SIZE,
+      urbanWorkerIncome: [...URBAN_WORKER_INCOME_100],
+      medianIncome: [...MEDIAN_INCOME_100],
+    },
   };
 }

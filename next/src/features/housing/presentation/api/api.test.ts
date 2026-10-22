@@ -128,9 +128,10 @@ describe("공고 목록 API", () => {
 
   it("'내 조건'을 주면 자격 판정을 포함하고, v 로 판정 결과를 거를 수 있다", async () => {
     const { deps } = setup([draft(), draft({ title: "다른 공고", applicationEnd: "2026-10-01", sources: [{ source: "lh", externalId: "2", url: null, raw: {}, fetchedAt: "" }] })]);
-    const all = (await handleListNotices(qs("age=29&home=y&income=80&sort=deadline"), deps)).body as NoticeListDto;
+    const mine = "age=29&home=y&household=1&monthly=300&asset=5000&car=0";
+    const all = (await handleListNotices(qs(`${mine}&sort=deadline`), deps)).body as NoticeListDto;
     expect(all.items.every((i) => i.eligibility !== null)).toBe(true);
-    const eligible = (await handleListNotices(qs("age=29&home=y&income=80&v=eligible"), deps)).body as NoticeListDto;
+    const eligible = (await handleListNotices(qs(`${mine}&v=eligible`), deps)).body as NoticeListDto;
     expect(eligible.items.map((i) => i.title)).toEqual(["서울 행복주택 모집"]);
     expect(eligible.items[0]!.eligibility).toMatchObject({ verdict: "eligible", verdictLabel: "신청 가능" });
     expect(eligible.total).toBe(1);
@@ -179,6 +180,20 @@ describe("공고 상세 API", () => {
     expect(unsure.eligibility!.verdict).toBe("check");
   });
 
+  it("소득·자산을 주면 금액 기준으로 판정하고 사유에 기준 금액을 보여준다", async () => {
+    const { deps, notices } = setup([draft()]);
+    const base = "age=29&home=y&household=1&car=0&asset=5000";
+    const ok = (await handleGetNotice(notices[0]!.id, qs(`${base}&monthly=457`), deps)).body as NoticeDetailDto;
+    expect(ok.eligibility!.verdict).toBe("eligible");
+    const over = (await handleGetNotice(notices[0]!.id, qs(`${base}&monthly=458`), deps)).body as NoticeDetailDto;
+    expect(over.eligibility!.verdict).toBe("ineligible");
+    expect(over.eligibility!.reasons.join(" ")).toContain("4,576,036원");
+    // 자산을 빼면 확인 필요 + 필요한 입력을 알려준다
+    const noAsset = (await handleGetNotice(notices[0]!.id, qs("age=29&home=y&household=1&monthly=300"), deps)).body as NoticeDetailDto;
+    expect(noAsset.eligibility!.verdict).toBe("check");
+    expect(noAsset.eligibility!.reasons.join(" ")).toContain("총자산 입력 필요");
+  });
+
   it("없는 공고는 NOTICE_NOT_FOUND(404)", async () => {
     const { deps } = setup([draft()]);
     await expect(handleGetNotice("nope", qs(""), deps)).rejects.toMatchObject({
@@ -204,6 +219,15 @@ describe("메타 API", () => {
     ]);
     expect(meta.sidos).toContain("서울");
     expect(meta.sidos).toHaveLength(17);
+  });
+
+  it("자격 판정 기준표(연도, 가구원수별 소득)를 내려준다", () => {
+    const { standards } = handleGetMeta().body;
+    expect(standards.year).toBe(2026);
+    expect(standards.maxHouseholdSize).toBe(8);
+    expect(standards.urbanWorkerIncome).toHaveLength(8);
+    expect(standards.urbanWorkerIncome[2]).toBe(8_168_429);
+    expect(standards.medianIncome[0]).toBe(2_564_238);
   });
 });
 

@@ -36,6 +36,35 @@ describe("search params", () => {
     expect(p.sort).toBe("latest");
     expect(p.page).toBe(3);
   });
+  it("소득·자산 조건을 파싱한다 (만원 → 원)", () => {
+    const p = parseSearchParams({
+      household: "3",
+      monthly: "650",
+      dual: "y",
+      asset: "12000",
+      car: "0",
+      account: "n",
+    });
+    expect(p.profile).toMatchObject({
+      householdSize: 3,
+      monthlyIncomeWon: 6_500_000,
+      isDualIncome: true,
+      totalAssetWon: 120_000_000,
+      carValueWon: 0,
+      hasSubscriptionAccount: false,
+    });
+    expect(p.hasProfile).toBe(true);
+  });
+  it("소득·자산의 잘못된 값은 무시한다", () => {
+    const p = parseSearchParams({ household: "0", monthly: "-1", asset: "abc", car: "99999999999", dual: "x", account: "" });
+    expect(p.hasProfile).toBe(false);
+    expect(parseSearchParams({ household: "9" }).profile.householdSize).toBeUndefined();
+    expect(parseSearchParams({ household: "2.5" }).profile.householdSize).toBeUndefined();
+    expect(parseSearchParams({ household: "8" }).profile.householdSize).toBe(8);
+  });
+  it("상세 링크용 '내 조건' 쿼리에 새 항목도 포함한다", () => {
+    expect(profileQuery({ household: "2", monthly: "300", asset: "5000", sido: "서울" })).toBe("?household=2&monthly=300&asset=5000");
+  });
   it("잘못된 값은 무시한다", () => {
     const p = parseSearchParams({ age: "abc", maxDeposit: "-5", page: "0", sort: "x", sigungu: "강남구" });
     expect(p.hasProfile).toBe(false);

@@ -1,5 +1,6 @@
 import type { ApplicantProfile } from "@/features/housing/domain/eligibility/applicant";
 import { isProfileEmpty } from "@/features/housing/domain/eligibility/applicant";
+import { MAX_HOUSEHOLD_SIZE } from "@/features/housing/domain/eligibility/standards";
 import type { EligibilityVerdict } from "@/features/housing/domain/eligibility/evaluate";
 import {
   HOUSING_TYPES,
@@ -15,8 +16,30 @@ import type { NoticeFilters } from "@/features/housing/application/use-cases/sea
 
 export type RawSearchParams = Record<string, string | string[] | undefined>;
 
-/** URL 의 '내 조건' 파라미터 키 (localStorage 저장 대상) */
-export const PROFILE_KEYS = ["age", "home", "married", "newlywed", "student", "income"] as const;
+/**
+ * URL 의 '내 조건' 파라미터 키 (localStorage 저장 대상)
+ *  - household: 가구원수(1~8), monthly: 세대 월 소득(만원), dual: 맞벌이(y/n)
+ *  - asset: 총자산(만원), car: 자동차 가액(만원, 없으면 0), account: 청약통장(y/n)
+ *  - income: 도시근로자 월평균소득 대비 비율(%). household·monthly 이전 버전 호환용
+ */
+export const PROFILE_KEYS = [
+  "age",
+  "home",
+  "married",
+  "newlywed",
+  "student",
+  "household",
+  "monthly",
+  "dual",
+  "asset",
+  "car",
+  "account",
+  "income",
+] as const;
+
+/** 금액 입력 상한(만원). 터무니없는 값을 걸러낸다. */
+const MAX_MONTHLY_INCOME_MAN = 100_000;
+const MAX_ASSET_MAN = 10_000_000;
 export const VERDICTS: EligibilityVerdict[] = ["eligible", "check", "ineligible"];
 
 export interface ParsedSearch {
@@ -55,6 +78,17 @@ function numberOrUndefined(value: string, min = 0, max = Number.MAX_SAFE_INTEGER
 
 const triState = (v: string): boolean | undefined => (v === "y" ? true : v === "n" ? false : undefined);
 
+/** 만원 단위 입력을 원으로 바꾼다. 범위를 벗어나면 undefined. */
+function manToWon(value: string, max: number): number | undefined {
+  const n = numberOrUndefined(value, 0, max);
+  return n === undefined ? undefined : Math.round(n * 10_000);
+}
+
+function integerOrUndefined(value: string, min: number, max: number): number | undefined {
+  const n = numberOrUndefined(value, min, max);
+  return n === undefined || !Number.isInteger(n) ? undefined : n;
+}
+
 export function parseSearchParams(raw: RawSearchParams): ParsedSearch {
   const sidos = pick(many(raw.sido), SIDO_LIST);
   const supplyTypes = pick(many(raw.supply), SUPPLY_TYPES);
@@ -90,6 +124,12 @@ export function parseSearchParams(raw: RawSearchParams): ParsedSearch {
     isMarried: triState(one(raw.married)),
     isNewlywed: triState(one(raw.newlywed)),
     isStudent: triState(one(raw.student)),
+    householdSize: integerOrUndefined(one(raw.household), 1, MAX_HOUSEHOLD_SIZE),
+    monthlyIncomeWon: manToWon(one(raw.monthly), MAX_MONTHLY_INCOME_MAN),
+    isDualIncome: triState(one(raw.dual)),
+    totalAssetWon: manToWon(one(raw.asset), MAX_ASSET_MAN),
+    carValueWon: manToWon(one(raw.car), MAX_ASSET_MAN),
+    hasSubscriptionAccount: triState(one(raw.account)),
     incomeRatioPercent: numberOrUndefined(one(raw.income), 0, 1000),
   };
 
