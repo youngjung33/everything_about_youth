@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, isNotNull } from "drizzle-orm";
 import type { SyncRun, SyncRunFinish, SyncRunRepository, SyncRunStatus } from "@/features/housing/application/ports/sync-run-repository";
 import type { SourceId } from "@/features/housing/domain/enums";
 import type { SqliteDb } from "@/common/infrastructure/persistence/sqlite/client";
@@ -43,6 +43,17 @@ export class SqliteSyncRunRepository implements SyncRunRepository {
 
   async listRecent(limit: number): Promise<SyncRun[]> {
     return this.db.select().from(syncRuns).orderBy(desc(syncRuns.id)).limit(limit).all().map(toRun);
+  }
+
+  async lastSuccessAt(): Promise<string | null> {
+    const row = this.db
+      .select({ finishedAt: syncRuns.finishedAt })
+      .from(syncRuns)
+      .where(and(eq(syncRuns.status, "success"), isNotNull(syncRuns.finishedAt)))
+      .orderBy(desc(syncRuns.finishedAt))
+      .limit(1)
+      .get();
+    return row?.finishedAt ?? null;
   }
 
   async latestPerSource(): Promise<SyncRun[]> {

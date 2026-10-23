@@ -10,11 +10,20 @@ import { createSsoProviders } from "./sso/providers";
 import { createTokenService } from "./token-service-factory";
 
 const authKey = Symbol.for("everything_about_youth.auth-service");
+const clientsKey = Symbol.for("everything_about_youth.auth-clients");
 const ssoKey = Symbol.for("everything_about_youth.sso-service");
 type GlobalWithAuth = typeof globalThis & {
   [authKey]?: AuthService;
+  [clientsKey]?: SqliteAuthClientStore;
   [ssoKey]?: { service: SsoService; config: SsoConfig };
 };
+
+/** 세션(기기) 기록. 라우트가 "이 세션이 어느 회원인가"를 물어볼 때 쓴다. */
+export function getAuthClientStore(): SqliteAuthClientStore {
+  const g = globalThis as GlobalWithAuth;
+  if (!g[clientsKey]) g[clientsKey] = new SqliteAuthClientStore(getCommonContainer().sqlite.db);
+  return g[clientsKey];
+}
 
 /** 세션 발급/갱신용. 세션 식별자를 DB 에 저장하므로 공용 컨테이너의 연결을 쓴다. (proxy 에서는 import 금지) */
 export function getAuthService(): AuthService {
@@ -23,7 +32,7 @@ export function getAuthService(): AuthService {
     const common = getCommonContainer();
     g[authKey] = new AuthService(
       createTokenService(),
-      new SqliteAuthClientStore(common.sqlite.db),
+      getAuthClientStore(),
       common.clock,
       () => crypto.randomUUID(),
     );
@@ -50,7 +59,7 @@ export function getSso(): { service: SsoService; config: SsoConfig } {
         state: new JoseSsoStateCodec(auth.secret, auth.issuer, common.clock),
         users: new SqliteUserStore(common.sqlite.db),
         tickets: new SqliteSsoTicketStore(common.sqlite.db),
-        clients: new SqliteAuthClientStore(common.sqlite.db),
+        clients: getAuthClientStore(),
         auth: getAuthService(),
         clock: common.clock,
         logger: common.logger,

@@ -2,7 +2,9 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { createNotice } from "@/features/housing/domain/identity";
 import type { Complex, NoticeDraft } from "@/features/housing/domain/notice";
 import { openSqlite, runMigrations, type SqliteConnection } from "@/common/infrastructure/persistence/sqlite/client";
+import { SqliteUserStore } from "@/common/infrastructure/persistence/sqlite/sqlite-user-store";
 import { SqliteNoticeRepository } from "./sqlite-notice-repository";
+import { SqliteSavedNoticeRepository } from "./sqlite-saved-notice-repository";
 import { SqliteSyncRunRepository } from "./sqlite-sync-run-repository";
 
 const TODAY = "2026-10-12";
@@ -166,5 +168,54 @@ describe("SqliteSyncRunRepository", () => {
       ["lh", "success"],
     ]);
     expect((await runs.listRecent(10)).length).toBe(3);
+    expect(await runs.lastSuccessAt()).toBe("2026-10-12T01:00:05Z");
+  });
+
+  it("성공한 수집이 없으면 lastSuccessAt 은 null", async () => {
+    const conn = openSqlite(":memory:");
+    runMigrations(conn.db);
+    const runs = new SqliteSyncRunRepository(conn.db);
+    expect(await runs.lastSuccessAt()).toBeNull();
+    const id = await runs.start("lh", "2026-10-12T00:00:00Z");
+    await runs.finish(id, { status: "failed", finishedAt: "2026-10-12T00:00:01Z", fetchedCount: 0, insertedCount: 0, updatedCount: 0, error: "x" });
+    expect(await runs.lastSuccessAt()).toBeNull();
+  });
+});
+
+describe("SqliteSavedNoticeRepository", () => {
+  it("회원별로 저장하고 최근 순으로 조회하며, 공고·회원 삭제 때 같이 지워진다", async () => {
+    const conn = openSqlite(":memory:");
+    runMigrations(conn.db);
+    const notices = new SqliteNoticeRepository(conn.db);
+    const saved = new SqliteSavedNoticeRepository(conn.db);
+    const users = new SqliteUserStore(conn.db);
+    const userId = await users.findOrCreate("google", "g1", "2026-10-12T00:00:00Z", () => "u1");
+    const a = make({ title: "A" });
+    const b = make({ title: "B" });
+    await notices.upsertMany([a, b]);
+
+    await saved.save(userId, a.id, "2026-10-12T01:00:00Z");
+    await saved.save(userId, b.id, "2026-10-12T02:00:00Z");
+    await saved.save(userId, a.id, "2026-10-12T03:00:00Z"); // 이미 있으면 시각 유지
+    expect(await saved.count(userId)).toBe(2);
+    expect(await saved.isSaved(userId, a.id)).toBe(true);
+    expect((await saved.list(userId)).map((r) => r.noticeId)).toEqual([b.id, a.id]);
+    expect((await saved.list(userId))[1]!.savedAt).toBe("2026-10-12T01:00:00Z");
+
+    await saved.remove(userId, a.id);
+    expect(await saved.isSaved(userId, a.id)).toBe(false);
+    expect(await saved.count(userId)).toBe(1);
+
+    await notices.upsertMany([{ ...b, title: "B2", complexes: [] }]); // 공고는 남고
+    expect(await saved.isSaved(userId, b.id)).toBe(true);
+    await conn.raw.prepare("delete from notices where id = ?").run(b.id);
+    expect(await saved.count(userId)).toBe(0);
+
+    const other = await users.findOrCreate("kakao", "k1", "t", () => "u2");
+    const c = make({ title: "C" });
+    await notices.upsertMany([c]);
+    await saved.save(other, c.id, "2026-10-12T04:00:00Z");
+    await users.delete(other);
+    expect(await saved.count(other)).toBe(0);
   });
 });

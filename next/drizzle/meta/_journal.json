@@ -29,6 +29,13 @@
       "when": 1792580532743,
       "tag": "0003_sso_login",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1792780000000,
+      "tag": "0004_saved_notices",
+      "breakpoints": true
     }
   ]
 }

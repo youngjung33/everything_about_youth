@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:everything_about_youth/core/auth/auth_mode.dart';
 import 'package:everything_about_youth/core/network/api_client.dart';
 import 'package:everything_about_youth/core/providers/core_providers.dart';
 import 'package:everything_about_youth/core/security/cipher_key_store.dart';
@@ -261,5 +262,41 @@ void main() {
 
   test('errorMessage: 알 수 없는 오류는 일반 문구', () {
     expect(errorMessage(StateError('x')), '알 수 없는 오류가 발생했습니다.');
+  });
+
+  test('관심 공고: 비회원은 기기에 저장하고, 회원이 되면 서버에 합친다', () async {
+    final repo = FakeHousingRepository(
+      pages: [
+        page(['n1', 'n2']),
+      ],
+    );
+    final container = await makeContainer(repo);
+    container.listen(savedNoticesProvider, (_, _) {});
+
+    expect(await container.read(savedNoticesProvider.future), isEmpty);
+    expect(await container.read(savedNoticesProvider.notifier).toggle('n1'), isNull);
+    expect(container.read(savedNoticesProvider).requireValue, ['n1']);
+    expect(repo.saveCalls, isEmpty);
+
+    await container.read(authModeProvider.notifier).set(AuthMode.member);
+    expect(await container.read(savedNoticesProvider.future), ['n1']);
+    expect(repo.mergeCalls, [
+      ['n1'],
+    ]);
+
+    expect(await container.read(savedNoticesProvider.notifier).toggle('n2'), isNull);
+    expect(repo.saveCalls, ['n2']);
+    expect(container.read(savedNoticesProvider).requireValue, ['n2', 'n1']);
+  });
+
+  test('관심 공고: 상한을 넘기면 안내하고 넣지 않는다', () async {
+    final container = await makeContainer(FakeHousingRepository());
+    container.listen(savedNoticesProvider, (_, _) {});
+    await container.read(savedNoticesProvider.future);
+    for (var i = 0; i < 100; i++) {
+      expect(await container.read(savedNoticesProvider.notifier).toggle('n$i'), isNull);
+    }
+    expect(await container.read(savedNoticesProvider.notifier).toggle('overflow'), '관심 공고는 100개까지 저장할 수 있습니다.');
+    expect(container.read(savedNoticesProvider).requireValue, hasLength(100));
   });
 }

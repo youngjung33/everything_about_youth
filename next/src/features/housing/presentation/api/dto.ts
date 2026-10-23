@@ -18,6 +18,7 @@ import {
   SUPPLY_TYPE_LABELS,
   SUPPLY_TYPES,
 } from "@/features/housing/domain/enums";
+import { googleCalendarDeadlineUrl } from "@/features/housing/domain/calendar";
 import { summarizeUnits } from "@/features/housing/domain/notice";
 import type { NoticeListItem, SearchNoticesOutput } from "@/features/housing/application/use-cases/search-notices";
 import { regionLabel } from "../region-label";
@@ -99,6 +100,8 @@ export interface NoticeDetailDto extends NoticeSummaryDto {
   eligibilityText: string | null;
   complexes: ComplexDto[];
   sources: NoticeSourceDto[];
+  /** 접수 마감일을 Google 캘린더에 넣는 주소. 마감일이 없으면 null */
+  googleCalendarUrl: string | null;
 }
 
 export interface NoticeListDto {
@@ -128,6 +131,8 @@ export interface EligibilityStandardsDto {
 }
 
 export interface HousingMetaDto {
+  /** 공고 데이터가 마지막으로 갱신된(수집에 성공한) 시각. ISO 8601 UTC. 한 번도 수집하지 않았으면 null */
+  dataUpdatedAt: string | null;
   supplyTypes: OptionDto[];
   housingTypes: OptionDto[];
   statuses: OptionDto[];
@@ -183,6 +188,11 @@ export function toNoticeDetailDto(item: NoticeListItem, today: IsoDate): NoticeD
     ...toNoticeSummaryDto(item, today),
     winnerAnnouncementDate: notice.winnerAnnouncementDate,
     eligibilityText: notice.eligibilityText,
+    googleCalendarUrl: googleCalendarDeadlineUrl({
+      title: notice.title,
+      applicationEnd: notice.applicationEnd,
+      url: notice.url,
+    }),
     complexes: notice.complexes.map((c) => ({
       name: c.name,
       address: c.address,
@@ -219,8 +229,9 @@ export function toNoticeListDto(result: SearchNoticesOutput, today: IsoDate): No
   };
 }
 
-export function buildMeta(): HousingMetaDto {
+export function buildMeta(dataUpdatedAt: string | null = null): HousingMetaDto {
   return {
+    dataUpdatedAt,
     supplyTypes: SUPPLY_TYPES.map((value) => ({ value, label: SUPPLY_TYPE_LABELS[value] })),
     housingTypes: HOUSING_TYPES.map((value) => ({ value, label: HOUSING_TYPE_LABELS[value] })),
     statuses: NOTICE_STATUSES.map((value) => ({ value, label: NOTICE_STATUS_LABELS[value] })),

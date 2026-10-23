@@ -40,6 +40,14 @@ void main() {
     expect(formatPeriod(null, null), '일정 미정/상시');
   });
 
+  test('formatUpdatedAt: UTC 를 한국 시간으로', () {
+    expect(formatUpdatedAt('2026-10-12T01:00:00.000Z'), '2026.10.12 10:00 갱신');
+    expect(formatUpdatedAt('2026-10-12T15:30:00Z'), '2026.10.13 00:30 갱신');
+    expect(formatUpdatedAt(null), isNull);
+    expect(formatUpdatedAt(''), isNull);
+    expect(formatUpdatedAt('not-a-date'), isNull);
+  });
+
   test('formatRange / formatFrom', () {
     expect(formatRange<double>(16.5, 26, formatArea), '16.5㎡ ~ 26㎡');
     expect(formatRange<double>(20, 20, formatArea), '20㎡');

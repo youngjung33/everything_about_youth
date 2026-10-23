@@ -2,13 +2,15 @@ import { describe, expect, it } from "vitest";
 import {
   AuthError,
   InvalidTokenError,
+  type AuthClientStore,
   type AuthService,
   type SessionTokens,
   type TokenClaims,
   type TokenService,
   type TokenUse,
 } from "@/common/application/auth";
-import { authorizeApiRequest, extractBearerToken, handleRefresh, handleStartSession } from "./auth";
+import { CLIENT_ID_HEADER } from "./respond";
+import { authorizeApiRequest, extractBearerToken, handleRefresh, handleStartSession, requireMemberUserId } from "./auth";
 import { ApiError } from "./errors";
 import { apiPath } from "./version";
 
@@ -168,5 +170,46 @@ describe("세션 핸들러", () => {
         }),
       ),
     ).rejects.toThrow("db down");
+  });
+});
+
+describe("requireMemberUserId", () => {
+  const store = (rows: Record<string, { revoked?: boolean; userId?: string | null }>): AuthClientStore => ({
+    async create() {},
+    async find(id) {
+      const row = rows[id];
+      if (!row) return null;
+      return { id, revoked: row.revoked ?? false, userId: row.userId ?? null };
+    },
+    async touch() {},
+    async revoke() {
+      return false;
+    },
+    async revokeByUser() {
+      return 0;
+    },
+  });
+  const req = (clientId?: string) =>
+    new Request("http://x/api", { headers: clientId ? { [CLIENT_ID_HEADER]: clientId } : {} });
+
+  it("회원 세션이면 userId 를 돌려준다", async () => {
+    await expect(requireMemberUserId(req("c1"), store({ c1: { userId: "u1" } }))).resolves.toBe("u1");
+  });
+
+  it("세션 헤더가 없으면 AUTH_REQUIRED", async () => {
+    await expect(requireMemberUserId(req(), store({}))).rejects.toMatchObject({ code: "AUTH_REQUIRED" });
+  });
+
+  it("없거나 폐기된 세션은 AUTH_TOKEN_INVALID", async () => {
+    await expect(requireMemberUserId(req("gone"), store({}))).rejects.toMatchObject({ code: "AUTH_TOKEN_INVALID" });
+    await expect(requireMemberUserId(req("c1"), store({ c1: { revoked: true, userId: "u1" } }))).rejects.toMatchObject({
+      code: "AUTH_TOKEN_INVALID",
+    });
+  });
+
+  it("비회원 세션은 LOGIN_REQUIRED", async () => {
+    await expect(requireMemberUserId(req("c1"), store({ c1: { userId: null } }))).rejects.toMatchObject({
+      code: "LOGIN_REQUIRED",
+    });
   });
 });

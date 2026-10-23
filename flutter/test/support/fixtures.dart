@@ -42,6 +42,7 @@ Map<String, dynamic> detailJson({Map<String, dynamic>? eligibility}) => {
   ...summaryJson(eligibility: eligibility),
   'winnerAnnouncementDate': '2026-11-05',
   'eligibilityText': '문의: 1600-1004',
+  'googleCalendarUrl': 'https://calendar.google.com/calendar/render?action=TEMPLATE&dates=20261016%2F20261017',
   'complexes': [
     {
       'name': '강남 A단지',
@@ -82,6 +83,7 @@ Map<String, dynamic> pageJson({
 };
 
 Map<String, dynamic> metaJson() => {
+  'dataUpdatedAt': '2026-10-12T01:00:00.000Z',
   'supplyTypes': [
     {'value': 'happy', 'label': '행복주택'},
     {'value': 'national_rental', 'label': '국민임대'},
@@ -117,19 +119,30 @@ NoticeSummary sampleSummary({String id = 'n1', String title = '청년 행복주�
 
 /// 호출을 기록하고 정해진 응답을 돌려주는 가짜 저장소
 class FakeHousingRepository implements HousingRepository {
-  FakeHousingRepository({List<NoticePage>? pages, this.meta, this.detail, this.searchError, this.searchHook})
-    : pages = pages ?? [];
+  FakeHousingRepository({
+    List<NoticePage>? pages,
+    this.meta,
+    this.detail,
+    this.searchError,
+    this.searchHook,
+    List<String>? savedIds,
+  }) : pages = pages ?? [],
+       savedIds = savedIds ?? [];
 
   /// 1페이지부터 순서대로 돌려줄 페이지
   final List<NoticePage> pages;
   final HousingMeta? meta;
   final NoticeDetail? detail;
   Object? searchError;
+  List<String> savedIds;
 
   /// 검색 응답을 지연시키거나 가로채야 할 때 사용한다.
   Future<NoticePage> Function(HousingFilters filters, int page)? searchHook;
 
   final List<({HousingFilters filters, ApplicantProfile profile, int page})> searchCalls = [];
+  final List<String> saveCalls = [];
+  final List<String> unsaveCalls = [];
+  final List<List<String>> mergeCalls = [];
 
   @override
   Future<HousingMeta> fetchMeta() async => meta ?? HousingMeta.fromJson(metaJson());
@@ -149,7 +162,51 @@ class FakeHousingRepository implements HousingRepository {
 
   @override
   Future<NoticeDetail> getNotice(String id, {required ApplicantProfile profile}) async {
-    if (detail == null) throw const ApiException('공고를 찾을 수 없습니다.', statusCode: 404);
-    return detail!;
+    if (detail != null) return detail!;
+    for (final page in pages) {
+      for (final item in page.items) {
+        if (item.id == id) {
+          return NoticeDetail(summary: item, complexes: const [], sources: const []);
+        }
+      }
+    }
+    throw const ApiException('공고를 찾을 수 없습니다.', statusCode: 404);
+  }
+
+  @override
+  Future<List<String>> fetchSavedIds() async => List.of(savedIds);
+
+  @override
+  Future<SavedNoticeList> fetchSaved({required ApplicantProfile profile}) async {
+    final items = [
+      for (final page in pages)
+        for (final item in page.items)
+          if (savedIds.contains(item.id)) item,
+    ];
+    return SavedNoticeList(items: items, total: items.length, today: '2026-10-13');
+  }
+
+  @override
+  Future<void> saveNotice(String id) async {
+    saveCalls.add(id);
+    if (!savedIds.contains(id)) savedIds = [id, ...savedIds];
+  }
+
+  @override
+  Future<void> unsaveNotice(String id) async {
+    unsaveCalls.add(id);
+    savedIds = [
+      for (final e in savedIds)
+        if (e != id) e,
+    ];
+  }
+
+  @override
+  Future<List<String>> mergeSaved(List<String> ids) async {
+    mergeCalls.add(ids);
+    for (final id in ids) {
+      if (!savedIds.contains(id)) savedIds = [...savedIds, id];
+    }
+    return List.of(savedIds);
   }
 }

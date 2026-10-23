@@ -85,6 +85,7 @@ void main() {
     await pumpApp(tester, repo, location: '/housing');
 
     expect(find.text('공고 목록'), findsOneWidget);
+    expect(find.text('2026.10.12 10:00 갱신'), findsOneWidget);
     expect(find.text('청년 행복주택 입주자 모집'), findsOneWidget);
     expect(find.text('접수중'), findsWidgets);
     expect(find.text('행복주택'), findsWidgets);
@@ -165,6 +166,8 @@ void main() {
     final bodyScrollable = find.descendant(of: find.byType(ListView), matching: find.byType(Scrollable)).first;
     await tester.scrollUntilVisible(find.text('원문 공고 보기'), 300, scrollable: bodyScrollable);
     expect(find.text('원문 공고 보기'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('접수 마감일 캘린더에 넣기'), 300, scrollable: bodyScrollable);
+    expect(find.text('접수 마감일 캘린더에 넣기'), findsOneWidget);
   });
 
   testWidgets('상세: 없는 공고는 오류 문구', (tester) async {
@@ -322,5 +325,28 @@ void main() {
     await pumpApp(tester, repo, location: '/housing');
 
     expect(find.text('신청 가능'), findsOneWidget);
+  });
+
+  testWidgets('관심 공고: 북마크로 저장하면 관심 공고 화면에 보인다', (tester) async {
+    final repo = FakeHousingRepository(
+      pages: [
+        onePage([summaryJson()]),
+      ],
+    );
+    await pumpApp(tester, repo, location: '/housing');
+
+    await tester.tap(find.byTooltip('관심 공고로 저장'));
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('관심 공고에서 빼기'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('관심 공고'));
+    await tester.pumpAndSettle();
+    expect(find.text('저장한 관심 공고가 없습니다.'), findsNothing);
+    expect(find.text('청년 행복주택 입주자 모집'), findsOneWidget);
+  });
+
+  testWidgets('관심 공고: 비어 있으면 안내를 보여준다', (tester) async {
+    await pumpApp(tester, FakeHousingRepository(pages: [onePage([])]), location: '/housing/saved');
+    expect(find.text('저장한 관심 공고가 없습니다.'), findsOneWidget);
   });
 }

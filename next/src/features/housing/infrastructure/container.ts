@@ -3,13 +3,16 @@ import { getCommonContainer, type CommonContainer } from "@/common/infrastructur
 import type { Clock, Logger } from "@/common/application/system";
 import type { NoticeRepository } from "../application/ports/notice-repository";
 import type { NoticeSourcePort } from "../application/ports/notice-source";
+import type { SavedNoticeRepository } from "../application/ports/saved-notice-repository";
 import type { SyncRunRepository } from "../application/ports/sync-run-repository";
+import { ManageSavedNotices } from "../application/use-cases/manage-saved-notices";
 import { EvaluateEligibility } from "../application/use-cases/evaluate-eligibility";
 import { GetNoticeDetail } from "../application/use-cases/get-notice-detail";
 import { SearchNotices } from "../application/use-cases/search-notices";
 import { SyncNoticesFromSource } from "../application/use-cases/sync-notices-from-source";
 import { loadHousingConfig, type HousingConfig } from "./config";
 import { SqliteNoticeRepository } from "./persistence/sqlite/sqlite-notice-repository";
+import { SqliteSavedNoticeRepository } from "./persistence/sqlite/sqlite-saved-notice-repository";
 import { SqliteSyncRunRepository } from "./persistence/sqlite/sqlite-sync-run-repository";
 import { ApplyhomeSource } from "./sources/applyhome/applyhome-source";
 import { BoardCrawlerSource } from "./sources/crawlers/board-crawler";
@@ -24,12 +27,14 @@ export interface HousingContainer {
   clock: Clock;
   logger: Logger;
   notices: NoticeRepository;
+  savedNotices: SavedNoticeRepository;
   syncRuns: SyncRunRepository;
   /** 등록된 모든 소스 (활성 여부와 무관) */
   allSources: NoticeSourcePort[];
   searchNotices: SearchNotices;
   getNoticeDetail: GetNoticeDetail;
   evaluateEligibility: EvaluateEligibility;
+  manageSavedNotices: ManageSavedNotices;
   syncNotices: SyncNoticesFromSource;
 }
 
@@ -43,6 +48,7 @@ export function createHousingContainer(common: CommonContainer, overrides: Housi
   const config = { ...loadHousingConfig(), ...overrides.config };
 
   const notices = new SqliteNoticeRepository(common.sqlite.db);
+  const savedNotices = new SqliteSavedNoticeRepository(common.sqlite.db);
   const syncRuns = new SqliteSyncRunRepository(common.sqlite.db);
 
   const serviceKey = common.config.dataGoKrServiceKey;
@@ -70,11 +76,13 @@ export function createHousingContainer(common: CommonContainer, overrides: Housi
     clock,
     logger,
     notices,
+    savedNotices,
     syncRuns,
     allSources,
     searchNotices: new SearchNotices(notices, clock),
     getNoticeDetail: new GetNoticeDetail(notices, clock),
     evaluateEligibility: new EvaluateEligibility(clock),
+    manageSavedNotices: new ManageSavedNotices(savedNotices, notices, clock),
     syncNotices: new SyncNoticesFromSource(active, notices, syncRuns, clock, logger),
   };
 }

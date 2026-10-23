@@ -122,6 +122,8 @@ DB 마이그레이션은 앱/스크립트 시작 시 자동 적용됩니다(`npm
 | 변수 | 설명 |
 | --- | --- |
 | `HOUSING_SYNC_SOURCES` | 활성 소스 제한 (`lh,myhome,applyhome,sh,gh,ih`). 비우면 가능한 전부 |
+| `HOUSING_SYNC_INTERVAL_MINUTES` | 서버가 떠 있는 동안 공고를 자동 수집하는 간격(분). `0`(기본)이면 끄고, 켜려면 **30 이상**. 프로세스 시작 때 한 번 돌고 그 뒤 주기적으로 돕니다. |
+| `OPERATOR_TOKEN` | 운영자용 `POST /housing/sync` 헤더 `X-Operator-Token` 값. 운영에서는 **24자 이상**이어야 이 API 가 열립니다. 개발에서는 값이 있으면 일치할 때만 허용합니다. |
 
 공공데이터포털에서 활용신청이 필요한 API: LH 임대공고(`B552555/lhLeaseNoticeInfo1`), 마이홈포털 공공임대 공고(`1613000/HWSPR02`), 청약홈 분양정보(`ApplyhomeInfoDetailSvc`).
 
@@ -158,15 +160,21 @@ API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등�
 
 ## JSON API (Flutter 앱용)
 
-`../flutter` 앱이 쓰는 읽기 전용 API 입니다. 구현은 `src/features/housing/presentation/api/`(`dto.ts`, `handlers.ts`), 라우트는 `src/app/api/v1/housing/`.
+`../flutter` 앱이 쓰는 API 입니다. 구현은 `src/features/housing/presentation/api/`(`dto.ts`, `handlers.ts`), 라우트는 `src/app/api/v1/housing/`.
 
 모든 경로는 `/api/v1` 로 시작합니다. (아래 표는 `/api/v1` 뒤의 경로)
 
 | 엔드포인트 | 설명 |
 | --- | --- |
-| `GET /housing/meta` | 필터 선택지와 한글 라벨(공급유형·주택유형·상태·판정·정렬·시도). 앱은 라벨 표를 복제하지 않고 이 응답을 씁니다. |
+| `GET /housing/meta` | 필터 선택지와 한글 라벨(공급유형·주택유형·상태·판정·정렬·시도), 자격 기준표 `standards`, 마지막 수집 성공 시각 `dataUpdatedAt`(ISO UTC, 한 번도 없으면 `null`). 앱은 라벨 표를 복제하지 않고 이 응답을 씁니다. |
 | `GET /housing/notices` | 공고 목록. 웹과 같은 쿼리(`sido, sigungu, supply, housing, status, q, maxDeposit(만원), maxRent(만원), minArea, maxArea, sort, page, v`)에 `pageSize`(1~50, 기본 20) 추가. |
-| `GET /housing/notices/:id` | 공고 상세(단지·세대유형·출처). 없으면 404 `NOTICE_NOT_FOUND` |
+| `GET /housing/notices/:id` | 공고 상세(단지·세대유형·출처, 접수 마감 Google 캘린더 주소 `googleCalendarUrl`). 없으면 404 `NOTICE_NOT_FOUND` |
+| `GET /housing/notices/:id/calendar` | 접수 마감일 ICS(`text/calendar`). 마감일이 없으면 400. 캘린더 앱이 연다. |
+| `GET /housing/saved` | **회원 전용.** 관심 공고 목록(최근 저장 순). '내 조건' 쿼리가 있으면 자격 판정 포함. 비회원이면 403 `LOGIN_REQUIRED` |
+| `GET /housing/saved/ids` | **회원 전용.** 관심 공고 id 만. 목록 하트 표시용 |
+| `PUT /housing/saved/:id` | **회원 전용.** 관심 공고로 저장. 없으면 404, 100개 초과면 400. 이미 있으면 그대로 성공 |
+| `DELETE /housing/saved/:id` | **회원 전용.** 관심 공고에서 빼기 |
+| `PUT /housing/saved` | **회원 전용.** 본문 `{ "ids": string[] }`. 비회원 기기 목록을 회원 목록에 합친다. 없는 공고는 건너뛰고, 상한(100)을 넘기면 거기서 멈춘다 |
 | `GET /features` | 서비스 켜짐/꺼짐 `{ "features": [{ "id": "housing", "enabled": true }] }`. 앱이 시작할 때 받아 꺼진 서비스를 숨깁니다. 캐시하지 않습니다. |
 | `GET /app-config` | **토큰 없이** 호출. `{ api: { version }, update: { status: none｜optional｜required, minVersion, latestVersion, storeUrl, message } }`. 앱이 시작할 때 강제 업데이트인지 묻습니다. |
 | `POST /auth/session` | **토큰 없이** 호출. 서버가 기기 id 를 만들어 토큰 쌍을 줍니다. `{ tokenType, accessToken, accessExpiresIn, refreshToken, refreshExpiresIn }` (만료는 남은 초) |
@@ -303,9 +311,9 @@ API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등�
 
 - **실제 업체 계정으로는 확인하지 못했습니다.** 흐름·검증·실패 처리는 가짜 업체로 테스트했고(`sso-service.test.ts`, `providers.test.ts`), 업체 어댑터는 각 업체 문서의 요청/응답 모양을 따랐지만 업체 콘솔에 앱을 등록하고 실제로 로그인해 보는 확인은 필요합니다. Apple 은 HTTPS 도메인과 Services ID 가 있어야 시험할 수 있습니다.
 - 비회원 세션(`POST /auth/session`)은 누구나 받을 수 있습니다. 비회원 JWT 는 **누구인지 증명하는 것이 아니라 세션을 식별하고 토큰 없는 호출을 막는 것**입니다. 남용은 IP 별 요청 제한(30회/분)으로 줄이지만, 세션을 계속 새로 받아 세션별 한도를 우회할 수는 있습니다. 회원 세션은 업체 로그인을 거치므로 이 한계가 덜합니다.
-- 비회원으로 쓰던 서버 쪽 데이터는 없으므로(내 조건은 기기에만 저장) 로그인할 때 합칠 것이 없습니다. 기기 간 동기화 같은 회원 기능은 아직 없습니다.
+- 비회원의 **내 조건**과 **관심 공고 id** 는 이 기기에만 암호화되어 있습니다. 로그인하면 관심 공고 id 만 서버 회원 목록에 합칩니다(`PUT /housing/saved`). 내 조건은 기기에 남습니다. 회원 관심 공고는 같은 계정으로 로그인한 다른 기기에서도 보입니다.
 - proxy 의 검증은 서명·만료만 보는 무상태 방식이라 DB 를 열지 않습니다. 그래서 폐기한 기기도 이미 받은 액세스 토큰은 만료(기본 15분)까지 유효하고, 그 뒤 갱신에서 막힙니다. 리프레시 토큰은 사용해도 이전 것이 즉시 무효가 되지는 않습니다(회전·재사용 탐지 없음).
-- **`POST /api/v1/housing/sync` 는 JWT 대상이 아닙니다.** (앱 버전 확인과 CORS 도 적용하지 않고, 요청 제한(3회/분)만 받습니다.) 앱용 API 가 아니라 운영자용 수집 트리거이고, 앱 토큰(누구나 받을 수 있는)으로 열면 오히려 보호가 약해집니다. production 에서는 `ALLOW_WEB_SYNC=true` 가 아니면 403 입니다. 운영자 인증은 아직 없습니다. (소셜 로그인은 일반 회원용이고 운영자 권한을 구분하지 않습니다) 수집은 가능하면 CLI(`npm run housing:sync`)로 하세요.
+- **`POST /api/v1/housing/sync` 는 JWT 대상이 아닙니다.** (앱 버전 확인과 CORS 도 적용하지 않고, 요청 제한(3회/분)만 받습니다.) 앱용 API 가 아니라 운영자용 수집 트리거이고, 앱 토큰(누구나 받을 수 있는)으로 열면 오히려 보호가 약해집니다. 헤더 `X-Operator-Token` 이 `OPERATOR_TOKEN` 과 같아야 하고, production 에서는 토큰이 없거나 24자 미만이면 이 API 는 꺼져 있습니다. 평소 수집은 `HOUSING_SYNC_INTERVAL_MINUTES` 자동 수집 또는 CLI(`npm run housing:sync`)로 하세요. 웹 수집 화면은 production 에서 `ALLOW_WEB_SYNC=true` 가 아니면 막힙니다.
 
 - **서비스 켜기/끄기**: 서비스별 기본값은 코드(`src/features/<id>/feature.ts`, 목록은 `src/features/registry.ts`)에 두고, 운영자가 바꾼 값만 DB(`feature_flags`)에 저장합니다. 값은 CLI 로 바꾸며 서버를 다시 시작할 필요가 없습니다.
 
@@ -333,7 +341,7 @@ API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등�
 
   `GET /housing/meta` 의 `standards`(적용 연도, 가구원수별 도시근로자 월평균소득·기준 중위소득)로 앱이 입력 화면에서 "내 소득은 도시근로자 월평균소득의 약 N%"를 안내합니다.
 - 응답은 값(코드)과 한글 라벨을 함께 주고, 금액은 원, 면적은 ㎡, 날짜는 `YYYY-MM-DD`(KST)입니다. 원본(raw) 응답은 노출하지 않습니다.
-- **CORS**: gateway 가 모든 응답에 한 곳에서 붙입니다(`cors.ts`). `GET, POST, OPTIONS` 와 헤더 `Authorization`, `Content-Type`, `X-App-Version`, `X-App-Platform` 을 허용하고, 앱이 읽는 `Retry-After`, `RateLimit-*`, `X-Request-Id` 를 노출합니다. 토큰은 쿠키가 아니라 헤더로 보내므로 `*` 출처여도 자격 증명이 새지 않지만, 허용 출처는 `API_CORS_ORIGIN`(기본 `*`)으로 배포할 때 Flutter 웹 주소로 좁히세요. 동기화(`POST /api/v1/housing/sync`)에는 CORS 를 열지 않습니다.
+- **CORS**: gateway 가 모든 응답에 한 곳에서 붙입니다(`cors.ts`). `GET, PUT, DELETE, POST, OPTIONS` 와 헤더 `Authorization`, `Content-Type`, `X-App-Version`, `X-App-Platform` 을 허용하고, 앱이 읽는 `Retry-After`, `RateLimit-*`, `X-Request-Id` 를 노출합니다. 토큰은 쿠키가 아니라 헤더로 보내므로 `*` 출처여도 자격 증명이 새지 않지만, 허용 출처는 `API_CORS_ORIGIN`(기본 `*`)으로 배포할 때 Flutter 웹 주소로 좁히세요. 동기화(`POST /api/v1/housing/sync`)에는 CORS 를 열지 않습니다.
 - 모바일 앱(Android/iOS)은 CORS 와 무관하지만, 서버 주소는 앱 빌드 시 `--dart-define=API_BASE_URL=...` 로 지정합니다.
 
 ## 2차(Supabase) 전환 가이드

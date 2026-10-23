@@ -79,6 +79,8 @@ describe("2. CORS", () => {
     expect(res.headers.get("access-control-allow-origin")).toBe("https://app.example.com");
     expect(res.headers.get("access-control-allow-headers")).toMatch(/X-App-Version/);
     expect(res.headers.get("access-control-allow-headers")).toMatch(/X-App-Platform/);
+    expect(res.headers.get("access-control-allow-methods")).toMatch(/PUT/);
+    expect(res.headers.get("access-control-allow-methods")).toMatch(/DELETE/);
     expect(res.headers.get("access-control-expose-headers")).toMatch(/Retry-After/);
   });
 

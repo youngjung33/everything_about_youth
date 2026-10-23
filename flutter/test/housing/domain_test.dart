@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:everything_about_youth/core/security/cipher_key_store.dart';
 import 'package:everything_about_youth/core/security/field_cipher.dart';
 import 'package:everything_about_youth/features/housing/data/profile_store.dart';
+import 'package:everything_about_youth/features/housing/data/saved_notice_store.dart';
 import 'package:everything_about_youth/features/housing/domain/applicant_profile.dart';
 import 'package:everything_about_youth/features/housing/domain/housing_filters.dart';
 import 'package:everything_about_youth/features/housing/domain/housing_meta.dart';
@@ -54,6 +55,7 @@ void main() {
       expect(units.first.deposit, 50000000);
       expect(units.last.deposit, isNull);
       expect(d.sources.single.fetchedDate, '2026-10-12');
+      expect(d.googleCalendarUrl, contains('calendar.google.com'));
     });
 
     test('알 수 없는 상태/판정 코드는 안전한 기본값', () {
@@ -74,6 +76,7 @@ void main() {
       final m = HousingMeta.fromJson(metaJson());
       expect(m.sidos, ['서울특별시', '경기도']);
       expect(m.sorts.first.label, '마감 임박순');
+      expect(m.dataUpdatedAt, '2026-10-12T01:00:00.000Z');
     });
   });
 
@@ -344,6 +347,44 @@ void main() {
       });
       final (prefs2, cipher2) = await open();
       expect((await ProfileStore(prefs2, cipher2).load()).isEmpty, isTrue);
+    });
+  });
+
+  group('SavedNoticeStore (암호화 저장)', () {
+    setUp(() => SharedPreferences.setMockInitialValues({}));
+
+    Future<(SharedPreferences, AesGcmFieldCipher)> open([MemoryCipherKeyStore? keys]) async =>
+        (await SharedPreferences.getInstance(), AesGcmFieldCipher(keys ?? MemoryCipherKeyStore()));
+
+    test('저장하고 다시 읽는다. 비우면 키를 지운다', () async {
+      final (prefs, cipher) = await open();
+      final store = SavedNoticeStore(prefs, cipher);
+      expect(await store.load(), isEmpty);
+
+      await store.replace(['n1', 'n2', 'n1', '']);
+      expect(store.current, ['n1', 'n2']);
+      expect(await SavedNoticeStore(prefs, cipher).load(), ['n1', 'n2']);
+
+      await store.replace(const []);
+      expect(prefs.containsKey(SavedNoticeStore.storageKey), isFalse);
+    });
+
+    test('기기에는 평문 id 가 남지 않는다', () async {
+      final (prefs, cipher) = await open();
+      await SavedNoticeStore(prefs, cipher).replace(const ['notice-secret-id']);
+
+      final raw = prefs.getString(SavedNoticeStore.storageKey)!;
+      expect(AesGcmFieldCipher.looksEncrypted(raw), isTrue);
+      expect(raw, isNot(contains('notice-secret-id')));
+    });
+
+    test('상한을 넘기면 앞에서부터만 남긴다', () async {
+      final (prefs, cipher) = await open();
+      final store = SavedNoticeStore(prefs, cipher);
+      final ids = [for (var i = 0; i < SavedNoticeStore.maxCount + 5; i++) 'n$i'];
+      await store.replace(ids);
+      expect(store.current, hasLength(SavedNoticeStore.maxCount));
+      expect((await SavedNoticeStore(prefs, cipher).load()).first, 'n0');
     });
   });
 }

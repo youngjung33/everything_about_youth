@@ -20,7 +20,8 @@ export default async function SyncAdminPage() {
   const container = getHousingContainer();
   const [latest, recent] = await Promise.all([container.syncRuns.latestPerSource(), container.syncRuns.listRecent(20)]);
   const latestBySource = new Map(latest.map((r) => [r.source, r]));
-  const webSyncAllowed = process.env.NODE_ENV !== "production" || process.env.ALLOW_WEB_SYNC === "true";
+  // 이 화면의 버튼은 운영자 토큰을 보낼 수 없다. 토큰이 없는 개발 환경에서만 보여 준다.
+  const webSyncAllowed = process.env.NODE_ENV !== "production" && !process.env.OPERATOR_TOKEN;
 
   return (
     <div className="detail">

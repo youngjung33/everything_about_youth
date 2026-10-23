@@ -72,6 +72,10 @@ class FakeRuns implements SyncRunRepository {
   async latestPerSource() {
     return this.runs;
   }
+  async lastSuccessAt() {
+    const done = this.runs.filter((r) => r.status === "success" && r.finishedAt).map((r) => r.finishedAt!);
+    return done.length > 0 ? done.sort().at(-1)! : null;
+  }
 }
 
 const source = (id: "lh" | "sh", drafts: NoticeDraft[] | Error, available = true): NoticeSourcePort => ({

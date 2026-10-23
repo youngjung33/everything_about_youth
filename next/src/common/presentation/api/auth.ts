@@ -1,4 +1,12 @@
-import { AuthError, InvalidTokenError, type AuthService, type SessionTokens, type TokenService } from "@/common/application/auth";
+import {
+  AuthError,
+  InvalidTokenError,
+  type AuthClientStore,
+  type AuthService,
+  type SessionTokens,
+  type TokenService,
+} from "@/common/application/auth";
+import { clientIdOf } from "./respond";
 import { SSO_PROVIDER_IDS, type SsoProviderId } from "@/common/application/sso";
 import { ApiError, type ErrorCode } from "./errors";
 import type { ApiResult } from "./respond";
@@ -29,7 +37,7 @@ export const APP_CONFIG_PATH = apiPath("/app-config");
  * 토큰 없이 부를 수 있는 API.
  *
  * `/api/v1/housing/sync` 는 여기에 두지 않았다. 앱용 API 가 아니라 운영자용 수집 트리거이고,
- * 운영에서는 ALLOW_WEB_SYNC 로 따로 막혀 있다. (README 의 "인증" 절 참고)
+ * 라우트에서 `X-Operator-Token`(OPERATOR_TOKEN)으로 따로 검사한다. (README 의 "인증" 절 참고)
  */
 export const PUBLIC_API_PATHS: readonly string[] = [...AUTH_ENTRY_PATHS, APP_CONFIG_PATH];
 
@@ -77,6 +85,19 @@ export async function authorizeApiRequest(
     if (e instanceof InvalidTokenError && e.reason === "expired") return unauthorized("AUTH_TOKEN_EXPIRED");
     return unauthorized("AUTH_TOKEN_INVALID");
   }
+}
+
+/**
+ * 로그인한 회원의 id. 비회원 세션이면 LOGIN_REQUIRED.
+ * gateway 가 붙여 준 `x-client-id` 만 믿고, 그 세션이 회원에 묶여 있는지를 DB 에서 확인한다.
+ */
+export async function requireMemberUserId(request: Request, clients: AuthClientStore): Promise<string> {
+  const clientId = clientIdOf(request);
+  if (!clientId) throw new ApiError("AUTH_REQUIRED");
+  const client = await clients.find(clientId);
+  if (!client || client.revoked) throw new ApiError("AUTH_TOKEN_INVALID");
+  if (!client.userId) throw new ApiError("LOGIN_REQUIRED");
+  return client.userId;
 }
 
 export interface SessionDto {

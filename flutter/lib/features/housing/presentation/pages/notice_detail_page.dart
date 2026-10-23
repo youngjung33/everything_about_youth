@@ -10,6 +10,7 @@ import '../../application/providers.dart';
 import '../../domain/notice.dart';
 import '../widgets/badges.dart';
 import '../widgets/notice_card.dart';
+import '../widgets/saved_notice_button.dart';
 import '../../../../core/theme/app_fonts.dart';
 
 class NoticeDetailPage extends ConsumerWidget {
@@ -22,7 +23,10 @@ class NoticeDetailPage extends ConsumerWidget {
     final async = ref.watch(noticeDetailProvider(id));
 
     return AppScaffold(
-      appBar: AppTopBar(title: const Text('공고 상세')),
+      appBar: AppTopBar(
+        title: const Text('공고 상세'),
+        actions: [SavedNoticeButton(noticeId: id, compact: false)],
+      ),
       body: async.when(
         loading: () => const LoadingView(message: '공고 상세를 불러오는 중…'),
         error: (error, _) =>
@@ -105,6 +109,14 @@ class _DetailBody extends StatelessWidget {
                 icon: const Icon(Icons.open_in_new, size: 18),
                 label: const Text('원문 공고 보기'),
               ),
+            if (detail.googleCalendarUrl != null) ...[
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: () => openExternal(context, detail.googleCalendarUrl!),
+                icon: const Icon(Icons.event_outlined, size: 18),
+                label: const Text('접수 마감일 캘린더에 넣기'),
+              ),
+            ],
             const SizedBox(height: 12),
             Text(
               '이 정보는 공개 데이터와 각 기관 공고를 수집한 참고용입니다. 신청 전 반드시 원문 공고를 확인하세요.',

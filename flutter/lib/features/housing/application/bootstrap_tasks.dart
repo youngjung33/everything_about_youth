@@ -15,6 +15,14 @@ final housingBootstrapTasks = <BootstrapTask>[
     },
   ),
 
+  // 관심 공고 id. 회원은 서버(+ 기기 목록 합치기), 비회원은 기기. 실패해도 목록은 열리므로 필수가 아니다.
+  BootstrapTask(
+    name: '관심 공고 불러오기',
+    run: (ref) async {
+      await ref.read(savedNoticesProvider.future);
+    },
+  ),
+
   // 필터 선택지와 첫 페이지 공고를 미리 받아 둔다. 임대주택에 들어갔을 때 바로 목록이 보인다.
   // 서버가 느리거나 꺼져 있어도 앱은 시작해야 하므로 필수가 아니고, 실패하면 목록 화면이 자체 오류/재시도를 보여준다.
   BootstrapTask(

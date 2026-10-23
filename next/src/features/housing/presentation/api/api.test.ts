@@ -1,11 +1,25 @@
 import { describe, expect, it } from "vitest";
 import type { Clock } from "@/common/application/system";
-import { GetNoticeDetail } from "@/features/housing/application/use-cases/get-notice-detail";
 import { SearchNotices } from "@/features/housing/application/use-cases/search-notices";
 import type { NoticeRepository, NoticeSearchQuery } from "@/features/housing/application/ports/notice-repository";
 import { createNotice } from "@/features/housing/domain/identity";
 import type { Notice, NoticeDraft } from "@/features/housing/domain/notice";
-import { handleGetMeta, handleGetNotice, handleListNotices, toRawSearchParams, type HousingApiDeps } from "./handlers";
+import { GetNoticeDetail } from "@/features/housing/application/use-cases/get-notice-detail";
+import { ManageSavedNotices } from "@/features/housing/application/use-cases/manage-saved-notices";
+import type { SavedNotice, SavedNoticeRepository } from "@/features/housing/application/ports/saved-notice-repository";
+import {
+  handleGetMeta,
+  handleGetNotice,
+  handleListNotices,
+  handleListSaved,
+  handleListSavedIds,
+  handleMergeSaved,
+  handleNoticeCalendar,
+  handleSaveNotice,
+  handleUnsaveNotice,
+  toRawSearchParams,
+  type HousingApiDeps,
+} from "./handlers";
 import type { NoticeDetailDto, NoticeListDto } from "./dto";
 import { regionLabel } from "../region-label";
 
@@ -41,6 +55,25 @@ const draft = (over: Partial<NoticeDraft> = {}): NoticeDraft => ({
   ...over,
 });
 
+class MemorySaved implements SavedNoticeRepository {
+  rows: SavedNotice[] = [];
+  async list() {
+    return [...this.rows].sort((a, b) => (a.savedAt < b.savedAt ? 1 : -1));
+  }
+  async isSaved(_userId: string, noticeId: string) {
+    return this.rows.some((r) => r.noticeId === noticeId);
+  }
+  async count() {
+    return this.rows.length;
+  }
+  async save(_userId: string, noticeId: string, savedAt: string) {
+    if (!this.rows.some((r) => r.noticeId === noticeId)) this.rows.push({ noticeId, savedAt });
+  }
+  async remove(_userId: string, noticeId: string) {
+    this.rows = this.rows.filter((r) => r.noticeId !== noticeId);
+  }
+}
+
 class FakeRepo implements NoticeRepository {
   constructor(private readonly store: Notice[]) {}
   lastQuery: NoticeSearchQuery | null = null;
@@ -63,7 +96,13 @@ class FakeRepo implements NoticeRepository {
 function setup(drafts: NoticeDraft[]) {
   const notices = drafts.map(createNotice);
   const repo = new FakeRepo(notices);
-  const deps: HousingApiDeps = { searchNotices: new SearchNotices(repo, clock), getNoticeDetail: new GetNoticeDetail(repo, clock), clock };
+  const deps: HousingApiDeps = {
+    searchNotices: new SearchNotices(repo, clock),
+    getNoticeDetail: new GetNoticeDetail(repo, clock),
+    manageSavedNotices: new ManageSavedNotices(new MemorySaved(), repo, clock),
+    syncRuns: { lastSuccessAt: async () => "2026-10-12T01:00:00.000Z" },
+    clock,
+  };
   return { deps, notices, repo };
 }
 
@@ -166,6 +205,8 @@ describe("공고 상세 API", () => {
       fetchedAt: "2026-10-11T00:00:00.000Z",
     });
     expect(JSON.stringify(body)).not.toContain("secret");
+    expect(detail.googleCalendarUrl).toContain("calendar.google.com");
+    expect(detail.googleCalendarUrl).toContain("20261015");
   });
 
   it("내 조건을 주면 판정 사유와 안내를 준다", async () => {
@@ -204,12 +245,9 @@ describe("공고 상세 API", () => {
 });
 
 describe("메타 API", () => {
-  it("필터 선택지와 라벨을 내려준다", () => {
-    const meta = handleGetMeta().body as ReturnType<typeof handleGetMeta>["body"] & {
-      supplyTypes: Array<{ value: string; label: string }>;
-      sidos: string[];
-      verdicts: Array<{ value: string; label: string }>;
-    };
+  it("필터 선택지와 라벨을 내려준다", async () => {
+    const { deps } = setup([]);
+    const meta = (await handleGetMeta(deps)).body;
     expect(meta.supplyTypes).toContainEqual({ value: "public_rental", label: "공공임대(10·50년)" });
     expect(meta.supplyTypes).toContainEqual({ value: "happy_housing", label: "행복주택" });
     expect(meta.verdicts).toEqual([
@@ -221,13 +259,14 @@ describe("메타 API", () => {
     expect(meta.sidos).toHaveLength(17);
   });
 
-  it("자격 판정 기준표(연도, 가구원수별 소득)를 내려준다", () => {
-    const { standards } = handleGetMeta().body;
+  it("자격 판정 기준표(연도, 가구원수별 소득)와 마지막 수집 시각을 내려준다", async () => {
+    const { standards, dataUpdatedAt } = (await handleGetMeta(setup([]).deps)).body;
     expect(standards.year).toBe(2026);
     expect(standards.maxHouseholdSize).toBe(8);
     expect(standards.urbanWorkerIncome).toHaveLength(8);
     expect(standards.urbanWorkerIncome[2]).toBe(8_168_429);
     expect(standards.medianIncome[0]).toBe(2_564_238);
+    expect(dataUpdatedAt).toBe("2026-10-12T01:00:00.000Z");
   });
 });
 
@@ -245,6 +284,45 @@ describe("regionLabel", () => {
     expect(
       regionLabel(["a", "b", "c", "d", "e"].map((g) => ({ sido: "경기", sigungu: g }))),
     ).toBe("경기 a, 경기 b, 경기 c 외 2곳");
+  });
+});
+
+describe("관심 공고 API", () => {
+  it("저장하고 목록·id 를 조회하고 빼면 비운다", async () => {
+    const { deps, notices } = setup([draft()]);
+    const id = notices[0]!.id;
+    expect(await handleSaveNotice("u1", id, deps)).toEqual({ status: 200, body: { saved: true } });
+    expect((await handleListSavedIds("u1", deps)).body.ids).toEqual([id]);
+    const list = (await handleListSaved("u1", qs(""), deps)).body;
+    expect(list.total).toBe(1);
+    expect(list.items[0]!.id).toBe(id);
+    expect(await handleUnsaveNotice("u1", id, deps)).toEqual({ status: 200, body: { saved: false } });
+    expect((await handleListSavedIds("u1", deps)).body.ids).toEqual([]);
+  });
+
+  it("없는 공고는 NOTICE_NOT_FOUND, 합치기는 ids 가 필요하다", async () => {
+    const { deps, notices } = setup([draft()]);
+    await expect(handleSaveNotice("u1", "nope", deps)).rejects.toMatchObject({ code: "NOTICE_NOT_FOUND" });
+    await expect(handleMergeSaved("u1", {}, deps)).rejects.toMatchObject({ code: "BAD_REQUEST" });
+    const merged = (await handleMergeSaved("u1", { ids: [notices[0]!.id, "nope"] }, deps)).body;
+    expect(merged.ids).toEqual([notices[0]!.id]);
+  });
+});
+
+describe("캘린더 ICS", () => {
+  it("접수 마감일이 있으면 ICS 파일을 내려준다", async () => {
+    const { deps, notices } = setup([draft()]);
+    const res = await handleNoticeCalendar(notices[0]!.id, deps);
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("text/calendar");
+    const body = await res.text();
+    expect(body).toContain("BEGIN:VCALENDAR");
+    expect(body).toContain("DTSTART;VALUE=DATE:20261015");
+  });
+
+  it("없는 공고는 NOTICE_NOT_FOUND", async () => {
+    const { deps } = setup([draft()]);
+    await expect(handleNoticeCalendar("nope", deps)).rejects.toMatchObject({ code: "NOTICE_NOT_FOUND" });
   });
 });
 

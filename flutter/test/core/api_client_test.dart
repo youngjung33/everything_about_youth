@@ -260,6 +260,33 @@ void main() {
     );
   });
 
+  test('PUT/DELETE 도 JSON 으로 보내고 받는다', () async {
+    late http.BaseRequest sent;
+    final client = clientFor(
+      MockClient((request) async {
+        sent = request;
+        return jsonResponse({
+          'ids': <String>['n1'],
+        });
+      }),
+    );
+
+    expect(
+      (await client.putJson(
+        '/housing/saved',
+        body: {
+          'ids': ['n1'],
+        },
+      ))['ids'],
+      ['n1'],
+    );
+    expect(sent.method, 'PUT');
+    expect(sent.headers['content-type'], contains('application/json'));
+
+    await client.deleteJson('/housing/saved/n1');
+    expect(sent.method, 'DELETE');
+  });
+
   test('AppConfig.normalizeBaseUrl 은 끝의 / 를 제거한다', () {
     expect(AppConfig.normalizeBaseUrl('https://api.example.com///'), 'https://api.example.com');
     expect(AppConfig.normalizeBaseUrl(' http://localhost:3000 '), 'http://localhost:3000');

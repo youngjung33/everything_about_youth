@@ -86,6 +86,10 @@ class ApiClient {
   Future<Map<String, dynamic>> postJson(String path, {Map<String, Object?>? body}) =>
       _request('POST', path, body: body);
 
+  Future<Map<String, dynamic>> putJson(String path, {Map<String, Object?>? body}) => _request('PUT', path, body: body);
+
+  Future<Map<String, dynamic>> deleteJson(String path) => _request('DELETE', path);
+
   Future<Map<String, dynamic>> _request(
     String method,
     String path, {
@@ -117,9 +121,18 @@ class ApiClient {
       if (body != null) 'Content-Type': 'application/json',
     };
     try {
-      final request = method == 'POST'
-          ? _http.post(uri, headers: headers, body: body == null ? null : jsonEncode(body))
-          : _http.get(uri, headers: headers);
+      final encoded = body == null ? null : jsonEncode(body);
+      final Future<http.Response> request;
+      switch (method) {
+        case 'POST':
+          request = _http.post(uri, headers: headers, body: encoded);
+        case 'PUT':
+          request = _http.put(uri, headers: headers, body: encoded);
+        case 'DELETE':
+          request = _http.delete(uri, headers: headers);
+        default:
+          request = _http.get(uri, headers: headers);
+      }
       return await request.timeout(timeout);
     } on TimeoutException {
       throw const ApiException('서버 응답이 너무 늦습니다. 잠시 후 다시 시도해 주세요.', code: ApiErrorCode.timeout);

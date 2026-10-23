@@ -1,10 +1,11 @@
 import { index, integer, primaryKey, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { users } from "@/common/infrastructure/persistence/sqlite/schema";
 
 /**
  * 개념 모델은 Postgres(Supabase)로 그대로 옮길 수 있도록 설계:
  *  - ID는 문자열, 날짜는 'YYYY-MM-DD' 텍스트(→ date), 시각은 ISO 텍스트(→ timestamptz)
  *  - 배열/JSON 컬럼 대신 조인 테이블 사용 (raw_payload 만 JSON 텍스트 → jsonb)
- *  - 사용자(user_id) 개념은 1차에서 넣지 않는다.
+ *  - 관심 공고(saved_notices)만 회원(user_id)에 묶인다. 비회원 관심 공고는 앱 기기에만 둔다.
  */
 export const notices = sqliteTable(
   "notices",
@@ -108,6 +109,24 @@ export const noticeSources = sqliteTable(
     fetchedAt: text("fetched_at").notNull(),
   },
   (t) => [primaryKey({ columns: [t.source, t.externalId] }), index("notice_sources_notice_idx").on(t.noticeId)],
+);
+
+/**
+ * 회원이 관심 공고로 저장한 목록.
+ * users / notices 는 공용·섹션 테이블이지만 같은 SQLite 파일이라 외래 키를 건다. 회원 탈퇴·공고 삭제 때 같이 지워진다.
+ */
+export const savedNotices = sqliteTable(
+  "saved_notices",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    noticeId: text("notice_id")
+      .notNull()
+      .references(() => notices.id, { onDelete: "cascade" }),
+    createdAt: text("created_at").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.noticeId] }), index("saved_notices_user_idx").on(t.userId, t.createdAt)],
 );
 
 export const syncRuns = sqliteTable("sync_runs", {

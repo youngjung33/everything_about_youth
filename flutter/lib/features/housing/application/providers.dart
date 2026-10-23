@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../../core/network/api_error_code.dart';
 import '../../../core/providers/core_providers.dart';
 import '../data/api_housing_repository.dart';
 import '../data/profile_store.dart';
+import '../data/saved_notice_store.dart';
 import '../domain/applicant_profile.dart';
 import '../domain/housing_filters.dart';
 import '../domain/housing_meta.dart';
@@ -20,6 +22,10 @@ final housingRepositoryProvider = Provider<HousingRepository>(
 
 final profileStoreProvider = Provider<ProfileStore>(
   (ref) => ProfileStore(ref.watch(sharedPreferencesProvider), ref.watch(fieldCipherProvider)),
+);
+
+final savedNoticeStoreProvider = Provider<SavedNoticeStore>(
+  (ref) => SavedNoticeStore(ref.watch(sharedPreferencesProvider), ref.watch(fieldCipherProvider)),
 );
 
 // ---------------------------------------------------------------------------
@@ -178,6 +184,86 @@ final noticeListProvider = AsyncNotifierProvider<NoticeListController, NoticeLis
 final noticeDetailProvider = FutureProvider.family<NoticeDetail, String>((ref, id) {
   final profile = ref.watch(profileProvider);
   return ref.watch(housingRepositoryProvider).getNotice(id, profile: profile);
+});
+
+/// 관심 공고 id. 비회원은 기기, 회원은 서버. 로그인하면 기기 목록을 서버에 합친다.
+class SavedNoticesNotifier extends AsyncNotifier<List<String>> {
+  @override
+  Future<List<String>> build() async {
+    final mode = ref.watch(authModeProvider);
+    final store = ref.watch(savedNoticeStoreProvider);
+    final local = await store.load();
+    if (!mode.isMember) return local;
+    final repo = ref.watch(housingRepositoryProvider);
+    if (local.isNotEmpty) {
+      final merged = await repo.mergeSaved(local);
+      await store.replace(const []);
+      return merged;
+    }
+    return repo.fetchSavedIds();
+  }
+
+  /// 저장/해제. 실패하면 사용자에게 보여줄 문장, 성공하면 null.
+  Future<String?> toggle(String id) async {
+    final ids = [...(state.value ?? await future)];
+    final mode = ref.read(authModeProvider);
+    final exists = ids.contains(id);
+    if (exists) {
+      if (mode.isMember) {
+        try {
+          await ref.read(housingRepositoryProvider).unsaveNotice(id);
+        } on ApiException catch (e) {
+          return e.message;
+        }
+      }
+      ids.remove(id);
+    } else {
+      if (ids.length >= SavedNoticeStore.maxCount) {
+        return '관심 공고는 ${SavedNoticeStore.maxCount}개까지 저장할 수 있습니다.';
+      }
+      if (mode.isMember) {
+        try {
+          await ref.read(housingRepositoryProvider).saveNotice(id);
+        } on ApiException catch (e) {
+          return e.message;
+        }
+      }
+      ids.insert(0, id);
+    }
+    if (!mode.isMember) {
+      await ref.read(savedNoticeStoreProvider).replace(ids);
+    }
+    state = AsyncData(ids);
+    return null;
+  }
+}
+
+final savedNoticesProvider = AsyncNotifierProvider<SavedNoticesNotifier, List<String>>(SavedNoticesNotifier.new);
+
+/// 관심 공고 화면용 목록. id 가 바뀌면 다시 불러온다.
+final savedNoticeListProvider = FutureProvider<SavedNoticeList>((ref) async {
+  final ids = await ref.watch(savedNoticesProvider.future);
+  if (ids.isEmpty) return const SavedNoticeList(items: [], total: 0, today: '');
+  final profile = ref.watch(profileProvider);
+  final repo = ref.watch(housingRepositoryProvider);
+  if (ref.watch(authModeProvider).isMember) {
+    return repo.fetchSaved(profile: profile);
+  }
+  final results = await Future.wait(
+    ids.map((id) async {
+      try {
+        return await repo.getNotice(id, profile: profile);
+      } on ApiException catch (e) {
+        if (e.isNotFound || e.code == ApiErrorCode.noticeNotFound) return null;
+        rethrow;
+      }
+    }),
+  );
+  final items = [
+    for (final d in results)
+      if (d != null) d.summary,
+  ];
+  return SavedNoticeList(items: items, total: items.length, today: '');
 });
 
 /// 사용자에게 보여줄 오류 문장

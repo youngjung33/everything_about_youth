@@ -58,3 +58,13 @@ String formatRange<T>(T? min, T? max, String Function(T value) format) {
 
 /// 값이 있을 때만 뒤에 "~" 를 붙인다. (최소금액 표시용)
 String formatFrom(int? won) => won == null ? '-' : '${formatWon(won)}~';
+
+/// ISO 8601 UTC → "2026.10.12 10:00 갱신" (한국 시간). 없거나 해석할 수 없으면 null
+String? formatUpdatedAt(String? isoUtc) {
+  if (isoUtc == null || isoUtc.isEmpty) return null;
+  final parsed = DateTime.tryParse(isoUtc);
+  if (parsed == null) return null;
+  final kst = parsed.toUtc().add(const Duration(hours: 9));
+  String two(int n) => n.toString().padLeft(2, '0');
+  return '${kst.year}.${two(kst.month)}.${two(kst.day)} ${two(kst.hour)}:${two(kst.minute)} 갱신';
+}

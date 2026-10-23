@@ -63,6 +63,7 @@ class HousingMeta {
     required this.sorts,
     required this.sidos,
     this.standards,
+    this.dataUpdatedAt,
   });
 
   factory HousingMeta.fromJson(Map<String, dynamic> json) => HousingMeta(
@@ -75,6 +76,7 @@ class HousingMeta {
     standards: json['standards'] is Map<String, dynamic>
         ? EligibilityStandards.fromJson(json['standards'] as Map<String, dynamic>)
         : null,
+    dataUpdatedAt: asString(json['dataUpdatedAt']),
   );
 
   final List<Option> supplyTypes;
@@ -86,4 +88,7 @@ class HousingMeta {
 
   /// 소득 기준표. 서버가 주지 않으면 null (소득 수준 안내만 생략된다)
   final EligibilityStandards? standards;
+
+  /// 공고가 마지막으로 수집된 시각(ISO 8601 UTC). 한 번도 없으면 null
+  final String? dataUpdatedAt;
 }

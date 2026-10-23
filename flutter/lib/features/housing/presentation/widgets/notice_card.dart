@@ -5,6 +5,7 @@ import '../../../../core/format/format.dart';
 import '../../domain/notice.dart';
 import '../housing_routes.dart';
 import 'badges.dart';
+import 'saved_notice_button.dart';
 import '../../../../core/theme/app_fonts.dart';
 
 /// 라벨(작게) + 값 한 쌍
@@ -78,7 +79,13 @@ class NoticeCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              NoticeBadges(notice: notice),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: NoticeBadges(notice: notice)),
+                  SavedNoticeButton(noticeId: notice.id),
+                ],
+              ),
               const SizedBox(height: 10),
               Text(
                 notice.title,

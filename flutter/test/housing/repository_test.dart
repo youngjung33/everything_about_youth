@@ -69,5 +69,53 @@ void main() {
     expect(requests.single.path, '/api/v1/housing/notices/lh%3A1%202');
     expect(requests.single.queryParameters['age'], '30');
     expect(detail.complexes, isNotEmpty);
+    expect(detail.googleCalendarUrl, contains('calendar.google.com'));
+  });
+
+  test('관심 공고: 저장·합치기·목록·해제를 호출한다', () async {
+    late http.BaseRequest sent;
+    repo = ApiHousingRepository(
+      ApiClient(
+        baseUrl: 'http://localhost:3000',
+        httpClient: MockClient((request) async {
+          sent = request;
+          requests.add(request.url);
+          final Object body = switch (request.method) {
+            'PUT' when request.url.path.endsWith('/saved') => {
+              'ids': ['n1', 'n2'],
+            },
+            'GET' when request.url.path.endsWith('/saved/ids') => {
+              'ids': ['n1'],
+            },
+            'GET' when request.url.path.endsWith('/saved') => {
+              'items': [summaryJson()],
+              'total': 1,
+              'today': '2026-10-13',
+            },
+            _ => {'saved': true},
+          };
+          return http.Response.bytes(utf8.encode(jsonEncode(body)), 200);
+        }),
+      ),
+    );
+
+    expect(await repo.mergeSaved(['n1', 'n2']), ['n1', 'n2']);
+    expect(sent.method, 'PUT');
+    expect(requests.last.path, '/api/v1/housing/saved');
+
+    expect(await repo.fetchSavedIds(), ['n1']);
+    expect(requests.last.path, '/api/v1/housing/saved/ids');
+
+    final list = await repo.fetchSaved(profile: const ApplicantProfile(age: 29));
+    expect(list.total, 1);
+    expect(requests.last.queryParameters['age'], '29');
+
+    await repo.saveNotice('lh:1 2');
+    expect(sent.method, 'PUT');
+    expect(requests.last.path, '/api/v1/housing/saved/lh%3A1%202');
+
+    await repo.unsaveNotice('lh:1 2');
+    expect(sent.method, 'DELETE');
+    expect(requests.last.path, '/api/v1/housing/saved/lh%3A1%202');
   });
 }

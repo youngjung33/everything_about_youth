@@ -1,4 +1,5 @@
 import { apiHandler, respond } from "@/common/presentation/api/respond";
+import { getHousingContainer } from "@/features/housing/infrastructure/container";
 import { handleGetMeta } from "@/features/housing/presentation/api/handlers";
 import { assertHousingEnabled } from "../guard";
 
@@ -9,5 +10,5 @@ export const runtime = "nodejs";
 /** 필터 선택지와 한글 라벨 (앱용 JSON) */
 export const GET = apiHandler(async () => {
   await assertHousingEnabled();
-  return respond(handleGetMeta());
+  return respond(await handleGetMeta(getHousingContainer()));
 });

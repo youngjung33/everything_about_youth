@@ -1,4 +1,5 @@
 import { ApiError } from "@/common/presentation/api/errors";
+import { assertOperator } from "@/common/presentation/api/operator";
 import { apiHandler, respond } from "@/common/presentation/api/respond";
 import { parseSourceList } from "@/features/housing/infrastructure/config";
 import { getHousingContainer } from "@/features/housing/infrastructure/container";
@@ -7,13 +8,11 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 /**
- * 수동 수집 트리거 (개인용). 운영 배포 시에는 기본적으로 막고 ALLOW_WEB_SYNC=true 일 때만 허용한다.
- * 로그인이 생기는 2차에서 인증을 붙인다.
+ * 수동 수집 트리거(운영자용). 앱 사용자의 JWT 와는 별개로 `X-Operator-Token` 헤더가 `OPERATOR_TOKEN` 과 같아야 한다.
+ * 운영에서 `OPERATOR_TOKEN` 이 없으면 이 API 는 꺼져 있다. 평소 수집은 `HOUSING_SYNC_INTERVAL_MINUTES` 자동 수집이 한다.
  */
 export const POST = apiHandler(async (request) => {
-  if (process.env.NODE_ENV === "production" && process.env.ALLOW_WEB_SYNC !== "true") {
-    throw new ApiError("OPERATOR_DISABLED");
-  }
+  assertOperator(request);
 
   let ids: ReturnType<typeof parseSourceList>;
   try {

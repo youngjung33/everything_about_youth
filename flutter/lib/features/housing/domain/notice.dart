@@ -215,6 +215,7 @@ class NoticeDetail {
     required this.sources,
     this.winnerAnnouncementDate,
     this.eligibilityText,
+    this.googleCalendarUrl,
   });
 
   factory NoticeDetail.fromJson(Map<String, dynamic> json) => NoticeDetail(
@@ -223,6 +224,7 @@ class NoticeDetail {
     eligibilityText: asString(json['eligibilityText']),
     complexes: asList(json['complexes'], Complex.fromJson),
     sources: asList(json['sources'], NoticeSource.fromJson),
+    googleCalendarUrl: asString(json['googleCalendarUrl']),
   );
 
   final NoticeSummary summary;
@@ -232,6 +234,9 @@ class NoticeDetail {
   final String? eligibilityText;
   final List<Complex> complexes;
   final List<NoticeSource> sources;
+
+  /// 접수 마감일을 Google 캘린더에 넣는 주소. 마감일이 없으면 null
+  final String? googleCalendarUrl;
 }
 
 /// 목록 한 페이지
@@ -262,5 +267,21 @@ class NoticePage {
   final int totalPages;
 
   /// 서버(KST) 기준 오늘
+  final String today;
+}
+
+/// 관심 공고 목록. 페이지 없이 최근 저장 순 전체.
+@immutable
+class SavedNoticeList {
+  const SavedNoticeList({required this.items, required this.total, required this.today});
+
+  factory SavedNoticeList.fromJson(Map<String, dynamic> json) => SavedNoticeList(
+    items: asList(json['items'], NoticeSummary.fromJson),
+    total: asInt(json['total']) ?? 0,
+    today: asString(json['today']) ?? '',
+  );
+
+  final List<NoticeSummary> items;
+  final int total;
   final String today;
 }

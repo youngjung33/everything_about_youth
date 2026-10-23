@@ -95,6 +95,11 @@ class _NoticeListPageState extends ConsumerState<NoticeListPage> {
               ),
             ),
           IconButton(
+            tooltip: '관심 공고',
+            onPressed: () => context.push(HousingRoutes.saved),
+            icon: const Icon(Icons.bookmarks_outlined),
+          ),
+          IconButton(
             tooltip: '내 조건',
             onPressed: () => context.push(HousingRoutes.profile),
             icon: const Icon(Icons.person_outline),
@@ -214,6 +219,11 @@ class _Header extends ConsumerWidget {
               ),
             ],
           ),
+          if (formatUpdatedAt(meta?.dataUpdatedAt) != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(formatUpdatedAt(meta!.dataUpdatedAt)!, style: TextStyle(fontSize: 12, color: scheme.outline)),
+            ),
           const SizedBox(height: 10),
           Card(
             color: scheme.primaryContainer.withValues(alpha: 0.35),
