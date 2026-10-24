@@ -5,6 +5,13 @@
 export async function register(): Promise<void> {
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
   try {
+    const { getRuntimeEnv } = await import("./common/infrastructure/config/runtime-env-config");
+    console.info(`[runtime] APP_ENV=${getRuntimeEnv().appEnv}`);
+  } catch (error) {
+    console.error("[runtime] 환경 설정을 읽지 못했습니다.", error);
+    throw error;
+  }
+  try {
     const { startBackgroundJobs } = await import("./background-jobs");
     await startBackgroundJobs();
   } catch (error) {

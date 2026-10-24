@@ -188,6 +188,9 @@ describe("requireMemberUserId", () => {
     async revokeByUser() {
       return 0;
     },
+    async pruneGuestSessions() {
+      return 0;
+    },
   });
   const req = (clientId?: string) =>
     new Request("http://x/api", { headers: clientId ? { [CLIENT_ID_HEADER]: clientId } : {} });

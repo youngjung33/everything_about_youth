@@ -50,4 +50,25 @@ describe("SqliteAuthClientStore", () => {
     await store.create("d1", "2026-10-18T00:00:00Z");
     await expect(store.create("d1", "2026-10-18T00:00:00Z")).rejects.toThrow();
   });
+
+  it("비회원 세션만 오래된 것·상한 초과분을 지운다", async () => {
+    const conn = openSqlite(":memory:");
+    runMigrations(conn.db);
+    const store = new SqliteAuthClientStore(conn.db);
+    const users = new SqliteUserStore(conn.db);
+    const memberId = await users.findOrCreate("kakao", "k1", "2026-01-01T00:00:00Z", () => "user-1");
+
+    await store.create("old-guest", "2020-01-01T00:00:00Z");
+    await store.create("fresh-guest", "2026-10-18T00:00:00Z");
+    await store.create("member", "2020-01-01T00:00:00Z", memberId);
+
+    const deleted = await store.pruneGuestSessions({
+      olderThanIso: "2025-01-01T00:00:00Z",
+      maxRows: 1,
+    });
+    expect(deleted).toBeGreaterThanOrEqual(1);
+    expect(await store.find("old-guest")).toBeNull();
+    expect(await store.find("member")).not.toBeNull();
+    expect(await store.find("fresh-guest")).not.toBeNull();
+  });
 });

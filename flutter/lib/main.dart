@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app/app.dart';
 import 'app/feature_modules.dart';
+import 'core/config/app_config.dart';
+import 'core/config/app_runtime.dart';
 import 'core/error/error_reporting.dart';
 import 'core/feature/feature_flags.dart';
 import 'core/layout/system_ui.dart';
@@ -12,6 +14,8 @@ import 'core/update/app_info.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final appConfig = AppConfig.fromEnvironment();
+  AppRuntime.install(appConfig.env);
   installGlobalErrorHandlers();
   // 상태바·내비게이션바 뒤까지 그리는 edge-to-edge 로 모든 기기를 맞춘다. 피하는 일은 AppScaffold 가 한다.
   await AppSystemUi.apply();

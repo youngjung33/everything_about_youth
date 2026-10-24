@@ -1,0 +1,45 @@
+{
+  "items": [
+    {
+      "id": "n_cnqed6t8r9",
+      "title": "서울 행복주택 모집",
+      "organization": "LH",
+      "supplyType": "happy_housing",
+      "supplyTypeLabel": "행복주택",
+      "housingTypes": [
+        "apartment"
+      ],
+      "housingTypeLabels": [
+        "아파트"
+      ],
+      "status": "open",
+      "statusLabel": "접수중",
+      "dday": "D-3",
+      "regions": [
+        {
+          "sido": "서울",
+          "sigungu": "강남구"
+        }
+      ],
+      "regionLabel": "서울 강남구",
+      "applicationStart": "2026-10-01",
+      "applicationEnd": "2026-10-15",
+      "announcementDate": "2026-09-28",
+      "totalHouseholds": 15,
+      "minDeposit": 15000000,
+      "minMonthlyRent": 120000,
+      "minAreaM2": 16.5,
+      "maxAreaM2": 26.5,
+      "url": "https://example.com/n1",
+      "sourceLabels": [
+        "LH 분양임대공고"
+      ],
+      "eligibility": null
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "pageSize": 20,
+  "totalPages": 1,
+  "today": "2026-10-12"
+}

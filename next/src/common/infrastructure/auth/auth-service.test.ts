@@ -93,4 +93,19 @@ describe("AuthService + 실제 JWT/SQLite", () => {
     const s = await a.auth.startSession();
     await expect(b.auth.refresh(s.refreshToken)).rejects.toBeInstanceOf(AuthError);
   });
+
+  it("비회원 세션 발급 전에 오래된 비회원 행을 정리한다", async () => {
+    let now = new Date("2026-10-18T00:00:00Z");
+    const clock: Clock = { now: () => now };
+    const conn = openSqlite(":memory:");
+    runMigrations(conn.db);
+    const tokens = new JoseTokenService(config, clock);
+    const store = new SqliteAuthClientStore(conn.db);
+    await store.create("stale", "2020-01-01T00:00:00Z");
+    let n = 0;
+    const auth = new AuthService(tokens, store, clock, () => `device-${++n}`, { maxAgeDays: 30, maxRows: 10_000 });
+    await auth.startSession();
+    expect(await store.find("stale")).toBeNull();
+    expect(await store.find("device-1")).not.toBeNull();
+  });
 });

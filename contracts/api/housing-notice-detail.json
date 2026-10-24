@@ -1,0 +1,77 @@
+{
+  "id": "n_cnqed6t8r9",
+  "title": "서울 행복주택 모집",
+  "organization": "LH",
+  "supplyType": "happy_housing",
+  "supplyTypeLabel": "행복주택",
+  "housingTypes": [
+    "apartment"
+  ],
+  "housingTypeLabels": [
+    "아파트"
+  ],
+  "status": "open",
+  "statusLabel": "접수중",
+  "dday": "D-3",
+  "regions": [
+    {
+      "sido": "서울",
+      "sigungu": "강남구"
+    }
+  ],
+  "regionLabel": "서울 강남구",
+  "applicationStart": "2026-10-01",
+  "applicationEnd": "2026-10-15",
+  "announcementDate": "2026-09-28",
+  "totalHouseholds": 15,
+  "minDeposit": 15000000,
+  "minMonthlyRent": 120000,
+  "minAreaM2": 16.5,
+  "maxAreaM2": 26.5,
+  "url": "https://example.com/n1",
+  "sourceLabels": [
+    "LH 분양임대공고"
+  ],
+  "eligibility": null,
+  "winnerAnnouncementDate": "2026-11-01",
+  "eligibilityText": "문의: 1600-1004",
+  "googleCalendarUrl": "https://calendar.google.com/calendar/render?action=TEMPLATE&text=%EC%A0%91%EC%88%98+%EB%A7%88%EA%B0%90+%C2%B7+%EC%84%9C%EC%9A%B8+%ED%96%89%EB%B3%B5%EC%A3%BC%ED%83%9D+%EB%AA%A8%EC%A7%91&dates=20261015%2F20261016&details=%EC%9B%90%EB%AC%B8+%EA%B3%B5%EA%B3%A0%3A+https%3A%2F%2Fexample.com%2Fn1",
+  "complexes": [
+    {
+      "name": "가단지",
+      "address": "서울 강남구 1",
+      "region": {
+        "sido": "서울",
+        "sigungu": "강남구"
+      },
+      "housingType": "apartment",
+      "housingTypeLabel": "아파트",
+      "households": 15,
+      "units": [
+        {
+          "name": "16A",
+          "exclusiveAreaM2": 16.5,
+          "households": 10,
+          "deposit": 15000000,
+          "monthlyRent": 120000
+        },
+        {
+          "name": "26B",
+          "exclusiveAreaM2": 26.5,
+          "households": 5,
+          "deposit": 25000000,
+          "monthlyRent": 180000
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "lh",
+      "sourceLabel": "LH 분양임대공고",
+      "externalId": "1",
+      "url": "https://example.com/lh/1",
+      "fetchedAt": "2026-10-11T00:00:00.000Z"
+    }
+  ]
+}

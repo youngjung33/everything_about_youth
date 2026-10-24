@@ -48,9 +48,9 @@ flutter run -d <ios-device>
 배포용 빌드:
 
 ```bash
-flutter build web --release --dart-define=API_BASE_URL=https://api.example.com
-flutter build apk --release --dart-define=API_BASE_URL=https://api.example.com
-flutter build ios --release --dart-define=API_BASE_URL=https://api.example.com   # macOS 에서만
+flutter build web --release --dart-define=API_BASE_URL=https://api.example.com --dart-define=APP_ENV=prod
+flutter build apk --release --dart-define=API_BASE_URL=https://api.example.com --dart-define=APP_ENV=prod
+flutter build ios --release --dart-define=API_BASE_URL=https://api.example.com --dart-define=APP_ENV=prod   # macOS 에서만
 ```
 
 ### 3. 테스트
@@ -58,6 +58,9 @@ flutter build ios --release --dart-define=API_BASE_URL=https://api.example.com  
 ```bash
 cd next    && npm test && npm run typecheck && npm run lint
 cd flutter && flutter analyze && flutter test
+# 서버 DTO ↔ 앱 fromJson 계약 (contracts/api/*.json)
+cd next    && npm run contracts:sync && npm test -- src/contracts/api-contract.test.ts
+cd flutter && flutter test test/contracts/api_contract_test.dart
 ```
 
 ## 앱 구조 (`flutter/lib`)

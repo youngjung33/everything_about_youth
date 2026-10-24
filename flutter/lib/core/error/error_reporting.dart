@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import '../config/app_runtime.dart';
+
 /// 처리되지 못한 오류가 한 곳에서 걸러지도록 전역 처리기를 설치한다.
 ///
 /// - 위젯 빌드 오류(`FlutterError`): 그 위젯만 오류 표시로 바뀌고 나머지 화면은 그대로다. 기록만 남긴다.
@@ -21,5 +23,5 @@ void installGlobalErrorHandlers() {
 
 /// 오류를 기록한다. 지금은 콘솔에만 남긴다.
 void reportError(Object error, StackTrace? stack, {required String source}) {
-  debugPrint('[error:$source] $error');
+  debugPrint('[error:${AppRuntime.env.name}:$source] $error');
 }

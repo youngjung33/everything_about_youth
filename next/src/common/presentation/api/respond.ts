@@ -1,4 +1,5 @@
 import { consoleLogger, type Logger } from "@/common/application/system";
+import { getRuntimeEnv } from "@/common/infrastructure/config/runtime-env-config";
 import { errorResponseFrom } from "./errors";
 
 /**
@@ -58,7 +59,10 @@ export function apiHandler<Ctx = unknown>(
       return errorResponseFrom(thrown, {
         requestId,
         onUnexpected: (error) =>
-          logger.error(`[api] ${request.method} ${new URL(request.url).pathname} 실패 (requestId=${requestId ?? "-"})`, { error }),
+          logger.error(
+            `[api:${getRuntimeEnv().appEnv}] ${request.method} ${new URL(request.url).pathname} 실패 (requestId=${requestId ?? "-"})`,
+            { error },
+          ),
       });
     }
   };

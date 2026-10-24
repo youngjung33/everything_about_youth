@@ -1,0 +1,8 @@
+{
+  "tokenType": "Bearer",
+  "accessToken": "contract-access-token",
+  "accessExpiresIn": 900,
+  "refreshToken": "contract-refresh-token",
+  "refreshExpiresIn": 2592000,
+  "member": false
+}

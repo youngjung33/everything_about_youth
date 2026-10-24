@@ -14,7 +14,8 @@
     "db:migrate": "tsx scripts/migrate.ts",
     "features": "tsx scripts/features.ts",
     "housing:sync": "tsx scripts/housing/sync.ts",
-    "housing:seed-demo": "tsx scripts/housing/seed-demo.ts"
+    "housing:seed-demo": "tsx scripts/housing/seed-demo.ts",
+    "contracts:sync": "tsx scripts/sync-api-contracts.ts"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",

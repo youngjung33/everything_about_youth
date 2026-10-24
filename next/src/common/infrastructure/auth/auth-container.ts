@@ -2,6 +2,7 @@ import { AuthService } from "@/common/application/auth";
 import { SsoService } from "@/common/application/sso-service";
 import { getCommonContainer } from "../container";
 import { loadAuthConfig } from "../config/auth-config";
+import { loadGuestSessionConfig } from "../config/guest-session-config";
 import { loadSsoConfig, type SsoConfig } from "../config/sso-config";
 import { SqliteAuthClientStore } from "../persistence/sqlite/sqlite-auth-client-store";
 import { SqliteSsoTicketStore, SqliteUserStore } from "../persistence/sqlite/sqlite-user-store";
@@ -30,11 +31,13 @@ export function getAuthService(): AuthService {
   const g = globalThis as GlobalWithAuth;
   if (!g[authKey]) {
     const common = getCommonContainer();
+    const guest = loadGuestSessionConfig();
     g[authKey] = new AuthService(
       createTokenService(),
       getAuthClientStore(),
       common.clock,
       () => crypto.randomUUID(),
+      guest,
     );
   }
   return g[authKey]!;

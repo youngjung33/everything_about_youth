@@ -1,0 +1,168 @@
+{
+  "dataUpdatedAt": "2026-10-12T01:00:00.000Z",
+  "supplyTypes": [
+    {
+      "value": "happy_housing",
+      "label": "행복주택"
+    },
+    {
+      "value": "youth_purchase_rental",
+      "label": "청년매입임대"
+    },
+    {
+      "value": "national_rental",
+      "label": "국민임대"
+    },
+    {
+      "value": "permanent_rental",
+      "label": "영구임대"
+    },
+    {
+      "value": "jeonse_rental",
+      "label": "전세임대"
+    },
+    {
+      "value": "integrated_public_rental",
+      "label": "통합공공임대"
+    },
+    {
+      "value": "long_term_jeonse",
+      "label": "장기전세"
+    },
+    {
+      "value": "purchase_rental",
+      "label": "매입임대"
+    },
+    {
+      "value": "public_rental",
+      "label": "공공임대(10·50년)"
+    },
+    {
+      "value": "public_support_rental",
+      "label": "공공지원민간임대"
+    },
+    {
+      "value": "private_rental",
+      "label": "민간임대"
+    },
+    {
+      "value": "public_sale",
+      "label": "공공분양"
+    },
+    {
+      "value": "private_sale",
+      "label": "민간분양"
+    },
+    {
+      "value": "newlywed_hope_town",
+      "label": "신혼희망타운"
+    },
+    {
+      "value": "other",
+      "label": "기타"
+    }
+  ],
+  "housingTypes": [
+    {
+      "value": "apartment",
+      "label": "아파트"
+    },
+    {
+      "value": "officetel",
+      "label": "오피스텔"
+    },
+    {
+      "value": "multi_family",
+      "label": "다세대·연립"
+    },
+    {
+      "value": "urban_living",
+      "label": "도시형·원룸"
+    },
+    {
+      "value": "other",
+      "label": "기타"
+    }
+  ],
+  "statuses": [
+    {
+      "value": "upcoming",
+      "label": "접수예정"
+    },
+    {
+      "value": "open",
+      "label": "접수중"
+    },
+    {
+      "value": "closed",
+      "label": "마감"
+    }
+  ],
+  "verdicts": [
+    {
+      "value": "eligible",
+      "label": "신청 가능"
+    },
+    {
+      "value": "check",
+      "label": "조건 확인 필요"
+    },
+    {
+      "value": "ineligible",
+      "label": "신청 불가"
+    }
+  ],
+  "sorts": [
+    {
+      "value": "deadline",
+      "label": "마감 임박순"
+    },
+    {
+      "value": "latest",
+      "label": "최신 공고순"
+    }
+  ],
+  "sidos": [
+    "서울",
+    "부산",
+    "대구",
+    "인천",
+    "광주",
+    "대전",
+    "울산",
+    "세종",
+    "경기",
+    "강원",
+    "충북",
+    "충남",
+    "전북",
+    "전남",
+    "경북",
+    "경남",
+    "제주"
+  ],
+  "standards": {
+    "year": 2026,
+    "maxHouseholdSize": 8,
+    "urbanWorkerIncome": [
+      3813363,
+      5866270,
+      8168429,
+      8802202,
+      9326985,
+      9906263,
+      10485541,
+      11064819
+    ],
+    "medianIncome": [
+      2564238,
+      4199292,
+      5359036,
+      6494738,
+      7556719,
+      8555952,
+      9515150,
+      10474348
+    ]
+  }
+}

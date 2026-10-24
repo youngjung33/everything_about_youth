@@ -37,6 +37,13 @@ export interface AuthClient {
 }
 
 /** 서버가 발급한 세션(기기) 식별자 저장소. 폐기(revoke)한 세션은 리프레시가 거절된다. */
+export interface GuestSessionPruneOptions {
+  /** last_seen_at 이 이보다 이전인 비회원 행을 삭제한다. */
+  olderThanIso: string;
+  /** 비회원 행이 이 수를 넘으면 가장 오래 안 쓴 행부터 삭제한다. */
+  maxRows: number;
+}
+
 export interface AuthClientStore {
   create(id: string, at: string, userId?: string): Promise<void>;
   find(id: string): Promise<AuthClient | null>;
@@ -44,6 +51,8 @@ export interface AuthClientStore {
   revoke(id: string): Promise<boolean>;
   /** 한 회원의 모든 세션을 폐기한다. (회원 탈퇴) */
   revokeByUser(userId: string): Promise<number>;
+  /** 비회원 세션만 정리한다. 회원에 묶인 행은 삭제하지 않는다. */
+  pruneGuestSessions(options: GuestSessionPruneOptions): Promise<number>;
 }
 
 export interface SessionTokens {
@@ -73,19 +82,34 @@ export class AuthError extends Error {
  * - 회원:   [startUserSession]. SSO 로 확인된 회원에게 새 세션을 준다. (확인은 `SsoService` 가 한다)
  * 토큰 검증과 갱신은 둘이 같다.
  */
+export interface GuestSessionMaintenance {
+  maxAgeDays: number;
+  maxRows: number;
+}
+
 export class AuthService {
   constructor(
     private readonly tokens: TokenService,
     private readonly clients: AuthClientStore,
     private readonly clock: Clock,
     private readonly newId: () => string,
+    private readonly guestSessions?: GuestSessionMaintenance,
   ) {}
 
   /** 비회원 세션 */
   async startSession(): Promise<SessionTokens> {
+    await this.pruneGuestSessionsIfConfigured();
     const id = this.newId();
     await this.clients.create(id, this.now());
     return this.issuePair(id, false);
+  }
+
+  private async pruneGuestSessionsIfConfigured(): Promise<void> {
+    const policy = this.guestSessions;
+    if (!policy) return;
+    const cutoff = new Date(this.clock.now());
+    cutoff.setUTCDate(cutoff.getUTCDate() - policy.maxAgeDays);
+    await this.clients.pruneGuestSessions({ olderThanIso: cutoff.toISOString(), maxRows: policy.maxRows });
   }
 
   /** 회원 세션. 호출하는 쪽이 SSO 로 회원을 확인한 뒤에만 불러야 한다. */
