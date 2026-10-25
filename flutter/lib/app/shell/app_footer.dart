@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/app_logo.dart';
+import '../../features/legal/legal_paths.dart';
 
 /// 모든 화면 아래에 붙는 푸터. 서비스가 늘어도 문구가 맞도록 특정 서비스를 언급하지 않는다.
 ///
@@ -24,6 +26,15 @@ class AppFooter extends StatelessWidget {
     final small = Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary);
     final copyright = Text('© ${year ?? DateTime.now().year} ${AppLogo.name}', style: small);
     final notice = Text(disclaimer, style: small);
+    final legal = Wrap(
+      spacing: 8,
+      runSpacing: 4,
+      children: [
+        TextButton(onPressed: () => context.push(LegalPaths.privacy), child: const Text('개인정보 처리방침')),
+        TextButton(onPressed: () => context.push(LegalPaths.terms), child: const Text('이용약관')),
+        TextButton(onPressed: () => context.push(LegalPaths.licenses), child: const Text('오픈소스')),
+      ],
+    );
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -32,17 +43,24 @@ class AppFooter extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: wide ? 24 : 16, vertical: wide ? 14 : 10),
         child: wide
-            ? Row(
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  copyright,
-                  const SizedBox(width: 24),
-                  Expanded(child: notice),
+                  Row(
+                    children: [
+                      copyright,
+                      const SizedBox(width: 24),
+                      Expanded(child: notice),
+                    ],
+                  ),
+                  legal,
                 ],
               )
             : Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [notice, const SizedBox(height: 2), copyright],
+                children: [notice, const SizedBox(height: 2), copyright, legal],
               ),
       ),
     );

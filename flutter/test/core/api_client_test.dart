@@ -110,15 +110,11 @@ void main() {
       );
     });
 
-    test('예전 형식 { error: "문장" } 도 받아 준다', () async {
+    test('통합 템플릿이 아니면 BAD_RESPONSE 로 처리한다', () async {
       final client = clientFor(MockClient((_) async => jsonResponse({'error': '공고를 찾을 수 없습니다.'}, 404)));
       await expectLater(
         client.getJson('/x'),
-        throwsA(
-          isA<ApiException>()
-              .having((e) => e.message, 'message', '공고를 찾을 수 없습니다.')
-              .having((e) => e.code, 'code', ApiErrorCode.unknown),
-        ),
+        throwsA(isA<ApiException>().having((e) => e.code, 'code', ApiErrorCode.badResponse)),
       );
     });
 
@@ -133,8 +129,8 @@ void main() {
         null,
       ]) {
         final e = ApiClient.parseError(bad, 500);
-        expect(e.message, contains('HTTP 500'), reason: '$bad');
-        expect(e.code, ApiErrorCode.unknown);
+        expect(e.message, isNotEmpty, reason: '$bad');
+        expect(e.code, ApiErrorCode.badResponse);
       }
     });
 
@@ -225,11 +221,11 @@ void main() {
     });
   });
 
-  test('error 가 없는 오류 응답은 상태 코드를 안내한다', () async {
+  test('error 가 없는 오류 응답은 BAD_RESPONSE 로 처리한다', () async {
     final client = clientFor(MockClient((_) async => jsonResponse({'x': 1}, 500)));
     await expectLater(
       client.getJson('/x'),
-      throwsA(isA<ApiException>().having((e) => e.message, 'message', contains('HTTP 500'))),
+      throwsA(isA<ApiException>().having((e) => e.code, 'code', ApiErrorCode.badResponse)),
     );
   });
 

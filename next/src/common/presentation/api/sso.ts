@@ -15,12 +15,8 @@ function toApiError(e: unknown): unknown {
     case "login_required":
       return new ApiError("LOGIN_REQUIRED");
     default:
-      return new ApiError("BAD_REQUEST", { message: e.message });
+      return new ApiError("BAD_REQUEST");
   }
-}
-
-function field(raw: unknown, name: string): unknown {
-  return typeof raw === "object" && raw !== null ? (raw as Record<string, unknown>)[name] : undefined;
 }
 
 /** GET /api/v1/auth/providers — 로그인 화면용. 4곳 모두 주고, 지금 쓸 수 있는 곳만 enabled 다. */
@@ -30,15 +26,15 @@ export function handleListProviders(sso: SsoService): ApiResult<{ providers: Sso
 
 /** POST /api/v1/auth/sso/start { provider, redirectUri, codeChallenge } → { authorizationUrl } */
 export async function handleStartSso(
-  raw: unknown,
+  raw: { provider: string; redirectUri: string; codeChallenge: string },
   sso: SsoService,
   callbackBase: string,
 ): Promise<ApiResult<{ authorizationUrl: string }>> {
   try {
     const result = await sso.start({
-      provider: field(raw, "provider"),
-      redirectUri: field(raw, "redirectUri"),
-      codeChallenge: field(raw, "codeChallenge"),
+      provider: raw.provider,
+      redirectUri: raw.redirectUri,
+      codeChallenge: raw.codeChallenge,
       callbackBase,
       callbackPath: ssoCallbackPath,
     });
@@ -49,9 +45,12 @@ export async function handleStartSso(
 }
 
 /** POST /api/v1/auth/sso/exchange { ticket, verifier } → 회원 세션(토큰 쌍) */
-export async function handleExchangeTicket(raw: unknown, sso: SsoService): Promise<ApiResult<SessionDto>> {
+export async function handleExchangeTicket(
+  raw: { ticket: string; verifier: string },
+  sso: SsoService,
+): Promise<ApiResult<SessionDto>> {
   try {
-    return { status: 200, body: toDto(await sso.exchange({ ticket: field(raw, "ticket"), verifier: field(raw, "verifier") })) };
+    return { status: 200, body: toDto(await sso.exchange({ ticket: raw.ticket, verifier: raw.verifier })) };
   } catch (e) {
     throw toApiError(e);
   }

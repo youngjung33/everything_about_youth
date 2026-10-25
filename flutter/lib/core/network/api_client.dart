@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import 'api_error_code.dart';
@@ -137,7 +138,12 @@ class ApiClient {
     } on TimeoutException {
       throw const ApiException('서버 응답이 너무 늦습니다. 잠시 후 다시 시도해 주세요.', code: ApiErrorCode.timeout);
     } on http.ClientException {
-      throw ApiException('서버에 연결할 수 없습니다. 네트워크와 서버 주소(${_baseUri.origin})를 확인해 주세요.', code: ApiErrorCode.networkError);
+      throw ApiException(
+        kReleaseMode
+            ? '서버에 연결할 수 없습니다. 네트워크 연결을 확인해 주세요.'
+            : '서버에 연결할 수 없습니다. 네트워크와 서버 주소(${_baseUri.origin})를 확인해 주세요.',
+        code: ApiErrorCode.networkError,
+      );
     }
   }
 
@@ -164,10 +170,9 @@ class ApiClient {
     return decoded;
   }
 
-  /// 오류 응답 본문을 [ApiException] 으로 바꾼다.
-  /// 통합 템플릿 `{ error: { code, message, requestId, details } }` 을 읽고, 예전 형식 `{ error: "문장" }` 도 받아 준다.
+  /// 오류 응답 본문을 [ApiException] 으로 바꾼다. 서버 통합 템플릿만 인정한다.
   static ApiException parseError(Object? decoded, int statusCode, {String? retryAfterHeader}) {
-    final fallback = '요청에 실패했습니다. (HTTP $statusCode)';
+    final fallback = '요청에 실패했습니다. 잠시 후 다시 시도해 주세요.';
     final error = decoded is Map<String, dynamic> ? decoded['error'] : null;
 
     if (error is Map) {
@@ -177,22 +182,20 @@ class ApiClient {
       };
       final seconds = details['retryAfterSeconds'];
       final retryAfter = seconds is num ? seconds : int.tryParse(retryAfterHeader ?? '');
+      final code = error['code'];
+      final message = error['message'];
+      final knownCode = code is String && ApiErrorCode.serverCodes.contains(code);
       return ApiException(
-        error['message'] is String && (error['message'] as String).isNotEmpty ? error['message'] as String : fallback,
+        message is String && message.isNotEmpty ? message : fallback,
         statusCode: statusCode,
-        code: error['code'] is String ? error['code'] as String : ApiErrorCode.unknown,
+        code: knownCode ? code as String : ApiErrorCode.badResponse,
         requestId: error['requestId'] is String ? error['requestId'] as String : null,
         details: details,
         retryAfter: retryAfter == null ? null : Duration(seconds: retryAfter.toInt()),
       );
     }
 
-    final retryAfter = int.tryParse(retryAfterHeader ?? '');
-    return ApiException(
-      error is String ? error : fallback,
-      statusCode: statusCode,
-      retryAfter: retryAfter == null ? null : Duration(seconds: retryAfter),
-    );
+    return ApiException(fallback, statusCode: statusCode, code: ApiErrorCode.badResponse);
   }
 
   void close() => _http.close();

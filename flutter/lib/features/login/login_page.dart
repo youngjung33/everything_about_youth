@@ -11,6 +11,7 @@ import '../../core/network/api_error_code.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_fonts.dart';
 import '../../core/widgets/app_logo.dart';
+import '../legal/legal_paths.dart';
 
 /// 로그인 화면. 자체 회원가입/로그인은 없고, 소셜 로그인과 "비회원으로 시작하기"만 있다.
 ///
@@ -144,6 +145,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 '로그인해도 이메일이나 이름은 받지 않아요. 로그인 업체가 알려 주는 고유 번호만 저장합니다.',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 8,
+                children: [
+                  TextButton(onPressed: () => context.push(LegalPaths.privacy), child: const Text('개인정보 처리방침')),
+                  TextButton(onPressed: () => context.push(LegalPaths.terms), child: const Text('이용약관')),
+                ],
               ),
             ],
           ),

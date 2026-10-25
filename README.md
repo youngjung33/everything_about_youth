@@ -60,8 +60,10 @@ cd next    && npm test && npm run typecheck && npm run lint
 cd flutter && flutter analyze && flutter test
 # 서버 DTO ↔ 앱 fromJson 계약 (contracts/api/*.json)
 cd next    && npm run contracts:sync && npm test -- src/contracts/api-contract.test.ts
-cd flutter && flutter test test/contracts/api_contract_test.dart
+cd flutter && flutter test test/contracts/
 ```
+
+릴리스·버전 올리는 순서는 [docs/RELEASE.md](docs/RELEASE.md) 를 보세요. 서버 헬스는 `GET /api/v1/health` (`ready`, `appEnv`, DB 확인).
 
 ## 앱 구조 (`flutter/lib`)
 

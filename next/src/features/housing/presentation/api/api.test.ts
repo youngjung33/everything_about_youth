@@ -300,10 +300,9 @@ describe("관심 공고 API", () => {
     expect((await handleListSavedIds("u1", deps)).body.ids).toEqual([]);
   });
 
-  it("없는 공고는 NOTICE_NOT_FOUND, 합치기는 ids 가 필요하다", async () => {
+  it("없는 공고는 NOTICE_NOT_FOUND, 합치기는 존재하는 id 만 남긴다", async () => {
     const { deps, notices } = setup([draft()]);
     await expect(handleSaveNotice("u1", "nope", deps)).rejects.toMatchObject({ code: "NOTICE_NOT_FOUND" });
-    await expect(handleMergeSaved("u1", {}, deps)).rejects.toMatchObject({ code: "BAD_REQUEST" });
     const merged = (await handleMergeSaved("u1", { ids: [notices[0]!.id, "nope"] }, deps)).body;
     expect(merged.ids).toEqual([notices[0]!.id]);
   });

@@ -13,22 +13,15 @@ describe("오류 코드 표", () => {
     }
   });
 
-  it("앱이 의존하는 코드가 빠지지 않았다 (앱의 api_error_code.dart 와 같은 이름)", () => {
-    for (const code of [
-      "BAD_REQUEST",
-      "NOT_FOUND",
-      "NOTICE_NOT_FOUND",
-      "AUTH_REQUIRED",
-      "AUTH_TOKEN_EXPIRED",
-      "AUTH_TOKEN_INVALID",
-      "AUTH_REFRESH_INVALID",
-      "API_VERSION_UNSUPPORTED",
-      "APP_UPDATE_REQUIRED",
-      "RATE_LIMITED",
-      "SERVICE_DISABLED",
-      "INTERNAL_ERROR",
-    ]) {
-      expect(ERROR_CODES, code).toHaveProperty(code);
+  it("서버 오류 코드는 contracts/api/error-codes.json 과 같다", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { fileURLToPath } = await import("node:url");
+    const path = await import("node:path");
+    const file = path.join(path.dirname(fileURLToPath(import.meta.url)), "../../../../../contracts/api/error-codes.json");
+    const contract = JSON.parse(readFileSync(file, "utf8")) as { server: { code: string; status: number; message: string }[] };
+    expect(contract.server.map((e) => e.code).sort()).toEqual(Object.keys(ERROR_CODES).sort());
+    for (const entry of contract.server) {
+      expect(ERROR_CODES[entry.code as keyof typeof ERROR_CODES]).toEqual({ status: entry.status, message: entry.message });
     }
   });
 });

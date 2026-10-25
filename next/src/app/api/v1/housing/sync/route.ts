@@ -1,7 +1,6 @@
-import { ApiError } from "@/common/presentation/api/errors";
 import { assertOperator } from "@/common/presentation/api/operator";
 import { apiHandler, respond } from "@/common/presentation/api/respond";
-import { parseSourceList } from "@/features/housing/infrastructure/config";
+import { sourcesFromSyncQuery } from "@/features/housing/presentation/api/sync-query";
 import { getHousingContainer } from "@/features/housing/infrastructure/container";
 
 export const dynamic = "force-dynamic";
@@ -14,14 +13,7 @@ export const runtime = "nodejs";
 export const POST = apiHandler(async (request) => {
   assertOperator(request);
 
-  let ids: ReturnType<typeof parseSourceList>;
-  try {
-    ids = parseSourceList(new URL(request.url).searchParams.get("source") ?? undefined);
-  } catch (e) {
-    // 잘못된 source 값은 요청자의 실수이므로 이유를 알려 준다. (입력 검증 문구라 내부 정보가 아니다)
-    throw new ApiError("BAD_REQUEST", { message: e instanceof Error ? e.message : undefined });
-  }
-
+  const ids = sourcesFromSyncQuery(new URL(request.url).searchParams);
   const results = await getHousingContainer().syncNotices.execute(ids.length > 0 ? ids : undefined);
   return respond({ status: 200, body: { results } });
 });

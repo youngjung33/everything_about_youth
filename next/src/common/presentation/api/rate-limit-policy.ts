@@ -1,5 +1,5 @@
 import type { RateLimitPolicy, RateLimitResult } from "@/common/application/rate-limit";
-import { APP_CONFIG_PATH, AUTH_ENTRY_PATHS, OPERATOR_API_PATHS, type AuthorizationResult } from "./auth";
+import { APP_CONFIG_PATH, AUTH_ENTRY_PATHS, HEALTH_PATH, OPERATOR_API_PATHS, type AuthorizationResult } from "./auth";
 
 const MINUTE = 60_000;
 
@@ -36,7 +36,7 @@ export function chooseRateLimit(pathname: string, auth: AuthorizationResult, ip:
   const byIp = (policy: RateLimitPolicy): RateLimitTarget => ({ policy, key: `ip:${ip}` });
 
   if (AUTH_ENTRY_PATHS.includes(pathname)) return byIp(RATE_LIMITS.auth);
-  if (pathname === APP_CONFIG_PATH) return byIp(RATE_LIMITS.appConfig);
+  if (pathname === APP_CONFIG_PATH || pathname === HEALTH_PATH) return byIp(RATE_LIMITS.appConfig);
   if (OPERATOR_API_PATHS.includes(pathname)) return byIp(RATE_LIMITS.operator);
   if (!auth.ok || !auth.clientId) return byIp(RATE_LIMITS.anonymous);
   return { policy: RATE_LIMITS.api, key: `device:${auth.clientId}` };

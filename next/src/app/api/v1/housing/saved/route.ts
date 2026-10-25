@@ -1,5 +1,7 @@
 import { requireMemberUserId } from "@/common/presentation/api/auth";
+import { mergeSavedBodySchema } from "@/common/presentation/api/schemas/housing-schemas";
 import { apiHandler, respond } from "@/common/presentation/api/respond";
+import { parseJsonBody } from "@/common/presentation/api/validate";
 import { getAuthClientStore } from "@/common/infrastructure/auth/auth-container";
 import { getHousingContainer } from "@/features/housing/infrastructure/container";
 import { handleListSaved, handleMergeSaved } from "@/features/housing/presentation/api/handlers";
@@ -19,5 +21,6 @@ export const GET = apiHandler(async (request) => {
 export const PUT = apiHandler(async (request) => {
   await assertHousingEnabled();
   const userId = await requireMemberUserId(request, getAuthClientStore());
-  return respond(await handleMergeSaved(userId, await request.json(), getHousingContainer()));
+  const body = await parseJsonBody(request, mergeSavedBodySchema);
+  return respond(await handleMergeSaved(userId, body, getHousingContainer()));
 });

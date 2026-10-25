@@ -137,14 +137,10 @@ export async function handleUnsaveNotice(
 /** PUT /api/v1/housing/saved  { ids: string[] }  — 비회원 기기 목록을 회원에 합친다 */
 export async function handleMergeSaved(
   userId: string,
-  raw: unknown,
+  body: { ids: string[] },
   deps: Pick<HousingApiDeps, "manageSavedNotices">,
 ): Promise<ApiResult<SavedIdsDto>> {
-  const ids = Array.isArray((raw as { ids?: unknown } | null)?.ids)
-    ? (raw as { ids: unknown[] }).ids.filter((v): v is string => typeof v === "string")
-    : null;
-  if (!ids) throw new ApiError("BAD_REQUEST", { message: "ids 배열이 필요합니다." });
-  return { status: 200, body: { ids: await deps.manageSavedNotices.merge(userId, ids) } };
+  return { status: 200, body: { ids: await deps.manageSavedNotices.merge(userId, body.ids) } };
 }
 
 /** GET /api/v1/housing/notices/:id/calendar  — 접수 마감 ICS (캘린더 앱이 연다) */

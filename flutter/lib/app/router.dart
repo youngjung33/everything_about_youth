@@ -8,6 +8,10 @@ import '../core/layout/app_scaffold.dart';
 import '../core/layout/app_top_bar.dart';
 import '../core/layout/centered_scroll_view.dart';
 import '../features/home/home_page.dart';
+import '../features/legal/legal_paths.dart';
+import '../features/legal/open_source_licenses_page.dart';
+import '../features/legal/privacy_policy_page.dart';
+import '../features/legal/terms_page.dart';
 import '../features/login/login_page.dart';
 import '../features/splash/splash_page.dart';
 import '../features/unavailable/unavailable_page.dart';
@@ -64,6 +68,9 @@ String? bootstrapRedirect({required bool ready, required Uri uri}) {
 String? authRedirect({required AuthMode mode, required Uri uri}) {
   final atLogin = uri.path == loginPath;
 
+  if (uri.path == LegalPaths.privacy || uri.path == LegalPaths.terms || uri.path == LegalPaths.licenses) {
+    return null;
+  }
   if (mode == AuthMode.none) {
     return atLogin ? null : loginLocation(from: uri.toString());
   }
@@ -144,6 +151,9 @@ GoRouter buildRouter({
         builder: (context, state, child) => AppShell(location: state.uri.path, child: child),
         routes: [
           GoRoute(path: '/', builder: (context, state) => const HomePage()),
+          GoRoute(path: LegalPaths.privacy, builder: (context, state) => const PrivacyPolicyPage()),
+          GoRoute(path: LegalPaths.terms, builder: (context, state) => const TermsPage()),
+          GoRoute(path: LegalPaths.licenses, builder: (context, state) => const OpenSourceLicensesPage()),
           GoRoute(
             path: '$unavailableBase/:id',
             builder: (context, state) => UnavailablePage(featureId: state.pathParameters['id']!),

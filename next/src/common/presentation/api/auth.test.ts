@@ -137,12 +137,6 @@ describe("세션 핸들러", () => {
     expect(await handleRefresh({ refreshToken: "r" }, fakeAuth())).toEqual({ status: 200, body: sessionTokens });
   });
 
-  it("handleRefresh: 본문이 이상하면 BAD_REQUEST", async () => {
-    for (const body of [undefined, null, {}, { refreshToken: 1 }, { refreshToken: "" }, "x"]) {
-      await expect(handleRefresh(body, fakeAuth())).rejects.toMatchObject({ code: "BAD_REQUEST" });
-    }
-  });
-
   it("handleRefresh: 만료/위조/폐기는 모두 같은 AUTH_REFRESH_INVALID", async () => {
     const cases = [new InvalidTokenError("expired"), new InvalidTokenError("invalid"), new AuthError("invalid_refresh", "x")];
     for (const err of cases) {

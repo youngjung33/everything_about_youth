@@ -180,6 +180,7 @@ API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등�
 | `PUT /housing/saved` | **회원 전용.** 본문 `{ "ids": string[] }`. 비회원 기기 목록을 회원 목록에 합친다. 없는 공고는 건너뛰고, 상한(100)을 넘기면 거기서 멈춘다 |
 | `GET /features` | 서비스 켜짐/꺼짐 `{ "features": [{ "id": "housing", "enabled": true }] }`. 앱이 시작할 때 받아 꺼진 서비스를 숨깁니다. 캐시하지 않습니다. |
 | `GET /app-config` | **토큰 없이** 호출. `{ api: { version }, update: { status: none｜optional｜required, minVersion, latestVersion, storeUrl, message } }`. 앱이 시작할 때 강제 업데이트인지 묻습니다. |
+| `GET /health` | **토큰 없이** 호출. `{ status: "ok", ready, appEnv, checks: { database } }`. `ready: false` 이면 HTTP 503 (DB 미준비). 배포·로드밸런서 프로브용. |
 | `POST /auth/session` | **토큰 없이** 호출. 서버가 기기 id 를 만들어 토큰 쌍을 줍니다. `{ tokenType, accessToken, accessExpiresIn, refreshToken, refreshExpiresIn }` (만료는 남은 초) |
 | `POST /auth/refresh` | **토큰 없이** 호출. 본문 `{ "refreshToken": "..." }` → 새 토큰 쌍. 만료·위조·폐기·모르는 기기는 모두 401 `AUTH_REFRESH_INVALID`. 응답의 `member` 는 회원이면 `true` |
 | `GET /auth/providers` | **토큰 없이** 호출. 로그인 화면용 `{ providers: [{ id, name, enabled }] }`. Google·Apple·네이버·카카오 **네 곳을 항상** 주고, 서버에 설정이 있는 곳만 `enabled: true` |
@@ -189,7 +190,7 @@ API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등�
 | `POST /auth/logout` | 토큰 필요. 이 세션을 폐기합니다. (비회원 세션도 가능) |
 | `POST /auth/account/delete` | 토큰 필요. **회원 탈퇴**. 로그인 정보와 그 회원의 모든 세션을 지웁니다. 비회원 세션이면 403 `LOGIN_REQUIRED` |
 
-`/auth/session`, `/auth/refresh`, `/auth/providers`, `/auth/sso/*` 와 `/app-config` 를 뺀 나머지는 모두 `Authorization: Bearer <accessToken>` 이 있어야 합니다. (`/auth/logout`, `/auth/account/delete` 도 토큰이 필요합니다)
+`/auth/session`, `/auth/refresh`, `/auth/providers`, `/auth/sso/*`, `/app-config`, `/health` 를 뺀 나머지는 모두 `Authorization: Bearer <accessToken>` 이 있어야 합니다. (`/auth/logout`, `/auth/account/delete` 도 토큰이 필요합니다)
 
 ### 요청이 지나는 순서 (`src/proxy.ts` → `runGateway`)
 

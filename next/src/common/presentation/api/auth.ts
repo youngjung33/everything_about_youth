@@ -33,13 +33,16 @@ export const AUTH_ENTRY_PATHS: readonly string[] = [
 /** 앱이 가장 먼저 부르는 설정. 세션보다 먼저 확인할 수 있어야 해서 공개다. */
 export const APP_CONFIG_PATH = apiPath("/app-config");
 
+/** 생존·준비 상태. 인증·앱 최소 버전 검사에서 제외한다. */
+export const HEALTH_PATH = apiPath("/health");
+
 /**
  * 토큰 없이 부를 수 있는 API.
  *
  * `/api/v1/housing/sync` 는 여기에 두지 않았다. 앱용 API 가 아니라 운영자용 수집 트리거이고,
  * 라우트에서 `X-Operator-Token`(OPERATOR_TOKEN)으로 따로 검사한다. (README 의 "인증" 절 참고)
  */
-export const PUBLIC_API_PATHS: readonly string[] = [...AUTH_ENTRY_PATHS, APP_CONFIG_PATH];
+export const PUBLIC_API_PATHS: readonly string[] = [...AUTH_ENTRY_PATHS, APP_CONFIG_PATH, HEALTH_PATH];
 
 /** 앱이 쓰는 JWT 보호 대상이 아닌 운영자용 경로 */
 export const OPERATOR_API_PATHS: readonly string[] = [apiPath("/housing/sync")];
@@ -119,16 +122,9 @@ export async function handleStartSession(auth: AuthService): Promise<ApiResult<S
 }
 
 /** POST /api/v1/auth/refresh  { refreshToken } — 액세스 토큰이 만료되면 새 토큰 쌍을 받는다. */
-export async function handleRefresh(rawBody: unknown, auth: AuthService): Promise<ApiResult<SessionDto>> {
-  const refreshToken =
-    typeof rawBody === "object" && rawBody !== null && "refreshToken" in rawBody
-      ? (rawBody as { refreshToken: unknown }).refreshToken
-      : undefined;
-  if (typeof refreshToken !== "string" || refreshToken.length === 0) {
-    throw new ApiError("BAD_REQUEST", { message: "refreshToken 이 필요합니다." });
-  }
+export async function handleRefresh(body: { refreshToken: string }, auth: AuthService): Promise<ApiResult<SessionDto>> {
   try {
-    return { status: 200, body: toDto(await auth.refresh(refreshToken)) };
+    return { status: 200, body: toDto(await auth.refresh(body.refreshToken)) };
   } catch (e) {
     // 만료/위조/폐기/알 수 없는 기기는 같은 응답으로 돌려준다. (앱은 새 세션을 시작하면 된다)
     if (e instanceof InvalidTokenError || e instanceof AuthError) throw new ApiError("AUTH_REFRESH_INVALID");

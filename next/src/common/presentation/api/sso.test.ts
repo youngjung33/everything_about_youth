@@ -58,22 +58,8 @@ describe("handleStartSso", () => {
     expect((received as { callbackPath: (p: string) => string }).callbackPath("kakao")).toBe("/api/v1/auth/sso/callback/kakao");
   });
 
-  it("본문이 객체가 아니어도 죽지 않고 서비스의 검증에 맡긴다", async () => {
-    let received: unknown;
-    const sso = fakeSso({
-      start: async (input: unknown) => {
-        received = input;
-        throw new SsoError("invalid_request", "provider 가 올바르지 않습니다.");
-      },
-    });
-    for (const raw of [null, undefined, "x", 5, []]) {
-      const e = await errorOf(handleStartSso(raw, sso, "https://api.test"));
-      expect(e.code).toBe("BAD_REQUEST");
-    }
-    expect(received).toMatchObject({ provider: undefined });
-  });
-
   it("SsoError 를 통합 오류 코드로 바꾼다", async () => {
+    const body = { provider: "google", redirectUri: "https://app/callback", codeChallenge: "c".repeat(43) };
     const cases: [ConstructorParameters<typeof SsoError>[0], string][] = [
       ["provider_unavailable", "SSO_PROVIDER_UNAVAILABLE"],
       ["invalid_request", "BAD_REQUEST"],
@@ -85,18 +71,19 @@ describe("handleStartSso", () => {
           throw new SsoError(code, "m");
         },
       });
-      expect((await errorOf(handleStartSso({}, sso, "https://api.test"))).code).toBe(expected);
+      expect((await errorOf(handleStartSso(body, sso, "https://api.test"))).code).toBe(expected);
     }
   });
 
   it("예상하지 못한 오류는 그대로 올린다 (상위에서 500 으로 처리)", async () => {
+    const body = { provider: "google", redirectUri: "https://app/callback", codeChallenge: "c".repeat(43) };
     const boom = new Error("boom");
     const sso = fakeSso({
       start: async () => {
         throw boom;
       },
     });
-    await expect(handleStartSso({}, sso, "https://api.test")).rejects.toBe(boom);
+    await expect(handleStartSso(body, sso, "https://api.test")).rejects.toBe(boom);
   });
 });
 
@@ -113,7 +100,9 @@ describe("handleExchangeTicket", () => {
         throw new SsoError("invalid_ticket", "m");
       },
     });
-    expect((await errorOf(handleExchangeTicket({}, sso))).code).toBe("SSO_TICKET_INVALID");
+    expect(
+      (await errorOf(handleExchangeTicket({ ticket: "t", verifier: "v".repeat(43) }, sso))).code,
+    ).toBe("SSO_TICKET_INVALID");
   });
 });
 

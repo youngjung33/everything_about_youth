@@ -1,6 +1,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { CLIENT_ONLY_ERROR_CODES, listServerErrorCodes } from "../src/common/presentation/api/error-catalog";
 import {
   contractHousingMetaDto,
   contractNoticeDetailDto,
@@ -16,6 +17,7 @@ const files: Record<string, unknown> = {
   "housing-notice-detail.json": contractNoticeDetailDto(),
   "housing-meta.json": contractHousingMetaDto(),
   "auth-session.json": contractSessionDto(),
+  "error-codes.json": { server: listServerErrorCodes(), clientOnly: CLIENT_ONLY_ERROR_CODES },
 };
 
 mkdirSync(outDir, { recursive: true });

@@ -3,7 +3,7 @@ import { evaluateUpdateFromHeaders, type AppPolicy } from "@/common/application/
 import type { TokenService } from "@/common/application/auth";
 import type { RateLimiter } from "@/common/application/rate-limit";
 import { formatAppVersion } from "@/common/domain/app-version";
-import { APP_CONFIG_PATH, OPERATOR_API_PATHS, authorizeApiRequest } from "./auth";
+import { APP_CONFIG_PATH, HEALTH_PATH, OPERATOR_API_PATHS, authorizeApiRequest } from "./auth";
 import { corsHeaders } from "./cors";
 import { errorResponse, type ErrorCode } from "./errors";
 import { chooseRateLimit, clientIp, rateLimitHeaders } from "./rate-limit-policy";
@@ -55,7 +55,7 @@ export async function runGateway(request: NextRequest, deps: GatewayDeps): Promi
   if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: common });
 
   // 3. 앱 버전 (앱 설정 확인은 막지 않는다. 막힌 앱이 업데이트 안내를 받아야 하므로)
-  if (!operator && pathname !== APP_CONFIG_PATH) {
+  if (!operator && pathname !== APP_CONFIG_PATH && pathname !== HEALTH_PATH) {
     const decision = evaluateUpdateFromHeaders(
       { version: request.headers.get("x-app-version"), platform: request.headers.get("x-app-platform") },
       deps.policy,

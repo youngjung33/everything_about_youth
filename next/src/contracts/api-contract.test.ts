@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { listServerErrorCodes } from "@/common/presentation/api/error-catalog";
 import {
   contractHousingMetaDto,
   contractNoticeDetailDto,
@@ -30,5 +31,10 @@ describe("API 계약 JSON (서버 DTO ↔ contracts/api)", () => {
 
   it("auth-session.json", () => {
     expect(contractSessionDto()).toEqual(readContract("auth-session.json"));
+  });
+
+  it("error-codes.json", () => {
+    const contract = readContract("error-codes.json") as { server: unknown[] };
+    expect(listServerErrorCodes()).toEqual(contract.server);
   });
 });
