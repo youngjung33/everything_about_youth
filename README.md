@@ -159,8 +159,14 @@ features/
 
 - **API 버전**: 모든 경로가 `/api/v1/...` 입니다. 앱의 `ApiClient` 가 접두사(`core/network/api_version.dart` 의 `kApiPrefix`)를 붙이므로 서비스 코드는 `/housing/notices` 처럼 버전 없이 씁니다. 호환이 깨지는 변경이 생기면 서버에 `v2` 를 만들고 앱의 `kApiPrefix` 만 바꿉니다.
 - **오류 코드**: 서버의 모든 오류는 `{ "error": { "code", "message", "requestId", "details" } }` 한 가지 모양입니다. 앱은 `ApiException`(`code`, `message`, `requestId`, `retryAfter`)으로 받고, 코드는 `core/network/api_error_code.dart` 에 있습니다. `message` 는 그대로 화면에 보여줘도 되는 한글입니다. 서버까지 못 간 실패(연결·시간 초과·해석 불가)는 앱이 `NETWORK_ERROR`/`TIMEOUT`/`BAD_RESPONSE` 코드를 붙입니다.
-- **강제 업데이트**: 모든 요청에 `X-App-Version`/`X-App-Platform` 이 실립니다(`package_info_plus`). 서버의 `APP_MIN_VERSION` 보다 낮은 모바일 앱은 426 을 받고, 앱 전체가 **업데이트 화면**(`features/update_required/`)으로 바뀝니다. 시작할 때 `GET /api/v1/app-config` 로 미리 확인하고(서버에 닿지 못하면 막지 않음), 실행 중에 서버가 최소 버전을 올려도 다음 API 호출에서 같은 화면이 됩니다. 업데이트 화면에서는 헤더·메뉴로 우회할 수 없고 뒤로 가기도 막힙니다. 서버가 `API v1` 을 닫아도(410) 같은 화면입니다.
+- **강제·선택 업데이트**: 모든 요청에 `X-App-Version`/`X-App-Platform` 이 실립니다(`package_info_plus`). 서버의 `APP_MIN_VERSION` 보다 낮은 모바일 앱은 426 을 받고, 앱 전체가 **업데이트 화면**(`features/update_required/`)으로 바뀝니다. `APP_LATEST_VERSION` 등으로 `optional` 이면 **상단 배너**(`core/update/optional_update_banner.dart`)만 보이고 앱은 계속 쓸 수 있습니다. 시작할 때 `GET /api/v1/app-config` 로 미리 확인하고(서버에 닿지 못하면 막지 않음), 실행 중에 서버가 최소 버전을 올려도 다음 API 호출에서 같은 화면이 됩니다. 업데이트 화면에서는 헤더·메뉴로 우회할 수 없고 뒤로 가기도 막힙니다. 서버가 `API v1` 을 닫아도(410) 같은 화면입니다.
 - **요청 제한**: 기기별 분당 120회 등(서버 설정). 넘으면 429 `RATE_LIMITED` 와 `retryAfter` 를 받습니다. 앱이 자동으로 재시도하지는 않습니다.
+
+### 관측·원격 설정 (2차 베이스)
+
+- **크래시**: `core/telemetry/crash_reporter.dart` — 1차는 noop, `installCrashReporter` 로 교체. `installGlobalErrorHandlers()` 가 여기로 보냅니다. 2차에 Firebase Crashlytics 구현을 `main()` 에서 `WidgetsFlutterBinding` 직후 연결합니다.
+- **Remote Config**: `core/telemetry/remote_config.dart` — 1차는 noop. 기능 켜짐·강제 업데이트는 서버 `GET /features`, `GET /app-config` 가 진실입니다. 2차에 Firebase Remote Config 를 `installRemoteConfig` 로 붙일 때만 보조로 씁니다.
+- **DB·Redis (서버 2차)**: SQLite 1차. `DB_DRIVER=supabase` + `SUPABASE_DATABASE_URL` 은 Postgres만(Supabase Auth 없음). `REDIS_URL` 은 분산 rate limit. 지금 값을 넣으면 시작 시 2차 안내 오류 — [next/README.md](next/README.md#2차supabase-postgres--redis-전환-가이드).
 
 ### 글꼴 크기 상한
 

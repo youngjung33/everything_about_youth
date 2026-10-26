@@ -1,19 +1,19 @@
 import { consoleLogger, systemClock, type Clock, type Logger } from "@/common/application/system";
 import { loadConfig, type AppConfig } from "./config/env";
-import { openSqlite, runMigrations, type SqliteConnection } from "./persistence/sqlite/client";
+import { createPersistence, requireSqlite, type AppPersistence } from "./persistence/create-persistence";
+import type { SqliteConnection } from "./persistence/sqlite/client";
 
 /**
  * 모든 섹션이 공유하는 의존성(설정, 시계, 로거, DB 연결).
  * 각 섹션(features/*)의 container 가 이것을 받아 자기 리포지토리/유스케이스를 조립한다.
  *
- * 2차에 Supabase 를 붙일 때는 DB_DRIVER=supabase 분기에서 연결을 만들고,
- * 각 섹션 container 가 그 연결로 Postgres 리포지토리를 조립하도록 바꾼다.
+ * 2차: `persistence.driver === "supabase"` 일 때 Postgres 리포지토리를 `create-stores.ts` 에서 선택한다.
  */
 export interface CommonContainer {
   config: AppConfig;
   clock: Clock;
   logger: Logger;
-  sqlite: SqliteConnection;
+  persistence: AppPersistence;
   close(): void;
 }
 
@@ -21,21 +21,29 @@ export interface CommonOverrides {
   config?: Partial<AppConfig>;
   logger?: Logger;
   clock?: Clock;
-  sqlite?: SqliteConnection;
+  persistence?: AppPersistence;
 }
 
 export function createCommonContainer(overrides: CommonOverrides = {}): CommonContainer {
   const config = { ...loadConfig(), ...overrides.config };
   const logger = overrides.logger ?? consoleLogger;
   const clock = overrides.clock ?? systemClock;
+  const persistence = overrides.persistence ?? createPersistence(config);
 
-  if (config.dbDriver !== "sqlite") {
-    throw new Error("DB_DRIVER=supabase 는 2차 개발 범위입니다. 1차에서는 sqlite 만 지원합니다.");
-  }
-  const sqlite = overrides.sqlite ?? openSqlite(config.sqlitePath);
-  runMigrations(sqlite.db);
+  return {
+    config,
+    clock,
+    logger,
+    persistence,
+    close: () => {
+      if (persistence.driver === "sqlite") persistence.sqlite.close();
+    },
+  };
+}
 
-  return { config, clock, logger, sqlite, close: () => sqlite.close() };
+/** 1차 SQLite 전용. 2차 Postgres 경로에서는 호출하지 않는다. */
+export function sqliteOf(common: CommonContainer): SqliteConnection {
+  return requireSqlite(common.persistence);
 }
 
 const globalKey = Symbol.for("everything_about_youth.common-container");

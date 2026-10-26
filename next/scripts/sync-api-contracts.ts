@@ -3,6 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { CLIENT_ONLY_ERROR_CODES, listServerErrorCodes } from "../src/common/presentation/api/error-catalog";
 import {
+  contractAppConfigDto,
+  contractFeaturesDto,
   contractHousingMetaDto,
   contractNoticeDetailDto,
   contractNoticeListDto,
@@ -17,6 +19,8 @@ const files: Record<string, unknown> = {
   "housing-notice-detail.json": contractNoticeDetailDto(),
   "housing-meta.json": contractHousingMetaDto(),
   "auth-session.json": contractSessionDto(),
+  "app-config.json": contractAppConfigDto(),
+  "features.json": contractFeaturesDto(),
   "error-codes.json": { server: listServerErrorCodes(), clientOnly: CLIENT_ONLY_ERROR_CODES },
 };
 

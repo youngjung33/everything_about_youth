@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../network/api_client.dart';
+import 'app_update_info_holder.dart';
 import 'update_requirement.dart';
 
 /// 앱을 업데이트해야만 쓸 수 있는 상태인지. `null` 이면 쓸 수 있고, 값이 있으면 라우터가 업데이트 화면으로 막는다.
@@ -26,9 +27,10 @@ class UpdateGate extends Notifier<UpdateRequirement?> {
   ///
   /// 서버에 닿지 못하거나 응답이 이상하면 **막지 않는다**(fail-open). 서버가 죽었다는 이유로 모든 사용자를 막으면 안 되고,
   /// 진짜 차단은 어차피 모든 API 요청에서 서버가 한다.
-  Future<void> check(AppUpdateRemote remote, {required Duration timeout}) async {
+  Future<void> check(AppUpdateRemote remote, {required Duration timeout, AppUpdateInfoHolder? store}) async {
     try {
       final info = await remote.fetch().timeout(timeout);
+      store?.set(info);
       if (info.status == UpdateStatus.required) require(info.toRequirement());
     } on ApiException catch (e) {
       if (e.isUpdateRequired) requireFrom(e);

@@ -1,5 +1,10 @@
 import type { Clock } from "@/common/application/system";
 import type { SessionDto } from "@/common/presentation/api/auth";
+import type { AppConfigDto } from "@/common/presentation/api/app-config";
+import { loadAppPolicy } from "@/common/infrastructure/config/app-policy-config";
+import { handleGetAppConfig } from "@/common/presentation/api/app-config";
+import type { FeaturesDto } from "@/common/presentation/api/features";
+import { HOUSING_FEATURE_ID } from "@/features/housing/feature";
 import { createNotice } from "@/features/housing/domain/identity";
 import type { NoticeDraft } from "@/features/housing/domain/notice";
 import {
@@ -86,6 +91,14 @@ export function contractHousingMetaDto(): HousingMetaDto {
 }
 
 /** 토큰 값은 예시. 앱은 필드 이름·타입만 맞으면 된다. */
+export function contractAppConfigDto(): AppConfigDto {
+  return handleGetAppConfig({ version: "1.0.0", platform: "android" }, loadAppPolicy({})).body;
+}
+
+export function contractFeaturesDto(): FeaturesDto {
+  return { features: [{ id: HOUSING_FEATURE_ID, enabled: true }] };
+}
+
 export function contractSessionDto(): SessionDto {
   return {
     tokenType: "Bearer",

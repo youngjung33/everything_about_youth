@@ -4,8 +4,8 @@ import { getCommonContainer } from "../container";
 import { loadAuthConfig } from "../config/auth-config";
 import { loadGuestSessionConfig } from "../config/guest-session-config";
 import { loadSsoConfig, type SsoConfig } from "../config/sso-config";
-import { SqliteAuthClientStore } from "../persistence/sqlite/sqlite-auth-client-store";
-import { SqliteSsoTicketStore, SqliteUserStore } from "../persistence/sqlite/sqlite-user-store";
+import { createAuthClientStore, createSsoTicketStore, createUserStore } from "../persistence/create-stores";
+import type { SqliteAuthClientStore } from "../persistence/sqlite/sqlite-auth-client-store";
 import { JoseSsoStateCodec } from "./sso/jose-sso-state-codec";
 import { createSsoProviders } from "./sso/providers";
 import { createTokenService } from "./token-service-factory";
@@ -22,7 +22,7 @@ type GlobalWithAuth = typeof globalThis & {
 /** 세션(기기) 기록. 라우트가 "이 세션이 어느 회원인가"를 물어볼 때 쓴다. */
 export function getAuthClientStore(): SqliteAuthClientStore {
   const g = globalThis as GlobalWithAuth;
-  if (!g[clientsKey]) g[clientsKey] = new SqliteAuthClientStore(getCommonContainer().sqlite.db);
+  if (!g[clientsKey]) g[clientsKey] = createAuthClientStore(getCommonContainer().persistence) as SqliteAuthClientStore;
   return g[clientsKey];
 }
 
@@ -60,8 +60,8 @@ export function getSso(): { service: SsoService; config: SsoConfig } {
       service: new SsoService({
         providers,
         state: new JoseSsoStateCodec(auth.secret, auth.issuer, common.clock),
-        users: new SqliteUserStore(common.sqlite.db),
-        tickets: new SqliteSsoTicketStore(common.sqlite.db),
+        users: createUserStore(common.persistence),
+        tickets: createSsoTicketStore(common.persistence),
         clients: getAuthClientStore(),
         auth: getAuthService(),
         clock: common.clock,

@@ -4,7 +4,7 @@
 
 - Next.js 16 (App Router) + TypeScript
 - 클린 아키텍처 + **섹션(feature) 단위 폴더 구조**
-- 1차 DB는 SQLite(Drizzle + better-sqlite3), 2차에 Supabase(Postgres) 전환 예정
+- 1차 DB는 SQLite(Drizzle + better-sqlite3). 2차는 Supabase **호스팅 Postgres만**(Auth/RLS 없음). Redis rate limit도 2차.
 - 로그인은 **소셜 로그인(SSO)만** — Google · Apple · 네이버 · 카카오. 자체 회원가입/로그인(아이디·비밀번호)은 없고, 로그인하지 않은 **비회원도 조회**할 수 있습니다. (아래 "소셜 로그인")
 
 ## 폴더 구조
@@ -16,8 +16,11 @@ src/
     application/               Clock, Logger 포트
     infrastructure/
       config/                  공통 환경변수(DB, 크롤러, 서비스키)
-      container.ts             공통 의존성 조립 (설정, 시계, 로거, DB 연결, 마이그레이션)
+      container.ts             공통 의존성 조립 (설정, 시계, 로거, persistence, rate limit)
+      persistence/create-persistence.ts   SQLite(1차) / Postgres(2차) 연결
+      persistence/create-stores.ts        리포지토리·스토어 조립 (2차: supabase/ 구현)
       persistence/sqlite/      SQLite 연결/마이그레이션 실행
+      persistence/supabase/    2차 Postgres 리포지토리 (미구현)
       http/                    HTTP 재시도, 공공데이터포털(data.go.kr) 파서, JSON 매핑 유틸
       crawler/                 robots.txt 준수 + 호스트별 간격 크롤링 fetcher
     presentation/              금액/날짜/D-day 포맷
@@ -75,8 +78,10 @@ DB 마이그레이션은 앱/스크립트 시작 시 자동 적용됩니다(`npm
 | 변수 | 설명 |
 | --- | --- |
 | `DATA_GO_KR_SERVICE_KEY` | 공공데이터포털 서비스키. LH·마이홈·청약홈 수집에 필요 (없으면 해당 소스는 건너뜀) |
-| `DB_DRIVER` | `sqlite`(기본) · `supabase`(2차, 미구현) |
+| `DB_DRIVER` | `sqlite`(기본) · `supabase`(2차: **Postgres 호스트만**, Auth/RLS 없음) |
 | `SQLITE_PATH` | SQLite 파일 경로 (기본 `./data/app.db`) |
+| `SUPABASE_DATABASE_URL` | 2차: `DB_DRIVER=supabase` 일 때 Postgres 연결 문자열 (지금은 설정 시 시작 오류로 2차 안내) |
+| `REDIS_URL` | 2차: 분산 rate limit (지금은 설정 시 시작 오류로 2차 안내). 1차는 `FixedWindowRateLimiter` |
 | `CRAWL_DELAY_MS` / `CRAWL_USER_AGENT` | 크롤러 호스트별 최소 간격(기본 1500) / UA |
 | `CRAWL_IGNORE_ROBOTS_HOSTS` | robots.txt 확인을 건너뛸 호스트(콤마 구분, 기본 비어 있음). 지정한 호스트에만 적용되며 UA 위장 없이 요청 간격은 유지, 실행 시 경고 로그를 남김. 사이트 이용약관 책임은 본인에게 있음 |
 | `ALLOW_WEB_SYNC` | production 에서 웹 수집 버튼/API 허용 여부 (기본 차단, `true` 로 허용) |
@@ -348,16 +353,17 @@ API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등�
 - **CORS**: gateway 가 모든 응답에 한 곳에서 붙입니다(`cors.ts`). `GET, PUT, DELETE, POST, OPTIONS` 와 헤더 `Authorization`, `Content-Type`, `X-App-Version`, `X-App-Platform` 을 허용하고, 앱이 읽는 `Retry-After`, `RateLimit-*`, `X-Request-Id` 를 노출합니다. 토큰은 쿠키가 아니라 헤더로 보내므로 `*` 출처여도 자격 증명이 새지 않지만, 허용 출처는 `API_CORS_ORIGIN`(기본 `*`)으로 배포할 때 Flutter 웹 주소로 좁히세요. 동기화(`POST /api/v1/housing/sync`)에는 CORS 를 열지 않습니다.
 - 모바일 앱(Android/iOS)은 CORS 와 무관하지만, 서버 주소는 앱 빌드 시 `--dart-define=API_BASE_URL=...` 로 지정합니다.
 
-## 2차(Supabase) 전환 가이드
+## 2차(Supabase Postgres · Redis) 전환 가이드
+
+**Supabase는 DB(Postgres) 호스트만** 쓴다. Auth·RLS·Realtime·Edge Function은 이 프로젝트 범위 밖이다. 앱은 계속 Next JSON API만 호출한다.
 
 저장소는 섹션별 포트 뒤에 있어 domain/application/화면은 바뀌지 않습니다.
 
-1. **스키마**: `features/*/infrastructure/persistence/sqlite/schema.ts` 를 기준으로 Drizzle `pg-core` 스키마를 작성하고 마이그레이션 생성 (금액은 `bigint`, 날짜는 `date`).
-2. **리포지토리**: 각 섹션의 `NoticeRepository`, `SyncRunRepository` 등 Postgres 구현 추가. 계약 테스트(`sqlite-repositories.test.ts`)를 공용화해 두 구현에 모두 적용.
-3. **조립**: `common/infrastructure/container.ts` 의 `DB_DRIVER=supabase` 분기에서 Postgres 연결을 만들고, 각 섹션 `container.ts` 가 그 연결로 리포지토리를 조립하도록 분기 (현재는 "2차 개발 범위" 에러).
-4. **수집 실행**: 웹 요청이 아닌 Supabase Edge Function / cron / GitHub Actions 로 `scripts/housing/sync.ts` 를 주기 실행.
-5. **사용자 기능**: 프로필·저장 공고·알림 테이블 + RLS. 소셜 로그인은 이미 서버에 직접 구현되어 있으므로(`users`·`user_identities`·`sso_tickets` 테이블을 Postgres 로 옮기고 `UserStore`/`SsoTicketStore` 의 Postgres 구현을 추가), Supabase Auth 로 바꿀지는 그때 정합니다. 로그인/사용자 관련 코드는 모든 섹션이 쓰므로 `src/common` 에 둡니다. 현재 localStorage 의 "내 조건"은 `ApplicantProfile` 기준으로 서버 저장으로 이전. 공고 테이블은 읽기 전용 공개, 쓰기는 service role 만 허용.
-6. **`.env.example`**: 2차에서 환경변수가 안정되면 추가합니다.
+1. **스키마**: `features/*/infrastructure/persistence/sqlite/schema.ts` 를 기준으로 Drizzle `pg-core` 스키마와 Supabase SQL 마이그레이션 (금액 `bigint`, 날짜 `date`).
+2. **리포지토리**: `common/infrastructure/persistence/supabase/` 에 Postgres 구현. 계약 테스트(`sqlite-repositories.test.ts`)를 공용화해 두 구현에 모두 적용.
+3. **조립**: `create-persistence.ts` · `create-stores.ts` 에서 `DB_DRIVER=supabase` 분기 (현재는 "2차 개발 범위" 에러). JWT·SSO는 기존 서버 구조 유지.
+4. **Rate limit**: `create-rate-limiter.ts` 에 `REDIS_URL` 분기 (`infrastructure/rate-limit/redis-rate-limiter.ts`).
+5. **수집 실행**: cron / GitHub Actions 등으로 `scripts/housing/sync.ts` 주기 실행 (웹 `POST /housing/sync` 와 별개).
 
 ## 알려진 한계
 - LH 공고는 목록 API + 공고별 공급정보 API(`getLeaseNoticeSplInfo1`)로 단지·주택형·세대수·면적을 채웁니다 (수집 시 공고마다 1회 추가 호출, 약 2분). 단, LH 가 임대(행복·국민·영구·통합)의 보증금·월세를 `공고문 참조` 문자열로만 주므로 **금액은 대부분 비어 있고**, 예비입주자 모집(금회공급 0)·일부 공급정보 코드는 세대수가 없습니다. 같은 공고가 마이홈포털에도 있으면 병합되어 그쪽 값으로 채워질 수 있습니다.

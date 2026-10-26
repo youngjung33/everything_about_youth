@@ -1,0 +1,8 @@
+{
+  "features": [
+    {
+      "id": "housing",
+      "enabled": true
+    }
+  ]
+}

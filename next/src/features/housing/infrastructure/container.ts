@@ -11,9 +11,7 @@ import { GetNoticeDetail } from "../application/use-cases/get-notice-detail";
 import { SearchNotices } from "../application/use-cases/search-notices";
 import { SyncNoticesFromSource } from "../application/use-cases/sync-notices-from-source";
 import { loadHousingConfig, type HousingConfig } from "./config";
-import { SqliteNoticeRepository } from "./persistence/sqlite/sqlite-notice-repository";
-import { SqliteSavedNoticeRepository } from "./persistence/sqlite/sqlite-saved-notice-repository";
-import { SqliteSyncRunRepository } from "./persistence/sqlite/sqlite-sync-run-repository";
+import { createHousingRepositories } from "@/common/infrastructure/persistence/create-stores";
 import { ApplyhomeSource } from "./sources/applyhome/applyhome-source";
 import { BoardCrawlerSource } from "./sources/crawlers/board-crawler";
 import { ghStrategy } from "./sources/crawlers/gh/gh-strategy";
@@ -47,9 +45,7 @@ export function createHousingContainer(common: CommonContainer, overrides: Housi
   const { clock, logger } = common;
   const config = { ...loadHousingConfig(), ...overrides.config };
 
-  const notices = new SqliteNoticeRepository(common.sqlite.db);
-  const savedNotices = new SqliteSavedNoticeRepository(common.sqlite.db);
-  const syncRuns = new SqliteSyncRunRepository(common.sqlite.db);
+  const { notices, savedNotices, syncRuns } = createHousingRepositories(common.persistence);
 
   const serviceKey = common.config.dataGoKrServiceKey;
   const fetchText = createCrawlFetcher({

@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
-import { FixedWindowRateLimiter, type RateLimiter } from "@/common/application/rate-limit";
+import type { RateLimiter } from "@/common/application/rate-limit";
+import { createRateLimiter } from "@/common/infrastructure/rate-limit/create-rate-limiter";
 import { loadAppPolicy } from "@/common/infrastructure/config/app-policy-config";
 import { createTokenService } from "@/common/infrastructure/auth/token-service-factory";
 import { runGateway } from "@/common/presentation/api/gateway";
@@ -16,8 +17,7 @@ import { runGateway } from "@/common/presentation/api/gateway";
 const globalForLimiter = globalThis as unknown as { __rateLimiter?: RateLimiter };
 
 function rateLimiter(): RateLimiter | null {
-  if (process.env.RATE_LIMIT_DISABLED === "true") return null;
-  return (globalForLimiter.__rateLimiter ??= new FixedWindowRateLimiter());
+  return (globalForLimiter.__rateLimiter ??= createRateLimiter());
 }
 
 export async function proxy(request: NextRequest) {

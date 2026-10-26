@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:everything_about_youth/core/auth/auth_tokens.dart';
+import 'package:everything_about_youth/core/feature/feature_config.dart';
+import 'package:everything_about_youth/core/update/update_requirement.dart';
 import 'package:everything_about_youth/features/housing/domain/housing_meta.dart';
 import 'package:everything_about_youth/features/housing/domain/notice.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -41,5 +43,17 @@ void main() {
     final tokens = AuthTokens.fromSessionJson(json, now: DateTime.utc(2026, 10, 12));
     expect(tokens.accessToken, json['accessToken']);
     expect(tokens.member, false);
+  });
+
+  test('app-config.json 을 AppUpdateInfo.fromJson 으로 파싱한다', () {
+    final json = _readContract('app-config.json');
+    final info = AppUpdateInfo.fromJson(json);
+    expect(info.status, isA<UpdateStatus>());
+  });
+
+  test('features.json 을 parseFeatureConfig 으로 파싱한다', () {
+    final json = _readContract('features.json');
+    final flags = parseFeatureConfig(json);
+    expect(flags, isNotEmpty);
   });
 }

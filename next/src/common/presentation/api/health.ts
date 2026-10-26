@@ -1,5 +1,5 @@
 import { getRuntimeEnv } from "@/common/infrastructure/config/runtime-env-config";
-import { getCommonContainer } from "@/common/infrastructure/container";
+import { getCommonContainer, sqliteOf } from "@/common/infrastructure/container";
 import type { ApiResult } from "./respond";
 
 export interface HealthDto {
@@ -15,7 +15,7 @@ export interface HealthDto {
 
 function checkDatabase(): "ok" | "fail" {
   try {
-    getCommonContainer().sqlite.raw.prepare("SELECT 1").get();
+    sqliteOf(getCommonContainer()).raw.prepare("SELECT 1").get();
     return "ok";
   } catch {
     return "fail";

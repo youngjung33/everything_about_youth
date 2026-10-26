@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../feature/feature_flags.dart';
 import '../feature/feature_module.dart';
 import '../providers/core_providers.dart';
+import '../update/app_update_info_holder.dart';
 import '../update/update_gate.dart';
 import 'bootstrap_task.dart';
 
@@ -47,7 +48,11 @@ class BootstrapController extends AsyncNotifier<BootstrapResult> {
     // 0. 앱 버전을 확인한다. 강제 업데이트면 나머지 작업(서버 호출 포함)을 하지 않는다. 라우터가 업데이트 화면으로 막는다.
     //    서버에 닿지 못하면 막지 않고 계속한다. (진짜 차단은 모든 API 요청에서 서버가 한다)
     final gate = ref.read(updateGateProvider.notifier);
-    await gate.check(ref.read(appUpdateRemoteProvider), timeout: ref.read(updateCheckTimeoutProvider));
+    await gate.check(
+      ref.read(appUpdateRemoteProvider),
+      timeout: ref.read(updateCheckTimeoutProvider),
+      store: ref.read(appUpdateInfoProvider.notifier),
+    );
     if (ref.read(updateGateProvider) != null) {
       await minWait;
       return const BootstrapResult();

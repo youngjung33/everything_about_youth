@@ -1,6 +1,6 @@
 import { FeatureFlags, type FeatureDefinition } from "@/common/application/feature-flags";
 import { getCommonContainer, type CommonContainer } from "@/common/infrastructure/container";
-import { SqliteFeatureFlagStore } from "@/common/infrastructure/persistence/sqlite/sqlite-feature-flag-store";
+import { createFeatureFlagStore } from "@/common/infrastructure/persistence/create-stores";
 import { housingFeature } from "./housing/feature";
 
 /**
@@ -10,7 +10,7 @@ import { housingFeature } from "./housing/feature";
 export const FEATURES: FeatureDefinition[] = [housingFeature];
 
 export function createFeatureFlags(common: CommonContainer, definitions: FeatureDefinition[] = FEATURES): FeatureFlags {
-  return new FeatureFlags(definitions, new SqliteFeatureFlagStore(common.sqlite.db), common.clock, common.logger);
+  return new FeatureFlags(definitions, createFeatureFlagStore(common.persistence), common.clock, common.logger);
 }
 
 const globalKey = Symbol.for("everything_about_youth.feature-flags");

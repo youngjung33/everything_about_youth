@@ -10,6 +10,10 @@ const schema = z.object({
   CRAWL_DELAY_MS: z.preprocess(emptyToUndefined, z.coerce.number().int().min(0).default(1500)),
   CRAWL_USER_AGENT: z.preprocess(emptyToUndefined, z.string().default("everything-about-youth/0.1 (personal use)")),
   CRAWL_IGNORE_ROBOTS_HOSTS: z.preprocess(emptyToUndefined, z.string().optional()),
+  /** 2차: 분산 rate limit. 1차에서는 설정하면 서버가 시작하지 않는다. */
+  REDIS_URL: z.preprocess(emptyToUndefined, z.string().optional()),
+  /** 2차: Supabase 호스팅 Postgres 연결 문자열. DB_DRIVER=supabase 일 때 필수. */
+  SUPABASE_DATABASE_URL: z.preprocess(emptyToUndefined, z.string().optional()),
 });
 
 /** 모든 섹션이 공유하는 설정. 섹션 전용 설정은 각 feature 의 config 에 둔다. */

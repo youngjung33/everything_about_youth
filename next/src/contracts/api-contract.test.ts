@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { listServerErrorCodes } from "@/common/presentation/api/error-catalog";
 import {
+  contractAppConfigDto,
+  contractFeaturesDto,
   contractHousingMetaDto,
   contractNoticeDetailDto,
   contractNoticeListDto,
@@ -31,6 +33,14 @@ describe("API 계약 JSON (서버 DTO ↔ contracts/api)", () => {
 
   it("auth-session.json", () => {
     expect(contractSessionDto()).toEqual(readContract("auth-session.json"));
+  });
+
+  it("app-config.json", () => {
+    expect(contractAppConfigDto()).toEqual(readContract("app-config.json"));
+  });
+
+  it("features.json", () => {
+    expect(contractFeaturesDto()).toEqual(readContract("features.json"));
   });
 
   it("error-codes.json", () => {

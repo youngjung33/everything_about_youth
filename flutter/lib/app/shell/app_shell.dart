@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/feature/feature_flags.dart';
+import '../../core/update/optional_update_banner.dart';
 import '../../core/layout/app_scaffold.dart';
 import '../../core/theme/app_colors.dart';
 import 'app_drawer.dart';
@@ -33,7 +34,7 @@ class AppShell extends ConsumerWidget {
       drawer: inline ? null : AppDrawer(items: items, location: location),
       bottomBar: AppFooter(wide: inline),
       bottomBarColor: AppColors.surface,
-      body: child,
+      body: OptionalUpdateBanner(child: child),
     );
   }
 }

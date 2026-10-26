@@ -8,7 +8,7 @@
 | --- | --- |
 | `pubspec.yaml` 의 `version: 1.2.3+45` | `1.2.3` = 사용자에게 보이는 버전, `45` = 빌드 번호(스토어 `versionCode`) |
 | 서버 `APP_MIN_VERSION` | 이 버전 **미만** 앱은 API 426 (`APP_UPDATE_REQUIRED`) |
-| 서버 `APP_LATEST_VERSION` | 선택 업데이트 안내용 (UI는 추후) |
+| 서버 `APP_LATEST_VERSION` | 선택 업데이트(`optional`) — 앱 상단 배너(`OptionalUpdateBanner`) |
 
 `X-App-Version` 헤더에는 `1.2.3` 만 보낸다 (`AppInfo`).
 
@@ -37,6 +37,7 @@
 - `API_CORS_ORIGIN` (Flutter 웹 도메인)
 - `npm run db:migrate`
 - 헬스: `GET /api/v1/health` → `ready: true`
+- 1차: `DB_DRIVER` 미설정 또는 `sqlite`. `REDIS_URL`·`SUPABASE_DATABASE_URL` 은 비워 두기 (설정 시 2차 미구현 오류)
 
 ## 계약·오류 코드
 
