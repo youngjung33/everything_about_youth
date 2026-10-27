@@ -7,6 +7,7 @@ import '../core/feature/feature_flags.dart';
 import '../core/providers/core_providers.dart';
 import '../core/theme/app_text_scale.dart';
 import '../core/theme/app_theme.dart';
+import '../core/notifications/notification_launcher.dart';
 import '../core/update/update_gate.dart';
 import 'router.dart';
 
@@ -46,6 +47,10 @@ class _EveryThingAboutYouthAppState extends ConsumerState<EveryThingAboutYouthAp
         result: ref.read(bootstrapProvider).value,
       ),
       initialLocation: widget.initialLocation,
+    );
+    bindNotificationNavigation(
+      router: _router,
+      noticeLocation: (id) => '/housing/notices/${Uri.encodeComponent(id)}',
     );
 
     // 시작 작업을 여기서 시작하고, 완료/실패/재시도와 서비스 켜짐·꺼짐이 바뀌면 라우터가 가드를 다시 평가한다.

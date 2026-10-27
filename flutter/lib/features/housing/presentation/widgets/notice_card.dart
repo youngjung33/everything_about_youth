@@ -64,16 +64,17 @@ class NoticeBadges extends StatelessWidget {
 }
 
 class NoticeCard extends StatelessWidget {
-  const NoticeCard({super.key, required this.notice});
+  const NoticeCard({super.key, required this.notice, this.onTap});
 
   final NoticeSummary notice;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => context.push(HousingRoutes.notice(notice.id)),
+        onTap: onTap ?? () => context.push(HousingRoutes.notice(notice.id)),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

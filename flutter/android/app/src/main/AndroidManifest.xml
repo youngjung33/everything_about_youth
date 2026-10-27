@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- 서버 API 호출에 필요 (release 빌드에서는 main 매니페스트에 있어야 한다) -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <application
         android:label="청년의 모든 것"
         android:name="${applicationName}"

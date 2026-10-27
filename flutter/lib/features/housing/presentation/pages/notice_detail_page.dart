@@ -10,6 +10,7 @@ import '../../application/providers.dart';
 import '../../domain/notice.dart';
 import '../widgets/badges.dart';
 import '../widgets/notice_card.dart';
+import '../widgets/eligibility_next_steps_card.dart';
 import '../widgets/saved_notice_button.dart';
 import '../../../../core/theme/app_fonts.dart';
 
@@ -61,6 +62,8 @@ class _DetailBody extends StatelessWidget {
               const SizedBox(height: 16),
               _EligibilityCard(eligibility: notice.eligibility!),
             ],
+            const SizedBox(height: 16),
+            EligibilityNextStepsSection(detail: detail),
             const SizedBox(height: 16),
             _Section(
               title: '공고 개요',

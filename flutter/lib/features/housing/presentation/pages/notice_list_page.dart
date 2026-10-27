@@ -12,6 +12,7 @@ import '../../domain/housing_filters.dart';
 import '../../domain/housing_meta.dart';
 import '../housing_routes.dart';
 import '../widgets/filter_panel.dart';
+import '../widgets/filter_preset_chips.dart';
 import '../widgets/notice_card.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_fonts.dart';
@@ -94,6 +95,11 @@ class _NoticeListPageState extends ConsumerState<NoticeListPage> {
                 child: const Icon(Icons.tune),
               ),
             ),
+          IconButton(
+            tooltip: '접수 일정',
+            onPressed: () => context.push(HousingRoutes.schedule),
+            icon: const Icon(Icons.calendar_month_outlined),
+          ),
           IconButton(
             tooltip: '관심 공고',
             onPressed: () => context.push(HousingRoutes.saved),
@@ -224,6 +230,8 @@ class _Header extends ConsumerWidget {
               padding: const EdgeInsets.only(top: 4),
               child: Text(formatUpdatedAt(meta!.dataUpdatedAt)!, style: TextStyle(fontSize: 12, color: scheme.outline)),
             ),
+          const SizedBox(height: 4),
+          const HousingFilterPresetChips(),
           const SizedBox(height: 10),
           Card(
             color: scheme.primaryContainer.withValues(alpha: 0.35),

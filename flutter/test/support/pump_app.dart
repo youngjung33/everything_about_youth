@@ -8,6 +8,8 @@ import 'package:everything_about_youth/core/bootstrap/bootstrap_task.dart';
 import 'package:everything_about_youth/core/feature/feature_flags.dart';
 import 'package:everything_about_youth/core/feature/feature_module.dart';
 import 'package:everything_about_youth/core/network/api_client.dart';
+import 'package:everything_about_youth/core/notifications/deadline_notification_service.dart';
+import 'package:everything_about_youth/features/housing/application/saved_notice_reminder_sync.dart';
 import 'package:everything_about_youth/core/providers/core_providers.dart';
 import 'package:everything_about_youth/core/security/cipher_key_store.dart';
 import 'package:everything_about_youth/core/security/field_cipher.dart';
@@ -113,6 +115,7 @@ Future<ProviderContainer> pumpApp(
         featureConfigCacheProvider.overrideWithValue(cache ?? MemoryFeatureConfigCache()),
         // 테스트에서는 스플래시를 일부러 늘리지 않는다.
         bootstrapMinDurationProvider.overrideWithValue(Duration.zero),
+        deadlineNotificationServiceProvider.overrideWithValue(NoopDeadlineNotificationService()),
       ],
       child: EveryThingAboutYouthApp(initialLocation: location),
     ),

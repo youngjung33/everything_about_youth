@@ -154,19 +154,19 @@ void main() {
 
     expect(find.text('공고 상세'), findsOneWidget);
     expect(find.text('공고 개요'), findsOneWidget);
+    final bodyScrollable = find.descendant(of: find.byType(ListView), matching: find.byType(Scrollable)).first;
+    await tester.scrollUntilVisible(find.text('강남 A단지'), 300, scrollable: bodyScrollable);
     expect(find.text('강남 A단지'), findsOneWidget);
     expect(find.text('16A'), findsOneWidget);
     expect(find.text('500만원'), findsNothing); // 5,000만원이어야 한다
     expect(find.text('5,000만원'), findsOneWidget);
     expect(find.text('문의: 1600-1004'), findsOneWidget);
+    await tester.scrollUntilVisible(find.textContaining('LH청약플러스'), 300, scrollable: bodyScrollable);
     expect(find.textContaining('LH청약플러스'), findsWidgets);
 
-    // 목록은 화면에 보이는 만큼만 그려지므로 맨 아래 버튼은 스크롤해서 찾는다.
-    // (헤더의 가로 메뉴 스크롤이 아니라 본문 ListView 의 스크롤)
-    final bodyScrollable = find.descendant(of: find.byType(ListView), matching: find.byType(Scrollable)).first;
-    await tester.scrollUntilVisible(find.text('원문 공고 보기'), 300, scrollable: bodyScrollable);
+    await tester.scrollUntilVisible(find.text('원문 공고 보기'), 400, scrollable: bodyScrollable);
     expect(find.text('원문 공고 보기'), findsOneWidget);
-    await tester.scrollUntilVisible(find.text('접수 마감일 캘린더에 넣기'), 300, scrollable: bodyScrollable);
+    await tester.scrollUntilVisible(find.text('접수 마감일 캘린더에 넣기'), 400, scrollable: bodyScrollable);
     expect(find.text('접수 마감일 캘린더에 넣기'), findsOneWidget);
   });
 

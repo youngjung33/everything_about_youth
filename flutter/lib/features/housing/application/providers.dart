@@ -234,6 +234,7 @@ class SavedNoticesNotifier extends AsyncNotifier<List<String>> {
       await ref.read(savedNoticeStoreProvider).replace(ids);
     }
     state = AsyncData(ids);
+    ref.invalidate(savedNoticeListProvider);
     return null;
   }
 }
@@ -241,6 +242,42 @@ class SavedNoticesNotifier extends AsyncNotifier<List<String>> {
 final savedNoticesProvider = AsyncNotifierProvider<SavedNoticesNotifier, List<String>>(SavedNoticesNotifier.new);
 
 /// 관심 공고 화면용 목록. id 가 바뀌면 다시 불러온다.
+/// 일정 화면용: 접수중·예정 공고를 넉넉히 불러 온다.
+final housingScheduleNoticesProvider = FutureProvider<({String today, List<NoticeSummary> items})>((ref) async {
+  const pageSize = 80;
+  const maxPages = 5;
+  final repo = ref.watch(housingRepositoryProvider);
+  final profile = ref.watch(profileProvider);
+  const filters = HousingFilters(statuses: {'open', 'upcoming'}, sort: 'deadline');
+  final first = await repo.searchNotices(filters: filters, profile: profile, pageSize: pageSize);
+  var items = [...first.items];
+  var page = first.page;
+  while (page < first.totalPages && page < maxPages) {
+    page++;
+    final next = await repo.searchNotices(filters: filters, profile: profile, page: page, pageSize: pageSize);
+    final seen = items.map((e) => e.id).toSet();
+    items.addAll(next.items.where((e) => !seen.contains(e.id)));
+  }
+  return (today: first.today, items: items);
+});
+
+/// 같은 공급유형의 다른 공고 (상세 하단 추천)
+final similarNoticesProvider = FutureProvider.family<List<NoticeSummary>, String>((ref, id) async {
+  final detail = await ref.watch(noticeDetailProvider(id).future);
+  final supply = detail.summary.supplyType;
+  final profile = ref.watch(profileProvider);
+  final page = await ref.watch(housingRepositoryProvider).searchNotices(
+    filters: HousingFilters(
+      supplyTypes: {supply},
+      statuses: HousingFilters.defaultStatuses,
+      sort: 'deadline',
+    ),
+    profile: profile,
+    pageSize: 15,
+  );
+  return page.items.where((n) => n.id != id).take(5).toList();
+});
+
 final savedNoticeListProvider = FutureProvider<SavedNoticeList>((ref) async {
   final ids = await ref.watch(savedNoticesProvider.future);
   if (ids.isEmpty) return const SavedNoticeList(items: [], total: 0, today: '');

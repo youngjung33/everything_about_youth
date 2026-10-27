@@ -1,6 +1,6 @@
 # 청년의 모든 것 (everything_about_youth)
 
-한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 사이트. 지금은 **임대주택** 섹션 하나만 있고(1차, 개인용), 이후 섹션이 계속 추가됩니다.
+한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 사이트. **API·앱이 동작하는 섹션은 임대주택(`housing`) 하나**이고, `benefits`·`finance`·`jobs`·`living` 은 `features/registry.ts` 에 플래그만 등록된 **예정** 섹션입니다(루트 [README.md](../README.md) 로드맵).
 
 - Next.js 16 (App Router) + TypeScript
 - 클린 아키텍처 + **섹션(feature) 단위 폴더 구조**

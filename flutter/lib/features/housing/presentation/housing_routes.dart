@@ -5,6 +5,7 @@ class HousingRoutes {
   static const base = '/housing';
   static const profile = '/housing/profile';
   static const saved = '/housing/saved';
+  static const schedule = '/housing/schedule';
 
   static String notice(String id) => '/housing/notices/${Uri.encodeComponent(id)}';
 }

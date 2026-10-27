@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/app_logo.dart';
-import '../../features/legal/legal_paths.dart';
+import '../../core/legal/legal_paths.dart';
 
 /// 모든 화면 아래에 붙는 푸터. 서비스가 늘어도 문구가 맞도록 특정 서비스를 언급하지 않는다.
 ///

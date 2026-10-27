@@ -8,6 +8,7 @@ import 'presentation/housing_routes.dart';
 import 'presentation/pages/notice_detail_page.dart';
 import 'presentation/pages/notice_list_page.dart';
 import 'presentation/pages/profile_page.dart';
+import 'presentation/pages/notice_schedule_page.dart';
 import 'presentation/pages/saved_notices_page.dart';
 
 /// 임대주택 서비스가 코어에 꽂히는 유일한 접점. 서비스 안의 모든 레이어를 아는 곳은 이 파일뿐이다.
@@ -38,6 +39,7 @@ class HousingModule extends FeatureModule {
       routes: [
         GoRoute(path: 'profile', builder: (context, state) => const ProfilePage()),
         GoRoute(path: 'saved', builder: (context, state) => const SavedNoticesPage()),
+        GoRoute(path: 'schedule', builder: (context, state) => const NoticeSchedulePage()),
         GoRoute(
           path: 'notices/:id',
           builder: (context, state) => NoticeDetailPage(id: state.pathParameters['id']!),

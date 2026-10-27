@@ -8,7 +8,7 @@ import '../core/layout/app_scaffold.dart';
 import '../core/layout/app_top_bar.dart';
 import '../core/layout/centered_scroll_view.dart';
 import '../features/home/home_page.dart';
-import '../features/legal/legal_paths.dart';
+import '../core/legal/legal_paths.dart';
 import '../features/legal/open_source_licenses_page.dart';
 import '../features/legal/privacy_policy_page.dart';
 import '../features/legal/terms_page.dart';

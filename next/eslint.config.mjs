@@ -13,7 +13,7 @@ import nextTs from "eslint-config-next/typescript";
  *      domain  <-  application  <-  infrastructure / presentation
  * 2) 섹션 경계: common 은 features 를 import 할 수 없고, feature 는 다른 feature 를 import 할 수 없다.
  */
-const FEATURES = ["housing"];
+const FEATURES = ["housing", "benefits", "finance", "jobs", "living"];
 
 const FRAMEWORK_PACKAGES = [
   "next",

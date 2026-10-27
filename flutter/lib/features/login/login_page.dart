@@ -11,7 +11,7 @@ import '../../core/network/api_error_code.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_fonts.dart';
 import '../../core/widgets/app_logo.dart';
-import '../legal/legal_paths.dart';
+import '../../core/legal/legal_paths.dart';
 
 /// 로그인 화면. 자체 회원가입/로그인은 없고, 소셜 로그인과 "비회원으로 시작하기"만 있다.
 ///
