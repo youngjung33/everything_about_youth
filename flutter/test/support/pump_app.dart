@@ -9,11 +9,12 @@ import 'package:everything_about_youth/core/feature/feature_flags.dart';
 import 'package:everything_about_youth/core/feature/feature_module.dart';
 import 'package:everything_about_youth/core/network/api_client.dart';
 import 'package:everything_about_youth/core/notifications/deadline_notification_service.dart';
-import 'package:everything_about_youth/features/housing/application/saved_notice_reminder_sync.dart';
+import 'package:everything_about_youth/features/housing/data/mapping_housing_repository.dart';
+import 'package:everything_about_youth/features/housing/presentation/saved_notice_reminder_sync.dart';
 import 'package:everything_about_youth/core/providers/core_providers.dart';
 import 'package:everything_about_youth/core/security/cipher_key_store.dart';
 import 'package:everything_about_youth/core/security/field_cipher.dart';
-import 'package:everything_about_youth/features/housing/application/providers.dart';
+import 'package:everything_about_youth/features/housing/presentation/providers.dart';
 import 'package:everything_about_youth/features/housing/housing_module.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -87,7 +88,7 @@ Future<ProviderContainer> pumpApp(
       key: key,
       retry: (_, _) => null,
       overrides: [
-        housingRepositoryProvider.overrideWithValue(repo),
+        housingRepositoryProvider.overrideWithValue(MappingHousingRepository(repo)),
         sharedPreferencesProvider.overrideWithValue(prefs),
         // 진짜 보안 저장소(플랫폼 채널) 대신 메모리 키를 쓴다.
         fieldCipherProvider.overrideWithValue(cipher ?? AesGcmFieldCipher(MemoryCipherKeyStore())),

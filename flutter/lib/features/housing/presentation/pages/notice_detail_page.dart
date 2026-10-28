@@ -6,7 +6,7 @@ import '../../../../core/launch.dart';
 import '../../../../core/layout/app_scaffold.dart';
 import '../../../../core/layout/app_top_bar.dart';
 import '../../../../core/widgets/state_views.dart';
-import '../../application/providers.dart';
+import '../providers.dart';
 import '../../domain/notice.dart';
 import '../widgets/badges.dart';
 import '../widgets/notice_card.dart';

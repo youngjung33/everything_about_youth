@@ -7,7 +7,7 @@ import type { SqliteConnection } from "./persistence/sqlite/client";
  * 모든 섹션이 공유하는 의존성(설정, 시계, 로거, DB 연결).
  * 각 섹션(features/*)의 container 가 이것을 받아 자기 리포지토리/유스케이스를 조립한다.
  *
- * 2차: `persistence.driver === "supabase"` 일 때 Postgres 리포지토리를 `create-stores.ts` 에서 선택한다.
+ * 2차: `persistence.driver === "supabase"` 일 때 Postgres 는 각 섹션 `infrastructure/create-repositories.ts` 등에서 선택한다.
  */
 export interface CommonContainer {
   config: AppConfig;

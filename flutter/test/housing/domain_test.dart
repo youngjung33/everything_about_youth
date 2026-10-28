@@ -7,6 +7,7 @@ import 'package:everything_about_youth/features/housing/data/saved_notice_store.
 import 'package:everything_about_youth/features/housing/domain/applicant_profile.dart';
 import 'package:everything_about_youth/features/housing/domain/housing_filters.dart';
 import 'package:everything_about_youth/features/housing/domain/housing_meta.dart';
+import 'package:everything_about_youth/features/housing/domain/repositories/saved_notice_local_store.dart';
 import 'package:everything_about_youth/features/housing/domain/notice.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

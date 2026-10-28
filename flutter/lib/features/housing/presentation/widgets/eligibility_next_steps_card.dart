@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_fonts.dart';
-import '../../application/providers.dart';
+import '../providers.dart';
 import '../../domain/eligibility_next_steps.dart';
 import '../../domain/notice.dart';
 import '../housing_routes.dart';

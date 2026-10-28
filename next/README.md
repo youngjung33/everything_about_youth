@@ -18,7 +18,7 @@ src/
       config/                  공통 환경변수(DB, 크롤러, 서비스키)
       container.ts             공통 의존성 조립 (설정, 시계, 로거, persistence, rate limit)
       persistence/create-persistence.ts   SQLite(1차) / Postgres(2차) 연결
-      persistence/create-stores.ts        리포지토리·스토어 조립 (2차: supabase/ 구현)
+      persistence/create-stores.ts        공통·인증 SQLite 스토어 (feature 코드 import 금지)
       persistence/sqlite/      SQLite 연결/마이그레이션 실행
       persistence/supabase/    2차 Postgres 리포지토리 (미구현)
       http/                    HTTP 재시도, 공공데이터포털(data.go.kr) 파서, JSON 매핑 유틸
@@ -28,7 +28,7 @@ src/
     housing/                 ← 임대주택 섹션: 이 섹션의 모든 코드가 여기 한곳에
       domain/                  공고/단지/세대유형, 공급·주택유형, 동일 공고 병합, 자격 판정 규칙
       application/             포트(리포지토리, 소스) + 유스케이스(검색, 상세, 수집)
-      infrastructure/          SQLite 스키마/리포지토리, 수집 소스(LH·마이홈·청약홈 API, SH·iH·GH 크롤러), container, config
+      infrastructure/          SQLite(`create-repositories.ts`), 수집 소스, `container.ts`, config
       presentation/            필터 파싱, 컴포넌트, 경로(routes.ts)
   app/                       ← Next.js 라우트 (조립만)
     page.tsx                   섹션 목록 홈
@@ -361,7 +361,7 @@ API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등�
 
 1. **스키마**: `features/*/infrastructure/persistence/sqlite/schema.ts` 를 기준으로 Drizzle `pg-core` 스키마와 Supabase SQL 마이그레이션 (금액 `bigint`, 날짜 `date`).
 2. **리포지토리**: `common/infrastructure/persistence/supabase/` 에 Postgres 구현. 계약 테스트(`sqlite-repositories.test.ts`)를 공용화해 두 구현에 모두 적용.
-3. **조립**: `create-persistence.ts` · `create-stores.ts` 에서 `DB_DRIVER=supabase` 분기 (현재는 "2차 개발 범위" 에러). JWT·SSO는 기존 서버 구조 유지.
+3. **조립**: `common` 의 `create-persistence.ts` · `create-stores.ts`(인증·플래그만), 섹션별 `infrastructure/create-repositories.ts` · `container.ts` 에서 `DB_DRIVER=supabase` 분기 (현재는 "2차 개발 범위" 에러). JWT·SSO는 기존 서버 구조 유지.
 4. **Rate limit**: `create-rate-limiter.ts` 에 `REDIS_URL` 분기 (`infrastructure/rate-limit/redis-rate-limiter.ts`).
 5. **수집 실행**: cron / GitHub Actions 등으로 `scripts/housing/sync.ts` 주기 실행 (웹 `POST /housing/sync` 와 별개).
 

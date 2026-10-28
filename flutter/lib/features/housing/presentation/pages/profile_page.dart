@@ -7,7 +7,7 @@ import '../../../../core/format/format.dart';
 import '../../../../core/layout/app_scaffold.dart';
 import '../../../../core/layout/app_top_bar.dart';
 import '../../../../core/theme/app_fonts.dart';
-import '../../application/providers.dart';
+import '../providers.dart';
 import '../../domain/applicant_profile.dart';
 
 /// '내 조건' 입력. 이 기기에만 저장되며 서버에는 공고를 조회할 때 판정용으로만 전달된다.

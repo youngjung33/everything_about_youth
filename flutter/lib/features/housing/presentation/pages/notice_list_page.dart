@@ -7,7 +7,7 @@ import '../../../../core/layout/app_bottom_sheet.dart';
 import '../../../../core/layout/app_scaffold.dart';
 import '../../../../core/layout/app_top_bar.dart';
 import '../../../../core/widgets/state_views.dart';
-import '../../application/providers.dart';
+import '../providers.dart';
 import '../../domain/housing_filters.dart';
 import '../../domain/housing_meta.dart';
 import '../housing_routes.dart';

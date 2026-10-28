@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../application/providers.dart';
+import '../providers.dart';
 import '../../domain/housing_filter_presets.dart';
 
 /// 청년·신혼·매입임대 빠른 필터.

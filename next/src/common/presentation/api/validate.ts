@@ -15,7 +15,7 @@ export function throwValidationError(issues: ZodIssue[]): never {
   throw new ApiError("BAD_REQUEST", { details: validationDetails(issues) });
 }
 
-export function parseWithSchema<T>(schema: z.ZodType<T>, value: unknown, label = "body"): T {
+export function parseWithSchema<T>(schema: z.ZodType<T>, value: unknown): T {
   const result = schema.safeParse(value);
   if (!result.success) throwValidationError(result.error.issues);
   return result.data;
@@ -44,5 +44,5 @@ export function searchParamsRecord(params: URLSearchParams): Record<string, stri
 }
 
 export function parseSearchParams<T>(params: URLSearchParams, schema: z.ZodType<T>): T {
-  return parseWithSchema(schema, searchParamsRecord(params), "query");
+  return parseWithSchema(schema, searchParamsRecord(params));
 }

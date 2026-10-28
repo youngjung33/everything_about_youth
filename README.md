@@ -106,14 +106,14 @@ core/                         서비스와 무관한 공용 코드 (features/app
 features/
   home/ splash/ unavailable/ update_required/  앱 셸 화면 (홈 카드, 시작 화면, 꺼짐/장애 안내, 강제 업데이트)
   housing/                    임대주택 서비스
-    housing_module.dart       코어에 꽂히는 유일한 접점 (라우트, 홈 카드, 시작 작업)
-    domain/                   모델, 필터, 내 조건, 저장소 인터페이스 (순수 Dart)
-    data/                     API 저장소, 내 조건 저장(암호화해서 SharedPreferences 에)
-    application/              Riverpod 상태(목록 무한 스크롤, 필터, 상세, 내 조건)
-    presentation/             페이지와 위젯 (넓은 화면: 필터 사이드바 / 좁은 화면: 바텀시트)
+    housing_module.dart       코어에 꽂는 앱 어댑터 (라우트, 홈 카드, 시작 작업)
+    housing_container.dart    use case·data 조립 (composition root)
+    domain/                   모델, use case, 저장소 포트 (순수 Dart)
+    data/                     API·기기 저장 구현
+    presentation/             화면, Riverpod(use case 호출)
 ```
 
-의존 방향(`core ← features ← app`, 서비스끼리 금지, 서비스 안은 `presentation → application → data → domain`)은 `test/architecture_test.dart` 가 자동으로 검사합니다.
+의존 방향(`core ← features ← app`, 서비스끼리 금지, 서비스 안은 `presentation → data → domain`, **비즈니스 규칙은 domain use case**)은 `test/architecture_test.dart` 가 자동으로 검사합니다.
 
 ### 화면 틀 (헤더 · 푸터 · 메뉴)
 

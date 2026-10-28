@@ -14,7 +14,7 @@ import 'core/providers/core_providers.dart';
 import 'core/notifications/deadline_notification_service.dart';
 import 'core/notifications/notification_launcher.dart';
 import 'core/update/app_info.dart';
-import 'features/housing/application/saved_notice_reminder_sync.dart';
+import 'features/housing/presentation/saved_notice_reminder_sync.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

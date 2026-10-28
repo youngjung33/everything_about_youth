@@ -11,7 +11,7 @@ import { GetNoticeDetail } from "../application/use-cases/get-notice-detail";
 import { SearchNotices } from "../application/use-cases/search-notices";
 import { SyncNoticesFromSource } from "../application/use-cases/sync-notices-from-source";
 import { loadHousingConfig, type HousingConfig } from "./config";
-import { createHousingRepositories } from "@/common/infrastructure/persistence/create-stores";
+import { createHousingRepositories } from "./create-repositories";
 import { ApplyhomeSource } from "./sources/applyhome/applyhome-source";
 import { BoardCrawlerSource } from "./sources/crawlers/board-crawler";
 import { ghStrategy } from "./sources/crawlers/gh/gh-strategy";

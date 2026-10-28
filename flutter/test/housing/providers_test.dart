@@ -5,7 +5,9 @@ import 'package:everything_about_youth/core/network/api_client.dart';
 import 'package:everything_about_youth/core/providers/core_providers.dart';
 import 'package:everything_about_youth/core/security/cipher_key_store.dart';
 import 'package:everything_about_youth/core/security/field_cipher.dart';
-import 'package:everything_about_youth/features/housing/application/providers.dart';
+import 'package:everything_about_youth/features/housing/data/mapping_housing_repository.dart';
+import 'package:everything_about_youth/features/housing/domain/failures.dart';
+import 'package:everything_about_youth/features/housing/presentation/providers.dart';
 import 'package:everything_about_youth/features/housing/data/profile_store.dart';
 import 'package:everything_about_youth/features/housing/domain/applicant_profile.dart';
 import 'package:everything_about_youth/features/housing/domain/housing_filters.dart';
@@ -31,7 +33,7 @@ Future<ProviderContainer> makeContainer(FakeHousingRepository repo) async {
   final container = ProviderContainer(
     retry: (_, _) => null,
     overrides: [
-      housingRepositoryProvider.overrideWithValue(repo),
+      housingRepositoryProvider.overrideWithValue(MappingHousingRepository(repo)),
       sharedPreferencesProvider.overrideWithValue(prefs),
       fieldCipherProvider.overrideWithValue(AesGcmFieldCipher(MemoryCipherKeyStore())),
     ],
@@ -113,7 +115,7 @@ void main() {
     final container = await makeContainer(repo);
     container.listen(noticeListProvider, (_, _) {});
 
-    await expectLater(container.read(noticeListProvider.future), throwsA(isA<ApiException>()));
+    await expectLater(container.read(noticeListProvider.future), throwsA(isA<HousingUserMessage>()));
     expect(errorMessage(container.read(noticeListProvider).error!), '요청에 실패했습니다. (HTTP 500)');
   });
 
@@ -256,7 +258,7 @@ void main() {
 
     await expectLater(
       container.read(noticeDetailProvider('none').future),
-      throwsA(isA<ApiException>().having((e) => e.isNotFound, 'isNotFound', isTrue)),
+      throwsA(isA<HousingNoticeNotFound>()),
     );
   });
 

@@ -95,7 +95,7 @@ describe("AuthService + 실제 JWT/SQLite", () => {
   });
 
   it("비회원 세션 발급 전에 오래된 비회원 행을 정리한다", async () => {
-    let now = new Date("2026-10-18T00:00:00Z");
+    const now = new Date("2026-10-18T00:00:00Z");
     const clock: Clock = { now: () => now };
     const conn = openSqlite(":memory:");
     runMigrations(conn.db);

@@ -5,8 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/layout/app_scaffold.dart';
 import '../../../../core/layout/app_top_bar.dart';
 import '../../../../core/widgets/state_views.dart';
-import '../../application/providers.dart';
-import '../../application/saved_notice_reminder_sync.dart';
+import '../providers.dart';
+import '../saved_notice_reminder_sync.dart';
 import '../widgets/notice_card.dart';
 
 /// 저장한 관심 공고. 비회원은 이 기기, 회원은 서버(로그인 때 기기 목록을 합친다).

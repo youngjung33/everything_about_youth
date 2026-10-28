@@ -7,7 +7,7 @@ import '../../../../core/layout/app_scaffold.dart';
 import '../../../../core/layout/app_top_bar.dart';
 import '../../../../core/theme/app_fonts.dart';
 import '../../../../core/widgets/state_views.dart';
-import '../../application/providers.dart';
+import '../providers.dart';
 import '../../domain/notice_schedule.dart';
 import '../housing_routes.dart';
 import '../widgets/notice_card.dart';

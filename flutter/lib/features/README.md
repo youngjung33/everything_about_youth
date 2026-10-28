@@ -9,11 +9,11 @@ core/feature/            규격과 켜기/끄기 (FeatureModule, FeatureFlags)
 core/bootstrap/          시작 작업 (서비스별로 격리해서 실행)
 core/providers/          서비스가 받아 쓰는 공용 인프라 (API 클라이언트, 기기 저장소, 설정)
 features/<id>/           서비스 하나
-  <id>_module.dart       코어에 꽂히는 유일한 접점 (라우트, 홈 카드, 시작 작업)
-  domain/                모델, 규칙, 저장소 인터페이스   (순수 Dart. Flutter 도 data 도 모른다)
-  data/                  API/저장소 구현                  (domain 만 안다)
-  application/           Riverpod 상태, 유스케이스         (domain, data 를 안다)
-  presentation/          화면과 위젯                      (안쪽 전부를 안다)
+  <id>_module.dart       코어에 꽂히는 **앱 어댑터** (라우트, 홈 카드, 시작 작업)
+  <id>_container.dart    (선택) use case·data 조립 — 임대주택: `housing_container.dart`
+  domain/                모델, 규칙, **use case**, 저장소 포트   (순수 Dart)
+  data/                  API·기기 저장 구현
+  presentation/          화면, Riverpod( use case 호출만 )
 features/home, splash, unavailable   앱 셸 화면 (서비스가 아님)
 ```
 
@@ -21,7 +21,7 @@ features/home, splash, unavailable   앱 셸 화면 (서비스가 아님)
 
 - `core` 는 `features`/`app` 을 import 하지 않는다.
 - 서비스끼리 import 하지 않는다. 공유해야 하면 `core` 로 올린다.
-- 서비스 안의 방향은 `presentation → application → data → domain` 한 방향이다.
+- 서비스 안의 방향은 `presentation → data → domain` 한 방향이다. **앱 로직의 중심은 domain 의 use case** 이고, presentation 의 Provider 는 use case 를 호출만 한다.
 - `domain` 은 Flutter 에 의존하지 않는다. (`core/util/pure_dart.dart` 사용)
 - `app` 은 서비스의 `<id>_module.dart` 만 안다.
 - 화면은 `Scaffold`/`AppBar`/`SafeArea`/`showModalBottomSheet` 를 직접 쓰지 않는다. `core/layout/` 의
@@ -31,10 +31,10 @@ features/home, splash, unavailable   앱 셸 화면 (서비스가 아님)
 ## 새 서비스 추가
 
 1. `features/<id>/` 를 만들고 위 레이어로 나눠 구현한다.
+   - use case·저장소 조립은 `<id>_container.dart`, Riverpod 는 `presentation/providers.dart`.
    - API 는 `core/providers` 의 `apiClientProvider` 를 쓴다. 모든 요청에 JWT 와 앱 버전이 자동으로 붙고 만료되면 갱신되므로 서비스가 토큰을 다룰 일은 없다.
      경로는 **버전 없이** `/<id>/...` 로 쓴다. (`/api/v1` 은 클라이언트가 붙인다)
-   - 실패는 `ApiException` 으로 온다. 분기는 `e.code`(`ApiErrorCode`)로 하고 `e.message` 를 화면에 보여준다. 업데이트가 필요한 응답(426/410)은
-     코어가 이미 가로채 업데이트 화면으로 바꾸므로 서비스가 따로 처리하지 않는다.
+   - 실패: API 는 `data` 에서 `HousingUserMessage` 등 domain 실패로 바꾸고, 화면은 `housingErrorMessage` 로 문구만 표시한다. (426/410 은 코어가 가로챔)
    - 기기 저장은 `sharedPreferencesProvider` 를 쓴다. **개인정보(나이·소득·연락처 등)는 평문으로 쓰지 말고** `fieldCipherProvider` 로 암호화한 값을 저장한다.
      `encrypt`/`decrypt` 에 용도 문자열(`context`, 예 `<id>.profile`)을 같게 넘기고, 복호화는 실패하면 null 이므로 "없는 값"으로 처리한다. (참고: `housing/data/profile_store.dart`)
    - 글꼴 크기는 코어가 0.85~1.4배로 제한한다. 서비스 화면은 큰 글꼴에서도 넘치지 않게(고정 높이 대신 `Flexible`/`Wrap`/스크롤) 만든다.

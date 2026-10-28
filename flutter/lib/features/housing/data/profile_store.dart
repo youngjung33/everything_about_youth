@@ -4,13 +4,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/security/field_cipher.dart';
 import '../domain/applicant_profile.dart';
+import '../domain/repositories/profile_local_store.dart';
 
 /// '내 조건'(나이, 소득, 무주택 여부 등 개인정보)을 이 기기에만 **암호화해서** 저장한다.
 /// (웹: localStorage, 모바일: 앱 로컬 저장소. 키는 보안 저장소에 따로 있다 — [FieldCipher])
 ///
 /// 복호화는 비동기라서 사용하기 전에 [load] 로 한 번 읽어 둬야 한다. 읽은 값은 메모리에 두고 [current] 로 바로 쓴다.
 /// (앱 시작 때 임대주택의 시작 작업이 [load] 를 부른다)
-class ProfileStore {
+class ProfileStore implements ProfileLocalStore {
   ProfileStore(this._prefs, this._cipher);
 
   final SharedPreferences _prefs;
@@ -26,10 +27,13 @@ class ProfileStore {
   int _saves = 0;
 
   /// [load] 가 끝난 뒤의 값. 그 전에는 빈 조건이다.
+  @override
   ApplicantProfile get current => _current;
+  @override
   bool get isLoaded => _loaded;
 
   /// 저장된 값을 읽어 복호화한다. 값이 없거나 읽을 수 없으면(손상, 변조, 키 분실) 빈 조건이다. 던지지 않는다.
+  @override
   Future<ApplicantProfile> load() async {
     final savesBefore = _saves;
     final read = await _read();
@@ -71,6 +75,7 @@ class ProfileStore {
     return null;
   }
 
+  @override
   Future<void> save(ApplicantProfile profile) async {
     _saves++;
     _current = profile;
