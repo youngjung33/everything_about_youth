@@ -5,8 +5,8 @@
  *   npm run housing:sync -- --list           # 소스 목록/사용 가능 여부
  */
 import { createCommonContainer } from "@/common/infrastructure/container";
-import { parseSourceList } from "@/features/housing/infrastructure/config";
-import { createHousingContainer } from "@/features/housing/infrastructure/container";
+import { parseSourceList } from "@/features/housing/domain/sync-sources";
+import { createHousingContainer } from "@/features/housing/housing-container";
 import { SOURCE_LABELS } from "@/features/housing/domain/enums";
 import { loadEnv } from "../load-env";
 

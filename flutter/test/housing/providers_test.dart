@@ -5,13 +5,16 @@ import 'package:everything_about_youth/core/network/api_client.dart';
 import 'package:everything_about_youth/core/providers/core_providers.dart';
 import 'package:everything_about_youth/core/security/cipher_key_store.dart';
 import 'package:everything_about_youth/core/security/field_cipher.dart';
+import 'package:everything_about_youth/features/housing/data/saved_notice_reminder_prefs.dart';
 import 'package:everything_about_youth/features/housing/data/mapping_housing_repository.dart';
-import 'package:everything_about_youth/features/housing/domain/failures.dart';
-import 'package:everything_about_youth/features/housing/presentation/providers.dart';
 import 'package:everything_about_youth/features/housing/data/profile_store.dart';
+import 'package:everything_about_youth/features/housing/data/saved_notice_store.dart';
+import 'package:everything_about_youth/features/housing/housing_container.dart';
 import 'package:everything_about_youth/features/housing/domain/applicant_profile.dart';
+import 'package:everything_about_youth/features/housing/domain/failures.dart';
 import 'package:everything_about_youth/features/housing/domain/housing_filters.dart';
 import 'package:everything_about_youth/features/housing/domain/notice.dart';
+import 'package:everything_about_youth/features/housing/presentation/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,12 +33,20 @@ NoticePage page(List<String> ids, {int total = 4, int pageNo = 1, int totalPages
 Future<ProviderContainer> makeContainer(FakeHousingRepository repo) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
+  final cipher = AesGcmFieldCipher(MemoryCipherKeyStore());
   final container = ProviderContainer(
     retry: (_, _) => null,
     overrides: [
-      housingRepositoryProvider.overrideWithValue(MappingHousingRepository(repo)),
+      housingContainerProvider.overrideWithValue(
+        HousingContainer.fromStores(
+          repository: MappingHousingRepository(repo),
+          profileLocalStore: ProfileStore(prefs, cipher),
+          savedNoticeLocalStore: SavedNoticeStore(prefs, cipher),
+          reminderPrefs: SavedNoticeReminderPrefs(prefs),
+        ),
+      ),
       sharedPreferencesProvider.overrideWithValue(prefs),
-      fieldCipherProvider.overrideWithValue(AesGcmFieldCipher(MemoryCipherKeyStore())),
+      fieldCipherProvider.overrideWithValue(cipher),
     ],
   );
   addTearDown(container.dispose);
@@ -166,14 +177,21 @@ void main() {
 
     final container = ProviderContainer(
       overrides: [
-        housingRepositoryProvider.overrideWithValue(FakeHousingRepository()),
+        housingContainerProvider.overrideWithValue(
+          HousingContainer.fromStores(
+            repository: MappingHousingRepository(FakeHousingRepository()),
+            profileLocalStore: ProfileStore(prefs, cipher),
+            savedNoticeLocalStore: SavedNoticeStore(prefs, cipher),
+            reminderPrefs: SavedNoticeReminderPrefs(prefs),
+          ),
+        ),
         sharedPreferencesProvider.overrideWithValue(prefs),
         fieldCipherProvider.overrideWithValue(cipher),
       ],
     );
     addTearDown(container.dispose);
 
-    await container.read(profileStoreProvider).load();
+    await container.read(housingContainerProvider).profileLocalStore.load();
     expect(container.read(profileProvider), const ApplicantProfile(age: 33, isHomeless: true));
   });
 
@@ -185,7 +203,14 @@ void main() {
 
     final container = ProviderContainer(
       overrides: [
-        housingRepositoryProvider.overrideWithValue(FakeHousingRepository()),
+        housingContainerProvider.overrideWithValue(
+          HousingContainer.fromStores(
+            repository: MappingHousingRepository(FakeHousingRepository()),
+            profileLocalStore: ProfileStore(prefs, cipher),
+            savedNoticeLocalStore: SavedNoticeStore(prefs, cipher),
+            reminderPrefs: SavedNoticeReminderPrefs(prefs),
+          ),
+        ),
         sharedPreferencesProvider.overrideWithValue(prefs),
         fieldCipherProvider.overrideWithValue(cipher),
       ],
@@ -205,7 +230,14 @@ void main() {
 
     final container = ProviderContainer(
       overrides: [
-        housingRepositoryProvider.overrideWithValue(FakeHousingRepository()),
+        housingContainerProvider.overrideWithValue(
+          HousingContainer.fromStores(
+            repository: MappingHousingRepository(FakeHousingRepository()),
+            profileLocalStore: ProfileStore(prefs, cipher),
+            savedNoticeLocalStore: SavedNoticeStore(prefs, cipher),
+            reminderPrefs: SavedNoticeReminderPrefs(prefs),
+          ),
+        ),
         sharedPreferencesProvider.overrideWithValue(prefs),
         fieldCipherProvider.overrideWithValue(cipher),
       ],

@@ -128,6 +128,43 @@ void main() {
     expect(bad, isEmpty, reason: '\nAppScaffold / AppTopBar / showAppBottomSheet 를 쓰세요:\n${bad.join('\n')}');
   });
 
+  test('housing: presentation 은 data 를 import 하지 않는다', () {
+    final bad = deps.where(
+      (d) =>
+          d.from.startsWith('features/housing/presentation/') &&
+          d.to.startsWith('features/housing/data/'),
+    );
+    expect(bad, isEmpty, reason: '\n${_describe(bad)}');
+  });
+
+  test('housing: data 구현 import 는 housing_container 와 data 레이어만', () {
+    final bad = deps.where((d) {
+      if (!d.to.startsWith('features/housing/data/')) return false;
+      if (d.from.startsWith('features/housing/data/')) return false;
+      if (d.from == 'features/housing/housing_container.dart') return false;
+      return d.from.startsWith('features/housing/');
+    });
+    expect(bad, isEmpty, reason: '\n${_describe(bad)}');
+  });
+
+  test('housing: presentation/providers 는 housing_container 만 조립한다', () {
+    final file = File('lib/features/housing/presentation/providers.dart');
+    final source = file.readAsStringSync();
+    expect(source, isNot(contains("features/housing/data/")));
+    expect(source, contains('housing_container.dart'));
+  });
+
+  test('housing: housing_module 은 data·container 를 import 하지 않는다 (앱 어댑터만)', () {
+    final file = File('lib/features/housing/housing_module.dart');
+    final source = file.readAsStringSync();
+    expect(source, isNot(contains('features/housing/data/')));
+    expect(source, isNot(contains('housing_container.dart')));
+  });
+
+  test('housing: composition root 파일이 존재한다', () {
+    expect(File('lib/features/housing/housing_container.dart').existsSync(), isTrue);
+  });
+
   test('서비스의 유일한 접점은 <id>_module.dart 이다 (바깥은 서비스 안쪽 파일을 import 하지 않는다)', () {
     final bad = deps.where((d) {
       final target = _featureOf(d.to);

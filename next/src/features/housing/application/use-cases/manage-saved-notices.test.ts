@@ -118,4 +118,22 @@ describe("ManageSavedNotices", () => {
     const ids = await uc.merge("u1", ["  ", b.id, "nope", a.id, b.id]);
     expect(ids.sort()).toEqual([a.id, b.id].sort());
   });
+
+  it("합치기: 상한에 도달하면 더 이상 추가하지 않는다", async () => {
+    const notices = Array.from({ length: MAX_SAVED_NOTICES + 2 }, (_, i) =>
+      createNotice(draft({ title: `n${i}`, sources: [{ source: "lh", externalId: `e${i}`, url: null, raw: {}, fetchedAt: "" }] })),
+    );
+    const { uc } = setup(notices);
+    const ids = await uc.merge(
+      "u1",
+      notices.map((n) => n.id),
+    );
+    expect(ids).toHaveLength(MAX_SAVED_NOTICES);
+  });
+
+  it("저장 해제: 없어도 오류 없이 idempotent", async () => {
+    const { uc } = setup([a]);
+    await uc.unsave("u1", "never-saved");
+    expect(await uc.listIds("u1")).toEqual([]);
+  });
 });

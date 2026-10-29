@@ -52,7 +52,7 @@ const LAYERS = {
       "drizzle-orm",
       "drizzle-orm/*",
     ],
-    message: "presentation/app 은 infrastructure 의 container(와 config)를 통해서만 구현체에 접근합니다.",
+    message: "presentation/app 은 infrastructure 구현(persistence·sources·crawler)을 import 할 수 없습니다. container·domain 을 통하세요.",
   },
 };
 

@@ -1,5 +1,5 @@
 import { todayInKst } from "@/common/domain/date";
-import { getHousingContainer } from "@/features/housing/infrastructure/container";
+import { getHousingContainer } from "@/features/housing/housing-container";
 import { FilterForm } from "@/features/housing/presentation/components/FilterForm";
 import { NoticeCard } from "@/features/housing/presentation/components/NoticeCard";
 import { Pagination } from "@/features/housing/presentation/components/Pagination";

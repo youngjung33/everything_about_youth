@@ -1,7 +1,7 @@
 import { assertOperator } from "@/common/presentation/api/operator";
 import { apiHandler, respond } from "@/common/presentation/api/respond";
 import { sourcesFromSyncQuery } from "@/features/housing/presentation/api/sync-query";
-import { getHousingContainer } from "@/features/housing/infrastructure/container";
+import { getHousingContainer } from "@/features/housing/housing-container";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";

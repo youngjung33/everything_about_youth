@@ -13,7 +13,7 @@ features/<id>/           서비스 하나
   <id>_container.dart    (선택) use case·data 조립 — 임대주택: `housing_container.dart`
   domain/                모델, 규칙, **use case**, 저장소 포트   (순수 Dart)
   data/                  API·기기 저장 구현
-  presentation/          화면, Riverpod( use case 호출만 )
+  presentation/          화면, Riverpod — **`housingContainerProvider` 하나만** (data import 금지)
 features/home, splash, unavailable   앱 셸 화면 (서비스가 아님)
 ```
 
@@ -24,6 +24,7 @@ features/home, splash, unavailable   앱 셸 화면 (서비스가 아님)
 - 서비스 안의 방향은 `presentation → data → domain` 한 방향이다. **앱 로직의 중심은 domain 의 use case** 이고, presentation 의 Provider 는 use case 를 호출만 한다.
 - `domain` 은 Flutter 에 의존하지 않는다. (`core/util/pure_dart.dart` 사용)
 - `app` 은 서비스의 `<id>_module.dart` 만 안다.
+- **임대주택(housing) 추가**: `presentation` 은 `data` 를 import 하지 않는다. `data` 구현 import 는 `housing_container.dart` 와 `data/` 만. `presentation/providers.dart` 조립은 `housingContainerProvider`·`housing_container.dart` 만. `housing_module.dart` 는 `data`·`housing_container` 를 import 하지 않는다. `housing_container.dart` 가 composition root 이다. (`test/architecture_test.dart`)
 - 화면은 `Scaffold`/`AppBar`/`SafeArea`/`showModalBottomSheet` 를 직접 쓰지 않는다. `core/layout/` 의
   `AppScaffold`(+`AppTopBar`), `CenteredScrollView`, `showAppBottomSheet` 를 쓴다. (아이폰 홈 인디케이터, 갤럭시 내비게이션바, 노치, 키보드를 한곳에서 처리한다)
   서비스 화면은 앱 헤더·푸터 안에 들어가므로 `AppScaffold(appBar: AppTopBar(...), body: ...)` 만 쓰면 되고, 여백이 중복되지 않는다.

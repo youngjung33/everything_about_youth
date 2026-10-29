@@ -6,7 +6,9 @@ import 'data/api_housing_repository.dart';
 import 'data/mapping_housing_repository.dart';
 import 'data/profile_store.dart';
 import 'data/saved_notice_store.dart';
+import 'data/saved_notice_reminder_prefs.dart';
 import 'domain/housing_repository.dart';
+import 'domain/repositories/saved_notice_reminder_prefs_store.dart';
 import 'domain/repositories/profile_local_store.dart';
 import 'domain/repositories/saved_notice_local_store.dart';
 import 'domain/use_cases/get_notice_detail.dart';
@@ -17,6 +19,7 @@ import 'domain/use_cases/load_schedule_notices.dart';
 import 'domain/use_cases/load_similar_notices.dart';
 import 'domain/use_cases/resolve_saved_notice_ids.dart';
 import 'domain/use_cases/save_profile.dart';
+import 'domain/use_cases/paginated_notice_list.dart';
 import 'domain/use_cases/search_notices.dart';
 import 'domain/use_cases/toggle_saved_notice.dart';
 
@@ -37,11 +40,14 @@ class HousingContainer {
     required this.toggleSavedNotice,
     required this.loadProfile,
     required this.saveProfile,
+    required this.paginatedNoticeList,
+    required this.reminderPrefs,
   });
 
   final HousingRepository repository;
   final ProfileLocalStore profileLocalStore;
   final SavedNoticeLocalStore savedNoticeLocalStore;
+  final SavedNoticeReminderPrefsStore reminderPrefs;
 
   final SearchNoticesUseCase searchNotices;
   final GetNoticeDetailUseCase getNoticeDetail;
@@ -53,6 +59,7 @@ class HousingContainer {
   final ToggleSavedNoticeUseCase toggleSavedNotice;
   final LoadProfileUseCase loadProfile;
   final SaveProfileUseCase saveProfile;
+  final PaginatedNoticeListUseCase paginatedNoticeList;
 
   factory HousingContainer.live({
     required ApiClient apiClient,
@@ -66,6 +73,7 @@ class HousingContainer {
       repository: repository,
       profileLocalStore: profileLocalStore,
       savedNoticeLocalStore: savedNoticeLocalStore,
+      reminderPrefs: SavedNoticeReminderPrefs(prefs),
     );
   }
 
@@ -73,13 +81,15 @@ class HousingContainer {
     required HousingRepository repository,
     required ProfileLocalStore profileLocalStore,
     required SavedNoticeLocalStore savedNoticeLocalStore,
+    required SavedNoticeReminderPrefsStore reminderPrefs,
   }) {
     final getNoticeDetail = GetNoticeDetailUseCase(repository);
+    final searchNotices = SearchNoticesUseCase(repository);
     return HousingContainer(
       repository: repository,
       profileLocalStore: profileLocalStore,
       savedNoticeLocalStore: savedNoticeLocalStore,
-      searchNotices: SearchNoticesUseCase(repository),
+      searchNotices: searchNotices,
       getNoticeDetail: getNoticeDetail,
       loadHousingMeta: LoadHousingMetaUseCase(repository),
       loadScheduleNotices: LoadScheduleNoticesUseCase(repository),
@@ -89,6 +99,8 @@ class HousingContainer {
       toggleSavedNotice: ToggleSavedNoticeUseCase(repository, savedNoticeLocalStore),
       loadProfile: LoadProfileUseCase(profileLocalStore),
       saveProfile: SaveProfileUseCase(profileLocalStore),
+      paginatedNoticeList: PaginatedNoticeListUseCase(searchNotices),
+      reminderPrefs: reminderPrefs,
     );
   }
 }

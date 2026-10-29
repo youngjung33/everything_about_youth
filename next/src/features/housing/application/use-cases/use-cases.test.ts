@@ -6,7 +6,7 @@ import { SourceSkippedError, type NoticeSourcePort } from "../ports/notice-sourc
 import type { SyncRun, SyncRunFinish, SyncRunRepository } from "../ports/sync-run-repository";
 import { silentLogger, type Clock } from "@/common/application/system";
 import { SearchNotices } from "./search-notices";
-import { SyncNoticesFromSource } from "./sync-notices-from-source";
+import { SyncNoticesFromSource, dedupeBatch } from "./sync-notices-from-source";
 
 const clock: Clock = { now: () => new Date("2026-10-12T03:00:00Z") };
 
@@ -86,6 +86,16 @@ const source = (id: "lh" | "sh", drafts: NoticeDraft[] | Error, available = true
     if (drafts instanceof Error) throw drafts;
     return drafts;
   },
+});
+
+describe("dedupeBatch", () => {
+  it("같은 공고는 mergeNotice 로 합친다", () => {
+    const a = createNotice(draft());
+    const b = createNotice(draft({ title: "[정정] 행복주택 모집" }));
+    const out = dedupeBatch([a, b]);
+    expect(out).toHaveLength(1);
+    expect(out[0]!.sources.length).toBeGreaterThanOrEqual(1);
+  });
 });
 
 describe("SyncNoticesFromSource", () => {
@@ -181,5 +191,30 @@ describe("SearchNotices", () => {
     expect(out.total).toBe(1);
     expect(out.items[0]!.notice.title).toBe("A 행복주택");
     expect(repo.lastQuery?.limit).toBeUndefined();
+  });
+
+  it("page·pageSize 경계를 보정한다", async () => {
+    const repo = new FakeRepo();
+    await repo.upsertMany([createNotice(draft())]);
+    const uc = new SearchNotices(repo, clock);
+    const out = await uc.execute({ filters: {}, page: 0, pageSize: 999 });
+    expect(out.page).toBe(1);
+    expect(out.pageSize).toBe(100);
+  });
+
+  it("verdicts 가 있어도 profile 이 없으면 SQL 페이징 경로", async () => {
+    const repo = new FakeRepo();
+    await repo.upsertMany([createNotice(draft())]);
+    const uc = new SearchNotices(repo, clock);
+    const out = await uc.execute({ filters: {}, verdicts: ["eligible"] });
+    expect(out.items).toHaveLength(1);
+    expect(repo.lastQuery?.limit).toBe(20);
+  });
+
+  it("profile 없으면 eligibility 는 null", async () => {
+    const repo = new FakeRepo();
+    await repo.upsertMany([createNotice(draft())]);
+    const out = await new SearchNotices(repo, clock).execute({ filters: {} });
+    expect(out.items[0]!.eligibility).toBeNull();
   });
 });

@@ -9,12 +9,16 @@ import 'package:everything_about_youth/core/feature/feature_flags.dart';
 import 'package:everything_about_youth/core/feature/feature_module.dart';
 import 'package:everything_about_youth/core/network/api_client.dart';
 import 'package:everything_about_youth/core/notifications/deadline_notification_service.dart';
+import 'package:everything_about_youth/features/housing/data/saved_notice_reminder_prefs.dart';
 import 'package:everything_about_youth/features/housing/data/mapping_housing_repository.dart';
+import 'package:everything_about_youth/features/housing/data/profile_store.dart';
+import 'package:everything_about_youth/features/housing/data/saved_notice_store.dart';
+import 'package:everything_about_youth/features/housing/housing_container.dart';
+import 'package:everything_about_youth/features/housing/presentation/providers.dart';
 import 'package:everything_about_youth/features/housing/presentation/saved_notice_reminder_sync.dart';
 import 'package:everything_about_youth/core/providers/core_providers.dart';
 import 'package:everything_about_youth/core/security/cipher_key_store.dart';
 import 'package:everything_about_youth/core/security/field_cipher.dart';
-import 'package:everything_about_youth/features/housing/presentation/providers.dart';
 import 'package:everything_about_youth/features/housing/housing_module.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -82,16 +86,24 @@ Future<ProviderContainer> pumpApp(
   addTearDown(tester.view.resetViewPadding);
   addTearDown(tester.view.resetViewInsets);
 
+  final resolvedCipher = cipher ?? AesGcmFieldCipher(MemoryCipherKeyStore());
   final key = UniqueKey();
   await tester.pumpWidget(
     ProviderScope(
       key: key,
       retry: (_, _) => null,
       overrides: [
-        housingRepositoryProvider.overrideWithValue(MappingHousingRepository(repo)),
+        housingContainerProvider.overrideWithValue(
+          HousingContainer.fromStores(
+            repository: MappingHousingRepository(repo),
+            profileLocalStore: ProfileStore(prefs, resolvedCipher),
+            savedNoticeLocalStore: SavedNoticeStore(prefs, resolvedCipher),
+            reminderPrefs: SavedNoticeReminderPrefs(prefs),
+          ),
+        ),
         sharedPreferencesProvider.overrideWithValue(prefs),
         // 진짜 보안 저장소(플랫폼 채널) 대신 메모리 키를 쓴다.
-        fieldCipherProvider.overrideWithValue(cipher ?? AesGcmFieldCipher(MemoryCipherKeyStore())),
+        fieldCipherProvider.overrideWithValue(resolvedCipher),
         appUpdateRemoteProvider.overrideWithValue(update ?? FakeAppUpdateRemote()),
         ssoRedirectUriProvider.overrideWithValue('everythingaboutyouth://auth'),
         // 진짜 로그인 창(플랫폼 채널)은 테스트에서 열 수 없다. 서버를 흉내 낼 때는 로그인에 성공하는 창이 기본이다.

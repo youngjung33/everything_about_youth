@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { todayInKst } from "@/common/domain/date";
 import { HOUSING_TYPE_LABELS, NOTICE_STATUS_LABELS, SOURCE_LABELS, SUPPLY_TYPE_LABELS } from "@/features/housing/domain/enums";
 import { VERDICT_LABELS } from "@/features/housing/domain/eligibility/evaluate";
-import { getHousingContainer } from "@/features/housing/infrastructure/container";
+import { getHousingContainer } from "@/features/housing/housing-container";
 import { regionLabel } from "@/features/housing/presentation/region-label";
 import { formatArea, formatDate, formatDday, formatPeriod, formatWon } from "@/common/presentation/format";
 import { HOUSING_BASE } from "@/features/housing/presentation/routes";

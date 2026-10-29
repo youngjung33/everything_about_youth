@@ -1,5 +1,5 @@
 import { SOURCE_LABELS } from "@/features/housing/domain/enums";
-import { getHousingContainer } from "@/features/housing/infrastructure/container";
+import { getHousingContainer } from "@/features/housing/housing-container";
 import { SyncButton } from "@/features/housing/presentation/components/SyncButton";
 
 export const dynamic = "force-dynamic";

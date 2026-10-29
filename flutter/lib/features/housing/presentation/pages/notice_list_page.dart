@@ -10,6 +10,7 @@ import '../../../../core/widgets/state_views.dart';
 import '../providers.dart';
 import '../../domain/housing_filters.dart';
 import '../../domain/housing_meta.dart';
+import '../../domain/notice_list_state.dart';
 import '../housing_routes.dart';
 import '../widgets/filter_panel.dart';
 import '../widgets/filter_preset_chips.dart';

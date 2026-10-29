@@ -1,5 +1,5 @@
 import { apiHandler, respond } from "@/common/presentation/api/respond";
-import { getHousingContainer } from "@/features/housing/infrastructure/container";
+import { getHousingContainer } from "@/features/housing/housing-container";
 import { handleGetMeta } from "@/features/housing/presentation/api/handlers";
 import { assertHousingEnabled } from "../guard";
 

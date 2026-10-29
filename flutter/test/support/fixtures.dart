@@ -124,6 +124,8 @@ class FakeHousingRepository implements HousingRepository {
     this.meta,
     this.detail,
     this.searchError,
+    this.saveError,
+    this.unsaveError,
     this.searchHook,
     List<String>? savedIds,
   }) : pages = pages ?? [],
@@ -134,6 +136,8 @@ class FakeHousingRepository implements HousingRepository {
   final HousingMeta? meta;
   final NoticeDetail? detail;
   Object? searchError;
+  Object? saveError;
+  Object? unsaveError;
   List<String> savedIds;
 
   /// 검색 응답을 지연시키거나 가로채야 할 때 사용한다.
@@ -188,12 +192,14 @@ class FakeHousingRepository implements HousingRepository {
 
   @override
   Future<void> saveNotice(String id) async {
+    if (saveError != null) throw saveError!;
     saveCalls.add(id);
     if (!savedIds.contains(id)) savedIds = [id, ...savedIds];
   }
 
   @override
   Future<void> unsaveNotice(String id) async {
+    if (unsaveError != null) throw unsaveError!;
     unsaveCalls.add(id);
     savedIds = [
       for (final e in savedIds)

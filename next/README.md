@@ -25,11 +25,12 @@ src/
       crawler/                 robots.txt 준수 + 호스트별 간격 크롤링 fetcher
     presentation/              금액/날짜/D-day 포맷
   features/
-    housing/                 ← 임대주택 섹션: 이 섹션의 모든 코드가 여기 한곳에
-      domain/                  공고/단지/세대유형, 공급·주택유형, 동일 공고 병합, 자격 판정 규칙
-      application/             포트(리포지토리, 소스) + 유스케이스(검색, 상세, 수집)
-      infrastructure/          SQLite(`create-repositories.ts`), 수집 소스, `container.ts`, config
-      presentation/            필터 파싱, 컴포넌트, 경로(routes.ts)
+    housing/                 ← 임대주택 섹션
+      housing-container.ts     app/API 가 쓰는 조립 re-export
+      domain/                  … + sync-sources.ts (소스 목록 파싱)
+      application/
+      infrastructure/          container.ts, create-repositories.ts, …
+      presentation/
   app/                       ← Next.js 라우트 (조립만)
     page.tsx                   섹션 목록 홈
     housing/                   /housing, /housing/notices/[id], /housing/admin/sync
@@ -42,7 +43,7 @@ drizzle/                     마이그레이션 (모든 섹션이 하나의 이�
 ```
 
 ### 의존 규칙 (`eslint.config.mjs` 로 강제)
-1. **레이어**: `domain ← application ← infrastructure / presentation`. `common` 과 각 `features/<name>` 안에서 똑같이 적용됩니다. `app`/`presentation` 은 infrastructure 의 `container`(와 `config`)를 통해서만 구현체에 접근합니다.
+1. **레이어**: `domain ← application ← infrastructure / presentation`. `common` 과 각 `features/<name>` 안에서 똑같이 적용됩니다. `app`/`presentation` 은 **infrastructure 구현(persistence·sources·crawler 등)을 import 하지 않고** `housing-container.ts`(또는 섹션별 `<id>-container.ts`)·`domain` 을 통합니다. (`eslint.config.mjs` + 임대주택은 `housing-boundary.test.ts`)
 2. **섹션 경계**: `common` 은 `features` 를 import 할 수 없고, 섹션끼리도 서로 import 할 수 없습니다. 여러 섹션이 필요로 하는 코드는 `common` 으로 옮깁니다.
 
 ### 새 섹션 추가하기 (예: jobs)

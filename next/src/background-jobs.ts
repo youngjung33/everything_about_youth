@@ -1,7 +1,7 @@
 import { getFeatureFlags } from "@/features/registry";
 import { SyncScheduler } from "@/features/housing/application/sync-scheduler";
 import { HOUSING_FEATURE_ID } from "@/features/housing/feature";
-import { getHousingContainer } from "@/features/housing/infrastructure/container";
+import { getHousingContainer } from "@/features/housing/housing-container";
 
 /** 서버가 뜬 뒤 첫 수집까지 기다리는 시간. 시작 직후의 요청을 먼저 처리하게 한다. */
 const STARTUP_DELAY_MS = 60_000;

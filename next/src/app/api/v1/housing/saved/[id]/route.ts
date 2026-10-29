@@ -1,7 +1,7 @@
 import { requireMemberUserId } from "@/common/presentation/api/auth";
 import { apiHandler, respond } from "@/common/presentation/api/respond";
 import { getAuthClientStore } from "@/common/infrastructure/auth/auth-container";
-import { getHousingContainer } from "@/features/housing/infrastructure/container";
+import { getHousingContainer } from "@/features/housing/housing-container";
 import { handleSaveNotice, handleUnsaveNotice } from "@/features/housing/presentation/api/handlers";
 import { assertHousingEnabled } from "../../guard";
 

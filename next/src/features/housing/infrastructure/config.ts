@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { emptyToUndefined } from "@/common/infrastructure/config/env";
-import { SOURCE_IDS, type SourceId } from "../domain/enums";
+import { type SourceId } from "../domain/enums";
+import { parseSourceList } from "../domain/sync-sources";
 
 /** 자동 수집 간격의 최솟값(분). 공공 API 와 기관 사이트에 부담을 주지 않기 위한 하한이다. */
 export const MIN_SYNC_INTERVAL_MINUTES = 30;
@@ -17,19 +18,6 @@ export interface HousingConfig {
   enabledSources: SourceId[];
   /** 자동 수집 간격(분). 0 이면 끈다. */
   syncIntervalMinutes: number;
-}
-
-export function parseSourceList(value: string | undefined): SourceId[] {
-  if (!value) return [];
-  const names = value
-    .split(",")
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
-  const unknown = names.filter((n) => !(SOURCE_IDS as readonly string[]).includes(n));
-  if (unknown.length > 0) {
-    throw new Error(`알 수 없는 소스: ${unknown.join(", ")} (사용 가능: ${SOURCE_IDS.join(", ")})`);
-  }
-  return names as SourceId[];
 }
 
 export function loadHousingConfig(env: Record<string, string | undefined> = process.env): HousingConfig {

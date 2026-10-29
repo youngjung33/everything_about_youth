@@ -10,13 +10,18 @@ import '../saved_notice_reminder_sync.dart';
 import '../widgets/notice_card.dart';
 
 /// 저장한 관심 공고. 비회원은 이 기기, 회원은 서버(로그인 때 기기 목록을 합친다).
-class SavedNoticesPage extends ConsumerWidget {
+class SavedNoticesPage extends ConsumerStatefulWidget {
   const SavedNoticesPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SavedNoticesPage> createState() => _SavedNoticesPageState();
+}
+
+class _SavedNoticesPageState extends ConsumerState<SavedNoticesPage> {
+  @override
+  Widget build(BuildContext context) {
     final async = ref.watch(savedNoticeListProvider);
-    final reminderPrefs = ref.watch(savedNoticeReminderPrefsProvider);
+    final reminderPrefs = ref.read(housingContainerProvider).reminderPrefs;
     final remindersOn = !kIsWeb && reminderPrefs.enabled;
 
     return AppScaffold(
@@ -44,7 +49,7 @@ class SavedNoticesPage extends ConsumerWidget {
                       value: remindersOn,
                       onChanged: (value) async {
                         await reminderPrefs.setEnabled(value);
-                        ref.invalidate(savedNoticeReminderPrefsProvider);
+                        if (mounted) setState(() {});
                         await syncSavedNoticeReminders(ref);
                       },
                     ),

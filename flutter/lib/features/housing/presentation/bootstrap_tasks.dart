@@ -9,7 +9,7 @@ final housingBootstrapTasks = <BootstrapTask>[
     name: '내 조건 불러오기',
     critical: true,
     run: (ref) async {
-      await ref.read(loadProfileUseCaseProvider)();
+      await ref.read(housingContainerProvider).loadProfile();
       ref.read(profileProvider);
     },
   ),

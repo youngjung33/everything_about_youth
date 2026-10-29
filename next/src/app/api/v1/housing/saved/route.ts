@@ -3,7 +3,7 @@ import { mergeSavedBodySchema } from "@/common/presentation/api/schemas/housing-
 import { apiHandler, respond } from "@/common/presentation/api/respond";
 import { parseJsonBody } from "@/common/presentation/api/validate";
 import { getAuthClientStore } from "@/common/infrastructure/auth/auth-container";
-import { getHousingContainer } from "@/features/housing/infrastructure/container";
+import { getHousingContainer } from "@/features/housing/housing-container";
 import { handleListSaved, handleMergeSaved } from "@/features/housing/presentation/api/handlers";
 import { assertHousingEnabled } from "../guard";
 
