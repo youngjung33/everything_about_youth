@@ -157,6 +157,16 @@ describe("SyncScheduler", () => {
     scheduler.stop();
   });
 
+  it("tick: run 이 throw 하면 failed 를 돌려주고 running 은 풀린다", async () => {
+    const run = vi.fn(async () => {
+      throw new Error("boom");
+    });
+    const { scheduler } = setup({ run });
+    expect(await scheduler.tick()).toBe("failed");
+    expect(scheduler.isRunning).toBe(false);
+    expect(silentLogger.error).toHaveBeenCalled();
+  });
+
   it("start 는 여러 번 불러도 한 번만 시작하고, stop 하면 더 이상 실행하지 않는다", async () => {
     const { scheduler, timers, run } = setup();
     await scheduler.start();

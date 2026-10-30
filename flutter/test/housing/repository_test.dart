@@ -118,4 +118,39 @@ void main() {
     expect(sent.method, 'DELETE');
     expect(requests.last.path, '/api/v1/housing/saved/lh%3A1%202');
   });
+
+  group('API 오류', () {
+    test('404 는 ApiException isNotFound', () async {
+      repo = ApiHousingRepository(
+        ApiClient(
+          baseUrl: 'http://localhost:3000',
+          httpClient: MockClient((request) async => http.Response('{"error":{"code":"NOTICE_NOT_FOUND"}}', 404)),
+        ),
+      );
+      await expectLater(
+        repo.getNotice('nope', profile: ApplicantProfile.empty),
+        throwsA(isA<ApiException>().having((e) => e.isNotFound, 'notFound', isTrue)),
+      );
+    });
+
+    test('500 응답은 ApiException', () async {
+      repo = ApiHousingRepository(
+        ApiClient(
+          baseUrl: 'http://localhost:3000',
+          httpClient: MockClient((request) async => http.Response('{"error":{"message":"fail"}}', 500)),
+        ),
+      );
+      await expectLater(repo.fetchMeta(), throwsA(isA<ApiException>()));
+    });
+
+    test('잘못된 JSON 은 badResponse', () async {
+      repo = ApiHousingRepository(
+        ApiClient(
+          baseUrl: 'http://localhost:3000',
+          httpClient: MockClient((request) async => http.Response('not json', 200)),
+        ),
+      );
+      await expectLater(repo.fetchMeta(), throwsA(isA<ApiException>()));
+    });
+  });
 }

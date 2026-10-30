@@ -136,4 +136,11 @@ describe("ManageSavedNotices", () => {
     await uc.unsave("u1", "never-saved");
     expect(await uc.listIds("u1")).toEqual([]);
   });
+
+  it("save 는 already·not_found·limit·saved 를 구분한다", async () => {
+    const { uc } = setup([a]);
+    expect(await uc.save("u1", a.id)).toEqual({ status: "saved" });
+    expect(await uc.save("u1", a.id)).toEqual({ status: "already" });
+    expect(await uc.save("u1", "missing")).toEqual({ status: "not_found" });
+  });
 });

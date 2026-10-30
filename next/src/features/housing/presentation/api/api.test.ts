@@ -5,7 +5,7 @@ import type { NoticeRepository, NoticeSearchQuery } from "@/features/housing/app
 import { createNotice } from "@/features/housing/domain/identity";
 import type { Notice, NoticeDraft } from "@/features/housing/domain/notice";
 import { GetNoticeDetail } from "@/features/housing/application/use-cases/get-notice-detail";
-import { ManageSavedNotices } from "@/features/housing/application/use-cases/manage-saved-notices";
+import { ManageSavedNotices, MAX_SAVED_NOTICES } from "@/features/housing/application/use-cases/manage-saved-notices";
 import type { SavedNotice, SavedNoticeRepository } from "@/features/housing/application/ports/saved-notice-repository";
 import {
   handleGetMeta,
@@ -306,6 +306,26 @@ describe("관심 공고 API", () => {
     const merged = (await handleMergeSaved("u1", { ids: [notices[0]!.id, "nope"] }, deps)).body;
     expect(merged.ids).toEqual([notices[0]!.id]);
   });
+
+  it("상한에 도달하면 BAD_REQUEST", async () => {
+    const notices = Array.from({ length: MAX_SAVED_NOTICES + 1 }, (_, i) =>
+      createNotice(draft({ title: `n${i}`, sources: [{ source: "lh", externalId: `e${i}`, url: null, raw: {}, fetchedAt: "" }] })),
+    );
+    const { deps } = setup(notices);
+    for (let i = 0; i < MAX_SAVED_NOTICES; i++) {
+      await handleSaveNotice("u1", notices[i]!.id, deps);
+    }
+    await expect(handleSaveNotice("u1", notices[MAX_SAVED_NOTICES]!.id, deps)).rejects.toMatchObject({
+      code: "BAD_REQUEST",
+    });
+  });
+
+  it("이미 저장된 공고를 다시 저장해도 200 (already)", async () => {
+    const { deps, notices } = setup([draft()]);
+    const id = notices[0]!.id;
+    await handleSaveNotice("u1", id, deps);
+    await expect(handleSaveNotice("u1", id, deps)).resolves.toEqual({ status: 200, body: { saved: true } });
+  });
 });
 
 describe("캘린더 ICS", () => {
@@ -322,6 +342,14 @@ describe("캘린더 ICS", () => {
   it("없는 공고는 NOTICE_NOT_FOUND", async () => {
     const { deps } = setup([draft()]);
     await expect(handleNoticeCalendar("nope", deps)).rejects.toMatchObject({ code: "NOTICE_NOT_FOUND" });
+  });
+
+  it("접수 마감일이 없으면 BAD_REQUEST", async () => {
+    const { deps, notices } = setup([draft({ applicationEnd: null })]);
+    await expect(handleNoticeCalendar(notices[0]!.id, deps)).rejects.toMatchObject({
+      code: "BAD_REQUEST",
+      message: "접수 마감일이 없어 캘린더에 넣을 수 없습니다.",
+    });
   });
 });
 

@@ -124,8 +124,12 @@ class FakeHousingRepository implements HousingRepository {
     this.meta,
     this.detail,
     this.searchError,
+    this.fetchMetaError,
+    this.getNoticeError,
+    this.fetchSavedError,
     this.saveError,
     this.unsaveError,
+    this.mergeError,
     this.searchHook,
     List<String>? savedIds,
   }) : pages = pages ?? [],
@@ -136,8 +140,12 @@ class FakeHousingRepository implements HousingRepository {
   final HousingMeta? meta;
   final NoticeDetail? detail;
   Object? searchError;
+  Object? fetchMetaError;
+  Object? getNoticeError;
+  Object? fetchSavedError;
   Object? saveError;
   Object? unsaveError;
+  Object? mergeError;
   List<String> savedIds;
 
   /// 검색 응답을 지연시키거나 가로채야 할 때 사용한다.
@@ -149,7 +157,10 @@ class FakeHousingRepository implements HousingRepository {
   final List<List<String>> mergeCalls = [];
 
   @override
-  Future<HousingMeta> fetchMeta() async => meta ?? HousingMeta.fromJson(metaJson());
+  Future<HousingMeta> fetchMeta() async {
+    if (fetchMetaError != null) throw fetchMetaError!;
+    return meta ?? HousingMeta.fromJson(metaJson());
+  }
 
   @override
   Future<NoticePage> searchNotices({
@@ -166,6 +177,7 @@ class FakeHousingRepository implements HousingRepository {
 
   @override
   Future<NoticeDetail> getNotice(String id, {required ApplicantProfile profile}) async {
+    if (getNoticeError != null) throw getNoticeError!;
     if (detail != null) return detail!;
     for (final page in pages) {
       for (final item in page.items) {
@@ -182,6 +194,7 @@ class FakeHousingRepository implements HousingRepository {
 
   @override
   Future<SavedNoticeList> fetchSaved({required ApplicantProfile profile}) async {
+    if (fetchSavedError != null) throw fetchSavedError!;
     final items = [
       for (final page in pages)
         for (final item in page.items)
@@ -209,6 +222,7 @@ class FakeHousingRepository implements HousingRepository {
 
   @override
   Future<List<String>> mergeSaved(List<String> ids) async {
+    if (mergeError != null) throw mergeError!;
     mergeCalls.add(ids);
     for (final id in ids) {
       if (!savedIds.contains(id)) savedIds = [...savedIds, id];

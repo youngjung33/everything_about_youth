@@ -4,7 +4,6 @@ import 'package:everything_about_youth/features/housing/domain/applicant_profile
 import 'package:everything_about_youth/features/housing/domain/failures.dart';
 import 'package:everything_about_youth/features/housing/domain/housing_filters.dart';
 import 'package:everything_about_youth/features/housing/domain/notice.dart';
-import 'package:everything_about_youth/features/housing/domain/repositories/profile_local_store.dart';
 import 'package:everything_about_youth/features/housing/domain/repositories/saved_notice_local_store.dart';
 import 'package:everything_about_youth/features/housing/domain/use_cases/get_notice_detail.dart';
 import 'package:everything_about_youth/features/housing/domain/use_cases/load_housing_meta.dart';
@@ -19,56 +18,7 @@ import 'package:everything_about_youth/features/housing/domain/use_cases/toggle_
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../support/fixtures.dart';
-
-class MemoryProfileStore implements ProfileLocalStore {
-  MemoryProfileStore([this._current = ApplicantProfile.empty]) : _loaded = true;
-
-  ApplicantProfile _current;
-  bool _loaded;
-
-  @override
-  ApplicantProfile get current => _current;
-
-  @override
-  bool get isLoaded => _loaded;
-
-  @override
-  Future<ApplicantProfile> load() async {
-    _loaded = true;
-    return _current;
-  }
-
-  @override
-  Future<void> save(ApplicantProfile profile) async {
-    _current = profile;
-    _loaded = true;
-  }
-}
-
-class MemorySavedNoticeLocalStore implements SavedNoticeLocalStore {
-  MemorySavedNoticeLocalStore([List<String>? ids]) : _ids = ids ?? [];
-
-  List<String> _ids;
-  bool _loaded = true;
-
-  @override
-  List<String> get current => List.unmodifiable(_ids);
-
-  @override
-  bool get isLoaded => _loaded;
-
-  @override
-  Future<List<String>> load() async {
-    _loaded = true;
-    return List.of(_ids);
-  }
-
-  @override
-  Future<void> replace(List<String> ids) async {
-    _ids = [...ids.where((e) => e.isNotEmpty)];
-    _loaded = true;
-  }
-}
+import '../../support/housing_memory_stores.dart';
 
 void main() {
   group('SearchNoticesUseCase', () {
@@ -93,6 +43,11 @@ void main() {
       final meta = await LoadHousingMetaUseCase(repo)();
       expect(meta.sidos, isNotEmpty);
     });
+
+    test('fetchMeta 실패 전파', () {
+      final repo = FakeHousingRepository(fetchMetaError: const ApiException('meta'));
+      expect(LoadHousingMetaUseCase(repo)(), throwsA(isA<ApiException>()));
+    });
   });
 
   group('GetNoticeDetailUseCase', () {
@@ -100,6 +55,14 @@ void main() {
       final repo = FakeHousingRepository(pages: [NoticePage.fromJson(pageJson(items: [summaryJson(id: 'x')]))]);
       final detail = await GetNoticeDetailUseCase(repo)('x', profile: ApplicantProfile.empty);
       expect(detail.summary.id, 'x');
+    });
+
+    test('getNotice 실패 전파', () {
+      final repo = FakeHousingRepository(getNoticeError: const ApiException('detail fail'));
+      expect(
+        GetNoticeDetailUseCase(repo)('x', profile: ApplicantProfile.empty),
+        throwsA(isA<ApiException>()),
+      );
     });
   });
 
@@ -136,6 +99,15 @@ void main() {
       ]);
       expect(await local.load(), isEmpty);
       expect(ids, contains('local1'));
+    });
+
+    test('회원·merge 실패면 HousingUserMessage 전파', () async {
+      final local = MemorySavedNoticeLocalStore(['local1']);
+      final repo = FakeHousingRepository(mergeError: const HousingUserMessage('merge 실패'));
+      expect(
+        ResolveSavedNoticeIdsUseCase(repo, local)(isMember: true),
+        throwsA(isA<HousingUserMessage>()),
+      );
     });
   });
 
@@ -189,6 +161,12 @@ void main() {
       expect(await local.load(), ['old']);
       expect(repo.saveCalls, ['n1']);
     });
+
+    test('이미 있는 id 를 다시 누르면 제거', () async {
+      final uc = ToggleSavedNoticeUseCase(FakeHousingRepository(), MemorySavedNoticeLocalStore(['a', 'b']));
+      final r = await uc(id: 'a', isMember: false, currentIds: ['a', 'b']);
+      expect(r.ids, ['b']);
+    });
   });
 
   group('LoadSavedNoticeSummariesUseCase', () {
@@ -217,6 +195,16 @@ void main() {
       final list = await uc(ids: ['missing'], profile: ApplicantProfile.empty, isMember: false);
       expect(list.items, isEmpty);
     });
+
+    test('비회원: getNotice 가 HousingUserMessage 이면 전파한다', () async {
+      final inner = FakeHousingRepository(getNoticeError: const HousingUserMessage('상세 실패'));
+      final repo = MappingHousingRepository(inner);
+      final uc = LoadSavedNoticeSummariesUseCase(repo, GetNoticeDetailUseCase(repo));
+      expect(
+        uc(ids: ['bad'], profile: ApplicantProfile.empty, isMember: false),
+        throwsA(isA<HousingUserMessage>()),
+      );
+    });
   });
 
   group('LoadSimilarNoticesUseCase', () {
@@ -232,6 +220,18 @@ void main() {
       );
       expect(similar, hasLength(5));
       expect(similar.any((n) => n.id == 'n0'), isFalse);
+    });
+
+    test('search 실패 전파', () {
+      final repo = FakeHousingRepository(searchError: const ApiException('similar fail'));
+      expect(
+        LoadSimilarNoticesUseCase(repo)(
+          excludeId: 'n0',
+          supplyType: 'happy',
+          profile: ApplicantProfile.empty,
+        ),
+        throwsA(isA<ApiException>()),
+      );
     });
   });
 
@@ -258,6 +258,24 @@ void main() {
       final out = await LoadScheduleNoticesUseCase(repo)(profile: ApplicantProfile.empty);
       expect(out.items.map((e) => e.id), ['a', 'b', 'c']);
       expect(repo.searchCalls.length, 2);
+    });
+
+    test('2페이지 조회 실패면 예외 전파', () async {
+      late FakeHousingRepository repo;
+      repo = FakeHousingRepository(
+        pages: [
+          NoticePage.fromJson(pageJson(items: [summaryJson(id: 'a')], page: 1, totalPages: 3)),
+          NoticePage.fromJson(pageJson(items: [summaryJson(id: 'b')], page: 2, totalPages: 3)),
+        ],
+        searchHook: (_, page) {
+          if (page == 2) throw const ApiException('page2 fail');
+          return Future.value(repo.pages[page - 1]);
+        },
+      );
+      expect(
+        LoadScheduleNoticesUseCase(repo)(profile: ApplicantProfile.empty),
+        throwsA(isA<ApiException>()),
+      );
     });
   });
 }

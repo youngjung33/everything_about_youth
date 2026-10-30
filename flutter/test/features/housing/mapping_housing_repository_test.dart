@@ -4,6 +4,7 @@ import 'package:everything_about_youth/features/housing/data/mapping_housing_rep
 import 'package:everything_about_youth/features/housing/domain/applicant_profile.dart';
 import 'package:everything_about_youth/features/housing/domain/failures.dart';
 import 'package:everything_about_youth/features/housing/domain/housing_filters.dart';
+import 'package:everything_about_youth/features/housing/domain/notice.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../support/fixtures.dart';
@@ -43,6 +44,27 @@ void main() {
       final inner = FakeHousingRepository(saveError: const ApiException('저장 불가'));
       final repo = MappingHousingRepository(inner);
       await expectLater(repo.saveNotice('n1'), throwsA(isA<HousingUserMessage>()));
+    });
+
+    test('fetchMeta·mergeSaved·unsave·fetchSaved 실패도 HousingUserMessage', () async {
+      var inner = FakeHousingRepository(fetchMetaError: const ApiException('meta fail'));
+      var repo = MappingHousingRepository(inner);
+      await expectLater(repo.fetchMeta(), throwsA(isA<HousingUserMessage>().having((e) => e.message, 'msg', 'meta fail')));
+
+      inner = FakeHousingRepository(mergeError: const ApiException('merge fail'));
+      repo = MappingHousingRepository(inner);
+      await expectLater(repo.mergeSaved(['a']), throwsA(isA<HousingUserMessage>()));
+
+      inner = FakeHousingRepository(unsaveError: const ApiException('unsave fail'));
+      repo = MappingHousingRepository(inner);
+      await expectLater(repo.unsaveNotice('a'), throwsA(isA<HousingUserMessage>()));
+
+      inner = FakeHousingRepository(fetchSavedError: const ApiException('saved list fail'));
+      repo = MappingHousingRepository(inner);
+      await expectLater(
+        repo.fetchSaved(profile: ApplicantProfile.empty),
+        throwsA(isA<HousingUserMessage>()),
+      );
     });
   });
 }

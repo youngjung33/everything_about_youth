@@ -323,6 +323,20 @@ void main() {
     expect(container.read(savedNoticesProvider).requireValue, ['n2', 'n1']);
   });
 
+  test('관심 공고: 회원 save API 실패면 문구를 돌려주고 목록은 그대로', () async {
+    final repo = FakeHousingRepository(
+      pages: [page(['n1'])],
+      saveError: const HousingUserMessage('저장 실패'),
+    );
+    final container = await makeContainer(repo);
+    container.listen(savedNoticesProvider, (_, _) {});
+    await container.read(authModeProvider.notifier).set(AuthMode.member);
+    await container.read(savedNoticesProvider.future);
+
+    expect(await container.read(savedNoticesProvider.notifier).toggle('n1'), '저장 실패');
+    expect(container.read(savedNoticesProvider).requireValue, isEmpty);
+  });
+
   test('관심 공고: 상한을 넘기면 안내하고 넣지 않는다', () async {
     final container = await makeContainer(FakeHousingRepository());
     container.listen(savedNoticesProvider, (_, _) {});

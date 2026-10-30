@@ -151,6 +151,40 @@ describe("SyncNoticesFromSource", () => {
     expect(r).toMatchObject({ status: "skipped", error: "robots.txt 금지" });
     expect(runs.runs[0]).toMatchObject({ status: "skipped" });
   });
+
+  it("fetch 가 문자열을 던져도 failed 로 기록한다", async () => {
+    const runs = new FakeRuns();
+    const throwing: NoticeSourcePort = {
+      id: "lh",
+      label: "lh",
+      checkAvailability: () => ({ available: true }),
+      fetchNotices: async () => {
+        throw "network down";
+      },
+    };
+    const [r] = await new SyncNoticesFromSource([throwing], new FakeRepo(), runs, clock, silentLogger).execute();
+    expect(r).toMatchObject({ status: "failed", error: "network down" });
+  });
+
+  it("sourceIds 로 대상 소스만 실행한다", async () => {
+    const repo = new FakeRepo();
+    const uc = new SyncNoticesFromSource(
+      [source("lh", [draft()]), source("sh", [draft({ title: "SH" })])],
+      repo,
+      new FakeRuns(),
+      clock,
+      silentLogger,
+    );
+    const results = await uc.execute(["sh"]);
+    expect(results).toHaveLength(1);
+    expect(results[0]!.source).toBe("sh");
+    expect(repo.store.size).toBe(1);
+  });
+
+  it("빈 수집도 success 로 끝난다", async () => {
+    const [r] = await new SyncNoticesFromSource([source("lh", [])], new FakeRepo(), new FakeRuns(), clock, silentLogger).execute();
+    expect(r).toMatchObject({ status: "success", fetched: 0, inserted: 0, updated: 0 });
+  });
 });
 
 describe("SearchNotices", () => {

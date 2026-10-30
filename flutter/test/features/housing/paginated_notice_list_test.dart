@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:everything_about_youth/core/network/api_client.dart';
 import 'package:everything_about_youth/features/housing/domain/applicant_profile.dart';
 import 'package:everything_about_youth/features/housing/domain/housing_filters.dart';
 import 'package:everything_about_youth/features/housing/domain/notice.dart';
@@ -73,6 +74,28 @@ void main() {
         profile: ApplicantProfile.empty,
       );
       expect(outcome.loadMoreError, '알 수 없는 오류가 발생했습니다.');
+    });
+
+    test('loadFirstPage: search 실패는 전파', () {
+      final repo = FakeHousingRepository(searchError: const ApiException('first fail'));
+      final uc = PaginatedNoticeListUseCase(SearchNoticesUseCase(repo));
+      expect(
+        uc.loadFirstPage(filters: HousingFilters.initial, profile: ApplicantProfile.empty),
+        throwsA(isA<ApiException>()),
+      );
+    });
+
+    test('loadNextPage: 잘못된 generation 이면 stale', () async {
+      final repo = FakeHousingRepository(pages: [_page(['a']), _page(['b'], pageNo: 2)]);
+      final uc = PaginatedNoticeListUseCase(SearchNoticesUseCase(repo));
+      final first = await uc.loadFirstPage(filters: HousingFilters.initial, profile: ApplicantProfile.empty);
+      final outcome = await uc.loadNextPage(
+        capturedGeneration: uc.queryGeneration - 1,
+        current: first,
+        filters: HousingFilters.initial,
+        profile: ApplicantProfile.empty,
+      );
+      expect(outcome.stale, isTrue);
     });
 
     test('늦게 도착한 추가 페이지는 버린다', () async {

@@ -1,0 +1,5 @@
+# 로컬 전용 — 원격 저장소에 올리지 않음 (에이전트 테스트 원칙·매니페스트)
+local/
+.cursor/rules/testing-failure-first.mdc
+.cursor/rules/testing-test-files.mdc
+next/vitest.local.config.mts
