@@ -1,0 +1,40 @@
+{
+  "id": "b_1dnu1l76ohr",
+  "title": "청년 월세 지원",
+  "organization": "서울시",
+  "categoryId": "housing",
+  "categoryLabel": "주거",
+  "tags": [
+    "월세",
+    "청년"
+  ],
+  "status": "open",
+  "statusLabel": "신청중",
+  "dday": "D-8",
+  "regions": [
+    {
+      "sido": "서울",
+      "sigungu": ""
+    }
+  ],
+  "regionLabel": "서울",
+  "applicationStart": "2026-10-01",
+  "applicationEnd": "2026-10-20",
+  "announcementDate": "2026-09-25",
+  "summary": "만 19~39세 무주택 청년 월세 지원",
+  "url": "https://example.com/b1",
+  "sourceLabels": [
+    "데모 데이터"
+  ],
+  "eligibility": null,
+  "googleCalendarUrl": "https://calendar.google.com/calendar/render?action=TEMPLATE&text=%EC%8B%A0%EC%B2%AD+%EB%A7%88%EA%B0%90+%C2%B7+%EC%B2%AD%EB%85%84+%EC%9B%94%EC%84%B8+%EC%A7%80%EC%9B%90&dates=20261020%2F20261021&details=%EC%9B%90%EB%AC%B8%3A+https%3A%2F%2Fexample.com%2Fb1",
+  "sources": [
+    {
+      "source": "demo",
+      "sourceLabel": "데모 데이터",
+      "externalId": "demo-1",
+      "url": "https://example.com/demo/1",
+      "fetchedAt": "2026-10-11T00:00:00.000Z"
+    }
+  ]
+}

@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:everything_about_youth/core/auth/auth_tokens.dart';
 import 'package:everything_about_youth/core/feature/feature_config.dart';
 import 'package:everything_about_youth/core/update/update_requirement.dart';
+import 'package:everything_about_youth/features/benefits/domain/benefit_meta.dart';
+import 'package:everything_about_youth/features/benefits/domain/benefit_program.dart';
 import 'package:everything_about_youth/features/housing/domain/housing_meta.dart';
 import 'package:everything_about_youth/features/housing/domain/notice.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,6 +37,27 @@ void main() {
     final json = _readContract('housing-meta.json');
     final meta = HousingMeta.fromJson(json);
     expect(meta.supplyTypes, isNotEmpty);
+    expect(meta.sidos, isNotEmpty);
+  });
+
+  test('benefits-program-list.json 을 ProgramPage 로 파싱한다', () {
+    final json = _readContract('benefits-program-list.json');
+    final page = ProgramPage.fromJson(json);
+    expect(page.items, isNotEmpty);
+    expect(page.today, isNotEmpty);
+  });
+
+  test('benefits-program-detail.json 을 ProgramDetail 로 파싱한다', () {
+    final json = _readContract('benefits-program-detail.json');
+    final detail = ProgramDetail.fromJson(json);
+    expect(detail.summary.id, isNotEmpty);
+    expect(detail.sources, isNotEmpty);
+  });
+
+  test('benefits-meta.json 을 BenefitMeta 로 파싱한다', () {
+    final json = _readContract('benefits-meta.json');
+    final meta = BenefitMeta.fromJson(json);
+    expect(meta.categories, isNotEmpty);
     expect(meta.sidos, isNotEmpty);
   });
 

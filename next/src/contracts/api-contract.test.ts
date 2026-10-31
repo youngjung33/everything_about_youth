@@ -6,9 +6,12 @@ import { listServerErrorCodes } from "@/common/presentation/api/error-catalog";
 import {
   contractAppConfigDto,
   contractFeaturesDto,
+  contractBenefitsMetaDto,
   contractHousingMetaDto,
   contractNoticeDetailDto,
   contractNoticeListDto,
+  contractProgramDetailDto,
+  contractProgramListDto,
   contractSessionDto,
 } from "./api-samples";
 
@@ -29,6 +32,18 @@ describe("API 계약 JSON (서버 DTO ↔ contracts/api)", () => {
 
   it("housing-meta.json", () => {
     expect(contractHousingMetaDto()).toEqual(readContract("housing-meta.json"));
+  });
+
+  it("benefits-program-list.json", () => {
+    expect(contractProgramListDto()).toEqual(readContract("benefits-program-list.json"));
+  });
+
+  it("benefits-program-detail.json", () => {
+    expect(contractProgramDetailDto()).toEqual(readContract("benefits-program-detail.json"));
+  });
+
+  it("benefits-meta.json", () => {
+    expect(contractBenefitsMetaDto()).toEqual(readContract("benefits-meta.json"));
   });
 
   it("auth-session.json", () => {

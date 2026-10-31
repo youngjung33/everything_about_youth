@@ -8,6 +8,7 @@ abstract final class ApiErrorCode {
   static const badRequest = 'BAD_REQUEST';
   static const notFound = 'NOT_FOUND';
   static const noticeNotFound = 'NOTICE_NOT_FOUND';
+  static const programNotFound = 'PROGRAM_NOT_FOUND';
 
   static const authRequired = 'AUTH_REQUIRED';
   static const authTokenExpired = 'AUTH_TOKEN_EXPIRED';
@@ -31,6 +32,7 @@ abstract final class ApiErrorCode {
     badRequest,
     notFound,
     noticeNotFound,
+    programNotFound,
     authRequired,
     authTokenExpired,
     authTokenInvalid,

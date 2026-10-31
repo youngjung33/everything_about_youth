@@ -6,7 +6,7 @@ import { handleGetAppConfig } from "@/common/presentation/api/app-config";
 import type { FeaturesDto } from "@/common/presentation/api/features";
 import { HOUSING_FEATURE_ID } from "@/features/housing/feature";
 import { createNotice } from "@/features/housing/domain/identity";
-import type { NoticeDraft } from "@/features/housing/domain/notice";
+import type { NoticeDraft, Notice } from "@/features/housing/domain/notice";
 import {
   buildMeta,
   toNoticeDetailDto,
@@ -15,7 +15,17 @@ import {
   type NoticeDetailDto,
   type NoticeListDto,
 } from "@/features/housing/presentation/api/dto";
-import type { Notice } from "@/features/housing/domain/notice";
+import {
+  buildMeta as buildBenefitsMeta,
+  toProgramDetailDto,
+  toProgramListDto,
+  type BenefitsMetaDto,
+  type ProgramDetailDto,
+  type ProgramListDto,
+} from "@/features/benefits/presentation/api/dto";
+import { createProgram } from "@/features/benefits/domain/identity";
+import type { BenefitProgramDraft } from "@/features/benefits/domain/program";
+import type { BenefitProgram } from "@/features/benefits/domain/program";
 
 /** 계약 JSON 과 서버 테스트가 같은 시각·데이터를 쓴다. */
 export const CONTRACT_CLOCK: Clock = { now: () => new Date("2026-10-12T03:00:00Z") };
@@ -108,4 +118,55 @@ export function contractSessionDto(): SessionDto {
     refreshExpiresIn: 2_592_000,
     member: false,
   };
+}
+
+export function contractProgramDraft(): BenefitProgramDraft {
+  return {
+    title: "청년 월세 지원",
+    organization: "서울시",
+    categoryId: "housing",
+    tags: ["월세", "청년"],
+    regions: [{ sido: "서울", sigungu: "" }],
+    applicationStart: "2026-10-01",
+    applicationEnd: "2026-10-20",
+    announcementDate: "2026-09-25",
+    summary: "만 19~39세 무주택 청년 월세 지원",
+    url: "https://example.com/b1",
+    sources: [
+      {
+        source: "demo",
+        externalId: "demo-1",
+        url: "https://example.com/demo/1",
+        raw: { id: 1 },
+        fetchedAt: "2026-10-11T00:00:00.000Z",
+      },
+    ],
+  };
+}
+
+function contractProgram(): BenefitProgram {
+  return createProgram(contractProgramDraft());
+}
+
+export function contractProgramListDto(): ProgramListDto {
+  const program = contractProgram();
+  return toProgramListDto(
+    {
+      items: [{ program, status: "open", eligibility: null }],
+      total: 1,
+      page: 1,
+      pageSize: 20,
+      totalPages: 1,
+    },
+    CONTRACT_TODAY,
+  );
+}
+
+export function contractProgramDetailDto(): ProgramDetailDto {
+  const program = contractProgram();
+  return toProgramDetailDto({ program, status: "open", eligibility: null }, CONTRACT_TODAY);
+}
+
+export function contractBenefitsMetaDto(): BenefitsMetaDto {
+  return buildBenefitsMeta("2026-10-12T01:00:00.000Z");
 }

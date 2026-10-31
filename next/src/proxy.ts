@@ -14,10 +14,13 @@ import { runGateway } from "@/common/presentation/api/gateway";
  * 요청 제한은 서버 한 대의 메모리에서 센다. (여러 대로 늘리면 `RateLimiter` 를 공유 저장소 구현으로 바꾼다)
  */
 
-const globalForLimiter = globalThis as unknown as { __rateLimiter?: RateLimiter };
+const globalForLimiter = globalThis as unknown as { __rateLimiter?: RateLimiter | null };
 
 function rateLimiter(): RateLimiter | null {
-  return (globalForLimiter.__rateLimiter ??= createRateLimiter());
+  if (globalForLimiter.__rateLimiter === undefined) {
+    globalForLimiter.__rateLimiter = createRateLimiter();
+  }
+  return globalForLimiter.__rateLimiter;
 }
 
 export async function proxy(request: NextRequest) {

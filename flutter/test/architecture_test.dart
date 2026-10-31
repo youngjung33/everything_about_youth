@@ -165,6 +165,43 @@ void main() {
     expect(File('lib/features/housing/housing_container.dart').existsSync(), isTrue);
   });
 
+  test('benefits: presentation 은 data 를 import 하지 않는다', () {
+    final bad = deps.where(
+      (d) =>
+          d.from.startsWith('features/benefits/presentation/') &&
+          d.to.startsWith('features/benefits/data/'),
+    );
+    expect(bad, isEmpty, reason: '\n${_describe(bad)}');
+  });
+
+  test('benefits: data 구현 import 는 benefits_container 와 data 레이어만', () {
+    final bad = deps.where((d) {
+      if (!d.to.startsWith('features/benefits/data/')) return false;
+      if (d.from.startsWith('features/benefits/data/')) return false;
+      if (d.from == 'features/benefits/benefits_container.dart') return false;
+      return d.from.startsWith('features/benefits/');
+    });
+    expect(bad, isEmpty, reason: '\n${_describe(bad)}');
+  });
+
+  test('benefits: presentation/providers 는 benefits_container 만 조립한다', () {
+    final file = File('lib/features/benefits/presentation/providers.dart');
+    final source = file.readAsStringSync();
+    expect(source, isNot(contains('features/benefits/data/')));
+    expect(source, contains('benefits_container.dart'));
+  });
+
+  test('benefits: benefits_module 은 data·container 를 import 하지 않는다 (앱 어댑터만)', () {
+    final file = File('lib/features/benefits/benefits_module.dart');
+    final source = file.readAsStringSync();
+    expect(source, isNot(contains('features/benefits/data/')));
+    expect(source, isNot(contains('benefits_container.dart')));
+  });
+
+  test('benefits: composition root 파일이 존재한다', () {
+    expect(File('lib/features/benefits/benefits_container.dart').existsSync(), isTrue);
+  });
+
   test('서비스의 유일한 접점은 <id>_module.dart 이다 (바깥은 서비스 안쪽 파일을 import 하지 않는다)', () {
     final bad = deps.where((d) {
       final target = _featureOf(d.to);

@@ -36,6 +36,13 @@
       "when": 1792780000000,
       "tag": "0004_saved_notices",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1793444667979,
+      "tag": "0005_sour_dreadnoughts",
+      "breakpoints": true
     }
   ]
 }

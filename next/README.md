@@ -1,6 +1,6 @@
 # 청년의 모든 것 (everything_about_youth)
 
-한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 사이트. **API·앱이 동작하는 섹션은 임대주택(`housing`) 하나**이고, `benefits`·`finance`·`jobs`·`living` 은 `features/registry.ts` 에 플래그만 등록된 **예정** 섹션입니다(루트 [README.md](../README.md) 로드맵).
+한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 사이트. **API·앱이 동작하는 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)** 이고, `finance`·`jobs`·`living` 은 `features/registry.ts` 에 플래그만 등록된 **예정** 섹션입니다(루트 [README.md](../README.md) 로드맵).
 
 - Next.js 16 (App Router) + TypeScript
 - 클린 아키텍처 + **섹션(feature) 단위 폴더 구조**
@@ -31,14 +31,20 @@ src/
       application/
       infrastructure/          container.ts, create-repositories.ts, …
       presentation/
+    benefits/                ← 청년 혜택·정책 섹션 (housing 과 동형)
+      benefits-container.ts
+      domain/ · application/ · infrastructure/ · presentation/
   app/                       ← Next.js 라우트 (조립만)
     page.tsx                   섹션 목록 홈
     housing/                   /housing, /housing/notices/[id], /housing/admin/sync
+    benefits/                  /benefits/admin/sync (앱·API는 /api/v1/benefits)
     api/v1/housing/sync/       수동 수집 API
+    api/v1/benefits/           혜택 JSON API
     sections.ts                섹션 등록부 (홈/헤더 메뉴)
 scripts/
   migrate.ts, load-env.ts      공통
   housing/                     임대주택 전용 CLI (sync, seed-demo)
+  benefits/                    청년 혜택 CLI (sync, seed-demo)
 drizzle/                     마이그레이션 (모든 섹션이 하나의 이력으로 관리)
 ```
 
@@ -69,6 +75,9 @@ DB 마이그레이션은 앱/스크립트 시작 시 자동 적용됩니다(`npm
 | --- | --- |
 | `npm run housing:sync -- --source=sh,lh` | 특정 소스만 수집 (`--list`로 목록/사용 가능 여부) |
 | `npm run housing:seed-demo` / `-- --clear` | 화면 확인용 `[데모]` 공고 10건 입력 / 삭제 |
+| `npm run benefits:sync -- --list` | 혜택 수집 소스 상태 |
+| `npm run benefits:sync` | 온통청년 등 사용 가능 소스 수집 |
+| `npm run benefits:seed-demo` / `-- --clear` | `[데모]` 혜택 정책 입력 / 삭제 |
 | `npm run typecheck` · `npm run lint` · `npm test` | 검증 |
 | `npm run db:generate` | 스키마 변경 후 마이그레이션 SQL 생성 |
 
@@ -133,6 +142,14 @@ DB 마이그레이션은 앱/스크립트 시작 시 자동 적용됩니다(`npm
 | `HOUSING_SYNC_SOURCES` | 활성 소스 제한 (`lh,myhome,applyhome,sh,gh,ih`). 비우면 가능한 전부 |
 | `HOUSING_SYNC_INTERVAL_MINUTES` | 서버가 떠 있는 동안 공고를 자동 수집하는 간격(분). `0`(기본)이면 끄고, 켜려면 **30 이상**. 프로세스 시작 때 한 번 돌고 그 뒤 주기적으로 돕니다. |
 | `OPERATOR_TOKEN` | 운영자용 `POST /housing/sync` 헤더 `X-Operator-Token` 값. 운영에서는 **24자 이상**이어야 이 API 가 열립니다. 개발에서는 값이 있으면 일치할 때만 허용합니다. |
+
+청년 혜택·정책
+
+| 변수 | 설명 |
+| --- | --- |
+| `BENEFITS_SYNC_SOURCES` | 활성 소스 제한 (`ontong`, `demo`). 비우면 가능한 전부 |
+| `BENEFITS_SYNC_INTERVAL_MINUTES` | 자동 수집 간격(분). `0`(기본)이면 끔 |
+| `BENEFITS_ONTONG_API_KEY` | 온통청년 OPEN API 키. 없으면 ontong 소스 skipped |
 
 공공데이터포털에서 활용신청이 필요한 API: LH 임대공고(`B552555/lhLeaseNoticeInfo1`), 마이홈포털 공공임대 공고(`1613000/HWSPR02`), 청약홈 분양정보(`ApplyhomeInfoDetailSvc`).
 

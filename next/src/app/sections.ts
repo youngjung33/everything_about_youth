@@ -1,3 +1,4 @@
+import { BENEFITS_BASE } from "@/features/benefits/presentation/routes";
 import { HOUSING_BASE } from "@/features/housing/presentation/routes";
 
 export interface Section {
@@ -15,13 +16,13 @@ export const SECTIONS: Section[] = [
     description: "청년이 신청할 수 있는 임대·분양 공고를 지역, 유형, 금액, 내 조건으로 조회합니다.",
     href: HOUSING_BASE,
   },
-  // 아래는 Next 관리자·홈용 예정 섹션(앱 FeatureModule·API 미구현). 자세한 로드맵은 루트 README.
   {
     id: "benefits",
     title: "청년 혜택·정책",
-    description: "(예정) 주거·생활비·취업 연계 공공 지원을 모아 보고 마감을 확인합니다.",
-    href: "/",
+    description: "주거·생활비·취업 연계 공공 지원을 모아 보고, 내 조건으로 신청 가능 여부를 확인합니다.",
+    href: BENEFITS_BASE,
   },
+  // 아래는 Next 관리자·홈용 예정 섹션. 자세한 로드맵은 루트 README.
   {
     id: "finance",
     title: "청년 주거·자금",

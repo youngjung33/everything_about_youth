@@ -8,6 +8,9 @@ import {
   contractHousingMetaDto,
   contractNoticeDetailDto,
   contractNoticeListDto,
+  contractProgramDetailDto,
+  contractProgramListDto,
+  contractBenefitsMetaDto,
   contractSessionDto,
 } from "../src/contracts/api-samples";
 
@@ -18,6 +21,9 @@ const files: Record<string, unknown> = {
   "housing-notice-list.json": contractNoticeListDto(),
   "housing-notice-detail.json": contractNoticeDetailDto(),
   "housing-meta.json": contractHousingMetaDto(),
+  "benefits-program-list.json": contractProgramListDto(),
+  "benefits-program-detail.json": contractProgramDetailDto(),
+  "benefits-meta.json": contractBenefitsMetaDto(),
   "auth-session.json": contractSessionDto(),
   "app-config.json": contractAppConfigDto(),
   "features.json": contractFeaturesDto(),

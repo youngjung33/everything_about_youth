@@ -18,6 +18,7 @@ export const ERROR_CODES = {
   BAD_REQUEST: { status: 400, message: "요청이 올바르지 않습니다." },
   NOT_FOUND: { status: 404, message: "요청한 주소를 찾을 수 없습니다." },
   NOTICE_NOT_FOUND: { status: 404, message: "공고를 찾을 수 없습니다." },
+  PROGRAM_NOT_FOUND: { status: 404, message: "정책을 찾을 수 없습니다." },
 
   // 인증
   AUTH_REQUIRED: { status: 401, message: "인증이 필요합니다." },
