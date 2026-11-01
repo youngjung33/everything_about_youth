@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/auth/auth_mode.dart';
 import '../../core/auth/auth_providers.dart';
 import '../../core/network/api_client.dart';
+import '../../core/network/api_user_message.dart';
 import '../../core/providers/core_providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../paths.dart';
@@ -99,7 +100,7 @@ class AccountMenu extends ConsumerWidget {
       await ref.read(authActionsProvider).deleteAccount();
     } on ApiException catch (e) {
       // 서버에서 지우지 못했다면 로그인 상태가 그대로이므로, 이유를 알리고 다시 시도할 수 있게 둔다.
-      messenger?.showSnackBar(SnackBar(content: Text('탈퇴하지 못했습니다. ${e.message}')));
+      messenger?.showSnackBar(SnackBar(content: Text('탈퇴하지 못했습니다. ${apiExceptionUserMessage(e)}')));
     }
   }
 }

@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:everything_about_youth/core/network/api_client.dart';
+import 'package:everything_about_youth/core/network/api_error_code.dart';
+import 'package:everything_about_youth/core/network/api_user_message.dart';
 import 'package:everything_about_youth/core/widgets/state_views.dart';
 import 'package:everything_about_youth/features/housing/domain/applicant_profile.dart';
+import 'package:everything_about_youth/features/housing/domain/failures.dart';
 import 'package:everything_about_youth/features/housing/domain/housing_meta.dart';
 import 'package:everything_about_youth/features/housing/domain/notice.dart';
 import 'package:flutter/material.dart';
@@ -109,11 +112,11 @@ void main() {
       pages: [
         onePage([summaryJson()]),
       ],
-      searchError: const ApiException('서버에 연결할 수 없습니다.'),
+      searchError: const ApiException(ApiUserMessages.networkUnavailable, code: ApiErrorCode.networkError),
     );
     await pumpApp(tester, repo, location: '/housing');
 
-    expect(find.text('서버에 연결할 수 없습니다.'), findsOneWidget);
+    expect(find.text(ApiUserMessages.networkUnavailable), findsOneWidget);
 
     repo.searchError = null;
     await tester.tap(find.text('다시 시도'));
@@ -164,9 +167,7 @@ void main() {
     await tester.scrollUntilVisible(find.textContaining('LH청약플러스'), 300, scrollable: bodyScrollable);
     expect(find.textContaining('LH청약플러스'), findsWidgets);
 
-    await tester.scrollUntilVisible(find.text('원문 공고 보기'), 400, scrollable: bodyScrollable);
     expect(find.text('원문 공고 보기'), findsOneWidget);
-    await tester.scrollUntilVisible(find.text('접수 마감일 캘린더에 넣기'), 400, scrollable: bodyScrollable);
     expect(find.text('접수 마감일 캘린더에 넣기'), findsOneWidget);
   });
 
@@ -339,7 +340,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byTooltip('관심 공고에서 빼기'), findsOneWidget);
 
-    await tester.tap(find.byTooltip('관심 공고'));
+    await tester.tap(find.text('관심 공고'));
     await tester.pumpAndSettle();
     expect(find.text('저장한 관심 공고가 없습니다.'), findsNothing);
     expect(find.text('청년 행복주택 입주자 모집'), findsOneWidget);

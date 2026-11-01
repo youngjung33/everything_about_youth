@@ -1,4 +1,5 @@
 import 'package:everything_about_youth/core/network/api_client.dart';
+import 'package:everything_about_youth/core/network/api_error_code.dart';
 import 'package:everything_about_youth/features/housing/domain/applicant_profile.dart';
 import 'package:everything_about_youth/features/housing/domain/housing_filters.dart';
 import 'package:everything_about_youth/features/housing/domain/housing_meta.dart';
@@ -186,7 +187,11 @@ class FakeHousingRepository implements HousingRepository {
         }
       }
     }
-    throw const ApiException('공고를 찾을 수 없습니다.', statusCode: 404);
+    throw const ApiException(
+      '공고를 찾을 수 없습니다.',
+      statusCode: 404,
+      code: ApiErrorCode.noticeNotFound,
+    );
   }
 
   @override

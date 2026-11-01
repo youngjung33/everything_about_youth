@@ -80,10 +80,12 @@ class ErrorView extends StatelessWidget {
 }
 
 class EmptyView extends StatelessWidget {
-  const EmptyView({super.key, required this.message, this.hint});
+  const EmptyView({super.key, required this.message, this.hint, this.actionLabel, this.onAction});
 
   final String message;
   final String? hint;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +106,10 @@ class EmptyView extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(color: scheme.outline),
               ),
+            ],
+            if (actionLabel != null && onAction != null) ...[
+              const SizedBox(height: 16),
+              FilledButton.tonal(onPressed: onAction, child: Text(actionLabel!)),
             ],
           ],
         ),

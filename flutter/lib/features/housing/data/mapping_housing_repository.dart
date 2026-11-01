@@ -1,4 +1,5 @@
 import '../../../core/network/api_client.dart';
+import '../../../core/network/api_user_message.dart';
 import '../../../core/network/api_error_code.dart';
 import '../domain/applicant_profile.dart';
 import '../domain/failures.dart';
@@ -18,9 +19,9 @@ class MappingHousingRepository implements HousingRepository {
       return await run;
     } on ApiException catch (e) {
       if (e.isNotFound || e.code == ApiErrorCode.noticeNotFound) {
-        throw HousingNoticeNotFound(e.message);
+        throw HousingNoticeNotFound(apiExceptionUserMessage(e));
       }
-      throw HousingUserMessage(e.message);
+      throw HousingUserMessage(apiExceptionUserMessage(e));
     }
   }
 

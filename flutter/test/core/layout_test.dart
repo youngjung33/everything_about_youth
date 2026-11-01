@@ -107,13 +107,25 @@ void main() {
     testWidgets('긴 화면의 마지막 내용이 푸터/내비게이션바에 가려지지 않는다', (tester) async {
       await pumpApp(tester, repo, location: '/housing/notices/n1', size: _galaxy, systemInsets: _galaxyInsets);
 
+      await tester.pumpAndSettle();
+      expect(find.text('원문 공고 보기'), findsOneWidget);
+
       final body = find.descendant(of: find.byType(ListView), matching: find.byType(Scrollable)).first;
-      await tester.scrollUntilVisible(find.text('원문 공고 보기'), 300, scrollable: body);
+      await tester.scrollUntilVisible(
+        find.textContaining('신청 전 반드시 원문 공고를 확인'),
+        300,
+        scrollable: body,
+      );
       await tester.pumpAndSettle();
 
-      final footerTop = rectOf(tester, find.byKey(AppScaffold.bottomAreaKey)).top;
-      expect(rectOf(tester, find.text('원문 공고 보기')).bottom, lessThanOrEqualTo(footerTop));
-      expect(footerTop, lessThan(_galaxy.height - _galaxyInsets.bottom)); // 푸터 내용은 내비게이션바 위
+      final innerBarTop = rectOf(tester, find.byKey(AppScaffold.bottomAreaKey).first).top;
+      final shellFooterTop = rectOf(tester, find.byKey(AppScaffold.bottomAreaKey).last).top;
+      expect(rectOf(tester, find.text('원문 공고 보기')).bottom, lessThanOrEqualTo(shellFooterTop));
+      expect(
+        rectOf(tester, find.textContaining('신청 전 반드시 원문 공고를 확인')).bottom,
+        lessThanOrEqualTo(innerBarTop),
+      );
+      expect(shellFooterTop, lessThan(_galaxy.height - _galaxyInsets.bottom)); // 푸터 내용은 내비게이션바 위
     });
   });
 

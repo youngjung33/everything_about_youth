@@ -15,8 +15,13 @@ import '../housing_routes.dart';
 import '../widgets/filter_panel.dart';
 import '../widgets/filter_preset_chips.dart';
 import '../widgets/notice_card.dart';
+import '../../../../core/design/service_accent.dart';
+import '../../../../core/widgets/service_intro_banner.dart';
+import '../../../../core/widgets/service_quick_actions.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_fonts.dart';
+
+const _accent = ServiceAccent.housing;
 
 /// 이 너비 이상이면 필터를 왼쪽 사이드바로 보여준다. (웹/태블릿)
 const double kWideLayoutWidth = 960;
@@ -84,7 +89,7 @@ class _NoticeListPageState extends ConsumerState<NoticeListPage> {
 
     return AppScaffold(
       appBar: AppTopBar(
-        title: const Text('임대주택'),
+        title: Text(_accent.title),
         actions: [
           if (!wide)
             IconButton(
@@ -96,21 +101,6 @@ class _NoticeListPageState extends ConsumerState<NoticeListPage> {
                 child: const Icon(Icons.tune),
               ),
             ),
-          IconButton(
-            tooltip: '접수 일정',
-            onPressed: () => context.push(HousingRoutes.schedule),
-            icon: const Icon(Icons.calendar_month_outlined),
-          ),
-          IconButton(
-            tooltip: '관심 공고',
-            onPressed: () => context.push(HousingRoutes.saved),
-            icon: const Icon(Icons.bookmarks_outlined),
-          ),
-          IconButton(
-            tooltip: '내 조건',
-            onPressed: () => context.push(HousingRoutes.profile),
-            icon: const Icon(Icons.person_outline),
-          ),
         ],
       ),
       body: wide
@@ -198,6 +188,21 @@ class _Header extends ConsumerWidget {
 
   final int total;
 
+  static Future<void> openFilterSheet(BuildContext context, WidgetRef ref, HousingMeta meta) async {
+    await showAppBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) => FilterPanel(
+        meta: meta,
+        initial: ref.read(filtersProvider),
+        onApply: (filters) {
+          Navigator.of(sheetContext).pop();
+          ref.read(filtersProvider.notifier).apply(filters);
+        },
+        onReset: () => ref.read(filtersProvider.notifier).reset(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filters = ref.watch(filtersProvider);
@@ -211,6 +216,36 @@ class _Header extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const ServiceIntroBanner(accent: _accent),
+          const SizedBox(height: 12),
+          ServiceQuickActions(
+            accent: _accent.accent,
+            actions: [
+              ServiceQuickAction(
+                label: '접수 일정',
+                icon: Icons.calendar_month_outlined,
+                onPressed: () => context.push(HousingRoutes.schedule),
+              ),
+              ServiceQuickAction(
+                label: '관심 공고',
+                icon: Icons.bookmarks_outlined,
+                onPressed: () => context.push(HousingRoutes.saved),
+              ),
+              ServiceQuickAction(
+                label: '내 조건',
+                icon: Icons.person_outline,
+                onPressed: () => context.push(HousingRoutes.profile),
+              ),
+              if (MediaQuery.sizeOf(context).width < kWideLayoutWidth)
+                ServiceQuickAction(
+                  label: '필터',
+                  icon: Icons.tune,
+                  badge: filters.activeCount > 0 ? '${filters.activeCount}' : null,
+                  onPressed: meta == null ? null : () => _Header.openFilterSheet(context, ref, meta),
+                ),
+            ],
+          ),
+          const SizedBox(height: 14),
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
@@ -304,9 +339,14 @@ class _Footer extends ConsumerWidget {
     final scheme = Theme.of(context).colorScheme;
 
     if (list.items.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 48),
-        child: EmptyView(message: '조건에 맞는 공고가 없습니다.', hint: '필터를 완화해 보세요.'),
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 48),
+        child: EmptyView(
+          message: '조건에 맞는 공고가 없습니다.',
+          hint: '필터를 완화하거나 프리셋을 바꿔 보세요.',
+          actionLabel: '필터 초기화',
+          onAction: () => ref.read(filtersProvider.notifier).reset(),
+        ),
       );
     }
     if (list.loadingMore) {

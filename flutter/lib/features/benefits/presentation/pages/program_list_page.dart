@@ -15,11 +15,15 @@ import '../benefits_routes.dart';
 import '../widgets/filter_panel.dart';
 import '../widgets/filter_preset_chips.dart';
 import '../widgets/program_card.dart';
+import '../../../../core/design/service_accent.dart';
+import '../../../../core/widgets/service_intro_banner.dart';
+import '../../../../core/widgets/service_quick_actions.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_fonts.dart';
 
 /// 이 너비 이상이면 필터를 왼쪽 사이드바로 보여준다. (웹/태블릿)
 const double kWideLayoutWidth = 960;
+const _accent = ServiceAccent.benefits;
 
 class ProgramListPage extends ConsumerStatefulWidget {
   const ProgramListPage({super.key});
@@ -84,7 +88,7 @@ class _ProgramListPageState extends ConsumerState<ProgramListPage> {
 
     return AppScaffold(
       appBar: AppTopBar(
-        title: const Text('청년 혜택'),
+        title: Text(_accent.title),
         actions: [
           if (!wide)
             IconButton(
@@ -96,21 +100,6 @@ class _ProgramListPageState extends ConsumerState<ProgramListPage> {
                 child: const Icon(Icons.tune),
               ),
             ),
-          IconButton(
-            tooltip: '접수 일정',
-            onPressed: () => context.push(BenefitsRoutes.schedule),
-            icon: const Icon(Icons.calendar_month_outlined),
-          ),
-          IconButton(
-            tooltip: '관심 공고',
-            onPressed: () => context.push(BenefitsRoutes.saved),
-            icon: const Icon(Icons.bookmarks_outlined),
-          ),
-          IconButton(
-            tooltip: '내 조건',
-            onPressed: () => context.push(BenefitsRoutes.profile),
-            icon: const Icon(Icons.person_outline),
-          ),
         ],
       ),
       body: wide
@@ -158,7 +147,7 @@ class _Results extends ConsumerWidget {
     final listAsync = ref.watch(programListProvider);
 
     return listAsync.when(
-      loading: () => const LoadingView(message: '공고를 불러오는 중…'),
+      loading: () => const LoadingView(message: '정책을 불러오는 중…'),
       error: (error, _) => ErrorView(message: errorMessage(error), onRetry: () => ref.invalidate(programListProvider)),
       data: (list) {
         return RefreshIndicator(
@@ -198,6 +187,21 @@ class _Header extends ConsumerWidget {
 
   final int total;
 
+  static Future<void> openFilterSheet(BuildContext context, WidgetRef ref, BenefitMeta meta) async {
+    await showAppBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) => FilterPanel(
+        meta: meta,
+        initial: ref.read(filtersProvider),
+        onApply: (filters) {
+          Navigator.of(sheetContext).pop();
+          ref.read(filtersProvider.notifier).apply(filters);
+        },
+        onReset: () => ref.read(filtersProvider.notifier).reset(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filters = ref.watch(filtersProvider);
@@ -211,12 +215,44 @@ class _Header extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const ServiceIntroBanner(accent: _accent),
+          const SizedBox(height: 12),
+          ServiceQuickActions(
+            accent: _accent.accent,
+            actions: [
+              ServiceQuickAction(
+                label: '접수 일정',
+                icon: Icons.calendar_month_outlined,
+                onPressed: () => context.push(BenefitsRoutes.schedule),
+              ),
+              ServiceQuickAction(
+                label: '관심 정책',
+                icon: Icons.bookmarks_outlined,
+                onPressed: () => context.push(BenefitsRoutes.saved),
+              ),
+              ServiceQuickAction(
+                label: '내 조건',
+                icon: Icons.person_outline,
+                onPressed: () => context.push(BenefitsRoutes.profile),
+              ),
+              if (MediaQuery.sizeOf(context).width < kWideLayoutWidth)
+                ServiceQuickAction(
+                  label: '필터',
+                  icon: Icons.tune,
+                  badge: filters.activeCount > 0 ? '${filters.activeCount}' : null,
+                  onPressed: meta == null
+                      ? null
+                      : () => _Header.openFilterSheet(context, ref, meta),
+                ),
+            ],
+          ),
+          const SizedBox(height: 14),
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
               Text(
-                onlyEligible ? '신청 가능한 공고' : '공고 목록',
+                onlyEligible ? '신청 가능한 정책' : '정책 목록',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: AppFonts.bold),
               ),
               const SizedBox(width: 8),
@@ -304,9 +340,14 @@ class _Footer extends ConsumerWidget {
     final scheme = Theme.of(context).colorScheme;
 
     if (list.items.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 48),
-        child: EmptyView(message: '조건에 맞는 공고가 없습니다.', hint: '필터를 완화해 보세요.'),
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 48),
+        child: EmptyView(
+          message: '조건에 맞는 정책이 없습니다.',
+          hint: '필터를 완화하거나 프리셋을 바꿔 보세요.',
+          actionLabel: '필터 초기화',
+          onAction: () => ref.read(filtersProvider.notifier).reset(),
+        ),
       );
     }
     if (list.loadingMore) {

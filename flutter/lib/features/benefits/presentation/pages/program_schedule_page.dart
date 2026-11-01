@@ -92,7 +92,7 @@ class _ProgramSchedulePageState extends ConsumerState<ProgramSchedulePage> {
                               ),
                               Expanded(
                                 child: ProgramCard(
-                                  notice: event.notice,
+                                  program: event.notice,
                                   onTap: () => context.push(BenefitsRoutes.program(event.notice.id)),
                                 ),
                               ),

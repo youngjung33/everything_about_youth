@@ -80,19 +80,19 @@ class NoticeCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(
+                notice.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: AppFonts.bold),
+              ),
+              const SizedBox(height: 8),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(child: NoticeBadges(notice: notice)),
                   SavedNoticeButton(noticeId: notice.id),
                 ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                notice.title,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: AppFonts.bold),
               ),
               const SizedBox(height: 12),
               Wrap(

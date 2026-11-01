@@ -8,6 +8,7 @@ import '../../core/layout/app_scaffold.dart';
 import '../../core/layout/centered_scroll_view.dart';
 import '../../core/network/api_client.dart';
 import '../../core/network/api_error_code.dart';
+import '../../core/network/api_user_message.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_fonts.dart';
 import '../../core/widgets/app_logo.dart';
@@ -51,8 +52,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     } on SsoFailedException catch (e) {
       error = e.message;
     } on ApiException catch (e) {
-      error = e.message;
-      // 서버 설정이 그 사이에 바뀌었다면 목록을 다시 받아 버튼 상태를 맞춘다.
+      error = apiExceptionUserMessage(e);
       if (e.code == ApiErrorCode.ssoProviderUnavailable) ref.invalidate(enabledSsoProvidersProvider);
     } on Exception {
       error = '로그인하지 못했습니다. 잠시 후 다시 시도해 주세요.';

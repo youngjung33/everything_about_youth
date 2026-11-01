@@ -78,6 +78,13 @@ class ProgramCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(
+                program.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: AppFonts.bold),
+              ),
+              const SizedBox(height: 8),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -85,15 +92,8 @@ class ProgramCard extends StatelessWidget {
                   SavedProgramButton(programId: program.id),
                 ],
               ),
-              const SizedBox(height: 10),
-              Text(
-                program.title,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: AppFonts.bold),
-              ),
               if (program.summary != null && program.summary!.isNotEmpty) ...[
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
                 Text(
                   program.summary!,
                   maxLines: 2,

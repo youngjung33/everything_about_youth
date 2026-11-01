@@ -13,6 +13,7 @@ import '../widgets/notice_card.dart';
 import '../widgets/eligibility_next_steps_card.dart';
 import '../widgets/saved_notice_button.dart';
 import '../../../../core/theme/app_fonts.dart';
+import '../../../../core/widgets/detail_primary_actions.dart';
 
 class NoticeDetailPage extends ConsumerWidget {
   const NoticeDetailPage({super.key, required this.id});
@@ -27,6 +28,27 @@ class NoticeDetailPage extends ConsumerWidget {
       appBar: AppTopBar(
         title: const Text('공고 상세'),
         actions: [SavedNoticeButton(noticeId: id, compact: false)],
+      ),
+      bottomBar: async.maybeWhen(
+        data: (detail) {
+          final notice = detail.summary;
+          final actions = <Widget>[
+            if (notice.url != null)
+              FilledButton.icon(
+                onPressed: () => openExternal(context, notice.url!),
+                icon: const Icon(Icons.open_in_new, size: 18),
+                label: const Text('원문 공고 보기'),
+              ),
+            if (detail.googleCalendarUrl != null)
+              OutlinedButton.icon(
+                onPressed: () => openExternal(context, detail.googleCalendarUrl!),
+                icon: const Icon(Icons.event_outlined, size: 18),
+                label: const Text('접수 마감일 캘린더에 넣기'),
+              ),
+          ];
+          return actions.isEmpty ? null : DetailPrimaryActions(children: actions);
+        },
+        orElse: () => null,
       ),
       body: async.when(
         loading: () => const LoadingView(message: '공고 상세를 불러오는 중…'),
@@ -55,9 +77,9 @@ class _DetailBody extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            NoticeBadges(notice: notice, largeEligibility: true),
-            const SizedBox(height: 12),
             Text(notice.title, style: textTheme.headlineSmall?.copyWith(fontWeight: AppFonts.bold)),
+            const SizedBox(height: 10),
+            NoticeBadges(notice: notice, largeEligibility: true),
             if (notice.eligibility != null) ...[
               const SizedBox(height: 16),
               _EligibilityCard(eligibility: notice.eligibility!),
@@ -105,27 +127,13 @@ class _DetailBody extends StatelessWidget {
                 children: [for (final source in detail.sources) _SourceRow(source: source)],
               ),
             ),
-            const SizedBox(height: 4),
-            if (notice.url != null)
-              FilledButton.icon(
-                onPressed: () => openExternal(context, notice.url!),
-                icon: const Icon(Icons.open_in_new, size: 18),
-                label: const Text('원문 공고 보기'),
-              ),
-            if (detail.googleCalendarUrl != null) ...[
-              const SizedBox(height: 8),
-              OutlinedButton.icon(
-                onPressed: () => openExternal(context, detail.googleCalendarUrl!),
-                icon: const Icon(Icons.event_outlined, size: 18),
-                label: const Text('접수 마감일 캘린더에 넣기'),
-              ),
-            ],
             const SizedBox(height: 12),
             Text(
               '이 정보는 공개 데이터와 각 기관 공고를 수집한 참고용입니다. 신청 전 반드시 원문 공고를 확인하세요.',
               style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.outline),
             ),
             const SizedBox(height: 24),
+            const SizedBox(height: 72),
           ],
         ),
       ),

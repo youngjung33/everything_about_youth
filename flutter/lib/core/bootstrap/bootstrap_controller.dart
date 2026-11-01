@@ -7,6 +7,7 @@ import '../providers/core_providers.dart';
 import '../update/app_update_info_holder.dart';
 import '../update/update_gate.dart';
 import 'bootstrap_task.dart';
+import '../network/api_user_message.dart';
 
 /// 앱 전체(코어)가 시작할 때 돌릴 작업. 서비스의 작업은 [FeatureModule.bootstrapTasks] 에 둔다.
 /// 코어 작업의 필수 실패는 앱이 시작되지 못하게 하므로, 정말 앱이 못 도는 일에만 쓴다.
@@ -116,7 +117,7 @@ class BootstrapController extends AsyncNotifier<BootstrapResult> {
       await task.run(ref).timeout(task.timeout);
     } catch (error) {
       if (task.critical) rethrow;
-      debugPrint('[bootstrap] ${owner == null ? '' : '$owner/'}"${task.name}" 건너뜀: $error');
+      debugPrint('[bootstrap] ${owner == null ? '' : '$owner/'}"${task.name}" 건너뜀 (${apiExceptionLogSummary(error)})');
     }
   }
 }

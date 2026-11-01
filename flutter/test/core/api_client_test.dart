@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:everything_about_youth/core/config/app_config.dart';
 import 'package:everything_about_youth/core/network/api_client.dart';
 import 'package:everything_about_youth/core/network/api_error_code.dart';
+import 'package:everything_about_youth/core/network/api_user_message.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -237,11 +238,15 @@ void main() {
     );
   });
 
-  test('연결 실패는 서버 주소를 포함한 안내로 바뀐다', () async {
+  test('연결 실패는 사용자용 네트워크 안내로 바뀐다', () async {
     final client = clientFor(MockClient((_) async => throw http.ClientException('refused')));
     await expectLater(
       client.getJson('/x'),
-      throwsA(isA<ApiException>().having((e) => e.message, 'message', contains('http://localhost:3000'))),
+      throwsA(
+        isA<ApiException>()
+            .having((e) => e.code, 'code', ApiErrorCode.networkError)
+            .having((e) => apiExceptionUserMessage(e), 'userMessage', ApiUserMessages.networkUnavailable),
+      ),
     );
   });
 

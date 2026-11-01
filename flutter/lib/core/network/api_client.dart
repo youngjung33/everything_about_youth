@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import 'api_error_code.dart';
+import 'api_user_message.dart';
 import 'api_version.dart';
 import 'auth_token_source.dart';
 
@@ -136,14 +136,9 @@ class ApiClient {
       }
       return await request.timeout(timeout);
     } on TimeoutException {
-      throw const ApiException('서버 응답이 너무 늦습니다. 잠시 후 다시 시도해 주세요.', code: ApiErrorCode.timeout);
+      throw const ApiException(ApiUserMessages.timeout, code: ApiErrorCode.timeout);
     } on http.ClientException {
-      throw ApiException(
-        kReleaseMode
-            ? '서버에 연결할 수 없습니다. 네트워크 연결을 확인해 주세요.'
-            : '서버에 연결할 수 없습니다. 네트워크와 서버 주소(${_baseUri.origin})를 확인해 주세요.',
-        code: ApiErrorCode.networkError,
-      );
+      throw const ApiException(ApiUserMessages.networkUnavailable, code: ApiErrorCode.networkError);
     }
   }
 
@@ -153,7 +148,7 @@ class ApiClient {
       decoded = jsonDecode(utf8.decode(response.bodyBytes));
     } on FormatException {
       throw ApiException(
-        '서버 응답을 해석할 수 없습니다. (HTTP ${response.statusCode})',
+        ApiUserMessages.badResponse,
         statusCode: response.statusCode,
         code: ApiErrorCode.badResponse,
       );
@@ -165,14 +160,14 @@ class ApiClient {
       throw error;
     }
     if (decoded is! Map<String, dynamic>) {
-      throw const ApiException('서버 응답 형식이 올바르지 않습니다.', code: ApiErrorCode.badResponse);
+      throw const ApiException(ApiUserMessages.badResponse, code: ApiErrorCode.badResponse);
     }
     return decoded;
   }
 
   /// 오류 응답 본문을 [ApiException] 으로 바꾼다. 서버 통합 템플릿만 인정한다.
   static ApiException parseError(Object? decoded, int statusCode, {String? retryAfterHeader}) {
-    final fallback = '요청에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+    final fallback = ApiUserMessages.requestFailed;
     final error = decoded is Map<String, dynamic> ? decoded['error'] : null;
 
     if (error is Map) {

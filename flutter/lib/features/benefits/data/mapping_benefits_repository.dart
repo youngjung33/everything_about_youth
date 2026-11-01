@@ -1,4 +1,5 @@
 import '../../../core/network/api_client.dart';
+import '../../../core/network/api_user_message.dart';
 import '../../../core/network/api_error_code.dart';
 import '../domain/applicant_profile.dart';
 import '../domain/failures.dart';
@@ -18,9 +19,9 @@ class MappingBenefitsRepository implements BenefitsRepository {
       return await run;
     } on ApiException catch (e) {
       if (e.isNotFound || e.code == ApiErrorCode.programNotFound) {
-        throw BenefitsProgramNotFound(e.message);
+        throw BenefitsProgramNotFound(apiExceptionUserMessage(e));
       }
-      throw BenefitsUserMessage(e.message);
+      throw BenefitsUserMessage(apiExceptionUserMessage(e));
     }
   }
 

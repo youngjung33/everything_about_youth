@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../bootstrap/bootstrap_controller.dart';
+import '../network/api_user_message.dart';
 import '../providers/core_providers.dart';
 import 'feature_config.dart';
 import 'feature_module.dart';
@@ -42,7 +43,7 @@ class FeatureFlags extends Notifier<Set<String>> {
       state = _disabledFrom(ref.read(featureModulesProvider), config);
       await ref.read(featureConfigCacheProvider).write(config);
     } catch (error) {
-      debugPrint('[features] 서버 설정을 받지 못해 기존 설정으로 시작합니다: $error');
+      debugPrint('[features] 서버 설정을 받지 못해 기존 설정으로 시작합니다 (${apiExceptionLogSummary(error)})');
     }
   }
 

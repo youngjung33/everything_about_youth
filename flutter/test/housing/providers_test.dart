@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:everything_about_youth/core/auth/auth_mode.dart';
 import 'package:everything_about_youth/core/network/api_client.dart';
+import 'package:everything_about_youth/core/network/api_user_message.dart';
 import 'package:everything_about_youth/core/providers/core_providers.dart';
 import 'package:everything_about_youth/core/security/cipher_key_store.dart';
 import 'package:everything_about_youth/core/security/field_cipher.dart';
@@ -104,13 +105,13 @@ void main() {
     container.listen(noticeListProvider, (_, _) {});
     await container.read(noticeListProvider.future);
 
-    repo.searchError = const ApiException('서버에 연결할 수 없습니다.');
+    repo.searchError = const HousingUserMessage(ApiUserMessages.networkUnavailable);
     await container.read(noticeListProvider.notifier).loadMore();
 
     final state = container.read(noticeListProvider).requireValue;
     expect(state.items, hasLength(2));
     expect(state.loadingMore, isFalse);
-    expect(state.loadMoreError, '서버에 연결할 수 없습니다.');
+    expect(state.loadMoreError, ApiUserMessages.networkUnavailable);
 
     // 다시 시도하면 오류가 지워진다.
     repo.searchError = null;
@@ -127,7 +128,7 @@ void main() {
     container.listen(noticeListProvider, (_, _) {});
 
     await expectLater(container.read(noticeListProvider.future), throwsA(isA<HousingUserMessage>()));
-    expect(errorMessage(container.read(noticeListProvider).error!), '요청에 실패했습니다. (HTTP 500)');
+    expect(errorMessage(container.read(noticeListProvider).error!), ApiUserMessages.requestFailed);
   });
 
   test('필터를 바꾸면 1페이지부터 다시 조회한다', () async {

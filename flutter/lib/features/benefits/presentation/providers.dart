@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/network/api_client.dart';
+import '../../../core/network/api_user_message.dart';
 import '../../../core/providers/core_providers.dart';
 import '../domain/applicant_profile.dart';
 import '../domain/failures.dart';
@@ -146,4 +148,7 @@ final savedProgramListProvider = FutureProvider<SavedProgramList>((ref) async {
   );
 });
 
-String errorMessage(Object error) => benefitsErrorMessage(error);
+String errorMessage(Object error) {
+  if (error is ApiException) return apiExceptionUserMessage(error);
+  return benefitsErrorMessage(error);
+}
