@@ -22,6 +22,12 @@ import '../../support/benefits_memory_stores.dart';
 
 void main() {
   group('SearchProgramsUseCase', () {
+    test('repository 오류는 그대로 전파한다', () {
+      final repo = FakeBenefitsRepository(searchError: const ApiException('fail'));
+      final uc = SearchProgramsUseCase(repo);
+      expect(uc(filters: BenefitFilters.initial, profile: ApplicantProfile.empty), throwsA(isA<ApiException>()));
+    });
+
     test('repository search 를 위임한다', () async {
       final repo = FakeBenefitsRepository(pages: [ProgramPage.fromJson(programPageJson(items: [programSummaryJson()]))]);
       final uc = SearchProgramsUseCase(repo);
@@ -29,40 +35,34 @@ void main() {
       expect(page.items, hasLength(1));
       expect(repo.searchCalls.single.page, 1);
     });
-
-    test('repository 오류는 그대로 전파한다', () {
-      final repo = FakeBenefitsRepository(searchError: const ApiException('fail'));
-      final uc = SearchProgramsUseCase(repo);
-      expect(uc(filters: BenefitFilters.initial, profile: ApplicantProfile.empty), throwsA(isA<ApiException>()));
-    });
   });
 
   group('LoadBenefitMetaUseCase', () {
+    test('fetchMeta 실패 전파', () {
+      final repo = FakeBenefitsRepository(fetchMetaError: const ApiException('meta'));
+      expect(LoadBenefitMetaUseCase(repo)(), throwsA(isA<ApiException>()));
+    });
+
     test('fetchMeta 위임', () async {
       final repo = FakeBenefitsRepository();
       final meta = await LoadBenefitMetaUseCase(repo)();
       expect(meta.sidos, isNotEmpty);
     });
-
-    test('fetchMeta 실패 전파', () {
-      final repo = FakeBenefitsRepository(fetchMetaError: const ApiException('meta'));
-      expect(LoadBenefitMetaUseCase(repo)(), throwsA(isA<ApiException>()));
-    });
   });
 
   group('GetProgramDetailUseCase', () {
-    test('getProgram 위임', () async {
-      final repo = FakeBenefitsRepository(pages: [ProgramPage.fromJson(programPageJson(items: [programSummaryJson(id: 'x')]))]);
-      final detail = await GetProgramDetailUseCase(repo)('x', profile: ApplicantProfile.empty);
-      expect(detail.summary.id, 'x');
-    });
-
     test('getProgram 실패 전파', () {
       final repo = FakeBenefitsRepository(getProgramError: const ApiException('detail fail'));
       expect(
         GetProgramDetailUseCase(repo)('x', profile: ApplicantProfile.empty),
         throwsA(isA<ApiException>()),
       );
+    });
+
+    test('getProgram 위임', () async {
+      final repo = FakeBenefitsRepository(pages: [ProgramPage.fromJson(programPageJson(items: [programSummaryJson(id: 'x')]))]);
+      final detail = await GetProgramDetailUseCase(repo)('x', profile: ApplicantProfile.empty);
+      expect(detail.summary.id, 'x');
     });
   });
 
@@ -76,6 +76,15 @@ void main() {
   });
 
   group('ResolveSavedProgramIdsUseCase', () {
+    test('회원·merge 실패면 BenefitsUserMessage 전파', () async {
+      final local = MemorySavedProgramLocalStore(['local1']);
+      final repo = FakeBenefitsRepository(mergeError: const BenefitsUserMessage('merge 실패'));
+      expect(
+        ResolveSavedProgramIdsUseCase(repo, local)(isMember: true),
+        throwsA(isA<BenefitsUserMessage>()),
+      );
+    });
+
     test('비회원: 로컬 id 만', () async {
       final local = MemorySavedProgramLocalStore(['a', 'b']);
       final repo = FakeBenefitsRepository();
@@ -100,36 +109,9 @@ void main() {
       expect(await local.load(), isEmpty);
       expect(ids, contains('local1'));
     });
-
-    test('회원·merge 실패면 BenefitsUserMessage 전파', () async {
-      final local = MemorySavedProgramLocalStore(['local1']);
-      final repo = FakeBenefitsRepository(mergeError: const BenefitsUserMessage('merge 실패'));
-      expect(
-        ResolveSavedProgramIdsUseCase(repo, local)(isMember: true),
-        throwsA(isA<BenefitsUserMessage>()),
-      );
-    });
   });
 
   group('ToggleSavedProgramUseCase', () {
-    test('비회원: 추가하면 로컬에만 저장', () async {
-      final local = MemorySavedProgramLocalStore();
-      final repo = FakeBenefitsRepository();
-      final uc = ToggleSavedProgramUseCase(repo, local);
-      final r = await uc(id: 'n1', isMember: false, currentIds: []);
-      expect(r.error, isNull);
-      expect(r.ids, ['n1']);
-      expect(await local.load(), ['n1']);
-      expect(repo.saveCalls, isEmpty);
-    });
-
-    test('비회원: 제거', () async {
-      final local = MemorySavedProgramLocalStore(['n1', 'n2']);
-      final uc = ToggleSavedProgramUseCase(FakeBenefitsRepository(), local);
-      final r = await uc(id: 'n1', isMember: false, currentIds: ['n1', 'n2']);
-      expect(r.ids, ['n2']);
-    });
-
     test('상한 초과면 error', () async {
       final ids = [for (var i = 0; i < SavedProgramLocalStore.maxCount; i++) 'n$i'];
       final uc = ToggleSavedProgramUseCase(FakeBenefitsRepository(), MemorySavedProgramLocalStore());
@@ -151,6 +133,24 @@ void main() {
       final uc = ToggleSavedProgramUseCase(repo, MemorySavedProgramLocalStore());
       final r = await uc(id: 'n1', isMember: true, currentIds: ['n1']);
       expect(r.error, '해제 실패');
+    });
+
+    test('비회원: 추가하면 로컬에만 저장', () async {
+      final local = MemorySavedProgramLocalStore();
+      final repo = FakeBenefitsRepository();
+      final uc = ToggleSavedProgramUseCase(repo, local);
+      final r = await uc(id: 'n1', isMember: false, currentIds: []);
+      expect(r.error, isNull);
+      expect(r.ids, ['n1']);
+      expect(await local.load(), ['n1']);
+      expect(repo.saveCalls, isEmpty);
+    });
+
+    test('비회원: 제거', () async {
+      final local = MemorySavedProgramLocalStore(['n1', 'n2']);
+      final uc = ToggleSavedProgramUseCase(FakeBenefitsRepository(), local);
+      final r = await uc(id: 'n1', isMember: false, currentIds: ['n1', 'n2']);
+      expect(r.ids, ['n2']);
     });
 
     test('회원: save 성공 시 로컬 replace 하지 않음', () async {
@@ -178,14 +178,23 @@ void main() {
       expect(list.total, 0);
     });
 
-    test('회원: fetchSaved', () async {
-      final repo = FakeBenefitsRepository(
-        pages: [ProgramPage.fromJson(programPageJson(items: [programSummaryJson(id: 's1')]))],
-        savedIds: ['s1'],
-      );
+    test('비회원: getProgram 가 BenefitsUserMessage 이면 전파한다', () async {
+      final inner = FakeBenefitsRepository(getProgramError: const BenefitsUserMessage('상세 실패'));
+      final repo = MappingBenefitsRepository(inner);
       final uc = LoadSavedProgramSummariesUseCase(repo, GetProgramDetailUseCase(repo));
-      final list = await uc(ids: ['s1'], profile: ApplicantProfile.empty, isMember: true);
-      expect(list.items.single.id, 's1');
+      expect(
+        uc(ids: ['bad'], profile: ApplicantProfile.empty, isMember: false),
+        throwsA(isA<BenefitsUserMessage>()),
+      );
+    });
+
+    test('회원: fetchSaved 실패 전파', () {
+      final repo = FakeBenefitsRepository(fetchSavedError: const BenefitsUserMessage('목록 실패'));
+      final uc = LoadSavedProgramSummariesUseCase(repo, GetProgramDetailUseCase(repo));
+      expect(
+        uc(ids: ['s1'], profile: ApplicantProfile.empty, isMember: true),
+        throwsA(isA<BenefitsUserMessage>()),
+      );
     });
 
     test('비회원: 없는 공고는 건너뛴다', () async {
@@ -196,19 +205,31 @@ void main() {
       expect(list.items, isEmpty);
     });
 
-    test('비회원: getProgram 가 BenefitsUserMessage 이면 전파한다', () async {
-      final inner = FakeBenefitsRepository(getProgramError: const BenefitsUserMessage('상세 실패'));
-      final repo = MappingBenefitsRepository(inner);
-      final uc = LoadSavedProgramSummariesUseCase(repo, GetProgramDetailUseCase(repo));
-      expect(
-        uc(ids: ['bad'], profile: ApplicantProfile.empty, isMember: false),
-        throwsA(isA<BenefitsUserMessage>()),
+    test('회원: fetchSaved', () async {
+      final repo = FakeBenefitsRepository(
+        pages: [ProgramPage.fromJson(programPageJson(items: [programSummaryJson(id: 's1')]))],
+        savedIds: ['s1'],
       );
+      final uc = LoadSavedProgramSummariesUseCase(repo, GetProgramDetailUseCase(repo));
+      final list = await uc(ids: ['s1'], profile: ApplicantProfile.empty, isMember: true);
+      expect(list.items.single.id, 's1');
     });
   });
 
   group('LoadSimilarProgramsUseCase', () {
-    test('같은 supplyType 검색에서 자신과 최대 5개', () async {
+    test('search 실패 전파', () {
+      final repo = FakeBenefitsRepository(searchError: const ApiException('similar fail'));
+      expect(
+        LoadSimilarProgramsUseCase(repo)(
+          excludeId: 'n0',
+          categoryId: 'housing',
+          profile: ApplicantProfile.empty,
+        ),
+        throwsA(isA<ApiException>()),
+      );
+    });
+
+    test('같은 category 검색에서 자신과 최대 5개', () async {
       final items = [for (var i = 0; i < 10; i++) programSummaryJson(id: 'n$i', title: 't$i')];
       final repo = FakeBenefitsRepository(
         pages: [ProgramPage.fromJson(programPageJson(items: items))],
@@ -221,21 +242,27 @@ void main() {
       expect(similar, hasLength(5));
       expect(similar.any((n) => n.id == 'n0'), isFalse);
     });
-
-    test('search 실패 전파', () {
-      final repo = FakeBenefitsRepository(searchError: const ApiException('similar fail'));
-      expect(
-        LoadSimilarProgramsUseCase(repo)(
-          excludeId: 'n0',
-          categoryId: 'housing',
-          profile: ApplicantProfile.empty,
-        ),
-        throwsA(isA<ApiException>()),
-      );
-    });
   });
 
   group('LoadScheduleProgramsUseCase', () {
+    test('2페이지 조회 실패면 예외 전파', () async {
+      late FakeBenefitsRepository repo;
+      repo = FakeBenefitsRepository(
+        pages: [
+          ProgramPage.fromJson(programPageJson(items: [programSummaryJson(id: 'a')], page: 1, totalPages: 3)),
+          ProgramPage.fromJson(programPageJson(items: [programSummaryJson(id: 'b')], page: 2, totalPages: 3)),
+        ],
+        searchHook: (_, page) {
+          if (page == 2) throw const ApiException('page2 fail');
+          return Future.value(repo.pages[page - 1]);
+        },
+      );
+      expect(
+        LoadScheduleProgramsUseCase(repo)(profile: ApplicantProfile.empty),
+        throwsA(isA<ApiException>()),
+      );
+    });
+
     test('여러 페이지를 dedup 하며 합친다', () async {
       final repo = FakeBenefitsRepository(
         pages: [
@@ -258,24 +285,6 @@ void main() {
       final out = await LoadScheduleProgramsUseCase(repo)(profile: ApplicantProfile.empty);
       expect(out.items.map((e) => e.id), ['a', 'b', 'c']);
       expect(repo.searchCalls.length, 2);
-    });
-
-    test('2페이지 조회 실패면 예외 전파', () async {
-      late FakeBenefitsRepository repo;
-      repo = FakeBenefitsRepository(
-        pages: [
-          ProgramPage.fromJson(programPageJson(items: [programSummaryJson(id: 'a')], page: 1, totalPages: 3)),
-          ProgramPage.fromJson(programPageJson(items: [programSummaryJson(id: 'b')], page: 2, totalPages: 3)),
-        ],
-        searchHook: (_, page) {
-          if (page == 2) throw const ApiException('page2 fail');
-          return Future.value(repo.pages[page - 1]);
-        },
-      );
-      expect(
-        LoadScheduleProgramsUseCase(repo)(profile: ApplicantProfile.empty),
-        throwsA(isA<ApiException>()),
-      );
     });
   });
 }

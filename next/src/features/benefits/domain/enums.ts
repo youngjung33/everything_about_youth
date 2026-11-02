@@ -30,6 +30,7 @@ export const PROGRAM_STATUS_LABELS: Record<ProgramStatus, string> = {
 };
 
 /** 데이터 소스 식별자 */
+/** 운영 sync id. 추가 후보는 next/README.md «청년 혜택·정책» */
 export const SOURCE_IDS = ["ontong", "demo"] as const;
 export type SourceId = (typeof SOURCE_IDS)[number];
 

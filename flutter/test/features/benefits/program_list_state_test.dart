@@ -6,6 +6,11 @@ import '../../support/benefits_fixtures.dart';
 
 void main() {
   group('ProgramListState.fromPage', () {
+    test('마지막 페이지면 hasMore 가 false', () {
+      final page = ProgramPage.fromJson(programPageJson(items: [programSummaryJson()], page: 3, totalPages: 3));
+      expect(ProgramListState.fromPage(page).hasMore, isFalse);
+    });
+
     test('페이지 필드를 그대로 옮긴다', () {
       final page = ProgramPage.fromJson(
         programPageJson(items: [programSummaryJson(id: 'a')], total: 10, page: 2, totalPages: 5),
@@ -17,11 +22,6 @@ void main() {
       expect(state.totalPages, 5);
       expect(state.today, page.today);
       expect(state.hasMore, isTrue);
-    });
-
-    test('마지막 페이지면 hasMore 가 false', () {
-      final page = ProgramPage.fromJson(programPageJson(items: [programSummaryJson()], page: 3, totalPages: 3));
-      expect(ProgramListState.fromPage(page).hasMore, isFalse);
     });
   });
 

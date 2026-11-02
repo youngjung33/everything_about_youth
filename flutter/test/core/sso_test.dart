@@ -133,24 +133,6 @@ void main() {
   });
 
   group('SsoClient', () {
-    test('쓸 수 있는 로그인 방법의 id 만 돌려준다', () async {
-      final env = _Env();
-      env.server.enabledProviders = {'kakao', 'google'};
-      expect(await env.client.enabledProviders(), {'google', 'kakao'});
-    });
-
-    test('모두 꺼져 있으면 빈 집합', () async {
-      final env = _Env();
-      env.server.enabledProviders = {};
-      expect(await env.client.enabledProviders(), isEmpty);
-    });
-
-    test('토큰 없이 부른다 (로그인 전에도 목록을 봐야 한다)', () async {
-      final env = _Env();
-      await env.client.enabledProviders();
-      expect(env.server.requestHeaders.single.containsKey('authorization'), isFalse);
-    });
-
     test('응답 형식이 이상하면 BAD_RESPONSE', () async {
       final bad = http.Response('{"providers":"x"}', 200, headers: {'content-type': 'application/json'});
       final client = SsoClient(ApiClient(baseUrl: _base, httpClient: MockClient((_) async => bad)));
@@ -158,14 +140,6 @@ void main() {
         client.enabledProviders(),
         throwsA(isA<ApiException>().having((e) => e.code, 'code', ApiErrorCode.badResponse)),
       );
-    });
-
-    test('시작하면 서버가 준 https 주소를 돌려주고, 서버에 provider/돌아올 주소/challenge 를 보낸다', () async {
-      final env = _Env();
-      final url = await env.client.start(provider: SsoProvider.kakao, redirectUri: _redirect, codeChallenge: 'c' * 43);
-      expect(url.scheme, 'https');
-      expect(url.host, 'login.test');
-      expect(env.server.lastStart, {'provider': 'kakao', 'redirectUri': _redirect, 'codeChallenge': 'c' * 43});
     });
 
     test('서버가 준 주소가 https 가 아니면 열지 않는다', () async {
@@ -192,29 +166,35 @@ void main() {
         throwsA(isA<ApiException>().having((e) => e.code, 'code', ApiErrorCode.ssoProviderUnavailable)),
       );
     });
+
+    test('쓸 수 있는 로그인 방법의 id 만 돌려준다', () async {
+      final env = _Env();
+      env.server.enabledProviders = {'kakao', 'google'};
+      expect(await env.client.enabledProviders(), {'google', 'kakao'});
+    });
+
+    test('모두 꺼져 있으면 빈 집합', () async {
+      final env = _Env();
+      env.server.enabledProviders = {};
+      expect(await env.client.enabledProviders(), isEmpty);
+    });
+
+    test('토큰 없이 부른다 (로그인 전에도 목록을 봐야 한다)', () async {
+      final env = _Env();
+      await env.client.enabledProviders();
+      expect(env.server.requestHeaders.single.containsKey('authorization'), isFalse);
+    });
+
+    test('시작하면 서버가 준 https 주소를 돌려주고, 서버에 provider/돌아올 주소/challenge 를 보낸다', () async {
+      final env = _Env();
+      final url = await env.client.start(provider: SsoProvider.kakao, redirectUri: _redirect, codeChallenge: 'c' * 43);
+      expect(url.scheme, 'https');
+      expect(url.host, 'login.test');
+      expect(env.server.lastStart, {'provider': 'kakao', 'redirectUri': _redirect, 'codeChallenge': 'c' * 43});
+    });
   });
 
   group('SsoSignInFlow', () {
-    test('티켓을 회원 세션으로 바꿔 돌려준다. 로그인 창에는 서버가 준 주소를 연다', () async {
-      final env = _Env();
-      final flow = SsoSignInFlow(client: env.client, launcher: env.launcher, redirectUri: _redirect);
-
-      final json = await flow.run(SsoProvider.google);
-
-      expect(json['member'], isTrue);
-      expect(env.launcher.opened.single.toString(), 'https://login.test/google?state=s');
-    });
-
-    test('verifier 는 서버로 start 때가 아니라 exchange 때만 간다 (start 에는 해시만)', () async {
-      final env = _Env();
-      final flow = SsoSignInFlow(client: env.client, launcher: env.launcher, redirectUri: _redirect);
-      await flow.run(SsoProvider.naver);
-
-      final startBody = env.server.lastStart!;
-      expect(startBody['codeChallenge'], hasLength(43));
-      expect(startBody.containsKey('verifier'), isFalse);
-    });
-
     test('로그인 창을 닫으면 SsoCancelledException', () async {
       final env = _Env(launcher: FakeSsoLauncher.cancelling());
       final flow = SsoSignInFlow(client: env.client, launcher: env.launcher, redirectUri: _redirect);
@@ -244,7 +224,7 @@ void main() {
       );
     });
 
-    test('티켓은 로그인을 시작한 verifier 로만 교환된다 (다른 앱이 티켓을 가로채도 쓸 수 없다)', () async {
+    test('티켓은 start 시 사용한 verifier 로만 교환된다 (다른 앱이 티켓을 가로채도 쓸 수 없다)', () async {
       final env = _Env();
       await env.client.start(
         provider: SsoProvider.google,
@@ -268,9 +248,63 @@ void main() {
         expect(() => SsoSignInFlow.ticketFromCallback(Uri.parse(bad)), throwsA(isA<SsoFailedException>()), reason: bad);
       }
     });
+
+    test('티켓을 회원 세션으로 바꿔 돌려준다. 로그인 창에는 서버가 준 주소를 연다', () async {
+      final env = _Env();
+      final flow = SsoSignInFlow(client: env.client, launcher: env.launcher, redirectUri: _redirect);
+
+      final json = await flow.run(SsoProvider.google);
+
+      expect(json['member'], isTrue);
+      expect(env.launcher.opened.single.toString(), 'https://login.test/google?state=s');
+    });
+
+    test('verifier 는 서버로 start 때가 아니라 exchange 때만 간다 (start 에는 해시만)', () async {
+      final env = _Env();
+      final flow = SsoSignInFlow(client: env.client, launcher: env.launcher, redirectUri: _redirect);
+      await flow.run(SsoProvider.naver);
+
+      final startBody = env.server.lastStart!;
+      expect(startBody['codeChallenge'], hasLength(43));
+      expect(startBody.containsKey('verifier'), isFalse);
+    });
   });
 
   group('AuthActions', () {
+    test('로그인을 취소하면 아무것도 바뀌지 않는다', () async {
+      final env = _Env(launcher: FakeSsoLauncher.cancelling());
+      await expectLater(env.actions.signIn(SsoProvider.google), throwsA(isA<SsoCancelledException>()));
+      expect(env.mode, AuthMode.none);
+      expect(await env.store.read(), isNull);
+    });
+
+    test('로그인에 실패하면 모드도 세션도 바뀌지 않는다', () async {
+      final env = _Env(launcher: FakeSsoLauncher.failing());
+      await expectLater(env.actions.signIn(SsoProvider.google), throwsA(isA<SsoFailedException>()));
+      expect(env.mode, AuthMode.none);
+      expect(await env.store.read(), isNull);
+    });
+
+    test('탈퇴에 실패하면 로그인 상태를 유지하고 오류를 알린다 (지워진 줄 알고 떠나면 안 된다)', () async {
+      final env = _Env();
+      await env.actions.signIn(SsoProvider.google);
+      env.server.failWith = 500;
+
+      await expectLater(env.actions.deleteAccount(), throwsA(isA<ApiException>()));
+
+      expect(env.mode, AuthMode.member);
+      expect(await env.store.read(), isNotNull);
+    });
+
+    test('비회원은 탈퇴할 수 없다 (LOGIN_REQUIRED)', () async {
+      final env = _Env(mode: AuthMode.guest);
+      await expectLater(
+        env.actions.deleteAccount(),
+        throwsA(isA<ApiException>().having((e) => e.code, 'code', ApiErrorCode.loginRequired)),
+      );
+      expect(env.mode, AuthMode.guest);
+    });
+
     test('비회원으로 시작하기는 서버를 부르지 않고 모드만 바꾼다', () async {
       final env = _Env();
       await env.actions.continueAsGuest();
@@ -287,20 +321,6 @@ void main() {
       // 이후 요청에는 회원 토큰이 붙는다
       final response = await env.api.getJson('/features');
       expect(env.server.memberAccess.contains(response['token']), isTrue);
-    });
-
-    test('로그인을 취소하면 아무것도 바뀌지 않는다', () async {
-      final env = _Env(launcher: FakeSsoLauncher.cancelling());
-      await expectLater(env.actions.signIn(SsoProvider.google), throwsA(isA<SsoCancelledException>()));
-      expect(env.mode, AuthMode.none);
-      expect(await env.store.read(), isNull);
-    });
-
-    test('로그인에 실패하면 모드도 세션도 바뀌지 않는다', () async {
-      final env = _Env(launcher: FakeSsoLauncher.failing());
-      await expectLater(env.actions.signIn(SsoProvider.google), throwsA(isA<SsoFailedException>()));
-      expect(env.mode, AuthMode.none);
-      expect(await env.store.read(), isNull);
     });
 
     test('비회원이던 사람이 로그인하면 비회원 세션이 회원 세션으로 바뀐다', () async {
@@ -346,41 +366,9 @@ void main() {
       expect(env.server.memberRefresh, isEmpty);
       expect(env.server.count('POST /api/v1/auth/account/delete'), 1);
     });
-
-    test('탈퇴에 실패하면 로그인 상태를 유지하고 오류를 알린다 (지워진 줄 알고 떠나면 안 된다)', () async {
-      final env = _Env();
-      await env.actions.signIn(SsoProvider.google);
-      env.server.failWith = 500;
-
-      await expectLater(env.actions.deleteAccount(), throwsA(isA<ApiException>()));
-
-      expect(env.mode, AuthMode.member);
-      expect(await env.store.read(), isNotNull);
-    });
-
-    test('비회원은 탈퇴할 수 없다 (LOGIN_REQUIRED)', () async {
-      final env = _Env(mode: AuthMode.guest);
-      await expectLater(
-        env.actions.deleteAccount(),
-        throwsA(isA<ApiException>().having((e) => e.code, 'code', ApiErrorCode.loginRequired)),
-      );
-      expect(env.mode, AuthMode.guest);
-    });
   });
 
   group('회원 세션 유지와 만료', () {
-    test('회원의 액세스 토큰이 만료되면 갱신해도 회원으로 남는다', () async {
-      final env = _Env();
-      await env.actions.signIn(SsoProvider.google);
-      env.server.expireAccessTokens();
-
-      final response = await env.api.getJson('/features');
-
-      expect(env.server.memberAccess.contains(response['token']), isTrue);
-      expect((await env.store.read())!.member, isTrue);
-      expect(env.mode, AuthMode.member);
-    });
-
     test('회원의 세션을 서버가 인정하지 않으면 비회원으로 바꾸지 않고 none 으로 돌려보낸다', () async {
       final env = _Env();
       await env.actions.signIn(SsoProvider.google);
@@ -403,6 +391,18 @@ void main() {
 
       expect(env.mode, AuthMode.none);
       expect(env.server.sessionCalls, 0);
+    });
+
+    test('회원의 액세스 토큰이 만료되면 갱신해도 회원으로 남는다', () async {
+      final env = _Env();
+      await env.actions.signIn(SsoProvider.google);
+      env.server.expireAccessTokens();
+
+      final response = await env.api.getJson('/features');
+
+      expect(env.server.memberAccess.contains(response['token']), isTrue);
+      expect((await env.store.read())!.member, isTrue);
+      expect(env.mode, AuthMode.member);
     });
 
     test('비회원은 세션을 잃으면 예전처럼 조용히 새 비회원 세션을 받는다', () async {

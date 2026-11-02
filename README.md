@@ -1,13 +1,13 @@
 # 청년의 모든 것 (everything_about_youth)
 
-한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 서비스. **지금 앱에 구현된 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)** 이고, 아래 로드맵의 나머지는 서버 플래그·문서에만 등록된 **예정** 항목입니다.
+한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 서비스. **지금 앱에 구현된 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)·청년 주거·자금(`finance`)** 입니다. `finance` 는 **기능 플래그가 기본 꺼짐**이라 `GET /features` 로 켜기 전까지 홈에서 숨깁니다. 아래 로드맵의 `jobs`·`living` 등은 플래그·문서에만 등록된 **예정** 항목입니다.
 
 ### 섹션 로드맵
 
 | id | 이름 | 상태 | 한 줄 설명 |
 | --- | --- | --- | --- |
 | `housing` | 임대주택 | **1차 구현** | LH·SH·마이홈 등 공고 통합, 내 조건 자격 판정, 관심 공고·일정·로컬 알림 |
-| `benefits` | 청년 혜택·정책 | **1차 구현** | 온통청년·지자체 등 주거·생활비·취업 연계 지원, 내 조건 판정, 관심·일정·로컬 알림 |
+| `benefits` | 청년 혜택·정책 | **1차 구현** | 온통청년 OPEN API로 전국 청년정책 수집, 내 조건 판정, 관심·일정·로컬 알림 |
 | `finance` | 청년 주거·자금 | 예정 | 전세·보증금·청약저축 등 주거 자금 제도 안내(공식 링크·조건 요약) |
 | `jobs` | 청년·공공 일자리 | 예정 | 청년·신입·공공 채용 공고 |
 | `living` | 이사·생활 | 예정 | 전입신고·확정일자 등 절차 체크리스트 |
@@ -23,8 +23,46 @@
 
 ### 청년 혜택(benefits) — housing 과 동형
 
-- **수집**: 온통청년 OPEN API(`BENEFITS_ONTONG_API_KEY`) + `[데모]` seed. CLI `npm run benefits:sync` / `benefits:seed-demo`.
-- **목록·상세·필터·내 조건 판정·관심 저장(회원 API + 로컬)·접수 일정·로컬 알림·meta·ICS** — API `/api/v1/benefits/*`, 앱 `/benefits`.
+- **수집(운영)**: **온통청년 OPEN API** 한 곳 (`BENEFITS_ONTONG_API_KEY`). 임대주택의 `DATA_GO_KR_SERVICE_KEY` 와 **별개**이며, 공공데이터포털 활용신청만으로는 benefits 가 채워지지 않습니다.
+- **수집(개발·데모)**: `npm run benefits:seed-demo` → `[데모]` 정책만 DB에 넣음.
+- **CLI**: `npm run benefits:sync -- --list` / `npm run benefits:sync`
+- **앱·API**: 목록·상세·필터·내 조건·관심·일정·로컬 알림·`/api/v1/benefits/*`, Flutter `/benefits`
+
+#### 온통청년 OPEN API — 키 발급·문서 (공공데이터포털 아님)
+
+| 단계 | 내용 |
+| --- | --- |
+| 1 | [온통청년](https://www.youthcenter.go.kr) **회원가입** |
+| 2 | 로그인 → **[마이페이지 → OPEN API](https://www.youthcenter.go.kr/myPage/openapi)** 에서 인증키 **신청** (사용할 API 종류 선택) |
+| 3 | 담당자 **승인 후** 발급된 키를 `next/.env.local` 의 `BENEFITS_ONTONG_API_KEY` 에 넣기 |
+| 4 | `cd next && npm run benefits:sync` |
+
+공식 안내·제공 API 목록:
+
+- [OPEN API 이용방법](https://www.youthcenter.go.kr/cmnFooter/openapiIntro/oaiGuide) (HTTPS, **XML** 응답)
+- [OPEN API 제공목록·파라미터](https://www.youthcenter.go.kr/cmnFooter/openapiIntro/oaiDoc) · [청년정책 목록 상세](https://www.youthcenter.go.kr/cmnFooter/openapiIntro/oaiDoc/47)
+
+이 레포가 호출하는 **청년정책 목록** (코드와 동일):
+
+- URL: `https://www.youthcenter.go.kr/opi/youthPlcyList.do`
+- 인증: 쿼리 `openApiVlak=<발급키>`
+- 페이징: `pageIndex`, `display` (최대 100)
+
+[공공데이터포털 «한국고용정보원_온통청년_청년정책»](https://www.data.go.kr/data/15143273/openapi.do) 은 **LINK** 유형입니다. 소개·활용 통계용이고, **실제 호출·키는 youthcenter.go.kr** 입니다. `apis.data.go.kr/.../youthPlcyList` 류 **구 엔드포인트는 동작하지 않으므로 쓰지 않습니다.**
+
+#### 크롤링이 더 필요한가?
+
+**1차 benefits 는 크롤러 없이 설계했습니다.** 온통 목록 API가 제목·기관·분야·기간·요약·원문 URL·지역·키워드를 주고, 앱은 **원문 링크**로 신청·상세 확인을 유도합니다 (임대주택처럼 기관 게시판을 긁지 않음).
+
+| 구분 | 방식 | 이 레포 |
+| --- | --- | --- |
+| 전국 청년정책 목록 | 온통 OPEN API | **구현됨** (`ontong`) |
+| 화면·CI용 데모 | DB seed | `benefits:seed-demo` |
+| 정책 **상세** 필드 보강 | 같은 키로 온통 **상세 API** (`youthPlcyDetail.do` 또는 목록 API의 `srchPolicyId`) | **미구현** — 목록 필드로 1차는 충분, 자격 문구가 부족할 때 API로 추가 (크롤 아님) |
+| 온통에 없는 지자체·부처 **단독** 공고 | 공식 API 있으면 소스 추가, 없으면 **선별적** 크롤 | **미구현** — 후보·검증은 [next/README.md](next/README.md#청년-혜택정책-섹션) «크롤링·추가 소스» |
+| 청년공간·콘텐츠 API | 온통 OPEN API 별도 메뉴 | **범위 밖** (정책 섹션이 아님) |
+
+env·sync·스탠바이 표는 [next/README.md](next/README.md#청년-혜택정책-섹션) 를 보세요.
 
 ```
 next/      서버: 공고 수집(LH·마이홈·청약홈·SH·iH·GH), DB(SQLite), 관리자 페이지, JSON API
@@ -45,7 +83,7 @@ flutter/   앱: 웹 · Android · iOS 를 하나의 Dart 코드로. 서버의 JS
 ```bash
 cd next
 npm install
-# next/.env.local 에 DATA_GO_KR_SERVICE_KEY 등 설정 (자세한 항목은 next/README.md)
+# next/.env.local 예: DATA_GO_KR_SERVICE_KEY (임대주택), BENEFITS_ONTONG_API_KEY (청년혜택·온통청년 마이페이지 발급)
 npm run db:migrate
 npm run housing:sync        # 공고 수집
 npm run benefits:seed-demo  # [데모] 혜택 정책 (화면 확인용)
@@ -60,6 +98,8 @@ JSON API 설명과 CORS 설정(`API_CORS_ORIGIN`)은 [next/README.md](next/READM
 ```bash
 cd flutter
 flutter pub get
+npm run finance:seed-demo   # [데모] 주거·자금 제도 (화면 확인용)
+npm run finance:sync          # 주거·자금 제도 수집 (curated, ontong-finance)
 
 # 웹
 flutter run -d chrome

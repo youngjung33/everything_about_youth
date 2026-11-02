@@ -68,11 +68,6 @@ describe("crawl fetcher", () => {
 describe("robots 무시 호스트 (명시적 opt-in)", () => {
   const rawGet = async (url: string) => (url.endsWith("/robots.txt") ? "User-agent: *\nDisallow: /" : "ok");
 
-  it("기본값에서는 robots 금지를 따른다", async () => {
-    const fetchText = createCrawlFetcher({ userAgent: "t", delayMs: 0, rawGet });
-    await expect(fetchText("https://blocked.example/a")).rejects.toThrow(RobotsDisallowedError);
-  });
-
   it("지정한 호스트만 robots 확인을 건너뛰고, 다른 호스트는 그대로 따른다", async () => {
     const ignored: string[] = [];
     const fetchText = createCrawlFetcher({
@@ -85,5 +80,10 @@ describe("robots 무시 호스트 (명시적 opt-in)", () => {
     expect(await fetchText("https://blocked.example/a")).toBe("ok");
     await expect(fetchText("https://other.example/a")).rejects.toThrow(RobotsDisallowedError);
     expect(ignored).toEqual(["blocked.example"]);
+  });
+
+  it("기본값에서는 robots 금지를 따른다", async () => {
+    const fetchText = createCrawlFetcher({ userAgent: "t", delayMs: 0, rawGet });
+    await expect(fetchText("https://blocked.example/a")).rejects.toThrow(RobotsDisallowedError);
   });
 });

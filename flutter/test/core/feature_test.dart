@@ -20,42 +20,6 @@ void main() {
 
     List<String> enabled(ProviderContainer c) => c.read(enabledFeaturesProvider).map((m) => m.id).toList();
 
-    test('서버 설정을 받기 전에는 서비스의 기본값을 쓴다 (defaultEnabled: false 는 숨김)', () {
-      final container = containerWith(const [], modules: modules);
-      expect(enabled(container), ['a', 'b']);
-      expect(container.read(featureAvailabilityProvider('beta')), FeatureAvailability.disabled);
-    });
-
-    test('서버가 끄면 숨기고, 서버가 켜면 기본값이 꺼짐이던 서비스도 켜진다', () async {
-      final remote = FakeFeatureConfigRemote(config: {'b': false, 'beta': true});
-      final container = containerWith(const [], modules: modules, remote: remote);
-
-      await container.read(featureFlagsProvider.notifier).syncWithServer();
-
-      expect(enabled(container), ['a', 'beta']);
-    });
-
-    test('서버 응답에 없는 서비스는 기본값을, 앱이 모르는 서비스 id 는 무시한다', () async {
-      final remote = FakeFeatureConfigRemote(config: {'a': true, 'unknown': false});
-      final container = containerWith(const [], modules: modules, remote: remote);
-
-      await container.read(featureFlagsProvider.notifier).syncWithServer();
-
-      expect(enabled(container), ['a', 'b']);
-    });
-
-    test('서버 설정은 기기에 남은 직전 설정보다 우선하고, 받은 설정을 기기에 저장한다', () async {
-      final cache = MemoryFeatureConfigCache({'a': false});
-      final remote = FakeFeatureConfigRemote(config: {'a': true, 'b': false});
-      final container = containerWith(const [], modules: modules, remote: remote, cache: cache);
-
-      expect(enabled(container), ['b'], reason: '시작 직후에는 직전 서버 설정을 쓴다');
-      await container.read(featureFlagsProvider.notifier).syncWithServer();
-
-      expect(enabled(container), ['a']);
-      expect(cache.data, {'a': true, 'b': false});
-    });
-
     test('서버에 닿지 못하면 기기에 남은 직전 설정으로 계속한다', () async {
       final cache = MemoryFeatureConfigCache({'b': false});
       final remote = FakeFeatureConfigRemote(error: StateError('서버 꺼짐'));
@@ -90,6 +54,42 @@ void main() {
       await container.read(featureFlagsProvider.notifier).syncWithServer();
 
       expect(enabled(container), ['b']);
+    });
+
+    test('서버 설정을 받기 전에는 서비스의 기본값을 쓴다 (defaultEnabled: false 는 숨김)', () {
+      final container = containerWith(const [], modules: modules);
+      expect(enabled(container), ['a', 'b']);
+      expect(container.read(featureAvailabilityProvider('beta')), FeatureAvailability.disabled);
+    });
+
+    test('서버가 끄면 숨기고, 서버가 켜면 기본값이 꺼짐이던 서비스도 켜진다', () async {
+      final remote = FakeFeatureConfigRemote(config: {'b': false, 'beta': true});
+      final container = containerWith(const [], modules: modules, remote: remote);
+
+      await container.read(featureFlagsProvider.notifier).syncWithServer();
+
+      expect(enabled(container), ['a', 'beta']);
+    });
+
+    test('서버 응답에 없는 서비스는 기본값을, 앱이 모르는 서비스 id 는 무시한다', () async {
+      final remote = FakeFeatureConfigRemote(config: {'a': true, 'unknown': false});
+      final container = containerWith(const [], modules: modules, remote: remote);
+
+      await container.read(featureFlagsProvider.notifier).syncWithServer();
+
+      expect(enabled(container), ['a', 'b']);
+    });
+
+    test('서버 설정은 기기에 남은 직전 설정보다 우선하고, 받은 설정을 기기에 저장한다', () async {
+      final cache = MemoryFeatureConfigCache({'a': false});
+      final remote = FakeFeatureConfigRemote(config: {'a': true, 'b': false});
+      final container = containerWith(const [], modules: modules, remote: remote, cache: cache);
+
+      expect(enabled(container), ['b'], reason: '시작 직후에는 직전 서버 설정을 쓴다');
+      await container.read(featureFlagsProvider.notifier).syncWithServer();
+
+      expect(enabled(container), ['a']);
+      expect(cache.data, {'a': true, 'b': false});
     });
 
     test('실행 중에도 끄고 켤 수 있다 (다음 서버 설정을 받으면 서버 값이 우선)', () async {

@@ -90,14 +90,6 @@ describe("SsoService.listProviders", () => {
 });
 
 describe("SsoService.start", () => {
-  it("업체의 로그인 주소를 만든다. 업체가 돌아올 주소는 서버 콜백이다", async () => {
-    const { sso } = setup();
-    const { url, state } = await startLogin(sso);
-    expect(url.origin + url.pathname).toBe("https://login.test/google");
-    expect(url.searchParams.get("redirect_uri")).toBe("https://api.test/api/v1/auth/sso/callback/google");
-    expect(state.split(".")).toHaveLength(3); // 서명된 JWT
-  });
-
   it("알 수 없는 업체, 잘못된 challenge, 허용되지 않은 돌아갈 주소는 거절한다", async () => {
     const { sso } = setup();
     const base = { callbackBase: "https://api.test", callbackPath: (p: string) => `/cb/${p}` };
@@ -121,50 +113,17 @@ describe("SsoService.start", () => {
     const { sso } = setup({ google: fakeProvider("google") });
     await expect(startLogin(sso, "kakao")).rejects.toMatchObject({ code: "provider_unavailable" });
   });
+
+  it("업체의 로그인 주소를 만든다. 업체가 돌아올 주소는 서버 콜백이다", async () => {
+    const { sso } = setup();
+    const { url, state } = await startLogin(sso);
+    expect(url.origin + url.pathname).toBe("https://login.test/google");
+    expect(url.searchParams.get("redirect_uri")).toBe("https://api.test/api/v1/auth/sso/callback/google");
+    expect(state.split(".")).toHaveLength(3); // 서명된 JWT
+  });
 });
 
 describe("로그인 전체 흐름 (시작 → 콜백 → 교환)", () => {
-  it("성공하면 앱 주소로 티켓이 돌아오고, 교환하면 회원 세션을 받는다", async () => {
-    const fetchProfile = vi.fn(async () => ({ subject: "g-123" }));
-    const { sso, tokens, clients } = setup({ google: fakeProvider("google", { fetchProfile }) });
-    const { state, nonce } = await startLogin(sso);
-
-    const outcome = await sso.handleCallback({ provider: "google", code: "auth-code", state, error: null });
-    expect(outcome.kind).toBe("redirect");
-    expect((outcome as { url: string }).url.startsWith(`${APP_REDIRECT}?ticket=`)).toBe(true);
-    // 업체에는 인가 코드, state, nonce, 시작할 때 쓴 서버 콜백 주소를 그대로 넘긴다
-    expect(fetchProfile).toHaveBeenCalledWith({
-      code: "auth-code",
-      state,
-      nonce,
-      redirectUri: "https://api.test/api/v1/auth/sso/callback/google",
-    });
-
-    const session = await sso.exchange({ ticket: ticketOf(outcome), verifier: VERIFIER });
-    expect(session.member).toBe(true);
-    const claims = await tokens.verify(session.accessToken, "access");
-    expect((await clients.find(claims.sub))?.userId).toBe("user-1");
-  });
-
-  it("같은 계정으로 다시 로그인하면 같은 회원이고, 다른 계정이면 다른 회원이다", async () => {
-    let subject = "g-1";
-    const { sso, tokens, clients } = setup({
-      google: fakeProvider("google", { fetchProfile: async () => ({ subject }) }),
-    });
-
-    async function login() {
-      const { state } = await startLogin(sso);
-      const outcome = await sso.handleCallback({ provider: "google", code: "c", state, error: null });
-      const s = await sso.exchange({ ticket: ticketOf(outcome), verifier: VERIFIER });
-      return (await clients.find((await tokens.verify(s.accessToken, "access")).sub))!.userId;
-    }
-
-    const first = await login();
-    expect(await login()).toBe(first);
-    subject = "g-2";
-    expect(await login()).not.toBe(first);
-  });
-
   it("티켓은 한 번만 쓸 수 있다", async () => {
     const { sso } = setup();
     const { state } = await startLogin(sso);
@@ -208,6 +167,47 @@ describe("로그인 전체 흐름 (시작 → 콜백 → 교환)", () => {
     ]) {
       await expect(sso.exchange(input)).rejects.toMatchObject({ code: "invalid_request" });
     }
+  });
+
+  it("성공하면 앱 주소로 티켓이 돌아오고, 교환하면 회원 세션을 받는다", async () => {
+    const fetchProfile = vi.fn(async () => ({ subject: "g-123" }));
+    const { sso, tokens, clients } = setup({ google: fakeProvider("google", { fetchProfile }) });
+    const { state, nonce } = await startLogin(sso);
+
+    const outcome = await sso.handleCallback({ provider: "google", code: "auth-code", state, error: null });
+    expect(outcome.kind).toBe("redirect");
+    expect((outcome as { url: string }).url.startsWith(`${APP_REDIRECT}?ticket=`)).toBe(true);
+    // 업체에는 인가 코드, state, nonce, 시작할 때 쓴 서버 콜백 주소를 그대로 넘긴다
+    expect(fetchProfile).toHaveBeenCalledWith({
+      code: "auth-code",
+      state,
+      nonce,
+      redirectUri: "https://api.test/api/v1/auth/sso/callback/google",
+    });
+
+    const session = await sso.exchange({ ticket: ticketOf(outcome), verifier: VERIFIER });
+    expect(session.member).toBe(true);
+    const claims = await tokens.verify(session.accessToken, "access");
+    expect((await clients.find(claims.sub))?.userId).toBe("user-1");
+  });
+
+  it("같은 계정으로 다시 로그인하면 같은 회원이고, 다른 계정이면 다른 회원이다", async () => {
+    let subject = "g-1";
+    const { sso, tokens, clients } = setup({
+      google: fakeProvider("google", { fetchProfile: async () => ({ subject }) }),
+    });
+
+    async function login() {
+      const { state } = await startLogin(sso);
+      const outcome = await sso.handleCallback({ provider: "google", code: "c", state, error: null });
+      const s = await sso.exchange({ ticket: ticketOf(outcome), verifier: VERIFIER });
+      return (await clients.find((await tokens.verify(s.accessToken, "access")).sub))!.userId;
+    }
+
+    const first = await login();
+    expect(await login()).toBe(first);
+    subject = "g-2";
+    expect(await login()).not.toBe(first);
   });
 });
 

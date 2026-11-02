@@ -1,0 +1,39 @@
+{
+  "items": [
+    {
+      "id": "f_ijcwejyhum",
+      "title": "청년 전세자금 대출",
+      "organization": "한국주택금융공사",
+      "productTypeId": "jeonse_loan",
+      "categoryLabel": "전세·주택자금대출",
+      "tags": [
+        "전세",
+        "대출"
+      ],
+      "status": "open",
+      "statusLabel": "신청중",
+      "dday": "D-8",
+      "regions": [
+        {
+          "sido": "세종",
+          "sigungu": "세종시"
+        }
+      ],
+      "regionLabel": "세종 세종시",
+      "applicationStart": "2026-10-01",
+      "applicationEnd": "2026-10-20",
+      "announcementDate": "2026-09-25",
+      "summary": "무주택 청년 전세자금 대출 안내",
+      "url": "https://example.com/f1",
+      "sourceLabels": [
+        "데모 데이터"
+      ],
+      "eligibility": null
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "pageSize": 20,
+  "totalPages": 1,
+  "today": "2026-10-12"
+}

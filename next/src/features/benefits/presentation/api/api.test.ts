@@ -5,7 +5,7 @@ import type { ProgramRepository, ProgramSearchQuery } from "@/features/benefits/
 import { createProgram } from "@/features/benefits/domain/identity";
 import type { BenefitProgram, BenefitProgramDraft } from "@/features/benefits/domain/program";
 import { GetProgramDetail } from "@/features/benefits/application/use-cases/get-program-detail";
-import { ManageSavedPrograms } from "@/features/benefits/application/use-cases/manage-saved-programs";
+import { ManageSavedPrograms, MAX_SAVED_PROGRAMS } from "@/features/benefits/application/use-cases/manage-saved-programs";
 import type { SavedProgram, SavedProgramRepository } from "@/features/benefits/application/ports/saved-program-repository";
 import {
   handleGetMeta,
@@ -84,6 +84,36 @@ function setup(drafts: BenefitProgramDraft[]) {
 }
 
 describe("benefits API handlers", () => {
+  it("없는 id 는 PROGRAM_NOT_FOUND", async () => {
+    const { deps } = setup([draft()]);
+    await expect(handleGetProgram("missing", new URLSearchParams(), deps)).rejects.toMatchObject({ code: "PROGRAM_NOT_FOUND" });
+  });
+
+  it("관심 저장 not_found", async () => {
+    const { deps } = setup([]);
+    await expect(handleSaveProgram("u1", "nope", deps)).rejects.toMatchObject({ code: "PROGRAM_NOT_FOUND" });
+  });
+
+  it("마감일 없으면 BAD_REQUEST", async () => {
+    const { deps, programs } = setup([draft({ applicationEnd: null })]);
+    await expect(handleProgramCalendar(programs[0]!.id, deps)).rejects.toMatchObject({ code: "BAD_REQUEST" });
+  });
+
+  it("관심 상한이면 BAD_REQUEST", async () => {
+    const { deps, programs, saved } = setup([draft()]);
+    saved.rows = Array.from({ length: MAX_SAVED_PROGRAMS }, (_, i) => ({
+      programId: `full${i}`,
+      savedAt: "2026-10-01T00:00:00.000Z",
+    }));
+    await expect(handleSaveProgram("u1", programs[0]!.id, deps)).rejects.toMatchObject({ code: "BAD_REQUEST" });
+  });
+
+  it("pageSize 는 API 상한(50)으로 clamp", async () => {
+    const { deps } = setup([draft()]);
+    const list = await handleListPrograms(new URLSearchParams({ pageSize: "999" }), deps);
+    expect(list.body.pageSize).toBe(50);
+  });
+
   it("목록·상세·meta", async () => {
     const { deps, programs } = setup([draft()]);
     const list = await handleListPrograms(new URLSearchParams(), deps);
@@ -97,24 +127,9 @@ describe("benefits API handlers", () => {
     expect(meta.body.categories.length).toBeGreaterThan(0);
   });
 
-  it("없는 id 는 PROGRAM_NOT_FOUND", async () => {
-    const { deps } = setup([draft()]);
-    await expect(handleGetProgram("missing", new URLSearchParams(), deps)).rejects.toMatchObject({ code: "PROGRAM_NOT_FOUND" });
-  });
-
   it("캘린더 ICS", async () => {
     const { deps, programs } = setup([draft()]);
     const res = await handleProgramCalendar(programs[0]!.id, deps);
     expect(res.headers.get("Content-Type")).toContain("text/calendar");
-  });
-
-  it("마감일 없으면 BAD_REQUEST", async () => {
-    const { deps, programs } = setup([draft({ applicationEnd: null })]);
-    await expect(handleProgramCalendar(programs[0]!.id, deps)).rejects.toMatchObject({ code: "BAD_REQUEST" });
-  });
-
-  it("관심 저장 not_found", async () => {
-    const { deps } = setup([]);
-    await expect(handleSaveProgram("u1", "nope", deps)).rejects.toMatchObject({ code: "PROGRAM_NOT_FOUND" });
   });
 });

@@ -34,6 +34,13 @@ function setup() {
 }
 
 describe("FeatureFlags", () => {
+  it("모르는 서비스: 조회는 꺼짐, 변경은 오류", async () => {
+    const { flags } = setup();
+    expect(await flags.isEnabled("nope")).toBe(false);
+    await expect(flags.set("nope", true)).rejects.toBeInstanceOf(UnknownFeatureError);
+    await expect(flags.reset("nope")).rejects.toBeInstanceOf(UnknownFeatureError);
+  });
+
   it("저장된 값이 없으면 코드의 기본값을 쓴다", async () => {
     const { flags } = setup();
     expect(await flags.list()).toEqual([
@@ -63,13 +70,6 @@ describe("FeatureFlags", () => {
     await flags.set("jobs", true);
     await flags.set("housing", false);
     expect(await flags.isEnabled("jobs")).toBe(true);
-  });
-
-  it("모르는 서비스: 조회는 꺼짐, 변경은 오류", async () => {
-    const { flags } = setup();
-    expect(await flags.isEnabled("nope")).toBe(false);
-    await expect(flags.set("nope", true)).rejects.toBeInstanceOf(UnknownFeatureError);
-    await expect(flags.reset("nope")).rejects.toBeInstanceOf(UnknownFeatureError);
   });
 
   it("저장소를 읽지 못하면 서비스를 멈추지 않고 기본값으로 동작한다", async () => {

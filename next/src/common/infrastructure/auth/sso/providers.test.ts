@@ -43,37 +43,6 @@ const deps = (fetch: typeof globalThis.fetch) => ({ fetch, now: () => NOW });
 describe("Google", () => {
   const config = { clientId: "gid", clientSecret: "gsecret" };
 
-  it("로그인 주소에는 최소 범위(openid)만 요청한다", () => {
-    const p = createGoogleProvider(config, deps(fakeFetch({}).fetch));
-    const url = new URL(p.authorizationUrl({ state: "s", nonce: NONCE, redirectUri: REDIRECT }));
-    expect(url.origin + url.pathname).toBe("https://accounts.google.com/o/oauth2/v2/auth");
-    expect(Object.fromEntries(url.searchParams)).toMatchObject({
-      client_id: "gid",
-      redirect_uri: REDIRECT,
-      response_type: "code",
-      scope: "openid",
-      state: "s",
-      nonce: NONCE,
-    });
-  });
-
-  it("코드를 토큰으로 바꾸고 id_token 의 sub 를 돌려준다", async () => {
-    const { fetch, calls } = fakeFetch({
-      "https://oauth2.googleapis.com/token": { body: { id_token: await idToken({}, "https://accounts.google.com", "gid") } },
-    });
-    const profile = await createGoogleProvider(config, deps(fetch)).fetchProfile({ code: "c", state: "s", nonce: NONCE, redirectUri: REDIRECT });
-    expect(profile).toEqual({ subject: "sub-1" });
-
-    const sent = new URLSearchParams(String(calls[0].init?.body));
-    expect(Object.fromEntries(sent)).toMatchObject({
-      grant_type: "authorization_code",
-      code: "c",
-      client_id: "gid",
-      client_secret: "gsecret",
-      redirect_uri: REDIRECT,
-    });
-  });
-
   it("발급자, 대상, nonce, 만료가 맞지 않는 id_token 은 거절한다", async () => {
     async function attempt(token: string) {
       const { fetch } = fakeFetch({ "https://oauth2.googleapis.com/token": { body: { id_token: token } } });
@@ -117,6 +86,37 @@ describe("Google", () => {
       .catch((e: Error) => e);
     expect((error as Error).message).toBe("로그인 업체에 연결하지 못했습니다.");
   });
+
+  it("로그인 주소에는 최소 범위(openid)만 요청한다", () => {
+    const p = createGoogleProvider(config, deps(fakeFetch({}).fetch));
+    const url = new URL(p.authorizationUrl({ state: "s", nonce: NONCE, redirectUri: REDIRECT }));
+    expect(url.origin + url.pathname).toBe("https://accounts.google.com/o/oauth2/v2/auth");
+    expect(Object.fromEntries(url.searchParams)).toMatchObject({
+      client_id: "gid",
+      redirect_uri: REDIRECT,
+      response_type: "code",
+      scope: "openid",
+      state: "s",
+      nonce: NONCE,
+    });
+  });
+
+  it("코드를 토큰으로 바꾸고 id_token 의 sub 를 돌려준다", async () => {
+    const { fetch, calls } = fakeFetch({
+      "https://oauth2.googleapis.com/token": { body: { id_token: await idToken({}, "https://accounts.google.com", "gid") } },
+    });
+    const profile = await createGoogleProvider(config, deps(fetch)).fetchProfile({ code: "c", state: "s", nonce: NONCE, redirectUri: REDIRECT });
+    expect(profile).toEqual({ subject: "sub-1" });
+
+    const sent = new URLSearchParams(String(calls[0].init?.body));
+    expect(Object.fromEntries(sent)).toMatchObject({
+      grant_type: "authorization_code",
+      code: "c",
+      client_id: "gid",
+      client_secret: "gsecret",
+      redirect_uri: REDIRECT,
+    });
+  });
 });
 
 describe("Apple", () => {
@@ -125,6 +125,23 @@ describe("Apple", () => {
     const pem = await exportPKCS8(privateKey);
     return { publicKey, config: { clientId: "com.example.web", teamId: "TEAM", keyId: "KEY", privateKey: pem } };
   }
+
+  it("다른 앱 대상의 id_token 은 거절한다", async () => {
+    const { config: c } = await config();
+    const { fetch } = fakeFetch({
+      "https://appleid.apple.com/auth/token": { body: { id_token: await idToken({}, "https://appleid.apple.com", "other") } },
+    });
+    await expect(
+      createAppleProvider(c, deps(fetch)).fetchProfile({ code: "c", state: "s", nonce: NONCE, redirectUri: REDIRECT }),
+    ).rejects.toThrow("대상");
+  });
+
+  it("잘못된 개인 키는 연결 전에 실패한다", async () => {
+    const { fetch, calls } = fakeFetch({});
+    const p = createAppleProvider({ clientId: "a", teamId: "t", keyId: "k", privateKey: "garbage" }, deps(fetch));
+    await expect(p.fetchProfile({ code: "c", state: "s", nonce: NONCE, redirectUri: REDIRECT })).rejects.toBeDefined();
+    expect(calls).toHaveLength(0);
+  });
 
   it("로그인 주소에는 scope 를 넣지 않는다 (이메일·이름을 받지 않는다)", async () => {
     const { config: c } = await config();
@@ -153,23 +170,6 @@ describe("Apple", () => {
     expect(payload.exp! - payload.iat!).toBeLessThanOrEqual(600);
   });
 
-  it("다른 앱 대상의 id_token 은 거절한다", async () => {
-    const { config: c } = await config();
-    const { fetch } = fakeFetch({
-      "https://appleid.apple.com/auth/token": { body: { id_token: await idToken({}, "https://appleid.apple.com", "other") } },
-    });
-    await expect(
-      createAppleProvider(c, deps(fetch)).fetchProfile({ code: "c", state: "s", nonce: NONCE, redirectUri: REDIRECT }),
-    ).rejects.toThrow("대상");
-  });
-
-  it("잘못된 개인 키는 연결 전에 실패한다", async () => {
-    const { fetch, calls } = fakeFetch({});
-    const p = createAppleProvider({ clientId: "a", teamId: "t", keyId: "k", privateKey: "garbage" }, deps(fetch));
-    await expect(p.fetchProfile({ code: "c", state: "s", nonce: NONCE, redirectUri: REDIRECT })).rejects.toBeDefined();
-    expect(calls).toHaveLength(0);
-  });
-
   it("secret JWT 내용에 개인 키가 들어가지 않는다", async () => {
     const { config: c } = await config();
     const { fetch, calls } = fakeFetch({
@@ -182,6 +182,16 @@ describe("Apple", () => {
 });
 
 describe("카카오", () => {
+  it("사용자 정보에 id 가 없으면 실패한다", async () => {
+    const { fetch } = fakeFetch({
+      "https://kauth.kakao.com/oauth/token": { body: { access_token: "AT" } },
+      "https://kapi.kakao.com/v2/user/me": { body: {} },
+    });
+    await expect(
+      createKakaoProvider({ clientId: "k", clientSecret: null }, deps(fetch)).fetchProfile({ code: "c", state: "s", nonce: NONCE, redirectUri: REDIRECT }),
+    ).rejects.toThrow("id");
+  });
+
   it("토큰으로 사용자 정보를 읽고 숫자 id 를 문자열로 돌려준다", async () => {
     const { fetch, calls } = fakeFetch({
       "https://kauth.kakao.com/oauth/token": { body: { access_token: "AT" } },
@@ -224,16 +234,6 @@ describe("카카오", () => {
       response_type: "code",
       state: "s",
     });
-  });
-
-  it("사용자 정보에 id 가 없으면 실패한다", async () => {
-    const { fetch } = fakeFetch({
-      "https://kauth.kakao.com/oauth/token": { body: { access_token: "AT" } },
-      "https://kapi.kakao.com/v2/user/me": { body: {} },
-    });
-    await expect(
-      createKakaoProvider({ clientId: "k", clientSecret: null }, deps(fetch)).fetchProfile({ code: "c", state: "s", nonce: NONCE, redirectUri: REDIRECT }),
-    ).rejects.toThrow("id");
   });
 });
 

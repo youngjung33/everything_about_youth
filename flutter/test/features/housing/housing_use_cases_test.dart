@@ -22,6 +22,12 @@ import '../../support/housing_memory_stores.dart';
 
 void main() {
   group('SearchNoticesUseCase', () {
+    test('repository 오류는 그대로 전파한다', () {
+      final repo = FakeHousingRepository(searchError: const ApiException('fail'));
+      final uc = SearchNoticesUseCase(repo);
+      expect(uc(filters: HousingFilters.initial, profile: ApplicantProfile.empty), throwsA(isA<ApiException>()));
+    });
+
     test('repository search 를 위임한다', () async {
       final repo = FakeHousingRepository(pages: [NoticePage.fromJson(pageJson(items: [summaryJson()]))]);
       final uc = SearchNoticesUseCase(repo);
@@ -29,40 +35,34 @@ void main() {
       expect(page.items, hasLength(1));
       expect(repo.searchCalls.single.page, 1);
     });
-
-    test('repository 오류는 그대로 전파한다', () {
-      final repo = FakeHousingRepository(searchError: const ApiException('fail'));
-      final uc = SearchNoticesUseCase(repo);
-      expect(uc(filters: HousingFilters.initial, profile: ApplicantProfile.empty), throwsA(isA<ApiException>()));
-    });
   });
 
   group('LoadHousingMetaUseCase', () {
+    test('fetchMeta 실패 전파', () {
+      final repo = FakeHousingRepository(fetchMetaError: const ApiException('meta'));
+      expect(LoadHousingMetaUseCase(repo)(), throwsA(isA<ApiException>()));
+    });
+
     test('fetchMeta 위임', () async {
       final repo = FakeHousingRepository();
       final meta = await LoadHousingMetaUseCase(repo)();
       expect(meta.sidos, isNotEmpty);
     });
-
-    test('fetchMeta 실패 전파', () {
-      final repo = FakeHousingRepository(fetchMetaError: const ApiException('meta'));
-      expect(LoadHousingMetaUseCase(repo)(), throwsA(isA<ApiException>()));
-    });
   });
 
   group('GetNoticeDetailUseCase', () {
-    test('getNotice 위임', () async {
-      final repo = FakeHousingRepository(pages: [NoticePage.fromJson(pageJson(items: [summaryJson(id: 'x')]))]);
-      final detail = await GetNoticeDetailUseCase(repo)('x', profile: ApplicantProfile.empty);
-      expect(detail.summary.id, 'x');
-    });
-
     test('getNotice 실패 전파', () {
       final repo = FakeHousingRepository(getNoticeError: const ApiException('detail fail'));
       expect(
         GetNoticeDetailUseCase(repo)('x', profile: ApplicantProfile.empty),
         throwsA(isA<ApiException>()),
       );
+    });
+
+    test('getNotice 위임', () async {
+      final repo = FakeHousingRepository(pages: [NoticePage.fromJson(pageJson(items: [summaryJson(id: 'x')]))]);
+      final detail = await GetNoticeDetailUseCase(repo)('x', profile: ApplicantProfile.empty);
+      expect(detail.summary.id, 'x');
     });
   });
 
@@ -76,6 +76,15 @@ void main() {
   });
 
   group('ResolveSavedNoticeIdsUseCase', () {
+    test('회원·merge 실패면 HousingUserMessage 전파', () async {
+      final local = MemorySavedNoticeLocalStore(['local1']);
+      final repo = FakeHousingRepository(mergeError: const HousingUserMessage('merge 실패'));
+      expect(
+        ResolveSavedNoticeIdsUseCase(repo, local)(isMember: true),
+        throwsA(isA<HousingUserMessage>()),
+      );
+    });
+
     test('비회원: 로컬 id 만', () async {
       final local = MemorySavedNoticeLocalStore(['a', 'b']);
       final repo = FakeHousingRepository();
@@ -100,36 +109,9 @@ void main() {
       expect(await local.load(), isEmpty);
       expect(ids, contains('local1'));
     });
-
-    test('회원·merge 실패면 HousingUserMessage 전파', () async {
-      final local = MemorySavedNoticeLocalStore(['local1']);
-      final repo = FakeHousingRepository(mergeError: const HousingUserMessage('merge 실패'));
-      expect(
-        ResolveSavedNoticeIdsUseCase(repo, local)(isMember: true),
-        throwsA(isA<HousingUserMessage>()),
-      );
-    });
   });
 
   group('ToggleSavedNoticeUseCase', () {
-    test('비회원: 추가하면 로컬에만 저장', () async {
-      final local = MemorySavedNoticeLocalStore();
-      final repo = FakeHousingRepository();
-      final uc = ToggleSavedNoticeUseCase(repo, local);
-      final r = await uc(id: 'n1', isMember: false, currentIds: []);
-      expect(r.error, isNull);
-      expect(r.ids, ['n1']);
-      expect(await local.load(), ['n1']);
-      expect(repo.saveCalls, isEmpty);
-    });
-
-    test('비회원: 제거', () async {
-      final local = MemorySavedNoticeLocalStore(['n1', 'n2']);
-      final uc = ToggleSavedNoticeUseCase(FakeHousingRepository(), local);
-      final r = await uc(id: 'n1', isMember: false, currentIds: ['n1', 'n2']);
-      expect(r.ids, ['n2']);
-    });
-
     test('상한 초과면 error', () async {
       final ids = [for (var i = 0; i < SavedNoticeLocalStore.maxCount; i++) 'n$i'];
       final uc = ToggleSavedNoticeUseCase(FakeHousingRepository(), MemorySavedNoticeLocalStore());
@@ -151,6 +133,24 @@ void main() {
       final uc = ToggleSavedNoticeUseCase(repo, MemorySavedNoticeLocalStore());
       final r = await uc(id: 'n1', isMember: true, currentIds: ['n1']);
       expect(r.error, '해제 실패');
+    });
+
+    test('비회원: 추가하면 로컬에만 저장', () async {
+      final local = MemorySavedNoticeLocalStore();
+      final repo = FakeHousingRepository();
+      final uc = ToggleSavedNoticeUseCase(repo, local);
+      final r = await uc(id: 'n1', isMember: false, currentIds: []);
+      expect(r.error, isNull);
+      expect(r.ids, ['n1']);
+      expect(await local.load(), ['n1']);
+      expect(repo.saveCalls, isEmpty);
+    });
+
+    test('비회원: 제거', () async {
+      final local = MemorySavedNoticeLocalStore(['n1', 'n2']);
+      final uc = ToggleSavedNoticeUseCase(FakeHousingRepository(), local);
+      final r = await uc(id: 'n1', isMember: false, currentIds: ['n1', 'n2']);
+      expect(r.ids, ['n2']);
     });
 
     test('회원: save 성공 시 로컬 replace 하지 않음', () async {
@@ -178,14 +178,23 @@ void main() {
       expect(list.total, 0);
     });
 
-    test('회원: fetchSaved', () async {
-      final repo = FakeHousingRepository(
-        pages: [NoticePage.fromJson(pageJson(items: [summaryJson(id: 's1')]))],
-        savedIds: ['s1'],
-      );
+    test('비회원: getNotice 가 HousingUserMessage 이면 전파한다', () async {
+      final inner = FakeHousingRepository(getNoticeError: const HousingUserMessage('상세 실패'));
+      final repo = MappingHousingRepository(inner);
       final uc = LoadSavedNoticeSummariesUseCase(repo, GetNoticeDetailUseCase(repo));
-      final list = await uc(ids: ['s1'], profile: ApplicantProfile.empty, isMember: true);
-      expect(list.items.single.id, 's1');
+      expect(
+        uc(ids: ['bad'], profile: ApplicantProfile.empty, isMember: false),
+        throwsA(isA<HousingUserMessage>()),
+      );
+    });
+
+    test('회원: fetchSaved 실패 전파', () {
+      final repo = FakeHousingRepository(fetchSavedError: const HousingUserMessage('목록 실패'));
+      final uc = LoadSavedNoticeSummariesUseCase(repo, GetNoticeDetailUseCase(repo));
+      expect(
+        uc(ids: ['s1'], profile: ApplicantProfile.empty, isMember: true),
+        throwsA(isA<HousingUserMessage>()),
+      );
     });
 
     test('비회원: 없는 공고는 건너뛴다', () async {
@@ -196,19 +205,31 @@ void main() {
       expect(list.items, isEmpty);
     });
 
-    test('비회원: getNotice 가 HousingUserMessage 이면 전파한다', () async {
-      final inner = FakeHousingRepository(getNoticeError: const HousingUserMessage('상세 실패'));
-      final repo = MappingHousingRepository(inner);
-      final uc = LoadSavedNoticeSummariesUseCase(repo, GetNoticeDetailUseCase(repo));
-      expect(
-        uc(ids: ['bad'], profile: ApplicantProfile.empty, isMember: false),
-        throwsA(isA<HousingUserMessage>()),
+    test('회원: fetchSaved', () async {
+      final repo = FakeHousingRepository(
+        pages: [NoticePage.fromJson(pageJson(items: [summaryJson(id: 's1')]))],
+        savedIds: ['s1'],
       );
+      final uc = LoadSavedNoticeSummariesUseCase(repo, GetNoticeDetailUseCase(repo));
+      final list = await uc(ids: ['s1'], profile: ApplicantProfile.empty, isMember: true);
+      expect(list.items.single.id, 's1');
     });
   });
 
   group('LoadSimilarNoticesUseCase', () {
-    test('같은 supplyType 검색에서 자신과 최대 5개', () async {
+    test('search 실패 전파', () {
+      final repo = FakeHousingRepository(searchError: const ApiException('similar fail'));
+      expect(
+        LoadSimilarNoticesUseCase(repo)(
+          excludeId: 'n0',
+          supplyType: 'happy',
+          profile: ApplicantProfile.empty,
+        ),
+        throwsA(isA<ApiException>()),
+      );
+    });
+
+    test('같은 category 검색에서 자신과 최대 5개', () async {
       final items = [for (var i = 0; i < 10; i++) summaryJson(id: 'n$i', title: 't$i')];
       final repo = FakeHousingRepository(
         pages: [NoticePage.fromJson(pageJson(items: items))],
@@ -221,21 +242,27 @@ void main() {
       expect(similar, hasLength(5));
       expect(similar.any((n) => n.id == 'n0'), isFalse);
     });
-
-    test('search 실패 전파', () {
-      final repo = FakeHousingRepository(searchError: const ApiException('similar fail'));
-      expect(
-        LoadSimilarNoticesUseCase(repo)(
-          excludeId: 'n0',
-          supplyType: 'happy',
-          profile: ApplicantProfile.empty,
-        ),
-        throwsA(isA<ApiException>()),
-      );
-    });
   });
 
   group('LoadScheduleNoticesUseCase', () {
+    test('2페이지 조회 실패면 예외 전파', () async {
+      late FakeHousingRepository repo;
+      repo = FakeHousingRepository(
+        pages: [
+          NoticePage.fromJson(pageJson(items: [summaryJson(id: 'a')], page: 1, totalPages: 3)),
+          NoticePage.fromJson(pageJson(items: [summaryJson(id: 'b')], page: 2, totalPages: 3)),
+        ],
+        searchHook: (_, page) {
+          if (page == 2) throw const ApiException('page2 fail');
+          return Future.value(repo.pages[page - 1]);
+        },
+      );
+      expect(
+        LoadScheduleNoticesUseCase(repo)(profile: ApplicantProfile.empty),
+        throwsA(isA<ApiException>()),
+      );
+    });
+
     test('여러 페이지를 dedup 하며 합친다', () async {
       final repo = FakeHousingRepository(
         pages: [
@@ -258,24 +285,6 @@ void main() {
       final out = await LoadScheduleNoticesUseCase(repo)(profile: ApplicantProfile.empty);
       expect(out.items.map((e) => e.id), ['a', 'b', 'c']);
       expect(repo.searchCalls.length, 2);
-    });
-
-    test('2페이지 조회 실패면 예외 전파', () async {
-      late FakeHousingRepository repo;
-      repo = FakeHousingRepository(
-        pages: [
-          NoticePage.fromJson(pageJson(items: [summaryJson(id: 'a')], page: 1, totalPages: 3)),
-          NoticePage.fromJson(pageJson(items: [summaryJson(id: 'b')], page: 2, totalPages: 3)),
-        ],
-        searchHook: (_, page) {
-          if (page == 2) throw const ApiException('page2 fail');
-          return Future.value(repo.pages[page - 1]);
-        },
-      );
-      expect(
-        LoadScheduleNoticesUseCase(repo)(profile: ApplicantProfile.empty),
-        throwsA(isA<ApiException>()),
-      );
     });
   });
 }

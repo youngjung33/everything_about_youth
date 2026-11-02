@@ -19,6 +19,7 @@ export const ERROR_CODES = {
   NOT_FOUND: { status: 404, message: "요청한 주소를 찾을 수 없습니다." },
   NOTICE_NOT_FOUND: { status: 404, message: "공고를 찾을 수 없습니다." },
   PROGRAM_NOT_FOUND: { status: 404, message: "정책을 찾을 수 없습니다." },
+  SCHEME_NOT_FOUND: { status: 404, message: "제도를 찾을 수 없습니다." },
 
   // 인증
   AUTH_REQUIRED: { status: 401, message: "인증이 필요합니다." },

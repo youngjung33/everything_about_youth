@@ -16,7 +16,8 @@
     "housing:sync": "tsx scripts/housing/sync.ts",
     "housing:seed-demo": "tsx scripts/housing/seed-demo.ts",
     "benefits:sync": "tsx scripts/benefits/sync.ts",
-    "benefits:seed-demo": "tsx scripts/benefits/seed-demo.ts",
+    "finance:sync": "tsx scripts/finance/sync.ts",
+    "finance:seed-demo": "tsx scripts/finance/seed-demo.ts",
     "contracts:sync": "tsx scripts/sync-api-contracts.ts"
   },
   "dependencies": {

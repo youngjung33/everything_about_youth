@@ -6,6 +6,8 @@ import 'package:everything_about_youth/core/feature/feature_config.dart';
 import 'package:everything_about_youth/core/update/update_requirement.dart';
 import 'package:everything_about_youth/features/benefits/domain/benefit_meta.dart';
 import 'package:everything_about_youth/features/benefits/domain/benefit_program.dart';
+import 'package:everything_about_youth/features/finance/domain/finance_meta.dart';
+import 'package:everything_about_youth/features/finance/domain/finance_scheme.dart';
 import 'package:everything_about_youth/features/housing/domain/housing_meta.dart';
 import 'package:everything_about_youth/features/housing/domain/notice.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -57,6 +59,27 @@ void main() {
   test('benefits-meta.json 을 BenefitMeta 로 파싱한다', () {
     final json = _readContract('benefits-meta.json');
     final meta = BenefitMeta.fromJson(json);
+    expect(meta.categories, isNotEmpty);
+    expect(meta.sidos, isNotEmpty);
+  });
+
+  test('finance-scheme-list.json 을 SchemePage 로 파싱한다', () {
+    final json = _readContract('finance-scheme-list.json');
+    final page = SchemePage.fromJson(json);
+    expect(page.items, isNotEmpty);
+    expect(page.today, isNotEmpty);
+  });
+
+  test('finance-scheme-detail.json 을 SchemeDetail 로 파싱한다', () {
+    final json = _readContract('finance-scheme-detail.json');
+    final detail = SchemeDetail.fromJson(json);
+    expect(detail.summary.id, isNotEmpty);
+    expect(detail.sources, isNotEmpty);
+  });
+
+  test('finance-meta.json 을 FinanceMeta 로 파싱한다', () {
+    final json = _readContract('finance-meta.json');
+    final meta = FinanceMeta.fromJson(json);
     expect(meta.categories, isNotEmpty);
     expect(meta.sidos, isNotEmpty);
   });

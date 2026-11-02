@@ -1,4 +1,5 @@
 import { BENEFITS_BASE } from "@/features/benefits/presentation/routes";
+import { FINANCE_BASE } from "@/features/finance/presentation/routes";
 import { HOUSING_BASE } from "@/features/housing/presentation/routes";
 
 export interface Section {

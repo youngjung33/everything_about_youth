@@ -1,6 +1,6 @@
 # 청년의 모든 것 (everything_about_youth)
 
-한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 사이트. **API·앱이 동작하는 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)** 이고, `finance`·`jobs`·`living` 은 `features/registry.ts` 에 플래그만 등록된 **예정** 섹션입니다(루트 [README.md](../README.md) 로드맵).
+한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 사이트. **API·앱이 동작하는 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)·청년 주거·자금(`finance`)** 입니다. `finance` 는 **기능 플래그 기본 꺼짐**. `jobs`·`living` 은 `features/registry.ts` 에만 등록된 **예정** 섹션입니다(루트 [README.md](../README.md) 로드맵).
 
 - Next.js 16 (App Router) + TypeScript
 - 클린 아키텍처 + **섹션(feature) 단위 폴더 구조**
@@ -34,17 +34,23 @@ src/
     benefits/                ← 청년 혜택·정책 섹션 (housing 과 동형)
       benefits-container.ts
       domain/ · application/ · infrastructure/ · presentation/
+    finance/                 ← 청년 주거·자금 섹션 (benefits 와 동형, 별도 DB)
+      finance-container.ts
+      domain/ · application/ · infrastructure/ · presentation/
   app/                       ← Next.js 라우트 (조립만)
     page.tsx                   섹션 목록 홈
     housing/                   /housing, /housing/notices/[id], /housing/admin/sync
     benefits/                  /benefits/admin/sync (앱·API는 /api/v1/benefits)
+    finance/                   /finance/admin/sync (앱·API는 /api/v1/finance)
     api/v1/housing/sync/       수동 수집 API
     api/v1/benefits/           혜택 JSON API
+    api/v1/finance/            주거·자금 JSON API
     sections.ts                섹션 등록부 (홈/헤더 메뉴)
 scripts/
   migrate.ts, load-env.ts      공통
   housing/                     임대주택 전용 CLI (sync, seed-demo)
   benefits/                    청년 혜택 CLI (sync, seed-demo)
+  finance/                     청년 주거·자금 CLI (sync, seed-demo)
 drizzle/                     마이그레이션 (모든 섹션이 하나의 이력으로 관리)
 ```
 
@@ -78,6 +84,9 @@ DB 마이그레이션은 앱/스크립트 시작 시 자동 적용됩니다(`npm
 | `npm run benefits:sync -- --list` | 혜택 수집 소스 상태 |
 | `npm run benefits:sync` | 온통청년 등 사용 가능 소스 수집 |
 | `npm run benefits:seed-demo` / `-- --clear` | `[데모]` 혜택 정책 입력 / 삭제 |
+| `npm run finance:sync -- --list` | 주거·자금 수집 소스 상태 |
+| `npm run finance:sync` | `curated`·`ontong-finance` 등 사용 가능 소스 수집 |
+| `npm run finance:seed-demo` / `-- --clear` | `[데모]` 주거·자금 제도 입력 / 삭제 |
 | `npm run typecheck` · `npm run lint` · `npm test` | 검증 |
 | `npm run db:generate` | 스키마 변경 후 마이그레이션 SQL 생성 |
 
@@ -147,11 +156,26 @@ DB 마이그레이션은 앱/스크립트 시작 시 자동 적용됩니다(`npm
 
 | 변수 | 설명 |
 | --- | --- |
-| `BENEFITS_SYNC_SOURCES` | 활성 소스 제한 (`ontong`, `demo`). 비우면 가능한 전부 |
-| `BENEFITS_SYNC_INTERVAL_MINUTES` | 자동 수집 간격(분). `0`(기본)이면 끔 |
-| `BENEFITS_ONTONG_API_KEY` | 온통청년 OPEN API 키. 없으면 ontong 소스 skipped |
+| `BENEFITS_SYNC_SOURCES` | 활성 소스 제한 (`ontong`만 운영 수집). `demo` 는 enum 에 있으나 **sync 소스가 아님** — `benefits:seed-demo` 로만 넣음. 비우면 등록된 소스 전부 |
+| `BENEFITS_SYNC_INTERVAL_MINUTES` | 자동 수집 간격(분). `0`(기본)이면 끔. 켜려면 **30 이상** |
+| `BENEFITS_ONTONG_API_KEY` | **온통청년** OPEN API 인증키 (`openApiVlak`). [마이페이지 → OPEN API](https://www.youthcenter.go.kr/myPage/openapi) 신청·승인 후 발급. **공공데이터포털 `DATA_GO_KR_SERVICE_KEY` 와 무관** |
 
-공공데이터포털에서 활용신청이 필요한 API: LH 임대공고(`B552555/lhLeaseNoticeInfo1`), 마이홈포털 공공임대 공고(`1613000/HWSPR02`), 청약홈 분양정보(`ApplyhomeInfoDetailSvc`).
+청년 주거·자금
+
+| 변수 | 설명 |
+| --- | --- |
+| `FINANCE_SYNC_SOURCES` | 활성 소스 제한 (`curated`, `ontong-finance`). `demo` 는 sync 소스 아님 — `finance:seed-demo` 로만 넣음. 비우면 등록된 소스 전부 |
+| `FINANCE_SYNC_INTERVAL_MINUTES` | 자동 수집 간격(분). `0`(기본)이면 끔. 켜려면 **30 이상**. `finance` 기능이 **켜져 있을 때만** 스케줄러 동작 |
+| (온통) | `ontong-finance` 는 **`BENEFITS_ONTONG_API_KEY` 재사용**. 키가 없으면 해당 소스만 skipped |
+
+온통청년 OPEN API (benefits·finance `ontong-finance`):
+
+- **공공데이터포털이 아닙니다.** [data.go.kr 온통청년 항목(15143273)](https://www.data.go.kr/data/15143273/openapi.do) 은 **LINK** — 실제 호출은 **youthcenter.go.kr** + 위 키.
+- 절차·문서: [이용방법](https://www.youthcenter.go.kr/cmnFooter/openapiIntro/oaiGuide) · [제공목록](https://www.youthcenter.go.kr/cmnFooter/openapiIntro/oaiDoc) · [청년정책 목록 API](https://www.youthcenter.go.kr/cmnFooter/openapiIntro/oaiDoc/47)
+- 이 레포 수집 URL: `GET https://www.youthcenter.go.kr/opi/youthPlcyList.do?openApiVlak=…&pageIndex=…&display=…` (구현: `features/benefits/infrastructure/sources/ontong/`)
+- 확인: `npm run benefits:sync -- --list` → `ontong` 이 **사용 가능**이면 키 OK. `npm run benefits:sync` 로 DB 적재.
+
+공공데이터포털에서 활용신청이 필요한 API (**임대주택 전용**): LH 임대공고(`B552555/lhLeaseNoticeInfo1`), 마이홈포털 공공임대 공고(`1613000/HWSPR02`), 청약홈 분양정보(`ApplyhomeInfoDetailSvc`).
 
 ## 임대주택 섹션
 
@@ -173,6 +197,7 @@ API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등�
 크롤링 정책: `robots.txt` 를 매 실행마다 확인해 막힌 사이트는 실패가 아니라 "건너뜀"으로 처리하고(우회하지 않음), 호스트별 요청 간격과 실행 중 URL 캐시를 적용합니다. 본문 전체를 복제하지 않고 제목·기간·기관과 **원문 링크** 중심으로 저장합니다(개인용 전제).
 
 ### 핵심 동작
+
 - **동일 공고 병합**: 정규화한 `제목|기관|접수종료일` 해시로 결정적 id 생성 → 여러 소스의 같은 공고는 하나로 합쳐지고 출처가 누적됩니다. 재수집해도 id가 유지됩니다.
 - **필터**: 지역/주택유형 정보를 모르는 공고는 필터로 숨기지 않습니다(놓치지 않기 위해). 금액·면적도 동일.
 - **상태**: 접수 상태는 저장하지 않고 날짜로 계산(KST). 날짜가 없으면 접수중으로 취급.
@@ -183,6 +208,94 @@ API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등�
   - **청약통장**: 공공·민간 분양, 신혼희망타운에서 가입 여부.
   - 소득이 이미 기준을 넘으면 자산을 입력하지 않았어도 `신청 불가`로 판정합니다.
   - 기준표는 `domain/eligibility/standards.ts` 한 곳에 있고 **매년 바뀝니다**(아래 "자격 기준표 갱신").
+
+## 청년 혜택·정책 섹션
+
+전국 청년정책을 **온통청년 OPEN API** 로 모아 목록·필터·내 조건 판정(참고용)·관심·일정을 제공합니다. Flutter 앱이 주 UI이고, Next 공개 목록 페이지(`/benefits`)는 아직 없습니다 (`/benefits/admin/sync`, `/api/v1/benefits/*` 는 있음).
+
+### 데이터 출처와 검증 상태
+
+| 소스 | 방식 | 상태 |
+| --- | --- | --- |
+| 온통청년 | OPEN API (`youthPlcyList.do`, 키 `BENEFITS_ONTONG_API_KEY`) | 코드·매퍼·sync CLI 구현. **키 발급·sync 실행은 운영자 작업** |
+| 데모 | `npm run benefits:seed-demo` | 화면 확인용 `[데모]` 정책 (sync 소스 아님) |
+
+### 크롤링·추가 소스
+
+- **1차에는 크롤러를 두지 않았습니다.** 임대주택과 달리, 정책 메타는 온통 API 한 곳에서 받고 **신청·자세한 조건은 정책별 원문 URL** 로 연결합니다.
+- **같은 온통 키로 붙일 수 있는 API(크롤 아님, 미구현):** 정책 **상세** (`youthPlcyDetail.do` 또는 목록 API의 `srchPolicyId`) — 목록만으로 부족할 때 요약·신청방법 필드를 보강.
+- **크롤을 검토할 때:** 온통에 **없는** 프로그램이 특정 지자체·부처 사이트에만 있고, 공식 Open API 도 없을 때. 그때 housing 의 SH/GH 처럼 `ProgramSourcePort` + robots·지연 정책으로 소스를 **하나씩** 추가합니다.
+- **쓰지 않음:** 공공데이터포털 `apis.data.go.kr/.../youthPlcyList` 등 **구 엔드포인트** (LINK 안내와 달리 youthcenter.go.kr 키로만 동작).
+
+**붙이는 순서:** (1) 온통·지자체 OPEN API (`OntongSource` 패턴) → (2) data.go.kr CSV/REST (`DATA_GO_KR_SERVICE_KEY`, 크롤 아님) → (3) HTML 포털 크롤 (`common/infrastructure/crawler/`, housing `BoardStrategy` 와 동형). 조사 기준일 **2026-11-02**.
+
+#### API·배치 후보 (크롤 아님)
+
+| 제안 id | 출처 | 비고 |
+| --- | --- | --- |
+| `ontong` | 온통 `youthPlcyList.do` | **운영 중** · [oaiDoc/47](https://www.youthcenter.go.kr/cmnFooter/openapiIntro/oaiDoc/47) |
+| `ontong-detail` | `youthPlcyDetail.do` + `srchPolicyId` | 목록 보강, sync/on-demand. 크롤 불필요 |
+| `gyeongbuk-youth` | [경북 청년e끌림](https://gbyouth.go.kr/openapi/spec.tc?mn=2455) `…/policy/list.json` | 포털 **별도** apiKey |
+| `incheon-youth-file` | [data.go.kr 15038446](https://www.data.go.kr/data/15038446/fileData.do) | 연간 CSV, 온통 diff 후 merge |
+| `jeonnam-youth-file` | [data.go.kr 15126384](https://www.data.go.kr/data/15126384/fileData.do) | 연간 |
+| 기타 시·도 fileData | 포털 «청년정책 현황» | 온통 미등록만. [15143273](https://www.data.go.kr/data/15143273/openapi.do) 은 LINK(온통) |
+
+온통 **청년공간·콘텐츠** API는 정책(신청) 섹션과 다를 수 있어 보류.
+
+#### 크롤 후보 (API·배치 없을 때)
+
+구현 시 `src/features/benefits/infrastructure/sources/crawlers/<id>/` (참고: housing `crawlers/sh/sh-strategy.ts`). **온통에 이미 있으면 크롤 소스를 붙이지 않음.**
+
+| 제안 id | 사이트 | 우선 | 검증 |
+| --- | --- | --- | --- |
+| `seoul-youth-portal` | [청년몽땅정보통](https://youth.seoul.go.kr/mainB.do) · 공개 OpenAPI 미확인 | P1 | 접수중 샘플 ~30건 vs DB 제목 diff, robots |
+| `busan-youth` | 부산 청년 포털 (URL 개편 잦음) | P2 | diff |
+| `gyeonggi-youth` | 경기 청년 포털 (주거 GH 는 housing) | P2 | diff |
+| `work24-youth` | [work24.go.kr](https://www.work24.go.kr) 청년 메뉴 | P3 | `jobs` 로드맵과 분리 |
+| `mcst-culture-youth` | 문화·체험 기관 공지 | P3 | 온통 `education` 누락만 |
+
+#### 소스 하나 붙일 때
+
+1. 온통 diff(제목·기관·마감, N≥30) → 신규 가치만.
+2. robots (`CrawlFetcher`; 예외는 env·문서에 명시).
+3. 이용약관·필드 매핑(`BenefitProgramDraft`).
+4. HTML fixture 테스트(housing `crawlers.test.ts` 패턴).
+5. `SOURCE_IDS`, `config.ts` env, (로컬) failure manifest 키워드.
+
+코드: API → `infrastructure/sources/<id>/`; 크롤 → `…/crawlers/<id>/`; 등록 → `container.ts` `allSources`.
+
+`npm run benefits:sync -- --source=ontong` · `--list` 로 상태를 확인합니다. housing 과 같이 매핑을 바꾼 뒤 DB가 어긋나면 `data/app.db` 를 지우고 `db:migrate` 후 다시 sync 하세요.
+
+### 핵심 동작
+
+- **동일 정책 병합**: 온통 `plcyId` 등으로 id 를 만들고, 재수집 시 출처·필드만 갱신합니다.
+- **분야**: 온통 분류 문자열을 `housing`·`employment`·`education`(교육·문화) 등으로 매핑 (`domain/enums.ts`).
+- **자격 판정**: 공통 규칙 기반 **참고용**. 세부 요건은 원문 확인.
+
+## 청년 주거·자금 섹션
+
+전세·보증금·청약저축 등 **주거 자금 제도**를 큐레이션 catalog와 온통 목록(금융·세금 분류만)으로 모아, benefits 와 **동형** UX(목록·필터·내 조건·관심·일정·로컬 알림)를 제공합니다. Flutter `/finance`, API `/api/v1/finance/*`, 관리 `/finance/admin/sync`. **공개 Next 목록 페이지는 없습니다.** 기능 플래그 `finance` 는 **기본 꺼짐** (`features/registry.ts` — `npm run features -- on finance`).
+
+benefits DB 의 `finance` **분류 필터**와 **별도 SQLite 테이블**(`finance_*`)입니다. 같은 온통 `plcyId` 가 benefits·finance 양쪽에 있을 수 있고, finance id 는 `finance:ontong:…` 처럼 benefits 와 공유하지 않습니다.
+
+### 데이터 출처와 검증 상태
+
+| 소스 | 방식 | 상태 |
+| --- | --- | --- |
+| `curated` | repo 내 catalog (`scripts/finance/curated-catalog.ts` 등) | 코드·sync CLI 구현 |
+| `ontong-finance` | 온통 `youthPlcyList.do` 페이징 + 금융·세금 분류 필터 | `BENEFITS_ONTONG_API_KEY` 필요 |
+| 데모 | `npm run finance:seed-demo` | 화면 확인용 `[데모]` (sync 소스 아님) |
+
+### 크롤링·추가 소스
+
+1차는 **크롤러 없음**. 스탠바이 후보(미구현): HF 전용 OpenAPI 등 — benefits «크롤링·추가 소스» 표와 같이 **공식 API·온통 보강 우선**.
+
+`npm run finance:sync -- --list` · `--source=curated` · `--source=ontong-finance` 로 확인합니다. 매핑 변경 후 DB가 어긋나면 `data/app.db` 삭제 → `db:migrate` → 다시 sync.
+
+### 핵심 동작
+
+- **제도 유형(`productTypeId`)**: `jeonse_loan`, `lease_deposit`, `housing_savings`, `guarantee`, `tax_benefit`, `other` — meta·필터·자격 규칙에 사용.
+- **자격 판정**: 제도 유형별 **참고용** 규칙 (`domain/eligibility/`). housing/benefits 와 같이 `standards` 는 meta 로 내려줍니다.
 
 ## JSON API (Flutter 앱용)
 

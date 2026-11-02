@@ -19,6 +19,14 @@ enum ServiceAccent {
     tagline: '주거·일자리·생활 지원 정책과 마감 일정',
     accent: Color(0xFF0D9488),
     icon: Icons.volunteer_activism_outlined,
+  ),
+  finance(
+    id: 'finance',
+    title: '청년 주거·자금',
+    itemNoun: '제도',
+    tagline: '전세·보증금·청약저축 등 주거 자금 제도',
+    accent: Color(0xFF2563EB),
+    icon: Icons.account_balance_outlined,
   );
 
   const ServiceAccent({

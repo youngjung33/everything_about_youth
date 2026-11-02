@@ -11,6 +11,9 @@ import {
   contractProgramDetailDto,
   contractProgramListDto,
   contractBenefitsMetaDto,
+  contractFinanceMetaDto,
+  contractSchemeDetailDto,
+  contractSchemeListDto,
   contractSessionDto,
 } from "../src/contracts/api-samples";
 

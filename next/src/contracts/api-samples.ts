@@ -23,9 +23,20 @@ import {
   type ProgramDetailDto,
   type ProgramListDto,
 } from "@/features/benefits/presentation/api/dto";
+import {
+  buildFinanceMeta,
+  toSchemeDetailDto,
+  toSchemeListDto,
+  type FinanceMetaDto,
+  type SchemeDetailDto,
+  type SchemeListDto,
+} from "@/features/finance/presentation/api/dto";
 import { createProgram } from "@/features/benefits/domain/identity";
+import { createScheme } from "@/features/finance/domain/identity";
 import type { BenefitProgramDraft } from "@/features/benefits/domain/program";
 import type { BenefitProgram } from "@/features/benefits/domain/program";
+import type { FinanceSchemeDraft } from "@/features/finance/domain/scheme";
+import type { FinanceScheme } from "@/features/finance/domain/scheme";
 
 /** 계약 JSON 과 서버 테스트가 같은 시각·데이터를 쓴다. */
 export const CONTRACT_CLOCK: Clock = { now: () => new Date("2026-10-12T03:00:00Z") };
@@ -169,4 +180,55 @@ export function contractProgramDetailDto(): ProgramDetailDto {
 
 export function contractBenefitsMetaDto(): BenefitsMetaDto {
   return buildBenefitsMeta("2026-10-12T01:00:00.000Z");
+}
+
+export function contractSchemeDraft(): FinanceSchemeDraft {
+  return {
+    title: "청년 전세자금 대출",
+    organization: "한국주택금융공사",
+    productTypeId: "jeonse_loan",
+    tags: ["전세", "대출"],
+    regions: [{ sido: "세종", sigungu: "세종시" }],
+    applicationStart: "2026-10-01",
+    applicationEnd: "2026-10-20",
+    announcementDate: "2026-09-25",
+    summary: "무주택 청년 전세자금 대출 안내",
+    url: "https://example.com/f1",
+    sources: [
+      {
+        source: "demo",
+        externalId: "demo-f1",
+        url: "https://example.com/demo/f1",
+        raw: { id: 1 },
+        fetchedAt: "2026-10-11T00:00:00.000Z",
+      },
+    ],
+  };
+}
+
+function contractScheme(): FinanceScheme {
+  return createScheme(contractSchemeDraft());
+}
+
+export function contractSchemeListDto(): SchemeListDto {
+  const scheme = contractScheme();
+  return toSchemeListDto(
+    {
+      items: [{ program: scheme, status: "open", eligibility: null }],
+      total: 1,
+      page: 1,
+      pageSize: 20,
+      totalPages: 1,
+    },
+    CONTRACT_TODAY,
+  );
+}
+
+export function contractSchemeDetailDto(): SchemeDetailDto {
+  const scheme = contractScheme();
+  return toSchemeDetailDto({ program: scheme, status: "open", eligibility: null }, CONTRACT_TODAY);
+}
+
+export function contractFinanceMetaDto(): FinanceMetaDto {
+  return buildFinanceMeta("2026-10-12T01:00:00.000Z");
 }

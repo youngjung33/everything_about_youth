@@ -67,6 +67,25 @@ describe("SH 크롤러", () => {
     { seq: "300001", title: "오래된 임대주택 입주자 모집 공고", date: "2026-01-02" },
   ]);
 
+  it("접수기간이 없는 오래된 글은 버리고, 상세 실패는 건너뛴다", async () => {
+    const warnings: string[] = [];
+    const list = shListHtml([
+      { seq: "1", title: "A 임대주택 입주자 모집 공고", date: "2026-06-20" },
+      { seq: "2", title: "B 임대주택 입주자 모집 공고", date: "2026-10-10" },
+    ]);
+    const source = new BoardCrawlerSource(shStrategy, {
+      onWarn: (m) => warnings.push(m),
+      fetchText: async (url) => {
+        if (url.includes("list.do")) return url.includes("page=1") && url.includes("multi_itm_seq=2") ? list : shListHtml([]);
+        if (/view\.do\?seq=2&/.test(url)) throw new Error("timeout");
+        return "<table><tr><td>등록일 본문 접수기간 안내 없음</td></tr></table>";
+      },
+    });
+    const drafts = await source.fetchNotices({ fetchedAt: FETCHED_AT });
+    expect(drafts).toHaveLength(0);
+    expect(warnings).toHaveLength(1);
+  });
+
   it("목록 파싱", () => {
     const rows = shStrategy.parseList(listHtml, "https://www.i-sh.co.kr/main/x/list.do?multi_itm_seq=2&page=1");
     expect(rows).toHaveLength(3);
@@ -101,25 +120,6 @@ describe("SH 크롤러", () => {
     expect(drafts[0]!.sources[0]).toMatchObject({ source: "sh", externalId: "311349" });
     // 서류안내 글과 오래된 글의 상세 페이지는 요청하지 않는다
     expect(requested.filter((u) => u.includes("view.do"))).toHaveLength(1);
-  });
-
-  it("접수기간이 없는 오래된 글은 버리고, 상세 실패는 건너뛴다", async () => {
-    const warnings: string[] = [];
-    const list = shListHtml([
-      { seq: "1", title: "A 임대주택 입주자 모집 공고", date: "2026-06-20" },
-      { seq: "2", title: "B 임대주택 입주자 모집 공고", date: "2026-10-10" },
-    ]);
-    const source = new BoardCrawlerSource(shStrategy, {
-      onWarn: (m) => warnings.push(m),
-      fetchText: async (url) => {
-        if (url.includes("list.do")) return url.includes("page=1") && url.includes("multi_itm_seq=2") ? list : shListHtml([]);
-        if (/view\.do\?seq=2&/.test(url)) throw new Error("timeout");
-        return "<table><tr><td>등록일 본문 접수기간 안내 없음</td></tr></table>";
-      },
-    });
-    const drafts = await source.fetchNotices({ fetchedAt: FETCHED_AT });
-    expect(drafts).toHaveLength(0);
-    expect(warnings).toHaveLength(1);
   });
 });
 

@@ -185,6 +185,14 @@ describe("공고 목록 API", () => {
 });
 
 describe("공고 상세 API", () => {
+  it("없는 공고는 NOTICE_NOT_FOUND(404)", async () => {
+    const { deps } = setup([draft()]);
+    await expect(handleGetNotice("nope", qs(""), deps)).rejects.toMatchObject({
+      code: "NOTICE_NOT_FOUND",
+      message: "공고를 찾을 수 없습니다.",
+    });
+  });
+
   it("단지·세대유형·출처를 포함하되 raw 는 제외한다", async () => {
     const { deps, notices } = setup([draft()]);
     const { status, body } = await handleGetNotice(notices[0]!.id, qs(""), deps);
@@ -234,14 +242,6 @@ describe("공고 상세 API", () => {
     expect(noAsset.eligibility!.verdict).toBe("check");
     expect(noAsset.eligibility!.reasons.join(" ")).toContain("총자산 입력 필요");
   });
-
-  it("없는 공고는 NOTICE_NOT_FOUND(404)", async () => {
-    const { deps } = setup([draft()]);
-    await expect(handleGetNotice("nope", qs(""), deps)).rejects.toMatchObject({
-      code: "NOTICE_NOT_FOUND",
-      message: "공고를 찾을 수 없습니다.",
-    });
-  });
 });
 
 describe("메타 API", () => {
@@ -288,18 +288,6 @@ describe("regionLabel", () => {
 });
 
 describe("관심 공고 API", () => {
-  it("저장하고 목록·id 를 조회하고 빼면 비운다", async () => {
-    const { deps, notices } = setup([draft()]);
-    const id = notices[0]!.id;
-    expect(await handleSaveNotice("u1", id, deps)).toEqual({ status: 200, body: { saved: true } });
-    expect((await handleListSavedIds("u1", deps)).body.ids).toEqual([id]);
-    const list = (await handleListSaved("u1", qs(""), deps)).body;
-    expect(list.total).toBe(1);
-    expect(list.items[0]!.id).toBe(id);
-    expect(await handleUnsaveNotice("u1", id, deps)).toEqual({ status: 200, body: { saved: false } });
-    expect((await handleListSavedIds("u1", deps)).body.ids).toEqual([]);
-  });
-
   it("없는 공고는 NOTICE_NOT_FOUND, 합치기는 존재하는 id 만 남긴다", async () => {
     const { deps, notices } = setup([draft()]);
     await expect(handleSaveNotice("u1", "nope", deps)).rejects.toMatchObject({ code: "NOTICE_NOT_FOUND" });
@@ -318,6 +306,18 @@ describe("관심 공고 API", () => {
     await expect(handleSaveNotice("u1", notices[MAX_SAVED_NOTICES]!.id, deps)).rejects.toMatchObject({
       code: "BAD_REQUEST",
     });
+  });
+
+  it("저장하고 목록·id 를 조회하고 빼면 비운다", async () => {
+    const { deps, notices } = setup([draft()]);
+    const id = notices[0]!.id;
+    expect(await handleSaveNotice("u1", id, deps)).toEqual({ status: 200, body: { saved: true } });
+    expect((await handleListSavedIds("u1", deps)).body.ids).toEqual([id]);
+    const list = (await handleListSaved("u1", qs(""), deps)).body;
+    expect(list.total).toBe(1);
+    expect(list.items[0]!.id).toBe(id);
+    expect(await handleUnsaveNotice("u1", id, deps)).toEqual({ status: 200, body: { saved: false } });
+    expect((await handleListSavedIds("u1", deps)).body.ids).toEqual([]);
   });
 
   it("이미 저장된 공고를 다시 저장해도 200 (already)", async () => {

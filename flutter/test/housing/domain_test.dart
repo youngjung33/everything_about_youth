@@ -16,6 +16,17 @@ import '../support/fixtures.dart';
 
 void main() {
   group('모델 파싱', () {
+    test('알 수 없는 상태/판정 코드는 안전한 기본값', () {
+      expect(NoticeStatus.fromCode('???'), NoticeStatus.open);
+      expect(Verdict.fromCode(null), Verdict.check);
+    });
+
+    test('정수가 실수(120.0)로 와도 읽고, 숫자가 아닌 값은 null', () {
+      final n = NoticeSummary.fromJson({...summaryJson(), 'totalHouseholds': 120.0, 'minDeposit': '5000'});
+      expect(n.totalHouseholds, 120);
+      expect(n.minDeposit, isNull);
+    });
+
     test('요약: 값과 라벨을 그대로 읽는다', () {
       final n = NoticeSummary.fromJson(summaryJson());
       expect(n.id, 'n1');
@@ -57,17 +68,6 @@ void main() {
       expect(units.last.deposit, isNull);
       expect(d.sources.single.fetchedDate, '2026-10-12');
       expect(d.googleCalendarUrl, contains('calendar.google.com'));
-    });
-
-    test('알 수 없는 상태/판정 코드는 안전한 기본값', () {
-      expect(NoticeStatus.fromCode('???'), NoticeStatus.open);
-      expect(Verdict.fromCode(null), Verdict.check);
-    });
-
-    test('정수가 실수(120.0)로 와도 읽고, 숫자가 아닌 값은 null', () {
-      final n = NoticeSummary.fromJson({...summaryJson(), 'totalHouseholds': 120.0, 'minDeposit': '5000'});
-      expect(n.totalHouseholds, 120);
-      expect(n.minDeposit, isNull);
     });
 
     test('페이지와 메타', () {

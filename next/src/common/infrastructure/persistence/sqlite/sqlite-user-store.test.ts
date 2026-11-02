@@ -17,6 +17,10 @@ beforeEach(() => {
 });
 
 describe("SqliteUserStore", () => {
+  it("없는 회원을 지워도 오류가 아니다", async () => {
+    await expect(users.delete("nobody")).resolves.toBeUndefined();
+  });
+
   it("처음 보는 계정은 회원을 만들고, 다시 오면 같은 회원이다", async () => {
     const a = await users.findOrCreate("google", "g1", "2026-10-21T00:00:00Z", () => "u1");
     const again = await users.findOrCreate("google", "g1", "2026-10-22T00:00:00Z", () => "should-not-be-used");
@@ -52,10 +56,6 @@ describe("SqliteUserStore", () => {
     expect(count("user_identities")).toBe(0);
     expect(count("sso_tickets")).toBe(0);
     expect(await clients.find("session-1")).toEqual({ id: "session-1", revoked: false, userId: null });
-  });
-
-  it("없는 회원을 지워도 오류가 아니다", async () => {
-    await expect(users.delete("nobody")).resolves.toBeUndefined();
   });
 });
 
