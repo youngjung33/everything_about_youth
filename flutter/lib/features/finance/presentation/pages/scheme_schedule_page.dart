@@ -10,7 +10,7 @@ import '../../../../core/widgets/state_views.dart';
 import '../providers.dart';
 import '../../domain/scheme_schedule.dart';
 import '../finance_routes.dart';
-import '../widgets/program_card.dart';
+import '../widgets/scheme_card.dart';
 
 class SchemeSchedulePage extends ConsumerStatefulWidget {
   const SchemeSchedulePage({super.key});

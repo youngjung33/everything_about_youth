@@ -6,6 +6,9 @@ import 'package:everything_about_youth/app/shell/menu_items.dart';
 import 'package:everything_about_youth/core/bootstrap/bootstrap_task.dart';
 import 'package:everything_about_youth/core/feature/feature_flags.dart';
 import 'package:everything_about_youth/core/widgets/app_logo.dart';
+import 'package:everything_about_youth/features/benefits/benefits_module.dart';
+import 'package:everything_about_youth/features/finance/finance_module.dart';
+import 'package:everything_about_youth/features/housing/housing_module.dart';
 import 'package:everything_about_youth/features/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -126,6 +129,21 @@ void main() {
       final many = [for (var i = 0; i < 30; i++) FakeFeature('s$i', title: '아주긴서비스이름$i')];
       await pumpApp(tester, repo, modules: many, size: const Size(800, 900));
       expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('임대·혜택·주거·자금이 켜져 있어도 finance 메뉴 라벨이 잘리지 않는다', (tester) async {
+      await pumpApp(
+        tester,
+        repo,
+        modules: const [
+          HousingModule(bootstrapTasks: []),
+          BenefitsModule(bootstrapTasks: []),
+          FinanceModule(bootstrapTasks: []),
+        ],
+        size: const Size(1000, 900),
+      );
+      expect(inHeader(find.text('주거·자금')), findsOneWidget);
+      expect(inHeader(find.textContaining('청년 주거', findRichText: true)), findsNothing);
     });
   });
 

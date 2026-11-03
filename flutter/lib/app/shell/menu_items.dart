@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/design/service_accent.dart';
 import '../../core/feature/feature_module.dart';
 
 /// 헤더 메뉴와 모바일 서랍 메뉴에 나오는 항목 하나
@@ -29,7 +30,14 @@ class AppMenuItem {
 
 /// 메뉴는 "홈 + 켜져 있는 서비스"다. 서비스가 늘거나 서버에서 꺼지면 메뉴도 저절로 따라 바뀐다.
 /// (어떤 서비스가 있는지는 모르고, 서비스가 알려 준 이름·아이콘·경로만 쓴다)
+String _menuLabel(FeatureModule module) {
+  for (final accent in ServiceAccent.values) {
+    if (accent.id == module.id) return accent.navTitle;
+  }
+  return module.entry.title;
+}
+
 List<AppMenuItem> buildMenuItems(Iterable<FeatureModule> enabled) => [
   const AppMenuItem(label: '홈', icon: Icons.home_outlined, path: AppMenuItem.homePath),
-  for (final f in enabled) AppMenuItem(label: f.entry.title, icon: f.entry.icon, path: f.basePath),
+  for (final f in enabled) AppMenuItem(label: _menuLabel(f), icon: f.entry.icon, path: f.basePath),
 ];

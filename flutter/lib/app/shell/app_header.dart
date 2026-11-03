@@ -20,7 +20,8 @@ class AppHeader extends AppTopBar {
   AppHeader({super.key, required List<AppMenuItem> items, required String location, required bool inlineMenu})
     : super(
         automaticallyImplyLeading: false,
-        titleSpacing: inlineMenu ? 24 : 0,
+        toolbarHeight: 56,
+        titleSpacing: inlineMenu ? 16 : 0,
         leading: inlineMenu ? null : const _DrawerToggle(),
         title: _HeaderTitle(items: items, location: location, inlineMenu: inlineMenu),
         actions: [AccountMenu(location: location, compact: !inlineMenu)],
@@ -52,21 +53,25 @@ class _HeaderTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // 로고를 누르면 홈으로
+        // 로고를 누르면 홈으로 (가로 메뉴에 공간을 최대한 남기기 위해 loose)
         Flexible(
+          fit: FlexFit.loose,
           child: InkWell(
             key: const ValueKey('header-logo'),
             borderRadius: BorderRadius.circular(8),
             onTap: () => context.go(AppMenuItem.homePath),
-            child: const Padding(padding: EdgeInsets.symmetric(vertical: 6, horizontal: 2), child: AppLogo()),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
+              child: AppLogo(showName: !inlineMenu),
+            ),
           ),
         ),
         if (inlineMenu) ...[
-          const SizedBox(width: 24),
-          // 서비스가 많아져 좁아져도 넘치지 않고 가로로 밀린다.
+          const SizedBox(width: 16),
           Expanded(
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
+              clipBehavior: Clip.none,
               child: Row(
                 children: [
                   for (final item in items)
@@ -74,6 +79,7 @@ class _HeaderTitle extends StatelessWidget {
                       padding: const EdgeInsets.only(right: 4),
                       child: _MenuButton(item: item, selected: item.matches(location)),
                     ),
+                  const SizedBox(width: 8),
                 ],
               ),
             ),
@@ -100,7 +106,7 @@ class _MenuButton extends StatelessWidget {
         key: ValueKey('menu:${item.path}'),
         onPressed: () => context.go(item.path),
         icon: Icon(item.icon, size: 20),
-        label: Text(item.label),
+        label: Text(item.label, softWrap: false),
         style: TextButton.styleFrom(
           foregroundColor: selected ? scheme.primary : AppColors.textSecondary,
           backgroundColor: selected ? scheme.primaryContainer.withValues(alpha: 0.5) : null,

@@ -4,14 +4,14 @@ import type { SchemeRepository } from "../application/ports/scheme-repository";
 import type { SchemeSourcePort } from "../application/ports/scheme-source";
 import type { SavedSchemeRepository } from "../application/ports/saved-scheme-repository";
 import type { SyncRunRepository } from "../application/ports/sync-run-repository";
-import { ManageSavedSchemes } from "../application/use-cases/manage-saved-programs";
+import { ManageSavedSchemes } from "../application/use-cases/manage-saved-schemes";
 import { EvaluateEligibility } from "../application/use-cases/evaluate-eligibility";
-import { GetSchemeDetail } from "../application/use-cases/get-program-detail";
+import { GetSchemeDetail } from "../application/use-cases/get-scheme-detail";
 import { SearchSchemes } from "../application/use-cases/search-schemes";
-import { SyncSchemesFromSource } from "../application/use-cases/sync-programs-from-source";
+import { SyncSchemesFromSource } from "../application/use-cases/sync-schemes-from-source";
 import { loadFinanceConfig, type FinanceConfig } from "./config";
 import { createFinanceRepositories } from "./create-repositories";
-import { OntongFinanceSource } from "./sources/ontong/ontong-source";
+import { OntongFinanceSource } from "./sources/ontong/ontong-finance-source";
 
 export interface FinanceContainer {
   config: FinanceConfig;

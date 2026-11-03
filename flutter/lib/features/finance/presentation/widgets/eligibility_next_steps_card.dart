@@ -7,7 +7,7 @@ import '../providers.dart';
 import '../../domain/eligibility_next_steps.dart';
 import '../../domain/finance_scheme.dart';
 import '../finance_routes.dart';
-import 'program_card.dart';
+import 'scheme_card.dart';
 
 class EligibilityNextStepsSection extends ConsumerWidget {
   const EligibilityNextStepsSection({super.key, required this.detail});

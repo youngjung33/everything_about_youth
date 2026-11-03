@@ -7,6 +7,7 @@ enum ServiceAccent {
   housing(
     id: 'housing',
     title: '임대주택',
+    navTitle: '임대주택',
     itemNoun: '공고',
     tagline: 'LH·SH·마이홈 등 임대·분양 공고를 한곳에서',
     accent: AppColors.primary,
@@ -15,6 +16,7 @@ enum ServiceAccent {
   benefits(
     id: 'benefits',
     title: '청년 혜택',
+    navTitle: '청년 혜택',
     itemNoun: '정책',
     tagline: '주거·일자리·생활 지원 정책과 마감 일정',
     accent: Color(0xFF0D9488),
@@ -23,6 +25,7 @@ enum ServiceAccent {
   finance(
     id: 'finance',
     title: '청년 주거·자금',
+    navTitle: '주거·자금',
     itemNoun: '제도',
     tagline: '전세·보증금·청약저축 등 주거 자금 제도',
     accent: Color(0xFF2563EB),
@@ -32,6 +35,7 @@ enum ServiceAccent {
   const ServiceAccent({
     required this.id,
     required this.title,
+    required this.navTitle,
     required this.itemNoun,
     required this.tagline,
     required this.accent,
@@ -40,6 +44,8 @@ enum ServiceAccent {
 
   final String id;
   final String title;
+  /// 헤더 가로 메뉴용 짧은 이름(잘림 방지). 홈 카드 등에는 [title] 을 쓴다.
+  final String navTitle;
   final String itemNoun;
   final String tagline;
   final Color accent;

@@ -5,7 +5,7 @@ import '../../../../core/format/format.dart';
 import '../../domain/finance_scheme.dart';
 import '../finance_routes.dart';
 import 'badges.dart';
-import 'saved_program_button.dart';
+import 'saved_scheme_button.dart';
 import '../../../../core/theme/app_fonts.dart';
 
 class MetaItem extends StatelessWidget {
@@ -17,13 +17,13 @@ class MetaItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
     return SizedBox(
       width: width,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(fontSize: 12, color: scheme.outline)),
+          Text(label, style: TextStyle(fontSize: 12, color: colors.outline)),
           const SizedBox(height: 2),
           Text(value, style: const TextStyle(fontSize: 14)),
         ],
@@ -35,12 +35,12 @@ class MetaItem extends StatelessWidget {
 class SchemeBadges extends StatelessWidget {
   const SchemeBadges({super.key, required this.scheme, this.largeEligibility = false});
 
-  final SchemeSummary program;
+  final SchemeSummary scheme;
   final bool largeEligibility;
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
     final showDday = scheme.dday != null && scheme.status != SchemeStatus.closed;
     return Wrap(
       spacing: 6,
@@ -51,9 +51,9 @@ class SchemeBadges extends StatelessWidget {
         if (showDday)
           Text(
             scheme.dday!,
-            style: TextStyle(fontSize: 13, fontWeight: AppFonts.bold, color: scheme.primary),
+            style: TextStyle(fontSize: 13, fontWeight: AppFonts.bold, color: colors.primary),
           ),
-        Pill(text: scheme.categoryLabel, background: scheme.primaryContainer, foreground: scheme.onPrimaryContainer),
+        Pill(text: scheme.categoryLabel, background: colors.primaryContainer, foreground: colors.onPrimaryContainer),
         for (final tag in scheme.tags.take(3)) Pill(text: tag),
         EligibilityBadge(eligibility: scheme.eligibility, large: largeEligibility),
       ],
@@ -64,7 +64,7 @@ class SchemeBadges extends StatelessWidget {
 class SchemeCard extends StatelessWidget {
   const SchemeCard({super.key, required this.scheme, this.onTap});
 
-  final SchemeSummary program;
+  final SchemeSummary scheme;
   final VoidCallback? onTap;
 
   @override

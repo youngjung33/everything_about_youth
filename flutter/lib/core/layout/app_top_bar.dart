@@ -12,6 +12,13 @@ import 'system_ui.dart';
 ///
 /// AppBar 의 다른 옵션이 필요해지면 여기에 인자를 추가한다. (화면에서 `AppBar` 를 직접 쓰지 않는다)
 class AppTopBar extends AppBar {
-  AppTopBar({super.key, super.title, super.leading, super.actions, super.automaticallyImplyLeading, super.titleSpacing})
-    : super(primary: false, systemOverlayStyle: AppSystemUi.style);
+  AppTopBar({
+    super.key,
+    super.title,
+    super.leading,
+    super.actions,
+    super.automaticallyImplyLeading,
+    super.titleSpacing,
+    super.toolbarHeight,
+  }) : super(primary: false, systemOverlayStyle: AppSystemUi.style);
 }

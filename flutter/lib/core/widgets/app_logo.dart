@@ -7,10 +7,11 @@ import '../theme/app_fonts.dart';
 ///
 /// 지금은 임시 마크(아이콘)와 앱 이름이다. 실제 로고 이미지가 생기면 이 위젯의 [_Mark] 만 바꾸면 된다.
 class AppLogo extends StatelessWidget {
-  const AppLogo({super.key, this.size = 32});
+  const AppLogo({super.key, this.size = 32, this.showName = true});
 
   /// 마크의 한 변 길이
   final double size;
+  final bool showName;
 
   static const name = '청년의 모든 것';
 
@@ -23,18 +24,20 @@ class AppLogo extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _Mark(size: size),
-          const SizedBox(width: 10),
-          // 좁은 화면에서 큰 글꼴이면 헤더의 다른 버튼에 밀려 이름이 잘린다. 넘치지 않고 말줄임으로 줄어든다.
-          Flexible(
-            child: Text(
-              name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: AppFonts.bold, color: AppColors.textPrimary),
+          if (showName) ...[
+            const SizedBox(width: 10),
+            // 좁은 화면에서 큰 글꼴이면 헤더의 다른 버튼에 밀려 이름이 잘린다. 넘치지 않고 말줄임으로 줄어든다.
+            Flexible(
+              child: Text(
+                name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: AppFonts.bold, color: AppColors.textPrimary),
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );

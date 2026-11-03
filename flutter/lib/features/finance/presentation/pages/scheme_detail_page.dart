@@ -8,9 +8,9 @@ import '../../../../core/layout/app_top_bar.dart';
 import '../../../../core/widgets/state_views.dart';
 import '../providers.dart';
 import '../../domain/finance_scheme.dart';
-import '../widgets/program_card.dart';
+import '../widgets/scheme_card.dart';
 import '../widgets/eligibility_next_steps_card.dart';
-import '../widgets/saved_program_button.dart';
+import '../widgets/saved_scheme_button.dart';
 import '../../../../core/widgets/detail_primary_actions.dart';
 import '../../../../core/theme/app_fonts.dart';
 

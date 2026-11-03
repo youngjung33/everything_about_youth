@@ -14,7 +14,7 @@ import '../../domain/scheme_list_state.dart';
 import '../finance_routes.dart';
 import '../widgets/filter_panel.dart';
 import '../widgets/filter_preset_chips.dart';
-import '../widgets/program_card.dart';
+import '../widgets/scheme_card.dart';
 import '../../../../core/design/service_accent.dart';
 import '../../../../core/widgets/service_intro_banner.dart';
 import '../../../../core/widgets/service_quick_actions.dart';
