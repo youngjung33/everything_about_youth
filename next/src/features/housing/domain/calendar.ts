@@ -2,9 +2,12 @@
  * 공고 접수 마감일을 캘린더에 넣는 주소·파일.
  * Google 캘린더 하루짜리 일정은 끝 날짜가 다음날(배타)이다.
  */
+import { buildCalendarEventDetails } from "@/common/presentation/calendar-event-details";
+
 export function googleCalendarDeadlineUrl(input: {
   title: string;
   applicationEnd: string | null;
+  bodyExcerpt?: string | null;
   url: string | null;
 }): string | null {
   const ymd = compactYmd(input.applicationEnd);
@@ -16,7 +19,8 @@ export function googleCalendarDeadlineUrl(input: {
     text: `접수 마감 · ${input.title}`,
     dates: `${ymd}/${next}`,
   });
-  if (input.url) params.set("details", `원문 공고: ${input.url}`);
+  const details = buildCalendarEventDetails(input.bodyExcerpt, input.url);
+  if (details) params.set("details", details);
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
@@ -25,6 +29,7 @@ export function deadlineIcs(input: {
   noticeId: string;
   title: string;
   applicationEnd: string | null;
+  bodyExcerpt?: string | null;
   url: string | null;
   now: Date;
 }): string | null {
@@ -35,7 +40,7 @@ export function deadlineIcs(input: {
   const stamp = compactStamp(input.now);
   const uid = `housing-${icsEscape(input.noticeId)}-deadline@everythingaboutyouth`;
   const summary = icsEscape(`접수 마감 · ${input.title}`);
-  const description = input.url ? icsEscape(`원문 공고: ${input.url}`) : "";
+  const description = buildCalendarEventDetails(input.bodyExcerpt, input.url);
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -48,7 +53,7 @@ export function deadlineIcs(input: {
     `DTSTART;VALUE=DATE:${ymd}`,
     `DTEND;VALUE=DATE:${next}`,
     `SUMMARY:${summary}`,
-    ...(description ? [`DESCRIPTION:${description}`] : []),
+    ...(description ? [`DESCRIPTION:${icsEscape(description)}`] : []),
     ...(input.url ? [`URL:${input.url}`] : []),
     "END:VEVENT",
     "END:VCALENDAR",

@@ -48,9 +48,9 @@ export interface Notice {
   announcementDate: IsoDate | null;
   winnerAnnouncementDate: IsoDate | null;
   totalHouseholds: number | null;
-  /** 자격/신청 안내 원문 요약(있으면) */
+  /** 자격/신청 안내 발췌(수집 본문, 있으면) */
   eligibilityText: string | null;
-  /** 대표 원문 공고 URL */
+  /** 기관 공고 URL (검증·더 보기) */
   url: string | null;
   complexes: Complex[];
   sources: NoticeSourceRef[];

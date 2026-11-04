@@ -20,39 +20,39 @@ export const CATEGORY_RULES: Record<CategoryId, CategoryRule> = {
     maxAge: YOUTH_MAX_AGE,
     requiresYouth: true,
     incomePercent: 100,
-    alwaysCheck: "주거 지원은 무주택·소득·자산 기준이 정책마다 다릅니다. 원문을 확인하세요.",
+    alwaysCheck: "주거 지원은 무주택·소득·자산 기준이 정책마다 다릅니다. 기관 공식 안내에서 확인하세요.",
   },
   employment: {
     minAge: YOUTH_MIN_AGE,
     maxAge: YOUTH_MAX_AGE,
     requiresYouth: true,
-    alwaysCheck: "취업·교육 연계 정책은 학력·경력 요건이 다릅니다. 원문을 확인하세요.",
+    alwaysCheck: "취업·교육 연계 정책은 학력·경력 요건이 다릅니다. 기관 공식 안내에서 확인하세요.",
   },
   finance: {
     minAge: YOUTH_MIN_AGE,
     maxAge: YOUTH_MAX_AGE,
     requiresYouth: true,
     incomePercent: 120,
-    alwaysCheck: "금융·세금 혜택은 소득·채무 조건이 다릅니다. 원문을 확인하세요.",
+    alwaysCheck: "금융·세금 혜택은 소득·채무 조건이 다릅니다. 기관 공식 안내에서 확인하세요.",
   },
   welfare: {
     requiresYouth: false,
-    alwaysCheck: "복지 정책은 대상 계층·가구 유형이 다양합니다. 원문을 확인하세요.",
+    alwaysCheck: "복지 정책은 대상 계층·가구 유형이 다양합니다. 기관 공식 안내에서 확인하세요.",
   },
   education: {
     minAge: YOUTH_MIN_AGE,
     maxAge: 34,
     requiresYouth: true,
-    alwaysCheck: "교육·장학 정책은 학적·성적 요건이 있습니다. 원문을 확인하세요.",
+    alwaysCheck: "교육·장학 정책은 학적·성적 요건이 있습니다. 기관 공식 안내에서 확인하세요.",
   },
   startup: {
     minAge: YOUTH_MIN_AGE,
     maxAge: 39,
     requiresYouth: true,
-    alwaysCheck: "창업 지원은 사업자 등록·업력 조건이 있습니다. 원문을 확인하세요.",
+    alwaysCheck: "창업 지원은 사업자 등록·업력 조건이 있습니다. 기관 공식 안내에서 확인하세요.",
   },
   other: {
-    alwaysCheck: "정책 분류를 알 수 없어 원문 확인이 필요합니다.",
+    alwaysCheck: "정책 분류를 알 수 없어 기관 공식 안내 확인이 필요합니다.",
   },
 };
 

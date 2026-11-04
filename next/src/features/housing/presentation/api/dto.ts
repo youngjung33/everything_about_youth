@@ -191,6 +191,7 @@ export function toNoticeDetailDto(item: NoticeListItem, today: IsoDate): NoticeD
     googleCalendarUrl: googleCalendarDeadlineUrl({
       title: notice.title,
       applicationEnd: notice.applicationEnd,
+      bodyExcerpt: notice.eligibilityText,
       url: notice.url,
     }),
     complexes: notice.complexes.map((c) => ({

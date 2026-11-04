@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/copy/service_copy.dart';
 import '../../../../core/format/format.dart';
 import '../../../../core/layout/app_bottom_sheet.dart';
 import '../../../../core/layout/app_scaffold.dart';
@@ -381,7 +382,7 @@ class _Footer extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 16, 0, 32),
       child: Text(
-        '자격 판정은 일반 기준에 따른 참고용이며, 신청 전 반드시 원문 공고를 확인하세요.',
+        ServiceCopy.listEligibilityHint,
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 12, color: scheme.outline),
       ),

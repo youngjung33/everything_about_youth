@@ -59,7 +59,7 @@ export function extractHouseholds(text: string): number | null {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
-/** "신청자격 : ..." 등 원문 발췌 (최대 maxLength 자) */
+/** "신청자격 : ..." 등 공고 발췌 (최대 maxLength 자) */
 export function extractEligibilityExcerpt(text: string, maxLength = 300): string | null {
   const body = compactText(text);
   const m = body.match(/(?:신청\s*자격|입주\s*자격|입주\s*대상|신청\s*대상)\s*[:：]?\s*(.{10,})/);

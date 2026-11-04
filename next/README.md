@@ -7,6 +7,12 @@
 - 1차 DB는 SQLite(Drizzle + better-sqlite3). 2차는 Supabase **호스팅 Postgres만**(Auth/RLS 없음). Redis rate limit도 2차.
 - 로그인은 **소셜 로그인(SSO)만** — Google · Apple · 네이버 · 카카오. 자체 회원가입/로그인(아이디·비밀번호)은 없고, 로그인하지 않은 **비회원도 조회**할 수 있습니다. (아래 "소셜 로그인")
 
+## 정보 우선 (housing · benefits · finance 공통)
+
+- **앱·API 본문** = sync 로 DB에 넣은 구조화 필드(제목·기관·요약·기간·지역·금액/유형·자격 판정·다음 행동 등). 사용자는 **링크 없이** 목록·상세만으로 판단을 시작할 수 있어야 한다.
+- **공식 URL** = 더 읽기·최신 변경·신청 **검증**용 부가 요소. 요약이 비면 **수집을 보강**한다(온통 상세 API, 크롤 발췌, catalog 문구). 링크만 두고 본문을 비우지 않는다.
+- **임대주택** 크롤/API는 `eligibilityText`·단지·금액 등 **공고 본문 필드**를 저장한다. **benefits·finance** 온통 sync 는 본문이 부족하면 **`srchPolicyId` 상세 API**로 `summary` 를 채운다 (80자 미만 또는 자격·신청 필드 없음 · `common/infrastructure/sources/ontong/`). 실패 시 `[ontong-detail]` 로그.
+
 ## 폴더 구조
 
 ```
@@ -194,14 +200,14 @@ DB 마이그레이션은 앱/스크립트 시작 시 자동 적용됩니다(`npm
 
 API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등으로 돌립니다. 응답 필드가 바뀌면 각 소스의 `*-mapper.ts`(+ 테스트)만 고치면 됩니다. 매핑 규칙을 바꾼 뒤에는 병합 규칙상 이전에 저장된 값이 남을 수 있으므로, 필요하면 `data/app.db` 를 지우고 `npm run db:migrate` 후 다시 수집하세요.
 
-크롤링 정책: `robots.txt` 를 매 실행마다 확인해 막힌 사이트는 실패가 아니라 "건너뜀"으로 처리하고(우회하지 않음), 호스트별 요청 간격과 실행 중 URL 캐시를 적용합니다. 본문 전체를 복제하지 않고 제목·기간·기관과 **원문 링크** 중심으로 저장합니다(개인용 전제).
+크롤링 정책: `robots.txt` 를 매 실행마다 확인해 막힌 사이트는 실패가 아니라 "건너뜀"으로 처리하고(우회하지 않음), 호스트별 요청 간격과 실행 중 URL 캐시를 적용합니다. **정보 우선**에 따라 제목·기간·기관·발췌(`eligibilityText`)·금액·단지 등 **본문 필드**를 저장하고, URL 은 검증·더 보기용입니다.
 
 ### 핵심 동작
 
 - **동일 공고 병합**: 정규화한 `제목|기관|접수종료일` 해시로 결정적 id 생성 → 여러 소스의 같은 공고는 하나로 합쳐지고 출처가 누적됩니다. 재수집해도 id가 유지됩니다.
 - **필터**: 지역/주택유형 정보를 모르는 공고는 필터로 숨기지 않습니다(놓치지 않기 위해). 금액·면적도 동일.
 - **상태**: 접수 상태는 저장하지 않고 날짜로 계산(KST). 날짜가 없으면 접수중으로 취급.
-- **자격 판정**: 공급유형별 일반 기준으로 판정하며 **참고용**입니다. 모르는 입력은 `조건 확인 필요`(사유에 무엇을 입력해야 하는지 나옵니다). 공고마다 요건이 다르므로 원문을 확인하세요. 판정 항목은 다음과 같습니다.
+- **자격 판정**: 공급유형별 일반 기준으로 판정하며 **참고용**입니다. 모르는 입력은 `조건 확인 필요`(사유에 무엇을 입력해야 하는지 나옵니다). 공고마다 요건이 다르므로 **앱의 공고 개요·발췌**를 먼저 보고, 세부는 기관 공고에서 검증하세요. 판정 항목은 다음과 같습니다.
   - **나이·무주택·미혼**, 청년/신혼부부/대학생(취준생) 중 하나 이상
   - **소득**: 가구원수와 가구 월 소득(세전 합계)을 **금액으로** 비교합니다. 기준은 도시근로자 월평균소득(국민임대 70%, 영구임대 50%, 행복주택 100% 등) 또는 기준 중위소득(통합공공임대 150%)이고, 1인 가구 +20%p·2인 가구 +10%p 가산을 반영합니다. 신혼부부는 맞벌이일 때 상한이 높습니다(행복주택 120%, 통합공공임대 180%).
   - **자산**: 총자산(부채 차감)과 자동차 가액. 행복주택은 계층별로 다릅니다(청년 2.51억, 신혼·한부모 3.45억, 대학생 1.08억·자동차 보유 불가). 계층이 여럿에 해당하면 가장 유리한 쪽으로 봅니다.
@@ -213,46 +219,53 @@ API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등�
 
 전국 청년정책을 **온통청년 OPEN API** 로 모아 목록·필터·내 조건 판정(참고용)·관심·일정을 제공합니다. Flutter 앱이 주 UI이고, Next 공개 목록 페이지(`/benefits`)는 아직 없습니다 (`/benefits/admin/sync`, `/api/v1/benefits/*` 는 있음).
 
+**정보 우선:** 앱·API 본문은 수집한 **제목·기관·요약·기간·지역·태그·판정** 입니다. 공식 URL 은 **더 보기·검증**용입니다.
+
 ### 데이터 출처와 검증 상태
 
-| 소스 | 방식 | 상태 |
+| 소스 | 방식 | 1차 sync |
 | --- | --- | --- |
-| 온통청년 | OPEN API (`youthPlcyList.do`, 키 `BENEFITS_ONTONG_API_KEY`) | 코드·매퍼·sync CLI 구현. **키 발급·sync 실행은 운영자 작업** |
-| 데모 | `npm run benefits:seed-demo` | 화면 확인용 `[데모]` 정책 (sync 소스 아님) |
+| `ontong` | OPEN API `youthPlcyList.do` | **등록됨** · `BENEFITS_ONTONG_API_KEY` 없으면 skipped |
+| 데모 | `npm run benefits:seed-demo` | sync 아님 · `[데모]` |
 
-### 크롤링·추가 소스
+### 1차 수집 vs 2차 후보
 
-- **1차에는 크롤러를 두지 않았습니다.** 임대주택과 달리, 정책 메타는 온통 API 한 곳에서 받고 **신청·자세한 조건은 정책별 원문 URL** 로 연결합니다.
-- **같은 온통 키로 붙일 수 있는 API(크롤 아님, 미구현):** 정책 **상세** (`youthPlcyDetail.do` 또는 목록 API의 `srchPolicyId`) — 목록만으로 부족할 때 요약·신청방법 필드를 보강.
-- **크롤을 검토할 때:** 온통에 **없는** 프로그램이 특정 지자체·부처 사이트에만 있고, 공식 Open API 도 없을 때. 그때 housing 의 SH/GH 처럼 `ProgramSourcePort` + robots·지연 정책으로 소스를 **하나씩** 추가합니다.
-- **쓰지 않음:** 공공데이터포털 `apis.data.go.kr/.../youthPlcyList` 등 **구 엔드포인트** (LINK 안내와 달리 youthcenter.go.kr 키로만 동작).
+**1차 원칙:** 키·robots 없이 **지금 호출 가능한 OPEN API** 는 sync 에 넣습니다. HTML 크롤·별도 승인 API·robots 로 막힌 사이트는 **2차**입니다.
 
-**붙이는 순서:** (1) 온통·지자체 OPEN API (`OntongSource` 패턴) → (2) data.go.kr CSV/REST (`DATA_GO_KR_SERVICE_KEY`, 크롤 아님) → (3) HTML 포털 크롤 (`common/infrastructure/crawler/`, housing `BoardStrategy` 와 동형). 조사 기준일 **2026-11-02**.
+| 구분 | 방식 | 1차 | 2차 |
+| --- | --- | --- | --- |
+| 전국 청년정책 목록 | 온통 `youthPlcyList.do` (`ontong`) | **sync** | — |
+| 정책 상세 필드 보강 | `youthPlcyDetail.do` / 목록+`srchPolicyId` | **sync 시 자동** (본문 &lt; 80자 또는 자격·신청 필드 없음) | — |
+| 지자체 OPEN API | 경북 청년e끌림 등 | — | 포털별 apiKey |
+| 공공데이터 fileData/REST | 인천·전남 CSV 등 | — | `DATA_GO_KR_SERVICE_KEY` · 온통 diff |
+| 지자체·부처 HTML 포털 | 청년몽땅·부산·경기 등 | — | robots·약관 · 온통에 없을 때만 |
+| 청년공간·콘텐츠 API | 온통 별도 메뉴 | — | 정책 섹션 범위 밖 |
 
-#### API·배치 후보 (크롤 아님)
+- **신청·자세한 조건**은 앱/API에 **제목·기관·요약·기간·지역·태그·(참고) 자격 판정** 으로 먼저 제공합니다. **공식 URL** 은 더 읽기·최신 내용·신청 **검증**용 부가 요소입니다 (링크만 두고 본문을 비우지 않음).
+- **쓰지 않음:** `apis.data.go.kr/.../youthPlcyList` 구 엔드포인트.
+
+**붙이는 순서 (2차 추가 시):** (1) 온통·지자체 OPEN API → (2) data.go.kr CSV/REST → (3) HTML 크롤 (`common/infrastructure/crawler/`, housing `BoardStrategy` 동형). 조사 기준일 **2026-11-02**.
+
+#### API·배치 후보 (2차 — 크롤 아님)
 
 | 제안 id | 출처 | 비고 |
 | --- | --- | --- |
-| `ontong` | 온통 `youthPlcyList.do` | **운영 중** · [oaiDoc/47](https://www.youthcenter.go.kr/cmnFooter/openapiIntro/oaiDoc/47) |
-| `ontong-detail` | `youthPlcyDetail.do` + `srchPolicyId` | 목록 보강, sync/on-demand. 크롤 불필요 |
-| `gyeongbuk-youth` | [경북 청년e끌림](https://gbyouth.go.kr/openapi/spec.tc?mn=2455) `…/policy/list.json` | 포털 **별도** apiKey |
-| `incheon-youth-file` | [data.go.kr 15038446](https://www.data.go.kr/data/15038446/fileData.do) | 연간 CSV, 온통 diff 후 merge |
+| `gyeongbuk-youth` | [경북 청년e끌림](https://gbyouth.go.kr/openapi/spec.tc?mn=2455) | 포털 **별도** apiKey |
+| `incheon-youth-file` | [data.go.kr 15038446](https://www.data.go.kr/data/15038446/fileData.do) | 연간 CSV |
 | `jeonnam-youth-file` | [data.go.kr 15126384](https://www.data.go.kr/data/15126384/fileData.do) | 연간 |
-| 기타 시·도 fileData | 포털 «청년정책 현황» | 온통 미등록만. [15143273](https://www.data.go.kr/data/15143273/openapi.do) 은 LINK(온통) |
+| 기타 시·도 fileData | «청년정책 현황» | 온통 미등록만 |
 
-온통 **청년공간·콘텐츠** API는 정책(신청) 섹션과 다를 수 있어 보류.
+#### 크롤 후보 (2차 — API·배치 없을 때)
 
-#### 크롤 후보 (API·배치 없을 때)
-
-구현 시 `src/features/benefits/infrastructure/sources/crawlers/<id>/` (참고: housing `crawlers/sh/sh-strategy.ts`). **온통에 이미 있으면 크롤 소스를 붙이지 않음.**
+구현 시 `src/features/benefits/infrastructure/sources/crawlers/<id>/`. **온통에 이미 있으면 크롤 소스를 붙이지 않음.**
 
 | 제안 id | 사이트 | 우선 | 검증 |
 | --- | --- | --- | --- |
-| `seoul-youth-portal` | [청년몽땅정보통](https://youth.seoul.go.kr/mainB.do) · 공개 OpenAPI 미확인 | P1 | 접수중 샘플 ~30건 vs DB 제목 diff, robots |
-| `busan-youth` | 부산 청년 포털 (URL 개편 잦음) | P2 | diff |
-| `gyeonggi-youth` | 경기 청년 포털 (주거 GH 는 housing) | P2 | diff |
-| `work24-youth` | [work24.go.kr](https://www.work24.go.kr) 청년 메뉴 | P3 | `jobs` 로드맵과 분리 |
-| `mcst-culture-youth` | 문화·체험 기관 공지 | P3 | 온통 `education` 누락만 |
+| `seoul-youth-portal` | [청년몽땅정보통](https://youth.seoul.go.kr/mainB.do) | P1 | diff, robots |
+| `busan-youth` | 부산 청년 포털 | P2 | diff |
+| `gyeonggi-youth` | 경기 청년 포털 | P2 | diff |
+| `work24-youth` | work24 청년 메뉴 | P3 | `jobs` 와 분리 |
+| `mcst-culture-youth` | 문화·체험 공지 | P3 | 온통 누락만 |
 
 #### 소스 하나 붙일 때
 
@@ -270,7 +283,7 @@ API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등�
 
 - **동일 정책 병합**: 온통 `plcyId` 등으로 id 를 만들고, 재수집 시 출처·필드만 갱신합니다.
 - **분야**: 온통 분류 문자열을 `housing`·`employment`·`education`(교육·문화) 등으로 매핑 (`domain/enums.ts`).
-- **자격 판정**: 공통 규칙 기반 **참고용**. 세부 요건은 원문 확인.
+- **자격 판정**: 공통 규칙 기반 **참고용**. 세부는 수집 본문·기관 공식 안내로 검증.
 
 ## 청년 주거·자금 섹션
 
@@ -278,17 +291,32 @@ API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등�
 
 benefits DB 의 `finance` **분류 필터**와 **별도 SQLite 테이블**(`finance_*`)입니다. 같은 온통 `plcyId` 가 benefits·finance 양쪽에 있을 수 있고, finance id 는 `finance:ontong:…` 처럼 benefits 와 공유하지 않습니다.
 
+**정보 우선:** sync 로 DB에 넣는 필드(`title`, `organization`, `summary`, 접수일, `regions`, `tags`, `raw_payload`)가 앱 목록·상세의 **본문**입니다. `url`·출처 링크는 **더 보기·검증**용이며, 요약이 비어 있으면 수집(온통 상세 API·catalog 문구 보강)을 늘려야 하지 링크로 대체하지 않습니다.
+
 ### 데이터 출처와 검증 상태
 
-| 소스 | 방식 | 상태 |
+| 소스 | 방식 | 1차 sync |
 | --- | --- | --- |
-| `curated` | repo 내 catalog (`scripts/finance/curated-catalog.ts` 등) | 코드·sync CLI 구현 |
-| `ontong-finance` | 온통 `youthPlcyList.do` 페이징 + 금융·세금 분류 필터 | `BENEFITS_ONTONG_API_KEY` 필요 |
-| 데모 | `npm run finance:seed-demo` | 화면 확인용 `[데모]` (sync 소스 아님) |
+| `curated` | repo catalog (`infrastructure/sources/curated/catalog.ts`, 8건) | **등록됨** · 키 불필요 · `npm run finance:sync -- --source=curated` |
+| `ontong-finance` | 온통 `youthPlcyList.do` 페이징 + 금융·세금 필터 | **등록됨** · `BENEFITS_ONTONG_API_KEY` 없으면 skipped |
+| 데모 | `npm run finance:seed-demo` | sync 아님 · 화면 확인용 `[데모]` |
 
-### 크롤링·추가 소스
+`container.ts` 의 `allSources` 순서: **`curated` → `ontong-finance`**. `FINANCE_SYNC_SOURCES` 가 비어 있으면 둘 다 시도합니다.
 
-1차는 **크롤러 없음**. 스탠바이 후보(미구현): HF 전용 OpenAPI 등 — benefits «크롤링·추가 소스» 표와 같이 **공식 API·온통 보강 우선**.
+### 1차 수집 vs 2차 후보
+
+**1차 원칙:** robots·약관·별도 키 없이 **지금 호출 가능한 OPEN API·repo catalog** 는 sync 에 넣습니다. HTML 크롤·미승인 포털·robots `Disallow` 사이트는 **2차**로 미룹니다 (housing 의 GH robots 예외는 env 명시 시에만 — [임대주택 섹션](#임대주택-섹션)).
+
+| 구분 | 출처 | 1차 | 2차로 미룬 이유 |
+| --- | --- | --- | --- |
+| HF·HUG·국세청 **안내 링크** | repo `curated` catalog | **sync** (메타·URL, 접수일 없음) | HTML 본문 크롤·HF 전용 OpenAPI 미연동 |
+| 온통 금융·세금 정책 | `ontong-finance` | **sync** (키 있을 때) | — |
+| 온통 정책 **상세** 필드 | `youthPlcyDetail.do` / `srchPolicyId` | **sync 시 자동** (본문 부족 시) | — |
+| 지자체 청년 포털 HTML | seoul·busan·경기 등 | — | 공개 API 없음 · robots·약관 검증 후 `BoardStrategy` (benefits «크롤 후보» 표) |
+| 공공데이터 CSV·REST | data.go.kr 청년정책 fileData 등 | — | `DATA_GO_KR_SERVICE_KEY` + 온통 diff merge · benefits 표 후보 |
+| 경북 청년e끌림 등 | 포털 **별도** apiKey | — | env·승인 절차 후 소스 추가 |
+
+**쓰지 않음:** `apis.data.go.kr/.../youthPlcyList` 구 엔드포인트 (온통은 youthcenter.go.kr 키만).
 
 `npm run finance:sync -- --list` · `--source=curated` · `--source=ontong-finance` 로 확인합니다. 매핑 변경 후 DB가 어긋나면 `data/app.db` 삭제 → `db:migrate` → 다시 sync.
 
@@ -500,7 +528,7 @@ benefits DB 의 `finance` **분류 필터**와 **별도 SQLite 테이블**(`fina
 - LH 공고는 목록 API + 공고별 공급정보 API(`getLeaseNoticeSplInfo1`)로 단지·주택형·세대수·면적을 채웁니다 (수집 시 공고마다 1회 추가 호출, 약 2분). 단, LH 가 임대(행복·국민·영구·통합)의 보증금·월세를 `공고문 참조` 문자열로만 주므로 **금액은 대부분 비어 있고**, 예비입주자 모집(금회공급 0)·일부 공급정보 코드는 세대수가 없습니다. 같은 공고가 마이홈포털에도 있으면 병합되어 그쪽 값으로 채워질 수 있습니다.
 - 크롤러는 사이트 개편에 취약하므로 fixture 테스트가 깨지면 `*-strategy.ts` 를 먼저 확인.
 - 크롤링 출처(SH 등)는 세대수·금액 같은 구조화 정보가 없어 금액/면적 필터가 적용되지 않습니다(필터에서 제외하지는 않음).
-- 자격 판정은 단순화된 일반 기준이며 법적 효력이 없습니다. 특히 다음은 반영하지 않습니다: 순위·배점(수급자·한부모·차상위 1순위 등), 거주지 우선공급, 신혼·다자녀·생애최초 등 분양 특별공급의 소득·자산 기준, 우선공급 대상 자격, 자녀 수에 따른 자동차 기준 가산, 청약통장 가입기간·납입횟수. 자세한 건 공고문 원문을 확인하세요.
+- 자격 판정은 단순화된 일반 기준이며 법적 효력이 없습니다. 특히 다음은 반영하지 않습니다: 순위·배점(수급자·한부모·차상위 1순위 등), 거주지 우선공급, 신혼·다자녀·생애최초 등 분양 특별공급의 소득·자산 기준, 우선공급 대상 자격, 자녀 수에 따른 자동차 기준 가산, 청약통장 가입기간·납입횟수. **앱 본문으로는 부족할 수 있으므로** 기관 공고·안내에서 최종 확인하세요.
 - 일부 유형은 2026년 기준표를 확인하지 못해 예전 기준을 유지합니다. **장기전세**(소득 100%만 판정, 자산 없음)와 **신혼희망타운**(소득 130%, 가산 없음). 공공임대(10·50년)·공공지원민간임대·민간임대·분양은 소득·자산을 판정하지 않습니다(공고별로 다름).
 - 청년매입·전세임대는 2순위(본인+부모 소득, 국민임대 자산 기준)를 기준으로 가장 넓게 봅니다. 순위별 차이는 판정 안내(`notes`)에 적혀 있습니다.
 - 월 소득과 자산은 사용자가 직접 입력한 값입니다. 실제 심사는 사회보장정보시스템의 공적 자료로 하므로 결과가 다를 수 있습니다.

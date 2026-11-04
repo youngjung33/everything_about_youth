@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/copy/service_copy.dart';
 import '../../../../core/format/format.dart';
+import '../../../../core/widgets/collected_summary.dart';
 import '../../../../core/launch.dart';
 import '../../../../core/layout/app_scaffold.dart';
 import '../../../../core/layout/app_top_bar.dart';
@@ -33,10 +35,10 @@ class ProgramDetailPage extends ConsumerWidget {
           final program = detail.summary;
           final actions = <Widget>[
             if (program.url != null)
-              FilledButton.icon(
+              OutlinedButton.icon(
                 onPressed: () => openExternal(context, program.url!),
                 icon: const Icon(Icons.open_in_new, size: 18),
-                label: const Text('원문 안내 보기'),
+                label: const Text(ServiceCopy.officialPolicyButtonLabel),
               ),
             if (detail.googleCalendarUrl != null)
               OutlinedButton.icon(
@@ -79,10 +81,8 @@ class _DetailBody extends StatelessWidget {
             Text(program.title, style: textTheme.headlineSmall?.copyWith(fontWeight: AppFonts.bold)),
             const SizedBox(height: 10),
             ProgramBadges(program: program, largeEligibility: true),
-            if (program.summary != null && program.summary!.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Text(program.summary!, style: textTheme.bodyLarge),
-            ],
+            const SizedBox(height: 8),
+            CollectedSummary(summary: program.summary),
             if (program.eligibility != null) ...[
               const SizedBox(height: 16),
               _EligibilityCard(eligibility: program.eligibility!),
@@ -117,7 +117,7 @@ class _DetailBody extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              '이 정보는 공개 데이터와 각 기관 안내를 수집한 참고용입니다. 신청 전 반드시 원문을 확인하세요.',
+              ServiceCopy.detailVerificationFooter,
               style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.outline),
             ),
             const SizedBox(height: 24),
@@ -198,7 +198,7 @@ class _SourceRow extends StatelessWidget {
           Text(source.sourceLabel, style: const TextStyle(fontWeight: AppFonts.bold)),
           Text('수집: ${formatDate(source.fetchedDate)} · ${source.externalId}', style: const TextStyle(fontSize: 12)),
           if (source.url != null)
-            TextButton(onPressed: () => openExternal(context, source.url!), child: const Text('출처 링크')),
+            TextButton(onPressed: () => openExternal(context, source.url!), child: const Text(ServiceCopy.sourceLinkLabel)),
         ],
       ),
     );

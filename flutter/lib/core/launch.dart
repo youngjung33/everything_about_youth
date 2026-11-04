@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-/// 원문 공고 등 외부 링크를 연다. (웹: 새 탭, 모바일: 브라우저)
+/// 기관 공식 안내 등 외부 URL 을 연다. (웹: 새 탭, 모바일: 브라우저)
 Future<void> openExternal(BuildContext context, String url) async {
   final messenger = ScaffoldMessenger.of(context);
   final uri = Uri.tryParse(url);

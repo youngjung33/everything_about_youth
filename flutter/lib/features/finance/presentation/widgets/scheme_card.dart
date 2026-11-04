@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/copy/service_copy.dart';
+import '../../../../core/widgets/collected_summary.dart';
 import '../../../../core/format/format.dart';
 import '../../domain/finance_scheme.dart';
 import '../finance_routes.dart';
@@ -92,15 +94,13 @@ class SchemeCard extends StatelessWidget {
                   SavedSchemeButton(schemeId: scheme.id),
                 ],
               ),
-              if (scheme.summary != null && scheme.summary!.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Text(
-                  scheme.summary!,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                ),
-              ],
+              const SizedBox(height: 8),
+              CollectedSummary(
+                summary: scheme.summary,
+                maxLines: 2,
+                missingText: ServiceCopy.missingSummaryCard,
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              ),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 16,

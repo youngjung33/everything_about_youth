@@ -83,6 +83,14 @@ export function mapMyhomeItems(items: Json[], ctx: MyhomeMapContext): NoticeDraf
     const total = complexes.reduce((s, c) => s + (c.households ?? 0), 0);
     const url = str(head, "url", "pcUrl", "mobileUrl", "hmpgAdres");
 
+    const excerptParts: string[] = [];
+    if (supplyText) excerptParts.push(`공급유형: ${supplyText}`);
+    if (total > 0) excerptParts.push(`모집 세대: ${total}세대`);
+    const tel = str(head, "refrnc", "cnsltTel");
+    if (tel) excerptParts.push(`문의: ${tel}`);
+    const note = str(head, "pblancCn", "rm", "rmk", "pblancSumry");
+    if (note) excerptParts.push(note.length > 400 ? `${note.slice(0, 397)}…` : note);
+
     drafts.push({
       title,
       organization: str(head, "suplyInsttNm", "insttNm") ?? "공공주택 공급기관",
@@ -94,7 +102,7 @@ export function mapMyhomeItems(items: Json[], ctx: MyhomeMapContext): NoticeDraf
       announcementDate: parseIsoDate(str(head, "rcritPblancDe", "pblancDe")),
       winnerAnnouncementDate: parseIsoDate(str(head, "przwnerPresnatnDe")),
       totalHouseholds: total > 0 ? total : null,
-      eligibilityText: str(head, "refrnc", "cnsltTel") ? `문의: ${str(head, "refrnc", "cnsltTel")}` : null,
+      eligibilityText: excerptParts.length > 0 ? excerptParts.join("\n") : null,
       url,
       complexes,
       sources: [{ source: "myhome", externalId: id, url, raw: rows.length === 1 ? head : rows, fetchedAt: ctx.fetchedAt }],

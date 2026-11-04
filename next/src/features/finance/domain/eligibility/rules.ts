@@ -27,7 +27,7 @@ export const PRODUCT_TYPE_RULES: Record<ProductTypeId, ProductTypeRule> = {
     requiresYouth: true,
     requiresHomeless: true,
     incomePercent: 100,
-    alwaysCheck: "임대보증금 대출·지원은 임차보증금·소득·무주택 요건을 원문에서 확인하세요.",
+    alwaysCheck: "임대보증금 대출·지원은 임차보증금·소득·무주택 요건을 기관 공식 안내에서 확인하세요.",
   },
   housing_savings: {
     minAge: 19,
@@ -47,7 +47,7 @@ export const PRODUCT_TYPE_RULES: Record<ProductTypeId, ProductTypeRule> = {
     alwaysCheck: "세금·소득공제는 소득·주택 보유·공제 한도가 다릅니다.",
   },
   other: {
-    alwaysCheck: "제도 유형을 특정할 수 없어 원문 확인이 필요합니다.",
+    alwaysCheck: "제도 유형을 특정할 수 없어 기관 공식 안내 확인이 필요합니다.",
   },
 };
 

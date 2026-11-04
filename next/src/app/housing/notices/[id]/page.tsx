@@ -73,7 +73,7 @@ export default async function NoticeDetailPage(props: PageProps<"/housing/notice
         {notice.url && (
           <p>
             <a className="btn primary" href={notice.url} target="_blank" rel="noopener noreferrer">
-              원문 공고 보기
+              기관 공고 · 검증
             </a>
           </p>
         )}
@@ -102,7 +102,7 @@ export default async function NoticeDetailPage(props: PageProps<"/housing/notice
         ) : (
           <p className="hint">목록 화면의 &lsquo;내 조건&rsquo;에 나이·소득 등을 입력하면 이 공고의 신청 가능 여부를 판정합니다.</p>
         )}
-        <p className="hint">일반적인 공급유형별 기준에 따른 참고용 판정입니다. 공고마다 요건이 다를 수 있으니 원문을 확인하세요.</p>
+        <p className="hint">일반적인 공급유형별 기준에 따른 참고용 판정입니다. 위 공고 개요·발췌를 먼저 보고, 세부는 기관 공고에서 검증하세요.</p>
         {notice.eligibilityText && (
           <blockquote>
             <strong>공고 발췌</strong>
@@ -115,7 +115,7 @@ export default async function NoticeDetailPage(props: PageProps<"/housing/notice
       <section className="panel">
         <h2>단지 · 세대유형</h2>
         {notice.complexes.length === 0 ? (
-          <p className="hint">이 소스는 단지/세대유형 정보를 제공하지 않습니다. 원문 공고를 확인하세요.</p>
+          <p className="hint">이 소스는 단지/세대유형 정보를 제공하지 않습니다. 공고 개요와 기관 공고를 함께 확인하세요.</p>
         ) : (
           notice.complexes.map((c, i) => (
             <div key={i} className="complex">
@@ -165,7 +165,7 @@ export default async function NoticeDetailPage(props: PageProps<"/housing/notice
               {SOURCE_LABELS[s.source]} ({s.externalId}){" "}
               {s.url && (
                 <a href={s.url} target="_blank" rel="noopener noreferrer">
-                  원문 링크
+                  출처 링크
                 </a>
               )}{" "}
               <small className="hint">수집: {formatDate(s.fetchedAt.slice(0, 10))}</small>

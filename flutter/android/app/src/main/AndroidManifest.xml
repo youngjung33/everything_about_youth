@@ -53,7 +53,7 @@
 
          In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
     <queries>
-        <!-- 원문 공고 링크를 브라우저로 열기 (url_launcher) -->
+        <!-- 기관 공고 URL 을 브라우저로 열기 (url_launcher) -->
         <intent>
             <action android:name="android.intent.action.VIEW"/>
             <data android:scheme="https"/>

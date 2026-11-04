@@ -60,6 +60,29 @@ function resolveSupplyType(kind: ApplyhomeKind, item: Json, title: string): Supp
   return "private_sale";
 }
 
+function buildApplyhomeEligibilityExcerpt(input: {
+  item: Json;
+  kind: ApplyhomeKind;
+  title: string;
+  supplyLabel: string;
+  regionLabel: string | null;
+  start: IsoDate | null;
+  end: IsoDate | null;
+}): string | null {
+  const parts: string[] = [];
+  const house = [str(input.item, "HOUSE_SECD_NM"), str(input.item, "HOUSE_DTL_SECD_NM"), str(input.item, "RENT_SECD_NM")]
+    .filter(Boolean)
+    .join(" · ");
+  if (house) parts.push(`주택 구분: ${house}`);
+  if (input.supplyLabel) parts.push(`공급유형: ${input.supplyLabel}`);
+  if (input.regionLabel) parts.push(`청약 지역: ${input.regionLabel}`);
+  if (input.start && input.end) parts.push(`접수: ${input.start} ~ ${input.end}`);
+  const tel = str(input.item, "MDHS_TELNO");
+  if (tel) parts.push(`분양·청약 문의: ${tel}`);
+  parts.push(`「${input.title}」 — 자격·순위·서류는 청약홈 공고문에서 확인하세요.`);
+  return parts.join("\n");
+}
+
 export function mapApplyhomeDetail(item: Json, kind: ApplyhomeKind, ctx: ApplyhomeMapContext): NoticeDraft | null {
   const manageNo = str(item, "HOUSE_MANAGE_NO");
   const title = str(item, "HOUSE_NM");
@@ -78,13 +101,15 @@ export function mapApplyhomeDetail(item: Json, kind: ApplyhomeKind, ctx: Applyho
   const { start, end } = pickApplicationPeriod(item);
   const url = str(item, "PBLANC_URL", "HMPG_ADRES");
   const households = num(item, "TOT_SUPLY_HSHLDCO");
+  const supplyType = resolveSupplyType(kind, item, title);
+  const regionLabel = str(item, "SUBSCRPT_AREA_CODE_NM") ?? address ?? null;
 
   const complex: Complex = { name: title, address, region, housingType, households, units: [] };
 
   return {
     title,
     organization: str(item, "BSNS_MBY_NM", "CNSTRCT_ENTRPS_NM") ?? "사업주체 미상",
-    supplyType: resolveSupplyType(kind, item, title),
+    supplyType,
     housingTypes: housingType === "other" ? [] : [housingType],
     regions: region ? [region] : [],
     applicationStart: start,
@@ -92,7 +117,15 @@ export function mapApplyhomeDetail(item: Json, kind: ApplyhomeKind, ctx: Applyho
     announcementDate: parseIsoDate(str(item, "RCRIT_PBLANC_DE")),
     winnerAnnouncementDate: parseIsoDate(str(item, "PRZWNER_PRESNATN_DE")),
     totalHouseholds: households,
-    eligibilityText: str(item, "MDHS_TELNO") ? `분양 문의: ${str(item, "MDHS_TELNO")}` : null,
+    eligibilityText: buildApplyhomeEligibilityExcerpt({
+      item,
+      kind,
+      title,
+      supplyLabel: supplyType,
+      regionLabel,
+      start,
+      end,
+    }),
     url,
     complexes: [complex],
     sources: [

@@ -14,6 +14,27 @@ const LH_APPLY_URL = "https://apply.lh.or.kr";
 
 const NON_HOUSING_TYPES = /어린이집|상가|토지|점포|주차/;
 
+function buildLhEligibilityExcerpt(input: {
+  item: Json;
+  status: string;
+  typeName: string;
+  upperName: string;
+  posted: IsoDate | null;
+  end: IsoDate | null;
+  title: string;
+}): string | null {
+  const parts: string[] = [];
+  if (input.status) parts.push(`공고 상태: ${input.status}`);
+  const supply = [input.upperName, input.typeName].filter(Boolean).join(" · ");
+  if (supply) parts.push(`공급유형: ${supply}`);
+  if (input.posted) parts.push(`공고일: ${input.posted}`);
+  if (input.end) parts.push(`접수 마감: ${input.end}`);
+  const extra = str(input.item, "PAN_CN", "PAN_CNT", "PAN_DTL");
+  if (extra) parts.push(extra.length > 400 ? `${extra.slice(0, 397)}…` : extra);
+  parts.push(`「${input.title}」 — 세부 자격·순위·서류는 LH 공고문에서 확인하세요.`);
+  return parts.join("\n");
+}
+
 /** 응답에 PAN_ID 가 없을 때 공고상세URL(`...PAN_ID:0000059133,...`)에서 꺼낸다. */
 function panIdFromUrl(url: string | null): string | null {
   return url?.match(/PAN_ID[:=]([0-9A-Za-z]+)/)?.[1] ?? null;
@@ -65,7 +86,7 @@ export function mapLhItem(item: Json, ctx: LhMapContext): NoticeDraft | null {
     announcementDate: posted,
     winnerAnnouncementDate: null,
     totalHouseholds: null,
-    eligibilityText: status ? `공고 상태: ${status}` : null,
+    eligibilityText: buildLhEligibilityExcerpt({ item, status, typeName, upperName, posted, end, title }),
     url: str(item, "DTL_URL") ?? LH_APPLY_URL,
     complexes: [],
     sources: [{ source: "lh", externalId: panId, url: str(item, "DTL_URL"), raw: item, fetchedAt: ctx.fetchedAt }],

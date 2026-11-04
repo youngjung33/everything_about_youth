@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:everything_about_youth/core/copy/service_copy.dart';
 import 'package:everything_about_youth/core/network/api_client.dart';
 import 'package:everything_about_youth/core/network/api_error_code.dart';
 import 'package:everything_about_youth/core/network/api_user_message.dart';
@@ -167,7 +168,7 @@ void main() {
     await tester.scrollUntilVisible(find.textContaining('LH청약플러스'), 300, scrollable: bodyScrollable);
     expect(find.textContaining('LH청약플러스'), findsWidgets);
 
-    expect(find.text('원문 공고 보기'), findsOneWidget);
+    expect(find.text(ServiceCopy.officialNoticeButtonLabel), findsOneWidget);
     expect(find.text('접수 마감일 캘린더에 넣기'), findsOneWidget);
   });
 

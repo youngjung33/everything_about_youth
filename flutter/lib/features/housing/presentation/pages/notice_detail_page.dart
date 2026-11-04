@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/copy/service_copy.dart';
 import '../../../../core/format/format.dart';
 import '../../../../core/launch.dart';
 import '../../../../core/layout/app_scaffold.dart';
@@ -34,10 +35,10 @@ class NoticeDetailPage extends ConsumerWidget {
           final notice = detail.summary;
           final actions = <Widget>[
             if (notice.url != null)
-              FilledButton.icon(
+              OutlinedButton.icon(
                 onPressed: () => openExternal(context, notice.url!),
                 icon: const Icon(Icons.open_in_new, size: 18),
-                label: const Text('원문 공고 보기'),
+                label: const Text(ServiceCopy.officialNoticeButtonLabel),
               ),
             if (detail.googleCalendarUrl != null)
               OutlinedButton.icon(
@@ -129,7 +130,7 @@ class _DetailBody extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              '이 정보는 공개 데이터와 각 기관 공고를 수집한 참고용입니다. 신청 전 반드시 원문 공고를 확인하세요.',
+              ServiceCopy.detailVerificationFooter,
               style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.outline),
             ),
             const SizedBox(height: 24),
@@ -307,7 +308,7 @@ class _SourceRow extends StatelessWidget {
             ),
           ),
           if (source.url != null)
-            TextButton(onPressed: () => openExternal(context, source.url!), child: const Text('원문')),
+            TextButton(onPressed: () => openExternal(context, source.url!), child: const Text(ServiceCopy.sourceLinkLabel)),
         ],
       ),
     );

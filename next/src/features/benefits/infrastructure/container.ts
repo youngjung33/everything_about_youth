@@ -38,7 +38,7 @@ export function createBenefitsContainer(common: CommonContainer, overrides: Bene
 
   const { programs, savedPrograms, syncRuns } = createBenefitsRepositories(common.persistence);
 
-  const allSources: ProgramSourcePort[] = [new OntongSource({ apiKey: config.ontongApiKey })];
+  const allSources: ProgramSourcePort[] = [new OntongSource({ apiKey: config.ontongApiKey, logger })];
   const active =
     config.enabledSources.length > 0 ? allSources.filter((s) => config.enabledSources.includes(s.id)) : allSources;
 

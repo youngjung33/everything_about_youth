@@ -11,6 +11,7 @@ import { SearchSchemes } from "../application/use-cases/search-schemes";
 import { SyncSchemesFromSource } from "../application/use-cases/sync-schemes-from-source";
 import { loadFinanceConfig, type FinanceConfig } from "./config";
 import { createFinanceRepositories } from "./create-repositories";
+import { CuratedSource } from "./sources/curated/curated-source";
 import { OntongFinanceSource } from "./sources/ontong/ontong-finance-source";
 
 export interface FinanceContainer {
@@ -38,7 +39,10 @@ export function createFinanceContainer(common: CommonContainer, overrides: Finan
 
   const { schemes, savedSchemes, syncRuns } = createFinanceRepositories(common.persistence);
 
-  const allSources: SchemeSourcePort[] = [new OntongFinanceSource({ apiKey: config.ontongApiKey })];
+  const allSources: SchemeSourcePort[] = [
+    new CuratedSource(),
+    new OntongFinanceSource({ apiKey: config.ontongApiKey, logger }),
+  ];
   const active =
     config.enabledSources.length > 0 ? allSources.filter((s) => config.enabledSources.includes(s.id)) : allSources;
 

@@ -51,7 +51,7 @@ export function evaluateEligibility(
   const rule = CATEGORY_RULES[program.categoryId];
   const notes = rule.alwaysCheck ? [rule.alwaysCheck] : [];
   if (rule.incomePercent) {
-    notes.push(`${STANDARDS_YEAR}년 도시근로자 소득 기준표로 판정했습니다. 정책 원문이 우선합니다.`);
+    notes.push(`${STANDARDS_YEAR}년 도시근로자 소득 기준표로 판정했습니다. 세부 조건은 기관 공식 안내가 우선합니다.`);
   }
   const fails: string[] = [];
   const unknowns: string[] = [];

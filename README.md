@@ -1,6 +1,6 @@
 # 청년의 모든 것 (everything_about_youth)
 
-한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 서비스. **지금 앱에 구현된 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)·청년 주거·자금(`finance`)** 입니다. `finance` 는 **기능 플래그가 기본 꺼짐**이라 `GET /features` 로 켜기 전까지 홈에서 숨깁니다. 아래 로드맵의 `jobs`·`living` 등은 플래그·문서에만 등록된 **예정** 항목입니다.
+한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 서비스. **정보 우선:** 앱·API 본문(수집·판정·안내)을 먼저 보여 주고, 공식 URL 은 더 보기·검증용입니다. **지금 앱에 구현된 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)·청년 주거·자금(`finance`)** 입니다. `finance` 는 **기능 플래그가 기본 꺼짐**이라 `GET /features` 로 켜기 전까지 홈에서 숨깁니다. 아래 로드맵의 `jobs`·`living` 등은 플래그·문서에만 등록된 **예정** 항목입니다.
 
 ### 섹션 로드맵
 
@@ -8,7 +8,7 @@
 | --- | --- | --- | --- |
 | `housing` | 임대주택 | **1차 구현** | LH·SH·마이홈 등 공고 통합, 내 조건 자격 판정, 관심 공고·일정·로컬 알림 |
 | `benefits` | 청년 혜택·정책 | **1차 구현** | 온통청년 OPEN API로 전국 청년정책 수집, 내 조건 판정, 관심·일정·로컬 알림 |
-| `finance` | 청년 주거·자금 | 예정 | 전세·보증금·청약저축 등 주거 자금 제도 안내(공식 링크·조건 요약) |
+| `finance` | 청년 주거·자금 | **1차 구현** | 큐레이션 catalog + 온통(금융·세금) · 기능 플래그 기본 꺼짐 |
 | `jobs` | 청년·공공 일자리 | 예정 | 청년·신입·공공 채용 공고 |
 | `living` | 이사·생활 | 예정 | 전입신고·확정일자 등 절차 체크리스트 |
 
@@ -16,14 +16,15 @@
 
 ### 임대주택(housing) — 1차에서 두껍게 넣은 기능
 
+- **정보 우선:** 공고 **개요·단지·금액·발췌(`eligibilityText`)·판정**을 앱 본문으로 두고, 기관 공고 URL 은 **검증·더 보기**용. LH·마이홈·청약홈 API 소스는 목록 필드+발췌 문단을 합쳐 저장한다(LH API 에 자격 전문이 없으면 발췌·안내 문구 수준).
 - **관심 공고 로컬 알림**: 접수 시작·마감 **하루 전·당일 오전 9시(KST)**. `관심 공고` 화면에서 끌 수 있음. 웹 미지원, 서버 푸시는 2차.
 - **접수 일정**: `임대주택` → 캘린더 아이콘 → **이번 주 / 이번 달** 타임라인(접수 시작·마감).
-- **다음 행동**: 상세 화면에서 판정별 안내·서류 힌트·원문 링크·비슷한 공급유형 공고.
+- **다음 행동**: 상세 화면에서 판정별 안내·서류 힌트·**수집 본문**·기관 공식 안내(검증)·비슷한 공급유형 공고.
 - **빠른 필터**: 목록 상단 **청년·행복 / 신혼 / 매입임대** 프리셋.
 
 ### 청년 혜택(benefits) — housing 과 동형
 
-- **수집(운영)**: **온통청년 OPEN API** 한 곳 (`BENEFITS_ONTONG_API_KEY`). 임대주택의 `DATA_GO_KR_SERVICE_KEY` 와 **별개**이며, 공공데이터포털 활용신청만으로는 benefits 가 채워지지 않습니다.
+- **수집(운영)**: **온통청년 OPEN API** (`BENEFITS_ONTONG_API_KEY`). sync 시 **본문이 80자 미만이거나 자격·신청 필드가 없으면 상세 API**로 `summary` 를 채웁니다. 실패 시 서버 로그 `[ontong-detail]`. 임대주택의 `DATA_GO_KR_SERVICE_KEY` 와 **별개**입니다.
 - **수집(개발·데모)**: `npm run benefits:seed-demo` → `[데모]` 정책만 DB에 넣음.
 - **CLI**: `npm run benefits:sync -- --list` / `npm run benefits:sync`
 - **앱·API**: 목록·상세·필터·내 조건·관심·일정·로컬 알림·`/api/v1/benefits/*`, Flutter `/benefits`
@@ -50,19 +51,27 @@
 
 [공공데이터포털 «한국고용정보원_온통청년_청년정책»](https://www.data.go.kr/data/15143273/openapi.do) 은 **LINK** 유형입니다. 소개·활용 통계용이고, **실제 호출·키는 youthcenter.go.kr** 입니다. `apis.data.go.kr/.../youthPlcyList` 류 **구 엔드포인트는 동작하지 않으므로 쓰지 않습니다.**
 
-#### 크롤링이 더 필요한가?
+### 청년 주거·자금(finance) — benefits 와 동형
 
-**1차 benefits 는 크롤러 없이 설계했습니다.** 온통 목록 API가 제목·기관·분야·기간·요약·원문 URL·지역·키워드를 주고, 앱은 **원문 링크**로 신청·상세 확인을 유도합니다 (임대주택처럼 기관 게시판을 긁지 않음).
+- **화면:** 목록·상세에 **요약·일정·지역·(참고) 자격·다음 행동**을 먼저 보여 주고, **기관 공식 안내** 링크는 더 읽기·검증용.
+- **수집(1차 sync)**: **`curated`** (repo catalog 8건, 키 불필요) + **`ontong-finance`** (`BENEFITS_ONTONG_API_KEY`, 금융·세금 필터). `npm run finance:sync` · `-- --list`
+- **수집(개발·데모)**: `npm run finance:seed-demo` → `[데모]` 제도
+- **2차**: HF·HUG HTML 크롤, data.go.kr·지자체 API, robots 막힌 포털 — [next/README.md](next/README.md#청년-주거자금-섹션) «1차 수집 vs 2차 후보»
+- **앱·API**: Flutter `/finance`, `/api/v1/finance/*` (플래그 `npm run features -- on finance`)
 
-| 구분 | 방식 | 이 레포 |
-| --- | --- | --- |
-| 전국 청년정책 목록 | 온통 OPEN API | **구현됨** (`ontong`) |
-| 화면·CI용 데모 | DB seed | `benefits:seed-demo` |
-| 정책 **상세** 필드 보강 | 같은 키로 온통 **상세 API** (`youthPlcyDetail.do` 또는 목록 API의 `srchPolicyId`) | **미구현** — 목록 필드로 1차는 충분, 자격 문구가 부족할 때 API로 추가 (크롤 아님) |
-| 온통에 없는 지자체·부처 **단독** 공고 | 공식 API 있으면 소스 추가, 없으면 **선별적** 크롤 | **미구현** — 후보·검증은 [next/README.md](next/README.md#청년-혜택정책-섹션) «크롤링·추가 소스» |
-| 청년공간·콘텐츠 API | 온통 OPEN API 별도 메뉴 | **범위 밖** (정책 섹션이 아님) |
+#### 크롤링이 더 필요한가? (benefits·finance 공통)
 
-env·sync·스탠바이 표는 [next/README.md](next/README.md#청년-혜택정책-섹션) 를 보세요.
+**1차**는 호출 가능한 OPEN API·repo catalog 만 sync 합니다. **2차**는 robots·별도 키·미구현 API·HTML 크롤 후보입니다.
+
+| 구분 | 방식 | benefits 1차 | finance 1차 | 2차 |
+| --- | --- | --- | --- | --- |
+| 전국 정책·금융 목록 | 온통 목록 API | **ontong** | **ontong-finance** | — |
+| HF·HUG 등 안내 | repo catalog | — | **curated** | HTML 크롤·HF OpenAPI |
+| 정책 상세 필드 | 온통 상세 API | **sync 시 요약 보강** (80자·자격·신청) | **sync 시 요약 보강** (동일) | — |
+| 온통에 없는 지자체 공고 | API 또는 크롤 | — | — | 표·robots 검증 후 |
+| 청년공간·콘텐츠 API | 온통 별도 | — | — | 범위 밖 |
+
+env·sync·후보 표는 [next/README.md](next/README.md#청년-혜택정책-섹션) · [next/README.md](next/README.md#청년-주거자금-섹션) 를 보세요.
 
 ```
 next/      서버: 공고 수집(LH·마이홈·청약홈·SH·iH·GH), DB(SQLite), 관리자 페이지, JSON API
@@ -283,7 +292,7 @@ features/
 
 - 앱 이름 "청년의 모든 것"(`CFBundleDisplayName`), 번들 ID `com.everythingaboutyouth.everythingAboutYouth`, 최소 iOS 13.0
 - 로컬 서버(`http://localhost:3000`) 호출 허용(`NSAllowsLocalNetworking`). 실기기에서 LAN 의 http 서버를 쓰려면 별도 예외가 필요하고, 배포 서버는 https 를 쓰세요.
-- 원문 링크를 Safari 로 열기(`LSApplicationQueriesSchemes: https`)
+- 기관 공식 URL 을 Safari 로 열기(`LSApplicationQueriesSchemes: https`)
 
 macOS 에서 처음 한 번:
 

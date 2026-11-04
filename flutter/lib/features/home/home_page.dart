@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/bootstrap/bootstrap_controller.dart';
+import '../../core/copy/service_copy.dart';
 import '../../core/design/service_accent.dart';
 import '../../core/feature/feature_flags.dart';
 import '../../core/feature/feature_module.dart';
@@ -36,7 +37,7 @@ class HomePage extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                '자격 판정은 참고용입니다. 신청 전 원문을 꼭 확인하세요.',
+                ServiceCopy.homeDisclaimer,
                 style: textTheme.bodySmall?.copyWith(color: scheme.outline),
               ),
               const SizedBox(height: 28),

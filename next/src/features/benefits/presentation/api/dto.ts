@@ -132,6 +132,7 @@ export function toProgramDetailDto(item: ProgramListItem, today: IsoDate): Progr
     googleCalendarUrl: googleCalendarDeadlineUrl({
       title: program.title,
       applicationEnd: program.applicationEnd,
+      summary: program.summary,
       url: program.url,
     }),
     sources: program.sources.map((s) => ({

@@ -29,7 +29,7 @@ export interface MoneyRule {
 
 /**
  * 공급유형별 자격 규칙(일반적인 기준). 실제 공고마다 다를 수 있으므로
- * 판정 결과는 참고용이며 항상 원문 공고 확인이 필요하다.
+ * 판정 결과는 참고용이며, 세부는 기관 공고에서 검증이 필요하다.
  */
 export interface SupplyRule {
   /** 연령 하한/상한(만 나이). 없으면 제한 없음 */
@@ -47,7 +47,7 @@ export interface SupplyRule {
   groupMoney?: Partial<Record<ApplicantGroup, MoneyRule>>;
   /** 청약통장(입주자저축) 가입이 필요한 유형 */
   requiresSubscriptionAccount?: boolean;
-  /** 항상 원문 확인이 필요한 사유 */
+  /** 판정만으로 부족할 때 안내하는 검증 문구 */
   alwaysCheck?: string;
 }
 

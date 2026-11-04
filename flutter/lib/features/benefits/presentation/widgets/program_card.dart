@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/copy/service_copy.dart';
 import '../../../../core/format/format.dart';
+import '../../../../core/widgets/collected_summary.dart';
 import '../../domain/benefit_program.dart';
 import '../benefits_routes.dart';
 import 'badges.dart';
@@ -92,15 +94,13 @@ class ProgramCard extends StatelessWidget {
                   SavedProgramButton(programId: program.id),
                 ],
               ),
-              if (program.summary != null && program.summary!.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Text(
-                  program.summary!,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                ),
-              ],
+              const SizedBox(height: 8),
+              CollectedSummary(
+                summary: program.summary,
+                maxLines: 2,
+                missingText: ServiceCopy.missingSummaryCard,
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              ),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 16,

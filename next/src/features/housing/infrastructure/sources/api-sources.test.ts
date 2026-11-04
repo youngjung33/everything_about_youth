@@ -525,6 +525,9 @@ describe("청약홈", () => {
       winnerAnnouncementDate: "2026-10-23",
       totalHouseholds: 1095,
     });
+    expect(d.eligibilityText).toContain("APT");
+    expect(d.eligibilityText).toContain("전남");
+    expect(d.eligibilityText).toContain("2026-10-12");
     expect(d.sources[0]!.externalId).toBe("apt:2026000090:2026000090");
   });
 

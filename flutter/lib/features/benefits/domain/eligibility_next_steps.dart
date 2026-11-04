@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 
+import '../../../core/copy/service_copy.dart';
 import 'benefit_program.dart';
 
 @immutable
@@ -17,8 +18,6 @@ class EligibilityNextSteps {
   final String disclaimer;
 }
 
-const _disclaimer = '아래 안내는 참고용이며 법적 효력이 없습니다. 최종 자격·서류는 원문 안내와 담당 기관 확인이 필요합니다.';
-
 EligibilityNextSteps eligibilityNextSteps({
   required ProgramSummary program,
   Eligibility? eligibility,
@@ -27,7 +26,8 @@ EligibilityNextSteps eligibilityNextSteps({
   final category = program.categoryId;
 
   final actions = <String>[
-    if (program.url != null) '원문 안내에서 세부 자격·제출 서류를 확인하세요.',
+    '상세 화면 요약·판정·다음 행동을 먼저 확인하세요.',
+    if (program.url != null) '세부 자격·서류·양식은 기관 공식 안내에서 검증하세요.',
     if (verdict == Verdict.eligible) '신청 기간 안에 안내에 따라 신청하세요.',
     if (verdict == Verdict.check) '안내 문서의 예외 조항을 확인한 뒤 신청 여부를 결정하세요.',
     if (verdict == Verdict.ineligible) '조건이 맞지 않을 수 있습니다. 유사 분야 정책을 검색하거나 내 조건을 수정해 보세요.',
@@ -43,7 +43,7 @@ EligibilityNextSteps eligibilityNextSteps({
     headline: headline,
     actions: actions,
     documentHints: _documentHints(category, verdict),
-    disclaimer: _disclaimer,
+    disclaimer: ServiceCopy.detailVerificationFooter,
   );
 }
 
@@ -55,11 +55,11 @@ List<String> _documentHints(String categoryId, Verdict verdict) {
   final extra = switch (categoryId) {
     'housing' => <String>['무주택·주택 관련 확인 서류(안내별)'],
     'employment' => <String>['경력·재직 증빙(해당 시)'],
-    _ => <String>['원문에 적힌 제출 서류 목록 전체'],
+    _ => <String>['안내에 적힌 제출 서류 목록 전체'],
   };
 
   if (verdict == Verdict.ineligible) {
-    return ['자격 미충족 시 제출이 거절될 수 있으니, 원문의 자격 요건을 먼저 확인하세요.', ...common.take(2)];
+    return ['자격 미충족 시 제출이 거절될 수 있습니다. 위 판정 사유와 안내 자격 요건을 함께 확인하세요.', ...common.take(2)];
   }
   return [...common, ...extra];
 }

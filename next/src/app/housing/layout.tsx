@@ -18,7 +18,7 @@ export default function HousingLayout({ children }: LayoutProps<"/housing">) {
       </nav>
       {children}
       <footer className="site-footer">
-        개인용 1차 버전 · 자격 판정은 일반 기준에 따른 참고용이며, 신청 전 반드시 원문 공고를 확인하세요.
+        개인용 1차 버전 · 자격 판정은 참고용입니다. 앱 본문을 확인한 뒤, 필요하면 기관 공고에서 최종 검증하세요.
       </footer>
     </>
   );

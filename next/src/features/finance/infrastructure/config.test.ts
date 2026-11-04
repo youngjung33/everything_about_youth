@@ -13,6 +13,9 @@ describe("loadFinanceConfig", () => {
   it("0 이면 자동 수집 끔, 30 이상이면 허용", () => {
     expect(loadFinanceConfig({})).toEqual({ enabledSources: [], syncIntervalMinutes: 0, ontongApiKey: undefined });
     expect(loadFinanceConfig({ FINANCE_SYNC_INTERVAL_MINUTES: "30" }).syncIntervalMinutes).toBe(30);
-    expect(loadFinanceConfig({ FINANCE_SYNC_SOURCES: "ontong-finance", BENEFITS_ONTONG_API_KEY: "k" }).enabledSources).toEqual(["ontong-finance"]);
+    expect(loadFinanceConfig({ FINANCE_SYNC_SOURCES: "curated,ontong-finance", BENEFITS_ONTONG_API_KEY: "k" }).enabledSources).toEqual([
+      "curated",
+      "ontong-finance",
+    ]);
   });
 });

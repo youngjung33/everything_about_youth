@@ -1,4 +1,5 @@
 import 'package:everything_about_youth/app/shell/app_footer.dart';
+import 'package:everything_about_youth/core/copy/service_copy.dart';
 import 'package:everything_about_youth/core/layout/app_bottom_sheet.dart';
 import 'package:everything_about_youth/core/layout/app_scaffold.dart';
 import 'package:everything_about_youth/core/layout/app_top_bar.dart';
@@ -108,11 +109,11 @@ void main() {
       await pumpApp(tester, repo, location: '/housing/notices/n1', size: _galaxy, systemInsets: _galaxyInsets);
 
       await tester.pumpAndSettle();
-      expect(find.text('원문 공고 보기'), findsOneWidget);
+      expect(find.text(ServiceCopy.officialNoticeButtonLabel), findsOneWidget);
 
       final body = find.descendant(of: find.byType(ListView), matching: find.byType(Scrollable)).first;
       await tester.scrollUntilVisible(
-        find.textContaining('신청 전 반드시 원문 공고를 확인'),
+        find.textContaining('최종 확인은 기관 공식 안내'),
         300,
         scrollable: body,
       );
@@ -120,9 +121,9 @@ void main() {
 
       final innerBarTop = rectOf(tester, find.byKey(AppScaffold.bottomAreaKey).first).top;
       final shellFooterTop = rectOf(tester, find.byKey(AppScaffold.bottomAreaKey).last).top;
-      expect(rectOf(tester, find.text('원문 공고 보기')).bottom, lessThanOrEqualTo(shellFooterTop));
+      expect(rectOf(tester, find.text(ServiceCopy.officialNoticeButtonLabel)).bottom, lessThanOrEqualTo(shellFooterTop));
       expect(
-        rectOf(tester, find.textContaining('신청 전 반드시 원문 공고를 확인')).bottom,
+        rectOf(tester, find.textContaining('최종 확인은 기관 공식 안내')).bottom,
         lessThanOrEqualTo(innerBarTop),
       );
       expect(shellFooterTop, lessThan(_galaxy.height - _galaxyInsets.bottom)); // 푸터 내용은 내비게이션바 위

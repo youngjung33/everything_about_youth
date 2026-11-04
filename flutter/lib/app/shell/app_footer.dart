@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/copy/service_copy.dart';
 import '../../core/widgets/app_logo.dart';
 import '../../core/legal/legal_paths.dart';
 
@@ -18,7 +19,7 @@ class AppFooter extends StatelessWidget {
   /// 저작권 연도. 테스트에서 고정할 때만 넘기고, 보통은 올해.
   final int? year;
 
-  static const disclaimer = '제공하는 정보는 참고용입니다. 신청 전에 반드시 각 기관의 원문 공고를 확인하세요.';
+  static const disclaimer = ServiceCopy.footerDisclaimer;
 
   @override
   Widget build(BuildContext context) {

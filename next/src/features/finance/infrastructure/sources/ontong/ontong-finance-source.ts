@@ -1,8 +1,10 @@
+import type { Logger } from "@/common/application/system";
 import type { SchemeSourcePort, SourceAvailability, SourceContext } from "@/features/finance/application/ports/scheme-source";
 import type { FinanceSchemeDraft } from "@/features/finance/domain/scheme";
 import { httpGetText, sleep } from "@/common/infrastructure/http/http";
 import { findDeep, findRecords, toNumber, type Json } from "@/common/infrastructure/http/mapping";
-import { XMLParser } from "fast-xml-parser";
+import { enrichOntongListRows } from "@/common/infrastructure/sources/ontong/ontong-detail-fetch";
+import { parseOntongBody } from "@/common/infrastructure/sources/ontong/ontong-parse";
 import { mapOntongFinanceItems } from "./ontong-finance-mapper";
 
 const BASE_URL = "https://www.youthcenter.go.kr";
@@ -12,21 +14,13 @@ const MAX_PAGES = 30;
 
 export interface OntongFinanceSourceOptions {
   apiKey?: string;
+  logger?: Logger;
   getText?: (url: string) => Promise<string>;
   delayMs?: number;
 }
 
 function parseBody(text: string): Json {
-  const trimmed = text.trim();
-  if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
-    try {
-      return JSON.parse(trimmed) as Json;
-    } catch {
-      /* fall through */
-    }
-  }
-  const parser = new XMLParser({ ignoreAttributes: false, trimValues: true });
-  return parser.parse(trimmed) as Json;
+  return parseOntongBody(text);
 }
 
 export class OntongFinanceSource implements SchemeSourcePort {
@@ -72,6 +66,15 @@ export class OntongFinanceSource implements SchemeSourcePort {
       await sleep(delay);
     }
 
-    return mapOntongFinanceItems(rows, { fetchedAt: ctx.fetchedAt, baseUrl: BASE_URL });
+    const enriched = await enrichOntongListRows(rows, {
+      apiKey: key,
+      baseUrl: BASE_URL,
+      getText,
+      signal: ctx.signal,
+      delayMs: delay,
+      logger: this.options.logger,
+    });
+
+    return mapOntongFinanceItems(enriched, { fetchedAt: ctx.fetchedAt, baseUrl: BASE_URL });
   }
 }
