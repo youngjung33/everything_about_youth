@@ -16,7 +16,7 @@
 
 ### 임대주택(housing) — 1차에서 두껍게 넣은 기능
 
-- **정보 우선:** 공고 **개요·단지·금액·발췌(`eligibilityText`)·판정**을 앱 본문으로 두고, 기관 공고 URL 은 **검증·더 보기**용. LH·마이홈·청약홈 API 소스는 목록 필드+발췌 문단을 합쳐 저장한다(LH API 에 자격 전문이 없으면 발췌·안내 문구 수준).
+- **정보 우선:** 공고 **발췌(`eligibilityText`)·개요·단지·금액·판정**을 앱·API 본문으로 두고(목록·상세 모두 — benefits `summary` 와 동형), 기관 공고 URL 은 **검증·더 보기**용. LH·마이홈·청약홈 API 소스는 목록 필드+발췌 문단을 합쳐 저장한다(LH API 에 자격 전문이 없으면 발췌·안내 문구 수준).
 - **관심 공고 로컬 알림**: 접수 시작·마감 **하루 전·당일 오전 9시(KST)**. `관심 공고` 화면에서 끌 수 있음. 웹 미지원, 서버 푸시는 2차.
 - **접수 일정**: `임대주택` → 캘린더 아이콘 → **이번 주 / 이번 달** 타임라인(접수 시작·마감).
 - **다음 행동**: 상세 화면에서 판정별 안내·서류 힌트·**수집 본문**·기관 공식 안내(검증)·비슷한 공급유형 공고.
@@ -97,6 +97,8 @@ npm run db:migrate
 npm run housing:sync        # 공고 수집
 npm run benefits:seed-demo  # [데모] 혜택 정책 (화면 확인용)
 npm run benefits:sync         # 혜택 정책 수집 (온통청년 등)
+npm run finance:seed-demo   # [데모] 주거·자금 제도 (화면 확인용)
+npm run finance:sync        # 주거·자금 수집 (curated, ontong-finance)
 npm run dev                 # http://localhost:3000
 ```
 
@@ -107,8 +109,6 @@ JSON API 설명과 CORS 설정(`API_CORS_ORIGIN`)은 [next/README.md](next/READM
 ```bash
 cd flutter
 flutter pub get
-npm run finance:seed-demo   # [데모] 주거·자금 제도 (화면 확인용)
-npm run finance:sync          # 주거·자금 제도 수집 (curated, ontong-finance)
 
 # 웹
 flutter run -d chrome

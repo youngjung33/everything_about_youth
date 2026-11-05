@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { todayInKst } from "@/common/domain/date";
+import { DETAIL_VERIFICATION_FOOTER, MISSING_SUMMARY_BODY } from "@/common/presentation/service-copy";
 import { HOUSING_TYPE_LABELS, NOTICE_STATUS_LABELS, SOURCE_LABELS, SUPPLY_TYPE_LABELS } from "@/features/housing/domain/enums";
 import { VERDICT_LABELS } from "@/features/housing/domain/eligibility/evaluate";
 import { getHousingContainer } from "@/features/housing/housing-container";
@@ -23,6 +24,7 @@ export default async function NoticeDetailPage(props: PageProps<"/housing/notice
   const { notice, status, eligibility } = item;
   const today = todayInKst(container.clock.now());
   const dday = formatDday(notice.applicationStart, notice.applicationEnd, today);
+  const bodyExcerpt = notice.eligibilityText?.trim() || MISSING_SUMMARY_BODY;
 
   return (
     <article className="detail">
@@ -42,8 +44,36 @@ export default async function NoticeDetailPage(props: PageProps<"/housing/notice
       </div>
       <h1>{notice.title}</h1>
 
+      <p className="collected-body">{bodyExcerpt}</p>
+
       <section className="panel">
-        <h2>일정 · 기본 정보</h2>
+        <h2>자격 판정</h2>
+        {eligibility ? (
+          <>
+            <p>
+              <span className={`badge verdict-${eligibility.verdict} big`}>{VERDICT_LABELS[eligibility.verdict]}</span>
+            </p>
+            <ul>
+              {eligibility.reasons.map((r) => (
+                <li key={r}>{r}</li>
+              ))}
+            </ul>
+            {eligibility.notes.length > 0 && (
+              <ul className="notes">
+                {eligibility.notes.map((n) => (
+                  <li key={n}>{n}</li>
+                ))}
+              </ul>
+            )}
+          </>
+        ) : (
+          <p className="hint">목록 화면의 &lsquo;내 조건&rsquo;에 나이·소득 등을 입력하면 이 공고의 신청 가능 여부를 판정합니다.</p>
+        )}
+        <p className="hint">일반적인 공급유형별 기준에 따른 참고용 판정입니다. 위 수집 본문·개요를 먼저 보고, 세부는 기관 공고에서 검증하세요.</p>
+      </section>
+
+      <section className="panel">
+        <h2>공고 개요</h2>
         <dl className="meta wide">
           <div>
             <dt>공급기관</dt>
@@ -70,46 +100,6 @@ export default async function NoticeDetailPage(props: PageProps<"/housing/notice
             <dd>{notice.totalHouseholds !== null ? `${notice.totalHouseholds.toLocaleString("ko-KR")}세대` : "-"}</dd>
           </div>
         </dl>
-        {notice.url && (
-          <p>
-            <a className="btn primary" href={notice.url} target="_blank" rel="noopener noreferrer">
-              기관 공고 · 검증
-            </a>
-          </p>
-        )}
-      </section>
-
-      <section className="panel">
-        <h2>자격 판정</h2>
-        {eligibility ? (
-          <>
-            <p>
-              <span className={`badge verdict-${eligibility.verdict} big`}>{VERDICT_LABELS[eligibility.verdict]}</span>
-            </p>
-            <ul>
-              {eligibility.reasons.map((r) => (
-                <li key={r}>{r}</li>
-              ))}
-            </ul>
-            {eligibility.notes.length > 0 && (
-              <ul className="notes">
-                {eligibility.notes.map((n) => (
-                  <li key={n}>{n}</li>
-                ))}
-              </ul>
-            )}
-          </>
-        ) : (
-          <p className="hint">목록 화면의 &lsquo;내 조건&rsquo;에 나이·소득 등을 입력하면 이 공고의 신청 가능 여부를 판정합니다.</p>
-        )}
-        <p className="hint">일반적인 공급유형별 기준에 따른 참고용 판정입니다. 위 공고 개요·발췌를 먼저 보고, 세부는 기관 공고에서 검증하세요.</p>
-        {notice.eligibilityText && (
-          <blockquote>
-            <strong>공고 발췌</strong>
-            <br />
-            {notice.eligibilityText}
-          </blockquote>
-        )}
       </section>
 
       <section className="panel">
@@ -173,6 +163,16 @@ export default async function NoticeDetailPage(props: PageProps<"/housing/notice
           ))}
         </ul>
       </section>
+
+      {notice.url && (
+        <p>
+          <a className="btn primary" href={notice.url} target="_blank" rel="noopener noreferrer">
+            기관 공고 · 검증
+          </a>
+        </p>
+      )}
+
+      <p className="hint">{DETAIL_VERIFICATION_FOOTER}</p>
     </article>
   );
 }

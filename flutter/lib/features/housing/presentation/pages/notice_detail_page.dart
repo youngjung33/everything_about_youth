@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/copy/service_copy.dart';
 import '../../../../core/format/format.dart';
+import '../../../../core/widgets/collected_summary.dart';
 import '../../../../core/launch.dart';
 import '../../../../core/layout/app_scaffold.dart';
 import '../../../../core/layout/app_top_bar.dart';
@@ -81,6 +82,8 @@ class _DetailBody extends StatelessWidget {
             Text(notice.title, style: textTheme.headlineSmall?.copyWith(fontWeight: AppFonts.bold)),
             const SizedBox(height: 10),
             NoticeBadges(notice: notice, largeEligibility: true),
+            const SizedBox(height: 8),
+            CollectedSummary(summary: notice.eligibilityText ?? detail.eligibilityText),
             if (notice.eligibility != null) ...[
               const SizedBox(height: 16),
               _EligibilityCard(eligibility: notice.eligibility!),
@@ -114,8 +117,6 @@ class _DetailBody extends StatelessWidget {
                 ],
               ),
             ),
-            if (detail.eligibilityText != null)
-              _Section(title: '공고 발췌', child: SelectableText(detail.eligibilityText!)),
             if (detail.complexes.isNotEmpty)
               _Section(
                 title: '단지·세대유형',

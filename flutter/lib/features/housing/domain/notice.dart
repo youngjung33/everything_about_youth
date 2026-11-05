@@ -79,6 +79,7 @@ class NoticeSummary {
     this.minAreaM2,
     this.maxAreaM2,
     this.url,
+    this.eligibilityText,
     this.eligibility,
   });
 
@@ -104,6 +105,7 @@ class NoticeSummary {
     maxAreaM2: asDouble(json['maxAreaM2']),
     url: asString(json['url']),
     sourceLabels: asStringList(json['sourceLabels']),
+    eligibilityText: asString(json['eligibilityText']),
     eligibility: json['eligibility'] is Map<String, dynamic> ? Eligibility.fromJson(asMap(json['eligibility'])) : null,
   );
 
@@ -130,6 +132,9 @@ class NoticeSummary {
   final double? maxAreaM2;
   final String? url;
   final List<String> sourceLabels;
+
+  /// 수집 발췌 본문 (benefits `summary` 와 동형)
+  final String? eligibilityText;
 
   /// '내 조건'을 보냈을 때만 값이 있다.
   final Eligibility? eligibility;

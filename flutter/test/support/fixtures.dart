@@ -36,6 +36,7 @@ Map<String, dynamic> summaryJson({
   'maxAreaM2': 26.0,
   'url': 'https://example.com/notice/1',
   'sourceLabels': ['LH청약플러스'],
+  'eligibilityText': null,
   'eligibility': eligibility,
 };
 

@@ -17,6 +17,7 @@ describe("mapOntongItem", () => {
         aplyBgngYmd: "20260101",
         aplyEndYmd: "20261231",
         plcyExplnCn: "설명",
+        aplyMthdCn: "온라인 신청",
       },
       { fetchedAt: "2026-10-12T00:00:00Z", baseUrl: "https://www.youthcenter.go.kr" },
     );
@@ -29,6 +30,8 @@ describe("mapOntongItem", () => {
       applicationEnd: "2026-12-31",
       sources: [{ source: "ontong", externalId: "P100" }],
     });
+    expect(draft?.summary).toContain("설명");
+    expect(draft?.summary).toContain("온라인 신청");
   });
 });
 

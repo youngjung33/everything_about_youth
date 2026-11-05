@@ -130,6 +130,7 @@ describe("공고 목록 API", () => {
       minAreaM2: 16.5,
       maxAreaM2: 26.5,
       sourceLabels: ["LH 분양임대공고"],
+      eligibilityText: "문의: 1600-1004",
       eligibility: null,
     });
   });

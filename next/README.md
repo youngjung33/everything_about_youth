@@ -11,7 +11,7 @@
 
 - **앱·API 본문** = sync 로 DB에 넣은 구조화 필드(제목·기관·요약·기간·지역·금액/유형·자격 판정·다음 행동 등). 사용자는 **링크 없이** 목록·상세만으로 판단을 시작할 수 있어야 한다.
 - **공식 URL** = 더 읽기·최신 변경·신청 **검증**용 부가 요소. 요약이 비면 **수집을 보강**한다(온통 상세 API, 크롤 발췌, catalog 문구). 링크만 두고 본문을 비우지 않는다.
-- **임대주택** 크롤/API는 `eligibilityText`·단지·금액 등 **공고 본문 필드**를 저장한다. **benefits·finance** 온통 sync 는 본문이 부족하면 **`srchPolicyId` 상세 API**로 `summary` 를 채운다 (80자 미만 또는 자격·신청 필드 없음 · `common/infrastructure/sources/ontong/`). 실패 시 `[ontong-detail]` 로그.
+- **임대주택** 크롤/API는 `eligibilityText`·단지·금액 등 **공고 본문 필드**를 저장하고, **목록·상세 API** 모두 `eligibilityText` 를 내려준다(benefits `summary` 와 동형). **benefits·finance** 온통 sync 는 본문이 부족하면 **`srchPolicyId` 상세 API**로 `summary` 를 채운다 (80자 미만 또는 자격·신청 필드 없음 · `common/infrastructure/sources/ontong/`). 실패 시 `[ontong-detail]` 로그.
 
 ## 폴더 구조
 

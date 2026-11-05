@@ -65,6 +65,8 @@ export interface NoticeSummaryDto {
   maxAreaM2: number | null;
   url: string | null;
   sourceLabels: string[];
+  /** 수집 발췌 본문. 목록·상세 공통 (benefits `summary` 와 동형) */
+  eligibilityText: string | null;
   /** '내 조건'을 보냈을 때만 값이 있다 */
   eligibility: EligibilityDto | null;
 }
@@ -97,7 +99,6 @@ export interface NoticeSourceDto {
 
 export interface NoticeDetailDto extends NoticeSummaryDto {
   winnerAnnouncementDate: string | null;
-  eligibilityText: string | null;
   complexes: ComplexDto[];
   sources: NoticeSourceDto[];
   /** 접수 마감일을 Google 캘린더에 넣는 주소. 마감일이 없으면 null */
@@ -178,6 +179,7 @@ export function toNoticeSummaryDto(item: NoticeListItem, today: IsoDate): Notice
     maxAreaM2: units.maxAreaM2,
     url: notice.url,
     sourceLabels: [...new Set(notice.sources.map((s) => SOURCE_LABELS[s.source]))],
+    eligibilityText: notice.eligibilityText,
     eligibility: toEligibilityDto(eligibility),
   };
 }
@@ -187,7 +189,6 @@ export function toNoticeDetailDto(item: NoticeListItem, today: IsoDate): NoticeD
   return {
     ...toNoticeSummaryDto(item, today),
     winnerAnnouncementDate: notice.winnerAnnouncementDate,
-    eligibilityText: notice.eligibilityText,
     googleCalendarUrl: googleCalendarDeadlineUrl({
       title: notice.title,
       applicationEnd: notice.applicationEnd,

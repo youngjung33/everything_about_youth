@@ -60,6 +60,8 @@ void main() {
     test('상세: 단지와 세대유형, null 금액', () {
       final d = NoticeDetail.fromJson(detailJson());
       expect(d.summary.id, 'n1');
+      expect(d.summary.eligibilityText, '문의: 1600-1004');
+      expect(d.eligibilityText, '문의: 1600-1004');
       expect(d.winnerAnnouncementDate, '2026-11-05');
       expect(d.complexes, hasLength(1));
       final units = d.complexes.first.units;

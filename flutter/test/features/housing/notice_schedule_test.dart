@@ -14,6 +14,7 @@ NoticeSummary _notice({required String id, String? start, String? end}) => Notic
   regionLabel: '서울',
   regions: const [],
   sourceLabels: const [],
+  eligibilityText: null,
   applicationStart: start,
   applicationEnd: end,
 );

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/copy/service_copy.dart';
 import '../../../../core/format/format.dart';
+import '../../../../core/widgets/collected_summary.dart';
 import '../../domain/notice.dart';
 import '../housing_routes.dart';
 import 'badges.dart';
@@ -93,6 +95,13 @@ class NoticeCard extends StatelessWidget {
                   Expanded(child: NoticeBadges(notice: notice)),
                   SavedNoticeButton(noticeId: notice.id),
                 ],
+              ),
+              const SizedBox(height: 8),
+              CollectedSummary(
+                summary: notice.eligibilityText,
+                maxLines: 2,
+                missingText: ServiceCopy.missingSummaryCard,
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               const SizedBox(height: 12),
               Wrap(

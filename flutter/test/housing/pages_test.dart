@@ -158,13 +158,13 @@ void main() {
 
     expect(find.text('공고 상세'), findsOneWidget);
     expect(find.text('공고 개요'), findsOneWidget);
+    expect(find.text('문의: 1600-1004'), findsOneWidget);
     final bodyScrollable = find.descendant(of: find.byType(ListView), matching: find.byType(Scrollable)).first;
     await tester.scrollUntilVisible(find.text('강남 A단지'), 300, scrollable: bodyScrollable);
     expect(find.text('강남 A단지'), findsOneWidget);
     expect(find.text('16A'), findsOneWidget);
     expect(find.text('500만원'), findsNothing); // 5,000만원이어야 한다
     expect(find.text('5,000만원'), findsOneWidget);
-    expect(find.text('문의: 1600-1004'), findsOneWidget);
     await tester.scrollUntilVisible(find.textContaining('LH청약플러스'), 300, scrollable: bodyScrollable);
     expect(find.textContaining('LH청약플러스'), findsWidgets);
 

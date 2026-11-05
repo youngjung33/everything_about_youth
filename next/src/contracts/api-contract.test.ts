@@ -49,6 +49,18 @@ describe("API 계약 JSON (서버 DTO ↔ contracts/api)", () => {
     expect(contractBenefitsMetaDto()).toEqual(readContract("benefits-meta.json"));
   });
 
+  it("finance-scheme-list.json", () => {
+    expect(contractSchemeListDto()).toEqual(readContract("finance-scheme-list.json"));
+  });
+
+  it("finance-scheme-detail.json", () => {
+    expect(contractSchemeDetailDto()).toEqual(readContract("finance-scheme-detail.json"));
+  });
+
+  it("finance-meta.json", () => {
+    expect(contractFinanceMetaDto()).toEqual(readContract("finance-meta.json"));
+  });
+
   it("auth-session.json", () => {
     expect(contractSessionDto()).toEqual(readContract("auth-session.json"));
   });

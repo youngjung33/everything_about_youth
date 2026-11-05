@@ -3,6 +3,7 @@ import type { BenefitProgramDraft } from "@/features/benefits/domain/program";
 import type { Sido } from "@/common/domain/region";
 import { SIDO_LIST } from "@/common/domain/region";
 import { findDeep, type Json } from "@/common/infrastructure/http/mapping";
+import { buildOntongSummaryText, readOntongListSummary } from "@/common/infrastructure/sources/ontong/ontong-summary";
 
 function deepStr(root: Json, ...keys: string[]): string | null {
   for (const key of keys) {
@@ -77,7 +78,7 @@ export function mapOntongItem(raw: Json, ctx: { fetchedAt: string; baseUrl: stri
   const organization = deepStr(raw, "sprvsnInstCdNm", "instNm", "orgNm", "sprvsnInstNm") ?? "온통청년";
   const categoryText = deepStr(raw, "plcyLclsNm", "plcyMclsNm", "lclsfNm", "mclsfNm", "bizTycdNm");
   const categoryId = parseCategoryId(categoryText);
-  const summary = deepStr(raw, "plcyExplnCn", "plcySmryCn", "expln", "summary");
+  const summary = buildOntongSummaryText(raw, readOntongListSummary(raw));
   const urlPath = deepStr(raw, "plcyUrlAddr", "dtlUrl", "linkUrl");
   const url = urlPath ? (urlPath.startsWith("http") ? urlPath : `${ctx.baseUrl}${urlPath.startsWith("/") ? "" : "/"}${urlPath}`) : `${ctx.baseUrl}/opi/youthPlcyDetail.do?plcyId=${externalId}`;
 
