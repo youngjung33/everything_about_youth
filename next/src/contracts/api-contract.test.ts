@@ -8,6 +8,9 @@ import {
   contractFeaturesDto,
   contractBenefitsMetaDto,
   contractFinanceMetaDto,
+  contractGuideDetailDto,
+  contractGuideListDto,
+  contractLivingMetaDto,
   contractHousingMetaDto,
   contractNoticeDetailDto,
   contractNoticeListDto,
@@ -59,6 +62,18 @@ describe("API 계약 JSON (서버 DTO ↔ contracts/api)", () => {
 
   it("finance-meta.json", () => {
     expect(contractFinanceMetaDto()).toEqual(readContract("finance-meta.json"));
+  });
+
+  it("living-guide-list.json", () => {
+    expect(contractGuideListDto()).toEqual(readContract("living-guide-list.json"));
+  });
+
+  it("living-guide-detail.json", () => {
+    expect(contractGuideDetailDto()).toEqual(readContract("living-guide-detail.json"));
+  });
+
+  it("living-meta.json", () => {
+    expect(contractLivingMetaDto()).toEqual(readContract("living-meta.json"));
   });
 
   it("auth-session.json", () => {

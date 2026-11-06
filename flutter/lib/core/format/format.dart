@@ -42,7 +42,7 @@ String formatDate(String? isoDate) => isoDate == null ? '-' : isoDate.replaceAll
 
 /// 접수기간. 시작/종료가 모두 없으면 "일정 미정/상시"
 String formatPeriod(String? start, String? end) {
-  if (start == null && end == null) return '접수일 미등록 · 안내형';
+  if (start == null && end == null) return '일정 미정/상시';
   if (start != null && end != null && start == end) return formatDate(start);
   if (start == null) return '~ ${formatDate(end)}';
   if (end == null) return '${formatDate(start)} ~';

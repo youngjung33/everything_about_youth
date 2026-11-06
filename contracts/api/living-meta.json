@@ -1,0 +1,76 @@
+{
+  "dataUpdatedAt": "2026-10-12T01:00:00.000Z",
+  "procedureTypes": [
+    {
+      "value": "move_in",
+      "label": "전입·전출"
+    },
+    {
+      "value": "lease",
+      "label": "임대차·확정일자"
+    },
+    {
+      "value": "moving",
+      "label": "이사 준비"
+    },
+    {
+      "value": "utilities",
+      "label": "공과금·통신"
+    },
+    {
+      "value": "registry",
+      "label": "등기·주민센터"
+    },
+    {
+      "value": "waste",
+      "label": "쓰레기·재활용"
+    },
+    {
+      "value": "other",
+      "label": "기타"
+    }
+  ],
+  "statuses": [
+    {
+      "value": "upcoming",
+      "label": "예정"
+    },
+    {
+      "value": "open",
+      "label": "진행중"
+    },
+    {
+      "value": "closed",
+      "label": "종료"
+    }
+  ],
+  "sorts": [
+    {
+      "value": "deadline",
+      "label": "마감 임박순"
+    },
+    {
+      "value": "latest",
+      "label": "최신 안내순"
+    }
+  ],
+  "sidos": [
+    "서울",
+    "부산",
+    "대구",
+    "인천",
+    "광주",
+    "대전",
+    "울산",
+    "세종",
+    "경기",
+    "강원",
+    "충북",
+    "충남",
+    "전북",
+    "전남",
+    "경북",
+    "경남",
+    "제주"
+  ]
+}

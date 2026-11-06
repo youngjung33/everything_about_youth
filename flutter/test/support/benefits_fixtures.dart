@@ -63,7 +63,7 @@ Map<String, dynamic> programPageJson({
 
 Map<String, dynamic> benefitsMetaJson() => {
   'dataUpdatedAt': '2026-10-12T01:00:00.000Z',
-  'categories': [
+  'procedureTypes': [
     {'value': 'housing', 'label': '주거'},
     {'value': 'employment', 'label': '일자리'},
   ],

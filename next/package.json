@@ -18,6 +18,8 @@
     "benefits:sync": "tsx scripts/benefits/sync.ts",
     "finance:sync": "tsx scripts/finance/sync.ts",
     "finance:seed-demo": "tsx scripts/finance/seed-demo.ts",
+    "living:sync": "tsx scripts/living/sync.ts",
+    "living:seed-demo": "tsx scripts/living/seed-demo.ts",
     "contracts:sync": "tsx scripts/sync-api-contracts.ts"
   },
   "dependencies": {

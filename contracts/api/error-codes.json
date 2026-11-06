@@ -26,6 +26,11 @@
       "message": "제도를 찾을 수 없습니다."
     },
     {
+      "code": "GUIDE_NOT_FOUND",
+      "status": 404,
+      "message": "안내를 찾을 수 없습니다."
+    },
+    {
       "code": "AUTH_REQUIRED",
       "status": 401,
       "message": "인증이 필요합니다."

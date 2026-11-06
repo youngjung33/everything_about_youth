@@ -1,6 +1,6 @@
 # 청년의 모든 것 (everything_about_youth)
 
-한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 서비스. **정보 우선:** 앱·API 본문(수집·판정·안내)을 먼저 보여 주고, 공식 URL 은 더 보기·검증용입니다. **지금 앱에 구현된 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)·청년 주거·자금(`finance`)** 입니다. `finance` 는 **기능 플래그가 기본 꺼짐**이라 `GET /features` 로 켜기 전까지 홈에서 숨깁니다. 아래 로드맵의 `jobs`·`living` 등은 플래그·문서에만 등록된 **예정** 항목입니다.
+한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 서비스. **정보 우선:** 앱·API 본문(수집·판정·안내)을 먼저 보여 주고, 공식 URL 은 더 보기·검증용입니다. **지금 앱에 구현된 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)·청년 주거·자금(`finance`)·이사·생활(`living`)** 입니다. `finance` 는 **기능 플래그가 기본 꺼짐**이라 `GET /features` 로 켜기 전까지 홈에서 숨깁니다. `living` 은 **플래그 기본 켜짐**이며 1차는 **curated 수집 + checklistSteps** (내 조건 판정 없음) 입니다. 아래 로드맵의 `jobs` 등은 플래그·문서에만 등록된 **예정** 항목입니다.
 
 ### 섹션 로드맵
 
@@ -10,7 +10,7 @@
 | `benefits` | 청년 혜택·정책 | **1차 구현** | 온통청년 OPEN API로 전국 청년정책 수집, 내 조건 판정, 관심·일정·로컬 알림 |
 | `finance` | 청년 주거·자금 | **1차 구현** | 큐레이션 catalog + 온통(금융·세금) · 기능 플래그 기본 꺼짐 |
 | `jobs` | 청년·공공 일자리 | 예정 | 청년·신입·공공 채용 공고 |
-| `living` | 이사·생활 | 예정 | 전입신고·확정일자 등 절차 체크리스트 |
+| `living` | 이사·생활 | **1차 구현** | curated + `living:seed-demo`, 상세 `checklistSteps[]`, 플래그 기본 on |
 
 새 섹션을 만들 때는 `next/src/features/<id>/` + `features/registry.ts`, Flutter `features/<id>/` + `app/feature_modules.dart` 를 같은 `id` 로 추가합니다.
 
@@ -99,6 +99,8 @@ npm run benefits:seed-demo  # [데모] 혜택 정책 (화면 확인용)
 npm run benefits:sync         # 혜택 정책 수집 (온통청년 등)
 npm run finance:seed-demo   # [데모] 주거·자금 제도 (화면 확인용)
 npm run finance:sync        # 주거·자금 수집 (curated, ontong-finance)
+npm run living:sync         # 이사·생활 curated 수집
+npm run living:seed-demo      # [데모] 생활 안내
 npm run dev                 # http://localhost:3000
 ```
 

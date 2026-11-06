@@ -8,6 +8,8 @@ import 'package:everything_about_youth/features/benefits/domain/benefit_meta.dar
 import 'package:everything_about_youth/features/benefits/domain/benefit_program.dart';
 import 'package:everything_about_youth/features/finance/domain/finance_meta.dart';
 import 'package:everything_about_youth/features/finance/domain/finance_scheme.dart';
+import 'package:everything_about_youth/features/living/domain/living_meta.dart';
+import 'package:everything_about_youth/features/living/domain/living_guide.dart';
 import 'package:everything_about_youth/features/housing/domain/housing_meta.dart';
 import 'package:everything_about_youth/features/housing/domain/notice.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -81,6 +83,27 @@ void main() {
     final json = _readContract('finance-meta.json');
     final meta = FinanceMeta.fromJson(json);
     expect(meta.categories, isNotEmpty);
+    expect(meta.sidos, isNotEmpty);
+  });
+
+  test('living-guide-list.json 을 GuidePage 로 파싱한다', () {
+    final json = _readContract('living-guide-list.json');
+    final page = GuidePage.fromJson(json);
+    expect(page.items, isNotEmpty);
+    expect(page.today, isNotEmpty);
+  });
+
+  test('living-guide-detail.json 을 GuideDetail 로 파싱한다', () {
+    final json = _readContract('living-guide-detail.json');
+    final detail = GuideDetail.fromJson(json);
+    expect(detail.summary.id, isNotEmpty);
+    expect(detail.checklistSteps, isNotEmpty);
+  });
+
+  test('living-meta.json 을 LivingMeta 로 파싱한다', () {
+    final json = _readContract('living-meta.json');
+    final meta = LivingMeta.fromJson(json);
+    expect(meta.procedureTypes, isNotEmpty);
     expect(meta.sidos, isNotEmpty);
   });
 

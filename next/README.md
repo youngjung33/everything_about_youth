@@ -1,6 +1,6 @@
 # 청년의 모든 것 (everything_about_youth)
 
-한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 사이트. **API·앱이 동작하는 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)·청년 주거·자금(`finance`)** 입니다. `finance` 는 **기능 플래그 기본 꺼짐**. `jobs`·`living` 은 `features/registry.ts` 에만 등록된 **예정** 섹션입니다(루트 [README.md](../README.md) 로드맵).
+한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 사이트. **API·앱이 동작하는 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)·청년 주거·자금(`finance`)·이사·생활(`living`)** 입니다. `finance` 는 **기능 플래그 기본 꺼짐**, `living` 은 **기본 켜짐**(1차: curated + `checklistSteps`, 내 조건 판정 없음). `jobs` 는 `features/registry.ts` 에만 등록된 **예정** 섹션입니다(루트 [README.md](../README.md) 로드맵).
 
 - Next.js 16 (App Router) + TypeScript
 - 클린 아키텍처 + **섹션(feature) 단위 폴더 구조**
@@ -93,6 +93,9 @@ DB 마이그레이션은 앱/스크립트 시작 시 자동 적용됩니다(`npm
 | `npm run finance:sync -- --list` | 주거·자금 수집 소스 상태 |
 | `npm run finance:sync` | `curated`·`ontong-finance` 등 사용 가능 소스 수집 |
 | `npm run finance:seed-demo` / `-- --clear` | `[데모]` 주거·자금 제도 입력 / 삭제 |
+| `npm run living:sync -- --list` | 이사·생활 수집 소스 상태 (`curated`) |
+| `npm run living:sync` | curated catalog 수집 |
+| `npm run living:seed-demo` / `-- --clear` | `[데모]` 생활 안내 입력 / 삭제 |
 | `npm run typecheck` · `npm run lint` · `npm test` | 검증 |
 | `npm run db:generate` | 스키마 변경 후 마이그레이션 SQL 생성 |
 
@@ -324,6 +327,17 @@ benefits DB 의 `finance` **분류 필터**와 **별도 SQLite 테이블**(`fina
 
 - **제도 유형(`productTypeId`)**: `jeonse_loan`, `lease_deposit`, `housing_savings`, `guarantee`, `tax_benefit`, `other` — meta·필터·자격 규칙에 사용.
 - **자격 판정**: 제도 유형별 **참고용** 규칙 (`domain/eligibility/`). housing/benefits 와 같이 `standards` 는 meta 로 내려줍니다.
+
+## 이사·생활 섹션
+
+전입·임대차·공과금 등 **절차 안내**를 `living_guides` SQLite 에 모읍니다. Flutter `/living`, API `/api/v1/living/guides/*`, 관리 `/living/admin/sync`. 상세 DTO 에 **`checklistSteps[]`** (title, summary, url). **1차 sync:** repo **`curated`** catalog (6건) + `npm run living:seed-demo`. 기능 플래그 `living` 은 **기본 켜짐**. **1차에는 내 조건 판정 없음** — 목록·상세 `eligibility` 는 항상 `null`, meta 에 `standards`/`verdicts` 없음.
+
+| 소스 | 1차 |
+| --- | --- |
+| `curated` | `npm run living:sync -- --source=curated` |
+| 데모 | `npm run living:seed-demo` (sync 아님) |
+
+환경: `LIVING_SYNC_SOURCES`, `LIVING_SYNC_INTERVAL_MINUTES` (0 또는 30+). `db:migrate` 후 `0007_living_guides` 적용.
 
 ## JSON API (Flutter 앱용)
 

@@ -239,6 +239,43 @@ void main() {
     expect(File('lib/features/finance/finance_container.dart').existsSync(), isTrue);
   });
 
+  test('living: presentation 은 data 를 import 하지 않는다', () {
+    final bad = deps.where(
+      (d) =>
+          d.from.startsWith('features/living/presentation/') &&
+          d.to.startsWith('features/living/data/'),
+    );
+    expect(bad, isEmpty, reason: '\n${_describe(bad)}');
+  });
+
+  test('living: data 구현 import 는 living_container 와 data 레이어만', () {
+    final bad = deps.where((d) {
+      if (!d.to.startsWith('features/living/data/')) return false;
+      if (d.from.startsWith('features/living/data/')) return false;
+      if (d.from == 'features/living/living_container.dart') return false;
+      return d.from.startsWith('features/living/');
+    });
+    expect(bad, isEmpty, reason: '\n${_describe(bad)}');
+  });
+
+  test('living: presentation/providers 는 living_container 만 조립한다', () {
+    final file = File('lib/features/living/presentation/providers.dart');
+    final source = file.readAsStringSync();
+    expect(source, isNot(contains('features/living/data/')));
+    expect(source, contains('living_container.dart'));
+  });
+
+  test('living: living_module 은 data·container 를 import 하지 않는다 (앱 어댑터만)', () {
+    final file = File('lib/features/living/living_module.dart');
+    final source = file.readAsStringSync();
+    expect(source, isNot(contains('features/living/data/')));
+    expect(source, isNot(contains('living_container.dart')));
+  });
+
+  test('living: composition root 파일이 존재한다', () {
+    expect(File('lib/features/living/living_container.dart').existsSync(), isTrue);
+  });
+
   test('서비스의 유일한 접점은 <id>_module.dart 이다 (바깥은 서비스 안쪽 파일을 import 하지 않는다)', () {
     final bad = deps.where((d) {
       final target = _featureOf(d.to);

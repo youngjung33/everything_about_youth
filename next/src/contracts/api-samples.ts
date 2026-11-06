@@ -31,6 +31,16 @@ import {
   type SchemeDetailDto,
   type SchemeListDto,
 } from "@/features/finance/presentation/api/dto";
+import {
+  buildLivingMeta,
+  toGuideDetailDto,
+  toGuideListDto,
+  type LivingMetaDto,
+  type GuideDetailDto,
+  type GuideListDto,
+} from "@/features/living/presentation/api/dto";
+import { createGuide } from "@/features/living/domain/identity";
+import type { LivingGuideDraft } from "@/features/living/domain/guide";
 import { createProgram } from "@/features/benefits/domain/identity";
 import { createScheme } from "@/features/finance/domain/identity";
 import type { BenefitProgramDraft } from "@/features/benefits/domain/program";
@@ -231,4 +241,59 @@ export function contractSchemeDetailDto(): SchemeDetailDto {
 
 export function contractFinanceMetaDto(): FinanceMetaDto {
   return buildFinanceMeta("2026-10-12T01:00:00.000Z");
+}
+
+export function contractGuideDraft(): LivingGuideDraft {
+  return {
+    title: "전입신고 안내",
+    organization: "행정안전부",
+    procedureTypeId: "move_in",
+    tags: ["전입", "주민센터"],
+    regions: [{ sido: "세종", sigungu: "세종시" }],
+    applicationStart: "2026-10-01",
+    applicationEnd: "2026-10-20",
+    announcementDate: "2026-09-25",
+    summary: "새 주소로 이사한 뒤 14일 이내 전입신고",
+    checklistSteps: [
+      { order: 1, title: "임대차계약서", summary: "확정일자가 있는 계약서", url: null },
+      { order: 2, title: "주민센터·정부24", summary: "온라인 또는 방문 신고", url: "https://example.com/move-in" },
+    ],
+    url: "https://example.com/l1",
+    sources: [
+      {
+        source: "curated",
+        externalId: "curated-move-in",
+        url: "https://example.com/demo/l1",
+        raw: { id: 1 },
+        fetchedAt: "2026-10-11T00:00:00.000Z",
+      },
+    ],
+  };
+}
+
+function contractGuide() {
+  return createGuide(contractGuideDraft());
+}
+
+export function contractGuideListDto(): GuideListDto {
+  const guide = contractGuide();
+  return toGuideListDto(
+    {
+      items: [{ program: guide, status: "open", eligibility: null }],
+      total: 1,
+      page: 1,
+      pageSize: 20,
+      totalPages: 1,
+    },
+    CONTRACT_TODAY,
+  );
+}
+
+export function contractGuideDetailDto(): GuideDetailDto {
+  const guide = contractGuide();
+  return toGuideDetailDto({ program: guide, status: "open", eligibility: null }, CONTRACT_TODAY);
+}
+
+export function contractLivingMetaDto(): LivingMetaDto {
+  return buildLivingMeta("2026-10-12T01:00:00.000Z");
 }

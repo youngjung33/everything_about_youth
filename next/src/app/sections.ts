@@ -1,6 +1,7 @@
 import { BENEFITS_BASE } from "@/features/benefits/presentation/routes";
 import { FINANCE_BASE } from "@/features/finance/presentation/routes";
 import { HOUSING_BASE } from "@/features/housing/presentation/routes";
+import { LIVING_BASE } from "@/features/living/presentation/routes";
 
 export interface Section {
   id: string;
@@ -39,7 +40,7 @@ export const SECTIONS: Section[] = [
   {
     id: "living",
     title: "이사·생활",
-    description: "(예정) 전입신고·확정일자 등 절차 체크리스트와 공식 안내 링크.",
-    href: "/",
+    description: "전입신고·확정일자 등 절차 체크리스트와 공식 안내(관리: 수집 현황).",
+    href: LIVING_BASE,
   },
 ];

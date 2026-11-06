@@ -10,12 +10,16 @@ import { SyncScheduler as FinanceSyncScheduler } from "@/features/finance/applic
 import { FINANCE_FEATURE_ID } from "@/features/finance/feature";
 import { getFinanceContainer } from "@/features/finance/finance-container";
 
+import { SyncScheduler as LivingSyncScheduler } from "@/features/living/application/sync-scheduler";
+import { LIVING_FEATURE_ID } from "@/features/living/feature";
+import { getLivingContainer } from "@/features/living/living-container";
+
 /** 서버가 뜬 뒤 첫 수집까지 기다리는 시간. 시작 직후의 요청을 먼저 처리하게 한다. */
 const STARTUP_DELAY_MS = 60_000;
 
 const globalKey = Symbol.for("everything_about_youth.background-jobs");
 type GlobalWithJobs = typeof globalThis & {
-  [globalKey]?: { housingSync?: SyncScheduler; benefitsSync?: BenefitsSyncScheduler; financeSync?: FinanceSyncScheduler };
+  [globalKey]?: { housingSync?: SyncScheduler; benefitsSync?: BenefitsSyncScheduler; financeSync?: FinanceSyncScheduler; livingSync?: LivingSyncScheduler };
 };
 
 /**
@@ -105,6 +109,33 @@ export async function startBackgroundJobs(): Promise<void> {
       jobs.financeSync = scheduler;
       await scheduler.start();
       finance.logger.info(`[sync-scheduler] 청년 주거·자금 자동 수집을 시작합니다. (${minutes}분마다)`);
+    }
+  }
+
+  if (!jobs.livingSync) {
+    const living = getLivingContainer();
+    const minutes = living.config.syncIntervalMinutes;
+    if (minutes > 0) {
+      const scheduler = new LivingSyncScheduler({
+        intervalMs: minutes * 60_000,
+        startupDelayMs: STARTUP_DELAY_MS,
+        lastSuccessAt: async () => {
+          const iso = await living.syncRuns.lastSuccessAt();
+          return iso ? new Date(iso) : null;
+        },
+        isEnabled: () => getFeatureFlags().isEnabled(LIVING_FEATURE_ID),
+        run: async () => {
+          const results = await living.syncGuides.execute();
+          const failed = results.filter((r) => r.status === "failed").length;
+          living.logger.info(`[sync-scheduler] 이사·생활 자동 수집 끝: 소스 ${results.length}개 중 실패 ${failed}개`);
+        },
+        now: () => living.clock.now(),
+        logger: living.logger,
+        timers: schedulerTimers,
+      });
+      jobs.livingSync = scheduler;
+      await scheduler.start();
+      living.logger.info(`[sync-scheduler] 이사·생활 자동 수집을 시작합니다. (${minutes}분마다)`);
     }
   }
 }
