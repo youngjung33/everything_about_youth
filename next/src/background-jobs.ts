@@ -14,12 +14,22 @@ import { SyncScheduler as LivingSyncScheduler } from "@/features/living/applicat
 import { LIVING_FEATURE_ID } from "@/features/living/feature";
 import { getLivingContainer } from "@/features/living/living-container";
 
+import { SyncScheduler as JobsSyncScheduler } from "@/features/jobs/application/sync-scheduler";
+import { JOBS_FEATURE_ID } from "@/features/jobs/feature";
+import { getJobsContainer } from "@/features/jobs/jobs-container";
+
 /** 서버가 뜬 뒤 첫 수집까지 기다리는 시간. 시작 직후의 요청을 먼저 처리하게 한다. */
 const STARTUP_DELAY_MS = 60_000;
 
 const globalKey = Symbol.for("everything_about_youth.background-jobs");
 type GlobalWithJobs = typeof globalThis & {
-  [globalKey]?: { housingSync?: SyncScheduler; benefitsSync?: BenefitsSyncScheduler; financeSync?: FinanceSyncScheduler; livingSync?: LivingSyncScheduler };
+  [globalKey]?: {
+    housingSync?: SyncScheduler;
+    benefitsSync?: BenefitsSyncScheduler;
+    financeSync?: FinanceSyncScheduler;
+    livingSync?: LivingSyncScheduler;
+    jobsSync?: JobsSyncScheduler;
+  };
 };
 
 /**
@@ -109,6 +119,33 @@ export async function startBackgroundJobs(): Promise<void> {
       jobs.financeSync = scheduler;
       await scheduler.start();
       finance.logger.info(`[sync-scheduler] 청년 주거·자금 자동 수집을 시작합니다. (${minutes}분마다)`);
+    }
+  }
+
+  if (!jobs.jobsSync) {
+    const jobSection = getJobsContainer();
+    const jobMinutes = jobSection.config.syncIntervalMinutes;
+    if (jobMinutes > 0) {
+      const scheduler = new JobsSyncScheduler({
+        intervalMs: jobMinutes * 60_000,
+        startupDelayMs: STARTUP_DELAY_MS,
+        lastSuccessAt: async () => {
+          const iso = await jobSection.syncRuns.lastSuccessAt();
+          return iso ? new Date(iso) : null;
+        },
+        isEnabled: () => getFeatureFlags().isEnabled(JOBS_FEATURE_ID),
+        run: async () => {
+          const results = await jobSection.syncPostings.execute();
+          const failed = results.filter((r) => r.status === "failed").length;
+          jobSection.logger.info(`[sync-scheduler] 청년·공공 일자리 자동 수집 끝: 소스 ${results.length}개 중 실패 ${failed}개`);
+        },
+        now: () => jobSection.clock.now(),
+        logger: jobSection.logger,
+        timers: schedulerTimers,
+      });
+      jobs.jobsSync = scheduler;
+      await scheduler.start();
+      jobSection.logger.info(`[sync-scheduler] 청년·공공 일자리 자동 수집을 시작합니다. (${jobMinutes}분마다)`);
     }
   }
 

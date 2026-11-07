@@ -1,0 +1,40 @@
+{
+  "id": "j_c94yco4gnh",
+  "title": "공기업 신입 NCS 채용",
+  "organization": "한국수자원공사",
+  "hireTypeId": "public_corp",
+  "categoryLabel": "공기업·준정부",
+  "tags": [
+    "신입",
+    "NCS"
+  ],
+  "status": "open",
+  "statusLabel": "모집중",
+  "dday": "D-8",
+  "regions": [
+    {
+      "sido": "대전",
+      "sigungu": "대전시"
+    }
+  ],
+  "regionLabel": "대전 대전시",
+  "applicationStart": "2026-10-01",
+  "applicationEnd": "2026-10-20",
+  "announcementDate": "2026-09-25",
+  "summary": "신입·NCS 전형 채용 안내",
+  "url": "https://example.com/j1",
+  "sourceLabels": [
+    "데모 데이터"
+  ],
+  "eligibility": null,
+  "googleCalendarUrl": "https://calendar.google.com/calendar/render?action=TEMPLATE&text=%EC%8B%A0%EC%B2%AD+%EB%A7%88%EA%B0%90+%C2%B7+%EA%B3%B5%EA%B8%B0%EC%97%85+%EC%8B%A0%EC%9E%85+NCS+%EC%B1%84%EC%9A%A9&dates=20261020%2F20261021&details=%EC%8B%A0%EC%9E%85%C2%B7NCS+%EC%A0%84%ED%98%95+%EC%B1%84%EC%9A%A9+%EC%95%88%EB%82%B4%0A%0A%EA%B2%80%EC%A6%9D%EC%9A%A9+%EB%A7%81%ED%81%AC%3A+https%3A%2F%2Fexample.com%2Fj1",
+  "sources": [
+    {
+      "source": "demo",
+      "sourceLabel": "데모 데이터",
+      "externalId": "demo-j1",
+      "url": "https://example.com/demo/j1",
+      "fetchedAt": "2026-10-11T00:00:00.000Z"
+    }
+  ]
+}

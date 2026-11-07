@@ -8,6 +8,8 @@ import 'package:everything_about_youth/features/benefits/domain/benefit_meta.dar
 import 'package:everything_about_youth/features/benefits/domain/benefit_program.dart';
 import 'package:everything_about_youth/features/finance/domain/finance_meta.dart';
 import 'package:everything_about_youth/features/finance/domain/finance_scheme.dart';
+import 'package:everything_about_youth/features/jobs/domain/jobs_meta.dart';
+import 'package:everything_about_youth/features/jobs/domain/job_posting.dart';
 import 'package:everything_about_youth/features/living/domain/living_meta.dart';
 import 'package:everything_about_youth/features/living/domain/living_guide.dart';
 import 'package:everything_about_youth/features/housing/domain/housing_meta.dart';
@@ -82,6 +84,27 @@ void main() {
   test('finance-meta.json 을 FinanceMeta 로 파싱한다', () {
     final json = _readContract('finance-meta.json');
     final meta = FinanceMeta.fromJson(json);
+    expect(meta.categories, isNotEmpty);
+    expect(meta.sidos, isNotEmpty);
+  });
+
+  test('jobs-posting-list.json 을 PostingPage 로 파싱한다', () {
+    final json = _readContract('jobs-posting-list.json');
+    final page = PostingPage.fromJson(json);
+    expect(page.items, isNotEmpty);
+    expect(page.today, isNotEmpty);
+  });
+
+  test('jobs-posting-detail.json 을 PostingDetail 로 파싱한다', () {
+    final json = _readContract('jobs-posting-detail.json');
+    final detail = PostingDetail.fromJson(json);
+    expect(detail.summary.id, isNotEmpty);
+    expect(detail.sources, isNotEmpty);
+  });
+
+  test('jobs-meta.json 을 JobsMeta 로 파싱한다', () {
+    final json = _readContract('jobs-meta.json');
+    final meta = JobsMeta.fromJson(json);
     expect(meta.categories, isNotEmpty);
     expect(meta.sidos, isNotEmpty);
   });

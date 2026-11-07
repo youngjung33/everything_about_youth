@@ -31,6 +31,16 @@ import {
   type SchemeDetailDto,
   type SchemeListDto,
 } from "@/features/finance/presentation/api/dto";
+import { createJobPosting } from "@/features/jobs/domain/identity";
+import type { JobPostingDraft, JobPosting } from "@/features/jobs/domain/job-posting";
+import {
+  buildFinanceMeta as buildJobsMeta,
+  toSchemeDetailDto as toPostingDetailDto,
+  toSchemeListDto as toPostingListDto,
+  type FinanceMetaDto as JobsMetaDto,
+  type SchemeDetailDto as PostingDetailDto,
+  type SchemeListDto as PostingListDto,
+} from "@/features/jobs/presentation/api/dto";
 import {
   buildLivingMeta,
   toGuideDetailDto,
@@ -241,6 +251,57 @@ export function contractSchemeDetailDto(): SchemeDetailDto {
 
 export function contractFinanceMetaDto(): FinanceMetaDto {
   return buildFinanceMeta("2026-10-12T01:00:00.000Z");
+}
+
+export function contractPostingDraft(): JobPostingDraft {
+  return {
+    title: "공기업 신입 NCS 채용",
+    organization: "한국수자원공사",
+    hireTypeId: "public_corp",
+    tags: ["신입", "NCS"],
+    regions: [{ sido: "대전", sigungu: "대전시" }],
+    applicationStart: "2026-10-01",
+    applicationEnd: "2026-10-20",
+    announcementDate: "2026-09-25",
+    summary: "신입·NCS 전형 채용 안내",
+    url: "https://example.com/j1",
+    sources: [
+      {
+        source: "demo",
+        externalId: "demo-j1",
+        url: "https://example.com/demo/j1",
+        raw: { id: 1 },
+        fetchedAt: "2026-10-11T00:00:00.000Z",
+      },
+    ],
+  };
+}
+
+function contractPosting(): JobPosting {
+  return createJobPosting(contractPostingDraft());
+}
+
+export function contractPostingListDto(): PostingListDto {
+  const posting = contractPosting();
+  return toPostingListDto(
+    {
+      items: [{ program: posting, status: "open", eligibility: null }],
+      total: 1,
+      page: 1,
+      pageSize: 20,
+      totalPages: 1,
+    },
+    CONTRACT_TODAY,
+  );
+}
+
+export function contractPostingDetailDto(): PostingDetailDto {
+  const posting = contractPosting();
+  return toPostingDetailDto({ program: posting, status: "open", eligibility: null }, CONTRACT_TODAY);
+}
+
+export function contractJobsMetaDto(): JobsMetaDto {
+  return buildJobsMeta("2026-10-12T01:00:00.000Z");
 }
 
 export function contractGuideDraft(): LivingGuideDraft {

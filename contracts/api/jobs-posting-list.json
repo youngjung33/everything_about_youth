@@ -1,0 +1,39 @@
+{
+  "items": [
+    {
+      "id": "j_c94yco4gnh",
+      "title": "공기업 신입 NCS 채용",
+      "organization": "한국수자원공사",
+      "hireTypeId": "public_corp",
+      "categoryLabel": "공기업·준정부",
+      "tags": [
+        "신입",
+        "NCS"
+      ],
+      "status": "open",
+      "statusLabel": "모집중",
+      "dday": "D-8",
+      "regions": [
+        {
+          "sido": "대전",
+          "sigungu": "대전시"
+        }
+      ],
+      "regionLabel": "대전 대전시",
+      "applicationStart": "2026-10-01",
+      "applicationEnd": "2026-10-20",
+      "announcementDate": "2026-09-25",
+      "summary": "신입·NCS 전형 채용 안내",
+      "url": "https://example.com/j1",
+      "sourceLabels": [
+        "데모 데이터"
+      ],
+      "eligibility": null
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "pageSize": 20,
+  "totalPages": 1,
+  "today": "2026-10-12"
+}

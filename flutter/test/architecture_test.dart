@@ -239,6 +239,43 @@ void main() {
     expect(File('lib/features/finance/finance_container.dart').existsSync(), isTrue);
   });
 
+  test('jobs: presentation 은 data 를 import 하지 않는다', () {
+    final bad = deps.where(
+      (d) =>
+          d.from.startsWith('features/jobs/presentation/') &&
+          d.to.startsWith('features/jobs/data/'),
+    );
+    expect(bad, isEmpty, reason: '\n${_describe(bad)}');
+  });
+
+  test('jobs: data 구현 import 는 jobs_container 와 data 레이어만', () {
+    final bad = deps.where((d) {
+      if (!d.to.startsWith('features/jobs/data/')) return false;
+      if (d.from.startsWith('features/jobs/data/')) return false;
+      if (d.from == 'features/jobs/jobs_container.dart') return false;
+      return d.from.startsWith('features/jobs/');
+    });
+    expect(bad, isEmpty, reason: '\n${_describe(bad)}');
+  });
+
+  test('jobs: presentation/providers 는 jobs_container 만 조립한다', () {
+    final file = File('lib/features/jobs/presentation/providers.dart');
+    final source = file.readAsStringSync();
+    expect(source, isNot(contains('features/jobs/data/')));
+    expect(source, contains('jobs_container.dart'));
+  });
+
+  test('jobs: jobs_module 은 data·container 를 import 하지 않는다 (앱 어댑터만)', () {
+    final file = File('lib/features/jobs/jobs_module.dart');
+    final source = file.readAsStringSync();
+    expect(source, isNot(contains('features/jobs/data/')));
+    expect(source, isNot(contains('jobs_container.dart')));
+  });
+
+  test('jobs: composition root 파일이 존재한다', () {
+    expect(File('lib/features/jobs/jobs_container.dart').existsSync(), isTrue);
+  });
+
   test('living: presentation 은 data 를 import 하지 않는다', () {
     final bad = deps.where(
       (d) =>

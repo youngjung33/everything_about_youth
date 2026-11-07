@@ -1,6 +1,7 @@
 import { BENEFITS_BASE } from "@/features/benefits/presentation/routes";
 import { FINANCE_BASE } from "@/features/finance/presentation/routes";
 import { HOUSING_BASE } from "@/features/housing/presentation/routes";
+import { JOBS_BASE } from "@/features/jobs/presentation/routes";
 import { LIVING_BASE } from "@/features/living/presentation/routes";
 
 export interface Section {
@@ -34,8 +35,8 @@ export const SECTIONS: Section[] = [
   {
     id: "jobs",
     title: "청년·공공 일자리",
-    description: "(예정) 청년·신입·공공 채용 공고를 모아 봅니다.",
-    href: "/",
+    description: "청년·신입·공공 채용 공고를 모아 보고, 내 조건·관심·일정으로 추립니다.",
+    href: JOBS_BASE,
   },
   {
     id: "living",

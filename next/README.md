@@ -1,6 +1,6 @@
 # 청년의 모든 것 (everything_about_youth)
 
-한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 사이트. **API·앱이 동작하는 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)·청년 주거·자금(`finance`)·이사·생활(`living`)** 입니다. `finance` 는 **기능 플래그 기본 꺼짐**, `living` 은 **기본 켜짐**(1차: curated + `checklistSteps`, 내 조건 판정 없음). `jobs` 는 `features/registry.ts` 에만 등록된 **예정** 섹션입니다(루트 [README.md](../README.md) 로드맵).
+한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 사이트. **API·앱이 동작하는 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)·청년 주거·자금(`finance`)·청년·공공 일자리(`jobs`)·이사·생활(`living`)** 입니다. `finance` 는 **기능 플래그 기본 꺼짐**, `jobs`·`living` 은 **기본 켜짐**. `living` 1차는 curated + `checklistSteps`(내 조건 판정 없음), `jobs` 1차는 curated + `jobs:seed-demo`(finance 와 동형 UX).
 
 - Next.js 16 (App Router) + TypeScript
 - 클린 아키텍처 + **섹션(feature) 단위 폴더 구조**
@@ -43,20 +43,26 @@ src/
     finance/                 ← 청년 주거·자금 섹션 (benefits 와 동형, 별도 DB)
       finance-container.ts
       domain/ · application/ · infrastructure/ · presentation/
+    jobs/                    ← 청년·공공 일자리 (finance 와 동형, 별도 DB)
+      jobs-container.ts
+      domain/ · application/ · infrastructure/ · presentation/
   app/                       ← Next.js 라우트 (조립만)
     page.tsx                   섹션 목록 홈
     housing/                   /housing, /housing/notices/[id], /housing/admin/sync
     benefits/                  /benefits/admin/sync (앱·API는 /api/v1/benefits)
     finance/                   /finance/admin/sync (앱·API는 /api/v1/finance)
+    jobs/                      /jobs/admin/sync (앱·API는 /api/v1/jobs)
     api/v1/housing/sync/       수동 수집 API
     api/v1/benefits/           혜택 JSON API
     api/v1/finance/            주거·자금 JSON API
+    api/v1/jobs/               일자리 JSON API
     sections.ts                섹션 등록부 (홈/헤더 메뉴)
 scripts/
   migrate.ts, load-env.ts      공통
   housing/                     임대주택 전용 CLI (sync, seed-demo)
   benefits/                    청년 혜택 CLI (sync, seed-demo)
   finance/                     청년 주거·자금 CLI (sync, seed-demo)
+  jobs/                        일자리 CLI (sync, seed-demo)
 drizzle/                     마이그레이션 (모든 섹션이 하나의 이력으로 관리)
 ```
 
@@ -93,6 +99,9 @@ DB 마이그레이션은 앱/스크립트 시작 시 자동 적용됩니다(`npm
 | `npm run finance:sync -- --list` | 주거·자금 수집 소스 상태 |
 | `npm run finance:sync` | `curated`·`ontong-finance` 등 사용 가능 소스 수집 |
 | `npm run finance:seed-demo` / `-- --clear` | `[데모]` 주거·자금 제도 입력 / 삭제 |
+| `npm run jobs:sync -- --list` | 일자리 수집 소스 상태 (`curated`) |
+| `npm run jobs:sync` | `curated` catalog 수집 |
+| `npm run jobs:seed-demo` / `-- --clear` | `[데모]` 채용 공고 입력 / 삭제 |
 | `npm run living:sync -- --list` | 이사·생활 수집 소스 상태 (`curated`) |
 | `npm run living:sync` | curated catalog 수집 |
 | `npm run living:seed-demo` / `-- --clear` | `[데모]` 생활 안내 입력 / 삭제 |
@@ -176,6 +185,13 @@ DB 마이그레이션은 앱/스크립트 시작 시 자동 적용됩니다(`npm
 | `FINANCE_SYNC_SOURCES` | 활성 소스 제한 (`curated`, `ontong-finance`). `demo` 는 sync 소스 아님 — `finance:seed-demo` 로만 넣음. 비우면 등록된 소스 전부 |
 | `FINANCE_SYNC_INTERVAL_MINUTES` | 자동 수집 간격(분). `0`(기본)이면 끔. 켜려면 **30 이상**. `finance` 기능이 **켜져 있을 때만** 스케줄러 동작 |
 | (온통) | `ontong-finance` 는 **`BENEFITS_ONTONG_API_KEY` 재사용**. 키가 없으면 해당 소스만 skipped |
+
+청년·공공 일자리
+
+| 변수 | 설명 |
+| --- | --- |
+| `JOBS_SYNC_SOURCES` | 활성 소스 제한 (`curated`). `demo` 는 sync 소스 아님 — `jobs:seed-demo` 로만 넣음. 비우면 등록된 소스 전부 |
+| `JOBS_SYNC_INTERVAL_MINUTES` | 자동 수집 간격(분). `0`(기본)이면 끔. 켜려면 **30 이상**. `jobs` 기능이 **켜져 있을 때만** 스케줄러 동작 |
 
 온통청년 OPEN API (benefits·finance `ontong-finance`):
 
@@ -327,6 +343,36 @@ benefits DB 의 `finance` **분류 필터**와 **별도 SQLite 테이블**(`fina
 
 - **제도 유형(`productTypeId`)**: `jeonse_loan`, `lease_deposit`, `housing_savings`, `guarantee`, `tax_benefit`, `other` — meta·필터·자격 규칙에 사용.
 - **자격 판정**: 제도 유형별 **참고용** 규칙 (`domain/eligibility/`). housing/benefits 와 같이 `standards` 는 meta 로 내려줍니다.
+
+## 청년·공공 일자리 섹션
+
+청년·신입·공공기관 채용 **안내·대표 공고 허브**를 `job_postings` SQLite 에 모아, finance 와 **동형** UX(목록·필터·내 조건·관심·일정·로컬 알림)를 제공합니다. Flutter `/jobs`, API `/api/v1/jobs/*`, 관리 `/jobs/admin/sync`. **공개 Next 목록 페이지는 없습니다.** 기능 플래그 `jobs` 는 **기본 켜짐**.
+
+benefits 의 **온통 일자리 분류 정책**은 `jobs` 로 옮기지 않습니다. jobs id 는 `jobs:…` prefix 로 다른 섹션 id 와 분리합니다.
+
+### 데이터 출처와 검증 상태
+
+| 소스 | 방식 | 1차 sync |
+| --- | --- | --- |
+| `curated` | repo catalog (`infrastructure/sources/curated/catalog.ts`, 6~10건) | **등록됨** · 키 불필요 · `npm run jobs:sync -- --source=curated` |
+| 데모 | `npm run jobs:seed-demo` | sync 아님 · 화면 확인용 `[데모]` |
+
+`container.ts` 의 `allSources`: **`curated`**. `JOBS_SYNC_SOURCES` 가 비어 있으면 등록 소스를 시도합니다.
+
+### 1차 수집 vs 2차 후보
+
+| 제안 id | 출처 | 비고 |
+| --- | --- | --- |
+| `work24-openapi` | 고용24 OPEN API | 키·약관·필드 매핑 검증 후 sync 소스 |
+| `alio-public` | 알리오 공공기관 채용 | — |
+| `work24-youth-crawl` | work24 청년 메뉴 | benefits P3 표와 동일, **크롤은 최후** |
+
+`npm run jobs:sync -- --list` 로 확인합니다. 매핑 변경 후 DB가 어긋나면 `data/app.db` 삭제 → `db:migrate` → 다시 sync.
+
+### 핵심 동작
+
+- **채용 유형(`hireTypeId`)**: `public_official`, `public_corp`, `youth`, `new_grad`, `intern`, `other` — meta·필터·자격 규칙에 사용.
+- **자격 판정**: 채용 유형·나이·학력·지역 기반 **참고용** 규칙 (`domain/eligibility/`).
 
 ## 이사·생활 섹션
 

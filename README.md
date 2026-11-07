@@ -1,6 +1,6 @@
 # 청년의 모든 것 (everything_about_youth)
 
-한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 서비스. **정보 우선:** 앱·API 본문(수집·판정·안내)을 먼저 보여 주고, 공식 URL 은 더 보기·검증용입니다. **지금 앱에 구현된 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)·청년 주거·자금(`finance`)·이사·생활(`living`)** 입니다. `finance` 는 **기능 플래그가 기본 꺼짐**이라 `GET /features` 로 켜기 전까지 홈에서 숨깁니다. `living` 은 **플래그 기본 켜짐**이며 1차는 **curated 수집 + checklistSteps** (내 조건 판정 없음) 입니다. 아래 로드맵의 `jobs` 등은 플래그·문서에만 등록된 **예정** 항목입니다.
+한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 서비스. **정보 우선:** 앱·API 본문(수집·판정·안내)을 먼저 보여 주고, 공식 URL 은 더 보기·검증용입니다. **지금 앱에 구현된 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)·청년 주거·자금(`finance`)·청년·공공 일자리(`jobs`)·이사·생활(`living`)** 입니다. `finance` 는 **기능 플래그가 기본 꺼짐**이라 `GET /features` 로 켜기 전까지 홈에서 숨깁니다. `jobs`·`living` 은 **플래그 기본 켜짐**입니다. `living` 1차는 **curated + checklistSteps**(내 조건 판정 없음), `jobs` 는 finance 와 **동형 UX**(내 조건·관심·일정·로컬 알림)입니다.
 
 ### 섹션 로드맵
 
@@ -9,7 +9,7 @@
 | `housing` | 임대주택 | **1차 구현** | LH·SH·마이홈 등 공고 통합, 내 조건 자격 판정, 관심 공고·일정·로컬 알림 |
 | `benefits` | 청년 혜택·정책 | **1차 구현** | 온통청년 OPEN API로 전국 청년정책 수집, 내 조건 판정, 관심·일정·로컬 알림 |
 | `finance` | 청년 주거·자금 | **1차 구현** | 큐레이션 catalog + 온통(금융·세금) · 기능 플래그 기본 꺼짐 |
-| `jobs` | 청년·공공 일자리 | 예정 | 청년·신입·공공 채용 공고 |
+| `jobs` | 청년·공공 일자리 | **1차 구현** | curated catalog + `jobs:seed-demo` · 기능 플래그 기본 켜짐 |
 | `living` | 이사·생활 | **1차 구현** | curated + `living:seed-demo`, 상세 `checklistSteps[]`, 플래그 기본 on |
 
 새 섹션을 만들 때는 `next/src/features/<id>/` + `features/registry.ts`, Flutter `features/<id>/` + `app/feature_modules.dart` 를 같은 `id` 로 추가합니다.
@@ -50,6 +50,14 @@
 - 페이징: `pageIndex`, `display` (최대 100)
 
 [공공데이터포털 «한국고용정보원_온통청년_청년정책»](https://www.data.go.kr/data/15143273/openapi.do) 은 **LINK** 유형입니다. 소개·활용 통계용이고, **실제 호출·키는 youthcenter.go.kr** 입니다. `apis.data.go.kr/.../youthPlcyList` 류 **구 엔드포인트는 동작하지 않으므로 쓰지 않습니다.**
+
+### 청년·공공 일자리(jobs) — finance 와 동형
+
+- **화면:** 목록·상세·필터·내 조건(프로필)·참고 자격·관심·일정·로컬 알림.
+- **수집(1차 sync)**: repo **`curated`** catalog (청년·신입·공공 채용 안내 허브)만. `npm run jobs:sync` · `-- --list` · `-- --source=curated`
+- **수집(개발·데모)**: `npm run jobs:seed-demo` → `[데모]` 공고
+- **2차**: 고용24 OPEN API·알리오 공공기관 채용·work24 청년 메뉴 HTML 등 — [next/README.md](next/README.md#청년공공-일자리-섹션)
+- **앱·API**: Flutter `/jobs`, `/api/v1/jobs/*` (플래그 기본 on). benefits 의 **온통 일자리 정책**은 `jobs` 로 옮기지 않습니다.
 
 ### 청년 주거·자금(finance) — benefits 와 동형
 
@@ -99,6 +107,8 @@ npm run benefits:seed-demo  # [데모] 혜택 정책 (화면 확인용)
 npm run benefits:sync         # 혜택 정책 수집 (온통청년 등)
 npm run finance:seed-demo   # [데모] 주거·자금 제도 (화면 확인용)
 npm run finance:sync        # 주거·자금 수집 (curated, ontong-finance)
+npm run jobs:seed-demo      # [데모] 채용 공고 (화면 확인용)
+npm run jobs:sync           # 일자리 수집 (curated)
 npm run living:sync         # 이사·생활 curated 수집
 npm run living:seed-demo      # [데모] 생활 안내
 npm run dev                 # http://localhost:3000
