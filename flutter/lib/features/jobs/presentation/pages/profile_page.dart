@@ -78,7 +78,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final posting = Theme.of(context).colorPosting;
+    final posting = Theme.of(context).colorScheme;
     final current = _current();
     return AppScaffold(
       appBar: AppTopBar(title: const Text('내 조건')),
@@ -313,7 +313,7 @@ class _IncomeHint extends ConsumerWidget {
     final ratio = standards.urbanWorkerRatioPercent(householdSize: size, monthlyIncomeMan: income);
     if (base == null || ratio == null) return const SizedBox.shrink();
 
-    final posting = Theme.of(context).colorPosting;
+    final posting = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Text(

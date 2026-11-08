@@ -96,7 +96,8 @@ class GuideCard extends StatelessWidget {
               CollectedSummary(
                 summary: guide.summary,
                 maxLines: 2,
-                emptyLabel: ServiceCopy.summaryEmptyLabel,
+                missingText: ServiceCopy.missingSummaryCard,
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               const SizedBox(height: 6),
               Text(

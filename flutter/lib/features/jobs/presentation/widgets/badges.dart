@@ -31,7 +31,7 @@ class Pill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final posting = Theme.of(context).colorPosting;
+    final posting = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: large ? 12 : 8, vertical: large ? 6 : 3),
       decoration: BoxDecoration(

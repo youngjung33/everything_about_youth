@@ -208,7 +208,7 @@ class _Header extends ConsumerWidget {
     final filters = ref.watch(filtersProvider);
     final profile = ref.watch(profileProvider);
     final meta = ref.watch(jobsMetaProvider).value;
-    final posting = Theme.of(context).colorPosting;
+    final posting = Theme.of(context).colorScheme;
     final onlyEligible = filters.verdicts.length == 1 && filters.verdicts.contains('eligible');
 
     return Padding(
@@ -338,7 +338,7 @@ class _Footer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final posting = Theme.of(context).colorPosting;
+    final posting = Theme.of(context).colorScheme;
 
     if (list.items.isEmpty) {
       return Padding(

@@ -1,54 +1,37 @@
 import type { ProcedureTypeId } from "../enums";
-import { YOUTH_MAX_AGE, YOUTH_MIN_AGE } from "./standards";
 
-export interface ProductTypeRule {
+export interface ProcedureTypeRule {
   minAge?: number;
   maxAge?: number;
-  requiresYouth?: boolean;
-  requiresHomeless?: boolean;
   requiresResidenceMatch?: boolean;
-  incomePercent?: number;
   alwaysCheck?: string;
 }
 
-/** 제도 유형별 참고용 자격 기준 */
-export const PRODUCT_TYPE_RULES: Record<ProcedureTypeId, ProductTypeRule> = {
-  jeonse_loan: {
-    minAge: YOUTH_MIN_AGE,
-    maxAge: YOUTH_MAX_AGE,
-    requiresYouth: true,
-    requiresHomeless: true,
-    incomePercent: 100,
-    alwaysCheck: "전세·주택자금 대출은 LTV·DSR·보유주택·연소득 기준이 금융사·상품마다 다릅니다.",
+/** 절차 유형별 참고 안내 (1차 living 은 판정 최소화) */
+export const PROCEDURE_TYPE_RULES: Record<ProcedureTypeId, ProcedureTypeRule> = {
+  move_in: {
+    alwaysCheck: "전입신고는 관할 주민센터·정부24 절차와 필요 서류를 기관 안내에서 확인하세요.",
   },
-  lease_deposit: {
-    minAge: YOUTH_MIN_AGE,
-    maxAge: YOUTH_MAX_AGE,
-    requiresYouth: true,
-    requiresHomeless: true,
-    incomePercent: 100,
-    alwaysCheck: "임대보증금 대출·지원은 임차보증금·소득·무주택 요건을 기관 공식 안내에서 확인하세요.",
+  lease: {
+    alwaysCheck: "확정일자·임대차 계약 순서와 등기부등본 확인이 중요합니다.",
   },
-  housing_savings: {
-    minAge: 19,
-    maxAge: 39,
-    requiresYouth: true,
-    alwaysCheck: "청약·주택저축은 가입 기간·순위·무주택 요건이 다릅니다.",
+  moving: {
+    alwaysCheck: "이사 당일 실측·하자 기록, 열쇠·관리비·주차 등을 계약서와 맞춰 확인하세요.",
   },
-  guarantee: {
-    minAge: YOUTH_MIN_AGE,
-    maxAge: YOUTH_MAX_AGE,
-    requiresYouth: true,
-    alwaysCheck: "보증·보증보험은 보증한도·신용·채무 조건이 있습니다.",
+  utilities: {
+    alwaysCheck: "전기·가스·수도·인터넷 명의 변경·해지 절차는 사업자마다 다릅니다.",
   },
-  tax_benefit: {
-    requiresYouth: false,
-    incomePercent: 120,
-    alwaysCheck: "세금·소득공제는 소득·주택 보유·공제 한도가 다릅니다.",
+  registry: {
+    alwaysCheck: "등기·주민센터 업무는 관할 기관 안내를 따르세요.",
+  },
+  waste: {
+    alwaysCheck: "쓰레기 배출·재활용 규정은 지자체·관리사무소 기준을 확인하세요.",
   },
   other: {
-    alwaysCheck: "제도 유형을 특정할 수 없어 기관 공식 안내 확인이 필요합니다.",
+    alwaysCheck: "절차 유형을 특정할 수 없어 기관 공식 안내 확인이 필요합니다.",
   },
 };
 
-export { YOUTH_MIN_AGE, YOUTH_MAX_AGE };
+// 평가기 호환 별칭
+export const PRODUCT_TYPE_RULES = PROCEDURE_TYPE_RULES;
+export type ProductTypeRule = ProcedureTypeRule;

@@ -11,6 +11,9 @@ export const MAX_SAVED_PROGRAMS = 100;
 
 export type SaveSchemeResult = { status: "saved" } | { status: "already" } | { status: "not_found" } | { status: "limit"; max: number };
 
+/** @deprecated 이름 호환 — `ManageSavedJobPostings` 사용 */
+export type ManageSavedPostings = ManageSavedJobPostings;
+
 export class ManageSavedJobPostings {
   constructor(
     private readonly saved: SavedJobPostingRepository,
@@ -55,7 +58,7 @@ export class ManageSavedJobPostings {
   }
 }
 
-function toItem(scheme: JobPosting, today: string, profile?: ApplicantProfile): PostingListItem {
+function toItem(program: JobPosting, today: string, profile?: ApplicantProfile): PostingListItem {
   return {
     program,
     status: getJobPostingStatus(program, today),

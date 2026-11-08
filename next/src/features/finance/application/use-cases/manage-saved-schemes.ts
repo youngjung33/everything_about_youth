@@ -55,7 +55,7 @@ export class ManageSavedSchemes {
   }
 }
 
-function toItem(scheme: FinanceScheme, today: string, profile?: ApplicantProfile): SchemeListItem {
+function toItem(program: FinanceScheme, today: string, profile?: ApplicantProfile): SchemeListItem {
   return {
     program,
     status: getSchemeStatus(program, today),

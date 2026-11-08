@@ -7,6 +7,7 @@ import { deadlineIcs } from "@/features/jobs/domain/calendar";
 import type { GetJobPostingDetail } from "@/features/jobs/application/use-cases/get-job-posting-detail";
 import type { ManageSavedPostings } from "@/features/jobs/application/use-cases/manage-saved-postings";
 import { DEFAULT_PAGE_SIZE, type SearchJobPostings } from "@/features/jobs/application/use-cases/search-job-postings";
+import type { PostingListItem } from "@/features/jobs/application/use-cases/search-job-postings";
 import { parseSearchParams, type RawSearchParams } from "../search-params";
 import {
   buildFinanceMeta,
@@ -97,7 +98,10 @@ export async function handleListSaved(
   const parsed = parseSearchParams(toRawSearchParams(searchParams));
   const items = await deps.manageSavedPostings.list(userId, parsed.hasProfile ? parsed.profile : undefined);
   const today = todayInKst(deps.clock.now());
-  return { status: 200, body: { items: items.map((i) => toSchemeSummaryDto(i, today)), total: items.length, today } };
+  return {
+    status: 200,
+    body: { items: items.map((i: PostingListItem) => toSchemeSummaryDto(i, today)), total: items.length, today },
+  };
 }
 
 export async function handleSaveScheme(

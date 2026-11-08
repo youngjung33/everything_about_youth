@@ -6,11 +6,13 @@ import '../domain/repositories/saved_posting_reminder_prefs_store.dart';
 class SavedPostingReminderPrefs implements SavedPostingReminderPrefsStore {
   SavedPostingReminderPrefs(this._prefs);
 
-  static const key = 'housing.savedNoticeReminders.enabled';
+  static const key = 'jobs.savedPostingReminders.enabled';
 
   final SharedPreferences _prefs;
 
+  @override
   bool get enabled => _prefs.getBool(key) ?? true;
 
+  @override
   Future<void> setEnabled(bool value) => _prefs.setBool(key, value);
 }

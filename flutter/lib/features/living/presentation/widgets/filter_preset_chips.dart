@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers.dart';
-import '../../domain/finance_filter_presets.dart';
+import '../../domain/living_filter_presets.dart';
 
-/// 청년·신혼·매입임대 빠른 필터.
+/// 이사·전입·임대차 빠른 필터.
 class LivingFilterPresetChips extends ConsumerWidget {
   const LivingFilterPresetChips({super.key});
 

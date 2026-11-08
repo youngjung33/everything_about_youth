@@ -10,7 +10,7 @@ const clock: Clock = { now: () => new Date("2026-10-12T03:00:00Z") };
 const draft = (): JobPostingDraft => ({
   title: "테스트",
   organization: "기관",
-  hireTypeId: "jeonse_loan",
+  hireTypeId: "youth",
   tags: [],
   regions: [{ sido: "서울", sigungu: null }],
   applicationStart: "2026-10-01",

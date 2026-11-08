@@ -11,7 +11,7 @@ const clock: Clock = { now: () => new Date("2026-10-12T03:00:00Z") };
 const draft = (over: Partial<JobPostingDraft> = {}): JobPostingDraft => ({
   title: "공고",
   organization: "기관",
-  hireTypeId: "jeonse_loan",
+  hireTypeId: "youth",
   tags: [],
   regions: [{ sido: "서울", sigungu: null }],
   applicationStart: "2026-10-01",
@@ -109,5 +109,15 @@ describe("ManageSavedJobPostings", () => {
     const uc = new ManageSavedJobPostings(saved, new FakeRepo([scheme]), clock);
     await expect(uc.save("u1", scheme.id)).resolves.toEqual({ status: "saved" });
     expect(await uc.listIds("u1")).toEqual([scheme.id]);
+  });
+
+  it("list: 저장된 공고 요약을 반환한다", async () => {
+    const scheme = createJobPosting(draft());
+    const saved = new MemorySaved();
+    saved.rows = [{ postingId: scheme.id, savedAt: "2026-10-01T00:00:00.000Z" }];
+    const uc = new ManageSavedJobPostings(saved, new FakeRepo([scheme]), clock);
+    const items = await uc.list("u1");
+    expect(items).toHaveLength(1);
+    expect(items[0]!.program.id).toBe(scheme.id);
   });
 });

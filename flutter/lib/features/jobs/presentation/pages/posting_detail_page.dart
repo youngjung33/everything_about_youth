@@ -118,7 +118,7 @@ class _DetailBody extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               ServiceCopy.financeDetailVerificationFooter,
-              style: TextStyle(fontSize: 12, color: Theme.of(context).colorPosting.outline),
+              style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.outline),
             ),
             const SizedBox(height: 24),
             const SizedBox(height: 72),
@@ -158,7 +158,7 @@ class _EligibilityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final posting = Theme.of(context).colorPosting;
+    final posting = Theme.of(context).colorScheme;
     return Card(
       color: posting.surfaceContainerHighest,
       child: Padding(

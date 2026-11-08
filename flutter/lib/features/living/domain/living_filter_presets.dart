@@ -18,18 +18,18 @@ class LivingFilterPreset {
 
 const livingProcedureTypeFilterPresets = <LivingFilterPreset>[
   LivingFilterPreset(
-    id: 'jeonse_loan',
-    label: '전세·대출',
-    procedureTypeIds: {'jeonse_loan'},
+    id: 'move_in',
+    label: '전입·전출',
+    procedureTypeIds: {'move_in'},
   ),
   LivingFilterPreset(
-    id: 'housing_savings',
-    label: '청약·저축',
-    procedureTypeIds: {'housing_savings'},
+    id: 'lease',
+    label: '임대차',
+    procedureTypeIds: {'lease'},
   ),
   LivingFilterPreset(
-    id: 'tax_benefit',
-    label: '세금·공제',
-    procedureTypeIds: {'tax_benefit'},
+    id: 'moving',
+    label: '이사',
+    procedureTypeIds: {'moving'},
   ),
 ];

@@ -15,7 +15,7 @@ const make = (over: Partial<FinanceSchemeDraft> = {}) => {
   return createScheme({
     title: `정책 ${seq}`,
     organization: "서울시",
-    productTypeId: "housing",
+    productTypeId: "jeonse_loan",
     tags: ["월세"],
     regions: [{ sido: "서울", sigungu: "마포구" }],
     applicationStart: "2026-10-01",

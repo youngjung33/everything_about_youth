@@ -8,7 +8,7 @@ export interface CuratedCatalogEntry {
   procedureTypeId: ProcedureTypeId;
   tags: string[];
   summary: string;
-  url: string;
+  url: string | null;
   steps: Omit<ChecklistStep, "order">[];
 }
 

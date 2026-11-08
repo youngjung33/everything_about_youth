@@ -29,8 +29,8 @@ export const SECTIONS: Section[] = [
   {
     id: "finance",
     title: "청년 주거·자금",
-    description: "(예정) 전세·보증금·청약저축 등 주거 자금 제도 안내(공식 링크·조건 요약).",
-    href: "/",
+    description: "전세·보증금·청약저축 등 주거 자금 제도·관심·일정 (플래그 기본 꺼짐·관리자 수집).",
+    href: FINANCE_BASE,
   },
   {
     id: "jobs",

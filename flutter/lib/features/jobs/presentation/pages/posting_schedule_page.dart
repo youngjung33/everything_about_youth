@@ -85,7 +85,7 @@ class _PostingSchedulePageState extends ConsumerState<PostingSchedulePage> {
                                 child: Text(
                                   event.kindLabel,
                                   style: textTheme.labelLarge?.copyWith(
-                                    color: Theme.of(context).colorPosting.primary,
+                                    color: Theme.of(context).colorScheme.primary,
                                     fontWeight: AppFonts.bold,
                                   ),
                                 ),

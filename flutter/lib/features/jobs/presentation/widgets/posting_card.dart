@@ -19,7 +19,7 @@ class MetaItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorPosting;
+    final colors = Theme.of(context).colorScheme;
     return SizedBox(
       width: width,
       child: Column(
@@ -42,7 +42,7 @@ class PostingBadges extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorPosting;
+    final colors = Theme.of(context).colorScheme;
     final showDday = posting.dday != null && posting.status != PostingStatus.closed;
     return Wrap(
       spacing: 6,
@@ -99,7 +99,7 @@ class PostingCard extends StatelessWidget {
                 summary: posting.summary,
                 maxLines: 2,
                 missingText: ServiceCopy.missingSummaryCard,
-                style: TextStyle(color: Theme.of(context).colorPosting.onSurfaceVariant),
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               const SizedBox(height: 12),
               Wrap(

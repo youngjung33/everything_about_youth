@@ -78,7 +78,7 @@ describe("SqliteSyncRunRepository", () => {
     const conn = openSqlite(":memory:");
     runMigrations(conn.db);
     const runs = new SqliteSyncRunRepository(conn.db);
-    const id = await runs.start("ontong-finance", "2026-01-01T00:00:00Z");
+    const id = await runs.start("curated", "2026-01-01T00:00:00Z");
     await runs.finish(id, {
       status: "success",
       finishedAt: "2026-01-01T00:01:00Z",

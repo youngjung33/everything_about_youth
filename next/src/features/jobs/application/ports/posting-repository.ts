@@ -1,5 +1,5 @@
 import type { IsoDate } from "@/common/domain/date";
-import type { HireTypeId, SchemeStatus } from "@/features/jobs/domain/enums";
+import type { HireTypeId, PostingStatus } from "@/features/jobs/domain/enums";
 import type { JobPosting } from "@/features/jobs/domain/job-posting";
 import type { Sido } from "@/common/domain/region";
 
@@ -11,7 +11,7 @@ export interface PostingSearchQuery {
   sigungu?: string;
   hireTypeIds?: HireTypeId[];
   tags?: string[];
-  statuses?: SchemeStatus[];
+  statuses?: PostingStatus[];
   keyword?: string;
   sort: PostingSort;
   limit?: number;

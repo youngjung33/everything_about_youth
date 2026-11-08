@@ -2,7 +2,6 @@ import type { IsoDate } from "@/common/domain/date";
 import { getJobPostingStatus, type JobPosting } from "../job-posting";
 import { isProfileEmpty, type ApplicantProfile } from "./applicant";
 import { HIRE_TYPE_RULES, YOUTH_MAX_AGE, YOUTH_MIN_AGE } from "./rules";
-import { STANDARDS_YEAR, formatWon, incomeLimitWon } from "./standards";
 import type { HireTypeId } from "../enums";
 
 export type EligibilityVerdict = "eligible" | "check" | "ineligible";
@@ -19,30 +18,6 @@ export interface EligibilityResult {
   notes: string[];
 }
 
-interface Outcome {
-  fails: string[];
-  unknowns: string[];
-}
-
-function checkIncome(percent: number, profile: ApplicantProfile): Outcome {
-  const out: Outcome = { fails: [], unknowns: [] };
-  const { householdSize: size, monthlyIncomeWon: income } = profile;
-  if (size !== undefined && income !== undefined) {
-    const limit = incomeLimitWon(percent, size, true);
-    if (income > limit) {
-      out.fails.push(`소득 기준 초과 (도시근로자 ${size}인 가구 월 ${formatWon(limit)} 이하, 입력 ${formatWon(income)})`);
-    }
-    return out;
-  }
-  if (profile.incomeRatioPercent !== undefined) {
-    if (profile.incomeRatioPercent > percent) out.fails.push(`소득 기준 초과 (기준: 도시근로자 ${percent}% 이하)`);
-    return out;
-  }
-  if (size === undefined) out.unknowns.push(`가구원수 입력 필요 (기준: 도시근로자 ${percent}% 이하)`);
-  if (income === undefined) out.unknowns.push(`월 소득 입력 필요 (기준: 도시근로자 ${percent}% 이하)`);
-  return out;
-}
-
 export function evaluateEligibility(
   program: Pick<JobPosting, "hireTypeId" | "applicationStart" | "applicationEnd" | "regions">,
   profile: ApplicantProfile,
@@ -50,9 +25,6 @@ export function evaluateEligibility(
 ): EligibilityResult {
   const rule = HIRE_TYPE_RULES[program.hireTypeId];
   const notes = rule.alwaysCheck ? [rule.alwaysCheck] : [];
-  if (rule.incomePercent) {
-    notes.push(`${STANDARDS_YEAR}년 도시근로자 소득 기준표로 판정했습니다. 세부 조건은 기관 공식 안내가 우선합니다.`);
-  }
   const fails: string[] = [];
   const unknowns: string[] = [];
 
@@ -61,7 +33,7 @@ export function evaluateEligibility(
   }
 
   if (program.hireTypeId === "other") {
-    return { verdict: "check", reasons: ["정책 분류를 알 수 없어 자격을 판정할 수 없습니다."], notes };
+    return { verdict: "check", reasons: ["채용 유형을 알 수 없어 자격을 판정할 수 없습니다."], notes };
   }
 
   if (isProfileEmpty(profile)) {
@@ -87,25 +59,12 @@ export function evaluateEligibility(
     }
   }
 
-  if (rule.requiresHomeless && profile.isHomeless === false) {
-    fails.push("무주택 요건을 충족하지 않습니다");
-  }
-  if (rule.requiresHomeless && profile.isHomeless === undefined) {
-    unknowns.push("무주택 여부 입력 필요");
-  }
-
   if (rule.requiresResidenceMatch && program.regions.length > 0) {
     if (profile.residenceSido === undefined) {
       unknowns.push("거주 시도 입력 필요 (지역 한정 정책)");
     } else if (!program.regions.some((r) => r.sido === profile.residenceSido)) {
       fails.push("거주 지역이 정책 대상 지역과 다릅니다");
     }
-  }
-
-  if (rule.incomePercent) {
-    const income = checkIncome(rule.incomePercent, profile);
-    fails.push(...income.fails);
-    unknowns.push(...income.unknowns);
   }
 
   if (fails.length > 0) return { verdict: "ineligible", reasons: fails, notes };

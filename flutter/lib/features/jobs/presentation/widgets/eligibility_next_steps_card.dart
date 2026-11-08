@@ -54,7 +54,7 @@ class EligibilityNextStepsSection extends ConsumerWidget {
                     child: Text('· $hint', style: const TextStyle(fontSize: 13)),
                   ),
                 const SizedBox(height: 12),
-                Text(steps.disclaimer, style: TextStyle(fontSize: 12, color: Theme.of(context).colorPosting.outline)),
+                Text(steps.disclaimer, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.outline)),
               ],
             ),
           ),
