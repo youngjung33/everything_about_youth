@@ -23,6 +23,9 @@ class FinanceModule extends FeatureModule {
   String get basePath => FinanceRoutes.base;
 
   @override
+  bool get defaultEnabled => true;
+
+  @override
   FeatureEntry get entry => const FeatureEntry(
     title: '청년 주거·자금',
     description: '주거·일자리·금융 등 청년 정책을 모아 보고, 내 조건으로 신청 가능 여부를 확인합니다.',

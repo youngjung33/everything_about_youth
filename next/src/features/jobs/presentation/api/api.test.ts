@@ -9,10 +9,10 @@ import { ManageSavedJobPostings, MAX_SAVED_PROGRAMS } from "@/features/jobs/appl
 import type { SavedPosting, SavedJobPostingRepository } from "@/features/jobs/application/ports/saved-posting-repository";
 import {
   handleGetMeta,
-  handleGetScheme,
-  handleListSchemes,
-  handleSchemeCalendar,
-  handleSaveScheme,
+  handleGetPosting,
+  handleListPostings,
+  handlePostingCalendar,
+  handleSavePosting,
   type JobsApiDeps,
 } from "./handlers";
 
@@ -70,8 +70,8 @@ class FakeRepo implements JobPostingRepository {
 }
 
 function setup(drafts: JobPostingDraft[]) {
-  const schemes = drafts.map(createJobPosting);
-  const repo = new FakeRepo(schemes);
+  const postings = drafts.map(createJobPosting);
+  const repo = new FakeRepo(postings);
   const saved = new MemorySaved();
   const deps: JobsApiDeps = {
     searchPostings: new SearchJobPostings(repo, clock),
@@ -80,47 +80,47 @@ function setup(drafts: JobPostingDraft[]) {
     syncRuns: { lastSuccessAt: async () => null },
     clock,
   };
-  return { deps, schemes, saved };
+  return { deps, postings, saved };
 }
 
 describe("jobs API handlers", () => {
   it("없는 id 는 POSTING_NOT_FOUND", async () => {
     const { deps } = setup([draft()]);
-    await expect(handleGetScheme("missing", new URLSearchParams(), deps)).rejects.toMatchObject({ code: "POSTING_NOT_FOUND" });
+    await expect(handleGetPosting("missing", new URLSearchParams(), deps)).rejects.toMatchObject({ code: "POSTING_NOT_FOUND" });
   });
 
   it("관심 저장 not_found", async () => {
     const { deps } = setup([]);
-    await expect(handleSaveScheme("u1", "nope", deps)).rejects.toMatchObject({ code: "POSTING_NOT_FOUND" });
+    await expect(handleSavePosting("u1", "nope", deps)).rejects.toMatchObject({ code: "POSTING_NOT_FOUND" });
   });
 
   it("마감일 없으면 BAD_REQUEST", async () => {
-    const { deps, schemes } = setup([draft({ applicationEnd: null })]);
-    await expect(handleSchemeCalendar(schemes[0]!.id, deps)).rejects.toMatchObject({ code: "BAD_REQUEST" });
+    const { deps, postings } = setup([draft({ applicationEnd: null })]);
+    await expect(handlePostingCalendar(postings[0]!.id, deps)).rejects.toMatchObject({ code: "BAD_REQUEST" });
   });
 
   it("관심 상한이면 BAD_REQUEST", async () => {
-    const { deps, schemes, saved } = setup([draft()]);
+    const { deps, postings, saved } = setup([draft()]);
     saved.rows = Array.from({ length: MAX_SAVED_PROGRAMS }, (_, i) => ({
       postingId: `full${i}`,
       savedAt: "2026-10-01T00:00:00.000Z",
     }));
-    await expect(handleSaveScheme("u1", schemes[0]!.id, deps)).rejects.toMatchObject({ code: "BAD_REQUEST" });
+    await expect(handleSavePosting("u1", postings[0]!.id, deps)).rejects.toMatchObject({ code: "BAD_REQUEST" });
   });
 
   it("pageSize 는 API 상한(50)으로 clamp", async () => {
     const { deps } = setup([draft()]);
-    const list = await handleListSchemes(new URLSearchParams({ pageSize: "999" }), deps);
+    const list = await handleListPostings(new URLSearchParams({ pageSize: "999" }), deps);
     expect(list.body.pageSize).toBe(50);
   });
 
   it("목록·상세·meta", async () => {
-    const { deps, schemes } = setup([draft()]);
-    const list = await handleListSchemes(new URLSearchParams(), deps);
+    const { deps, postings } = setup([draft()]);
+    const list = await handleListPostings(new URLSearchParams(), deps);
     expect(list.body.items).toHaveLength(1);
-    expect(list.body.items[0]!.id).toBe(schemes[0]!.id);
+    expect(list.body.items[0]!.id).toBe(postings[0]!.id);
 
-    const detail = await handleGetScheme(schemes[0]!.id, new URLSearchParams(), deps);
+    const detail = await handleGetPosting(postings[0]!.id, new URLSearchParams(), deps);
     expect(detail.body.title).toBe("서울 청년 월세");
 
     const meta = await handleGetMeta(deps);
@@ -128,8 +128,8 @@ describe("jobs API handlers", () => {
   });
 
   it("캘린더 ICS", async () => {
-    const { deps, schemes } = setup([draft()]);
-    const res = await handleSchemeCalendar(schemes[0]!.id, deps);
+    const { deps, postings } = setup([draft()]);
+    const res = await handlePostingCalendar(postings[0]!.id, deps);
     expect(res.headers.get("Content-Type")).toContain("text/calendar");
   });
 });

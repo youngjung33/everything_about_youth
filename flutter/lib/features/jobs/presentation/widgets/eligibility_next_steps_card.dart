@@ -67,7 +67,7 @@ class EligibilityNextStepsSection extends ConsumerWidget {
               children: [
                 const SizedBox(height: 8),
                 Text(
-                  '비슷한 분야 정책',
+                  '비슷한 분야 공고',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: AppFonts.bold),
                 ),
                 const SizedBox(height: 8),

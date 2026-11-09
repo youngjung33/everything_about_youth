@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/design/service_accent.dart';
+
 import '../../domain/living_filters.dart';
 import '../../domain/living_meta.dart';
 import '../../../../core/theme/app_fonts.dart';
@@ -153,7 +155,7 @@ class _FilterPanelState extends State<FilterPanel> {
         ),
         _Group(
           title: '검색',
-          child: _Field(controller: _keyword, label: '검색어 (정책명/기관/요약)'),
+          child: _Field(controller: _keyword, label: ServiceAccent.living.searchFieldLabel),
         ),
         const SizedBox(height: 4),
         Row(

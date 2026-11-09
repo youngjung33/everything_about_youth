@@ -27,7 +27,7 @@ export interface RegionDto {
   sigungu: string | null;
 }
 
-export interface SchemeSummaryDto {
+export interface PostingSummaryDto {
   id: string;
   title: string;
   organization: string;
@@ -48,7 +48,7 @@ export interface SchemeSummaryDto {
   eligibility: EligibilityDto | null;
 }
 
-export interface ProgramSourceDto {
+export interface PostingSourceDto {
   source: string;
   sourceLabel: string;
   externalId: string;
@@ -56,13 +56,13 @@ export interface ProgramSourceDto {
   fetchedAt: string;
 }
 
-export interface SchemeDetailDto extends SchemeSummaryDto {
+export interface PostingDetailDto extends PostingSummaryDto {
   googleCalendarUrl: string | null;
-  sources: ProgramSourceDto[];
+  sources: PostingSourceDto[];
 }
 
-export interface SchemeListDto {
-  items: SchemeSummaryDto[];
+export interface PostingListDto {
+  items: PostingSummaryDto[];
   total: number;
   page: number;
   pageSize: number;
@@ -81,7 +81,7 @@ export interface EligibilityStandardsDto {
   urbanWorkerIncome: number[];
 }
 
-export interface FinanceMetaDto {
+export interface JobsMetaDto {
   dataUpdatedAt: string | null;
   categories: OptionDto[];
   statuses: OptionDto[];
@@ -101,7 +101,7 @@ function toEligibilityDto(result: EligibilityResult | null): EligibilityDto | nu
   };
 }
 
-export function toSchemeSummaryDto(item: PostingListItem, today: IsoDate): SchemeSummaryDto {
+export function toPostingSummaryDto(item: PostingListItem, today: IsoDate): PostingSummaryDto {
   const { program, status, eligibility } = item;
   return {
     id: program.id,
@@ -125,10 +125,10 @@ export function toSchemeSummaryDto(item: PostingListItem, today: IsoDate): Schem
   };
 }
 
-export function toSchemeDetailDto(item: PostingListItem, today: IsoDate): SchemeDetailDto {
+export function toPostingDetailDto(item: PostingListItem, today: IsoDate): PostingDetailDto {
   const { program } = item;
   return {
-    ...toSchemeSummaryDto(item, today),
+    ...toPostingSummaryDto(item, today),
     googleCalendarUrl: googleCalendarDeadlineUrl({
       title: program.title,
       applicationEnd: program.applicationEnd,
@@ -145,9 +145,9 @@ export function toSchemeDetailDto(item: PostingListItem, today: IsoDate): Scheme
   };
 }
 
-export function toSchemeListDto(result: SearchJobPostingsOutput, today: IsoDate): SchemeListDto {
+export function toPostingListDto(result: SearchJobPostingsOutput, today: IsoDate): PostingListDto {
   return {
-    items: result.items.map((i) => toSchemeSummaryDto(i, today)),
+    items: result.items.map((i) => toPostingSummaryDto(i, today)),
     total: result.total,
     page: result.page,
     pageSize: result.pageSize,
@@ -156,7 +156,7 @@ export function toSchemeListDto(result: SearchJobPostingsOutput, today: IsoDate)
   };
 }
 
-export function buildFinanceMeta(dataUpdatedAt: string | null = null): FinanceMetaDto {
+export function buildJobsMeta(dataUpdatedAt: string | null = null): JobsMetaDto {
   return {
     dataUpdatedAt,
     categories: HIRE_TYPE_IDS.map((value) => ({ value, label: HIRE_TYPE_LABELS[value] })),
@@ -167,7 +167,7 @@ export function buildFinanceMeta(dataUpdatedAt: string | null = null): FinanceMe
     })),
     sorts: [
       { value: "deadline", label: "마감 임박순" },
-      { value: "latest", label: "최신 정책순" },
+      { value: "latest", label: "최신 공고순" },
     ],
     sidos: [...SIDO_LIST],
     standards: {

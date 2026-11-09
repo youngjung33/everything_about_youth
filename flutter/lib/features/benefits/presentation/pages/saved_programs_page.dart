@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/design/service_accent.dart';
 import '../../../../core/layout/app_scaffold.dart';
 import '../../../../core/layout/app_top_bar.dart';
 import '../../../../core/widgets/state_views.dart';
@@ -9,7 +10,9 @@ import '../providers.dart';
 import '../saved_program_reminder_sync.dart';
 import '../widgets/program_card.dart';
 
-/// 저장한 관심 공고. 비회원은 이 기기, 회원은 서버(로그인 때 기기 목록을 합친다).
+const _accent = ServiceAccent.benefits;
+
+/// 저장한 관심 정책. 비회원은 이 기기, 회원은 서버(로그인 때 기기 목록을 합친다).
 class SavedProgramsPage extends ConsumerStatefulWidget {
   const SavedProgramsPage({super.key});
 
@@ -25,9 +28,9 @@ class _SavedProgramsPageState extends ConsumerState<SavedProgramsPage> {
     final remindersOn = !kIsWeb && reminderPrefs.enabled;
 
     return AppScaffold(
-      appBar: AppTopBar(title: const Text('관심 공고')),
+      appBar: AppTopBar(title: Text(_accent.savedAppBarTitle)),
       body: async.when(
-        loading: () => const LoadingView(message: '관심 공고를 불러오는 중…'),
+        loading: () => LoadingView(message: _accent.savedLoadingMessage),
         error: (error, _) =>
             ErrorView(message: errorMessage(error), onRetry: () => ref.invalidate(savedProgramListProvider)),
         data: (list) {
@@ -45,7 +48,7 @@ class _SavedProgramsPageState extends ConsumerState<SavedProgramsPage> {
                   Card(
                     child: SwitchListTile(
                       title: const Text('접수·마감 알림'),
-                      subtitle: const Text('관심 공고의 접수 시작·마감 하루 전·당일 오전 9시(한국 시간)에 알려 줍니다.'),
+                      subtitle: Text(_accent.savedReminderSubtitle),
                       value: remindersOn,
                       onChanged: (value) async {
                         await reminderPrefs.setEnabled(value);
@@ -55,9 +58,9 @@ class _SavedProgramsPageState extends ConsumerState<SavedProgramsPage> {
                     ),
                   ),
                 if (list.items.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.only(top: 48),
-                    child: EmptyView(message: '저장한 관심 공고가 없습니다.', hint: '공고 카드의 북마크를 눌러 저장하세요.'),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 48),
+                    child: EmptyView(message: _accent.savedEmptyMessage, hint: _accent.savedEmptyHint),
                   )
                 else
                   for (final notice in list.items)

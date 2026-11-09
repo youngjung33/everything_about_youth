@@ -14,7 +14,10 @@ import '../widgets/program_card.dart';
 import '../widgets/eligibility_next_steps_card.dart';
 import '../widgets/saved_program_button.dart';
 import '../../../../core/widgets/detail_primary_actions.dart';
+import '../../../../core/design/service_accent.dart';
 import '../../../../core/theme/app_fonts.dart';
+
+const _accent = ServiceAccent.benefits;
 
 class ProgramDetailPage extends ConsumerWidget {
   const ProgramDetailPage({super.key, required this.id});
@@ -27,7 +30,7 @@ class ProgramDetailPage extends ConsumerWidget {
 
     return AppScaffold(
       appBar: AppTopBar(
-        title: const Text('정책 상세'),
+        title: Text(_accent.detailAppBarTitle),
         actions: [SavedProgramButton(programId: id, compact: false)],
       ),
       bottomBar: async.maybeWhen(
@@ -52,7 +55,7 @@ class ProgramDetailPage extends ConsumerWidget {
         orElse: () => null,
       ),
       body: async.when(
-        loading: () => const LoadingView(message: '정책 상세를 불러오는 중…'),
+        loading: () => LoadingView(message: _accent.detailLoadingMessage),
         error: (error, _) =>
             ErrorView(message: errorMessage(error), onRetry: () => ref.invalidate(programDetailProvider(id))),
         data: (detail) => _DetailBody(detail: detail),
@@ -91,7 +94,7 @@ class _DetailBody extends StatelessWidget {
             EligibilityNextStepsSection(detail: detail),
             const SizedBox(height: 16),
             _Section(
-              title: '정책 개요',
+              title: _accent.detailOverviewSectionTitle,
               child: Wrap(
                 spacing: 16,
                 runSpacing: 14,

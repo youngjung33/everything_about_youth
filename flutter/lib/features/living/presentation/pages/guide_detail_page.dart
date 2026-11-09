@@ -14,7 +14,10 @@ import '../widgets/guide_card.dart';
 import '../widgets/saved_guide_button.dart';
 import '../widgets/checklist_steps_section.dart';
 import '../../../../core/widgets/detail_primary_actions.dart';
+import '../../../../core/design/service_accent.dart';
 import '../../../../core/theme/app_fonts.dart';
+
+const _accent = ServiceAccent.living;
 
 class GuideDetailPage extends ConsumerWidget {
   const GuideDetailPage({super.key, required this.id});
@@ -27,7 +30,7 @@ class GuideDetailPage extends ConsumerWidget {
 
     return AppScaffold(
       appBar: AppTopBar(
-        title: const Text('안내 상세'),
+        title: Text(_accent.detailAppBarTitle),
         actions: [SavedGuideButton(guideId: id, compact: false)],
       ),
       bottomBar: async.maybeWhen(
@@ -52,7 +55,7 @@ class GuideDetailPage extends ConsumerWidget {
         orElse: () => null,
       ),
       body: async.when(
-        loading: () => const LoadingView(message: '안내 상세를 불러오는 중…'),
+        loading: () => LoadingView(message: _accent.detailLoadingMessage),
         error: (error, _) =>
             ErrorView(message: errorMessage(error), onRetry: () => ref.invalidate(guideDetailProvider(id))),
         data: (detail) => _DetailBody(detail: detail),

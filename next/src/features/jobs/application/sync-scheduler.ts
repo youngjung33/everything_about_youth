@@ -18,7 +18,7 @@ export interface SyncSchedulerDeps {
 
 export type TickResult = "ran" | "busy" | "disabled" | "failed";
 
-/** 청년 혜택 정책을 일정 간격으로 자동 수집한다. */
+/** 채용 공고를 일정 간격으로 자동 수집한다. */
 export class SyncScheduler {
   private handle: unknown = null;
   private running = false;

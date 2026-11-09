@@ -61,15 +61,15 @@ export function evaluateEligibility(
 
   if (rule.requiresResidenceMatch && program.regions.length > 0) {
     if (profile.residenceSido === undefined) {
-      unknowns.push("거주 시도 입력 필요 (지역 한정 정책)");
+      unknowns.push("거주 시도 입력 필요 (지역 한정 채용)");
     } else if (!program.regions.some((r) => r.sido === profile.residenceSido)) {
-      fails.push("거주 지역이 정책 대상 지역과 다릅니다");
+      fails.push("거주 지역이 공고 대상 지역과 다릅니다");
     }
   }
 
   if (fails.length > 0) return { verdict: "ineligible", reasons: fails, notes };
   if (unknowns.length > 0) return { verdict: "check", reasons: unknowns, notes };
-  return { verdict: "eligible", reasons: ["입력하신 조건이 일반 청년 정책 기준을 충족합니다."], notes };
+  return { verdict: "eligible", reasons: ["입력하신 조건이 이 공고의 일반 기준을 충족합니다."], notes };
 }
 
 export function ruleForCategory(hireTypeId: HireTypeId) {

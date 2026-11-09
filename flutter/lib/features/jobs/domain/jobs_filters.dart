@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 import '../../../core/util/pure_dart.dart';
 
-/// 정책 목록 검색 조건. 서버 API 쿼리 파라미터와 같은 이름·단위를 쓴다.
+/// 공고 목록 검색 조건. 서버 API 쿼리 파라미터와 같은 이름·단위를 쓴다.
 @immutable
 class JobsFilters {
   const JobsFilters({

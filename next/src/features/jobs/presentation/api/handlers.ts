@@ -10,14 +10,14 @@ import { DEFAULT_PAGE_SIZE, type SearchJobPostings } from "@/features/jobs/appli
 import type { PostingListItem } from "@/features/jobs/application/use-cases/search-job-postings";
 import { parseSearchParams, type RawSearchParams } from "../search-params";
 import {
-  buildFinanceMeta,
-  toSchemeDetailDto,
-  toSchemeListDto,
-  toSchemeSummaryDto,
-  type FinanceMetaDto,
-  type SchemeDetailDto,
-  type SchemeListDto,
-  type SchemeSummaryDto,
+  buildJobsMeta,
+  toPostingDetailDto,
+  toPostingListDto,
+  toPostingSummaryDto,
+  type JobsMetaDto,
+  type PostingDetailDto,
+  type PostingListDto,
+  type PostingSummaryDto,
 } from "./dto";
 
 export interface JobsApiDeps {
@@ -45,10 +45,10 @@ function parsePageSize(searchParams: URLSearchParams): number {
   return Math.min(MAX_API_PAGE_SIZE, Math.floor(n));
 }
 
-export async function handleListSchemes(
+export async function handleListPostings(
   searchParams: URLSearchParams,
   deps: JobsApiDeps,
-): Promise<ApiResult<SchemeListDto>> {
+): Promise<ApiResult<PostingListDto>> {
   const parsed = parseSearchParams(toRawSearchParams(searchParams));
   const result = await deps.searchPostings.execute({
     filters: parsed.filters,
@@ -58,22 +58,22 @@ export async function handleListSchemes(
     profile: parsed.hasProfile ? parsed.profile : undefined,
     verdicts: parsed.hasProfile ? parsed.verdicts : undefined,
   });
-  return { status: 200, body: toSchemeListDto(result, todayInKst(deps.clock.now())) };
+  return { status: 200, body: toPostingListDto(result, todayInKst(deps.clock.now())) };
 }
 
-export async function handleGetScheme(
+export async function handleGetPosting(
   id: string,
   searchParams: URLSearchParams,
   deps: JobsApiDeps,
-): Promise<ApiResult<SchemeDetailDto>> {
+): Promise<ApiResult<PostingDetailDto>> {
   const parsed = parseSearchParams(toRawSearchParams(searchParams));
   const item = await deps.getJobPostingDetail.execute(id, parsed.hasProfile ? parsed.profile : undefined);
   if (!item) throw new ApiError("POSTING_NOT_FOUND");
-  return { status: 200, body: toSchemeDetailDto(item, todayInKst(deps.clock.now())) };
+  return { status: 200, body: toPostingDetailDto(item, todayInKst(deps.clock.now())) };
 }
 
-export async function handleGetMeta(deps: Pick<JobsApiDeps, "syncRuns">): Promise<ApiResult<FinanceMetaDto>> {
-  return { status: 200, body: buildFinanceMeta(await deps.syncRuns.lastSuccessAt()) };
+export async function handleGetMeta(deps: Pick<JobsApiDeps, "syncRuns">): Promise<ApiResult<JobsMetaDto>> {
+  return { status: 200, body: buildJobsMeta(await deps.syncRuns.lastSuccessAt()) };
 }
 
 export interface SavedIdsDto {
@@ -81,7 +81,7 @@ export interface SavedIdsDto {
 }
 
 export interface SavedListDto {
-  items: SchemeSummaryDto[];
+  items: PostingSummaryDto[];
   total: number;
   today: string;
 }
@@ -100,11 +100,11 @@ export async function handleListSaved(
   const today = todayInKst(deps.clock.now());
   return {
     status: 200,
-    body: { items: items.map((i: PostingListItem) => toSchemeSummaryDto(i, today)), total: items.length, today },
+    body: { items: items.map((i: PostingListItem) => toPostingSummaryDto(i, today)), total: items.length, today },
   };
 }
 
-export async function handleSaveScheme(
+export async function handleSavePosting(
   userId: string,
   postingId: string,
   deps: Pick<JobsApiDeps, "manageSavedPostings">,
@@ -112,12 +112,12 @@ export async function handleSaveScheme(
   const result = await deps.manageSavedPostings.save(userId, postingId);
   if (result.status === "not_found") throw new ApiError("POSTING_NOT_FOUND");
   if (result.status === "limit") {
-    throw new ApiError("BAD_REQUEST", { message: `관심 정책은 ${result.max}개까지 저장할 수 있습니다.` });
+    throw new ApiError("BAD_REQUEST", { message: `관심 공고는 ${result.max}개까지 저장할 수 있습니다.` });
   }
   return { status: 200, body: { saved: true } };
 }
 
-export async function handleUnsaveScheme(
+export async function handleUnsavePosting(
   userId: string,
   postingId: string,
   deps: Pick<JobsApiDeps, "manageSavedPostings">,
@@ -134,7 +134,7 @@ export async function handleMergeSaved(
   return { status: 200, body: { ids: await deps.manageSavedPostings.merge(userId, body.ids) } };
 }
 
-export async function handleSchemeCalendar(
+export async function handlePostingCalendar(
   id: string,
   deps: Pick<JobsApiDeps, "getJobPostingDetail" | "clock">,
 ): Promise<Response> {

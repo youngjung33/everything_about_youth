@@ -1,6 +1,6 @@
 # 청년의 모든 것 (everything_about_youth)
 
-한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 사이트. **API·앱이 동작하는 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)·청년 주거·자금(`finance`)·청년·공공 일자리(`jobs`)·이사·생활(`living`)** 입니다. `finance` 는 **기능 플래그 기본 꺼짐**, `jobs`·`living` 은 **기본 켜짐**. `living` 1차는 curated + `checklistSteps`(내 조건 판정 없음), `jobs` 1차는 curated + `jobs:seed-demo`(finance 와 동형 UX).
+한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 사이트. **API·앱이 동작하는 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)·청년 주거·자금(`finance`)·청년·공공 일자리(`jobs`)·이사·생활(`living`)** 입니다. **섹션 기능 플래그는 모두 기본 켜짐** (`features/registry.ts`, `npm run features`). `living` 1차는 curated + `checklistSteps`(내 조건 판정 없음), `jobs` 1차는 curated + `jobs:seed-demo`(finance 와 동형 UX).
 
 - Next.js 16 (App Router) + TypeScript
 - 클린 아키텍처 + **섹션(feature) 단위 폴더 구조**
@@ -306,7 +306,7 @@ API 소스는 서비스키를 넣고 `npm run housing:sync -- --source=lh` 등�
 
 ## 청년 주거·자금 섹션
 
-전세·보증금·청약저축 등 **주거 자금 제도**를 큐레이션 catalog와 온통 목록(금융·세금 분류만)으로 모아, benefits 와 **동형** UX(목록·필터·내 조건·관심·일정·로컬 알림)를 제공합니다. Flutter `/finance`, API `/api/v1/finance/*`, 관리 `/finance/admin/sync`. **공개 Next 목록 페이지는 없습니다.** 기능 플래그 `finance` 는 **기본 꺼짐** (`features/registry.ts` — `npm run features -- on finance`).
+전세·보증금·청약저축 등 **주거 자금 제도**를 큐레이션 catalog와 온통 목록(금융·세금 분류만)으로 모아, benefits 와 **동형** UX(목록·필터·내 조건·관심·일정·로컬 알림)를 제공합니다. Flutter `/finance`, API `/api/v1/finance/*`, 관리 `/finance/admin/sync`. **공개 Next 목록 페이지는 없습니다.**
 
 benefits DB 의 `finance` **분류 필터**와 **별도 SQLite 테이블**(`finance_*`)입니다. 같은 온통 `plcyId` 가 benefits·finance 양쪽에 있을 수 있고, finance id 는 `finance:ontong:…` 처럼 benefits 와 공유하지 않습니다.
 

@@ -9,7 +9,7 @@ class JobsUserMessage implements Exception {
 }
 
 class JobPostingNotFound extends JobsUserMessage {
-  const JobPostingNotFound([super.message = '정책을 찾을 수 없습니다.']);
+  const JobPostingNotFound([super.message = '공고를 찾을 수 없습니다.']);
 }
 
 String jobsErrorMessage(Object error) {

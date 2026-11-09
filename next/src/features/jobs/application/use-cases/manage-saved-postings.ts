@@ -7,12 +7,22 @@ import type { JobPostingRepository } from "../ports/posting-repository";
 import type { SavedJobPostingRepository } from "../ports/saved-posting-repository";
 import type { PostingListItem } from "./search-job-postings";
 
-export const MAX_SAVED_PROGRAMS = 100;
+export const MAX_SAVED_POSTINGS = 100;
 
-export type SaveSchemeResult = { status: "saved" } | { status: "already" } | { status: "not_found" } | { status: "limit"; max: number };
+export type SavePostingResult =
+  | { status: "saved" }
+  | { status: "already" }
+  | { status: "not_found" }
+  | { status: "limit"; max: number };
 
 /** @deprecated 이름 호환 — `ManageSavedJobPostings` 사용 */
 export type ManageSavedPostings = ManageSavedJobPostings;
+
+/** @deprecated `MAX_SAVED_POSTINGS` 사용 */
+export const MAX_SAVED_PROGRAMS = MAX_SAVED_POSTINGS;
+
+/** @deprecated `SavePostingResult` 사용 */
+export type SaveSchemeResult = SavePostingResult;
 
 export class ManageSavedJobPostings {
   constructor(
@@ -21,16 +31,16 @@ export class ManageSavedJobPostings {
     private readonly clock: Clock,
   ) {}
 
-  async save(userId: string, schemeId: string): Promise<SaveSchemeResult> {
-    if (await this.saved.isSaved(userId, schemeId)) return { status: "already" };
-    if (!(await this.postings.findById(schemeId))) return { status: "not_found" };
-    if ((await this.saved.count(userId)) >= MAX_SAVED_PROGRAMS) return { status: "limit", max: MAX_SAVED_PROGRAMS };
-    await this.saved.save(userId, schemeId, this.clock.now().toISOString());
+  async save(userId: string, postingId: string): Promise<SavePostingResult> {
+    if (await this.saved.isSaved(userId, postingId)) return { status: "already" };
+    if (!(await this.postings.findById(postingId))) return { status: "not_found" };
+    if ((await this.saved.count(userId)) >= MAX_SAVED_POSTINGS) return { status: "limit", max: MAX_SAVED_POSTINGS };
+    await this.saved.save(userId, postingId, this.clock.now().toISOString());
     return { status: "saved" };
   }
 
-  async unsave(userId: string, schemeId: string): Promise<void> {
-    await this.saved.remove(userId, schemeId);
+  async unsave(userId: string, postingId: string): Promise<void> {
+    await this.saved.remove(userId, postingId);
   }
 
   async listIds(userId: string): Promise<string[]> {
@@ -48,8 +58,8 @@ export class ManageSavedJobPostings {
     return items;
   }
 
-  async merge(userId: string, schemeIds: string[]): Promise<string[]> {
-    const unique = [...new Set(schemeIds.map((id) => id.trim()).filter(Boolean))];
+  async merge(userId: string, postingIds: string[]): Promise<string[]> {
+    const unique = [...new Set(postingIds.map((id) => id.trim()).filter(Boolean))];
     for (const id of unique) {
       const result = await this.save(userId, id);
       if (result.status === "limit") break;

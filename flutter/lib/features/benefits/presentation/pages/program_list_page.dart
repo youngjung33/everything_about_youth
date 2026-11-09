@@ -148,7 +148,7 @@ class _Results extends ConsumerWidget {
     final listAsync = ref.watch(programListProvider);
 
     return listAsync.when(
-      loading: () => const LoadingView(message: '정책을 불러오는 중…'),
+      loading: () => LoadingView(message: _accent.listLoadingMessage),
       error: (error, _) => ErrorView(message: errorMessage(error), onRetry: () => ref.invalidate(programListProvider)),
       data: (list) {
         return RefreshIndicator(
@@ -227,7 +227,7 @@ class _Header extends ConsumerWidget {
                 onPressed: () => context.push(BenefitsRoutes.schedule),
               ),
               ServiceQuickAction(
-                label: '관심 정책',
+                label: _accent.savedQuickActionLabel,
                 icon: Icons.bookmarks_outlined,
                 onPressed: () => context.push(BenefitsRoutes.saved),
               ),
@@ -253,7 +253,7 @@ class _Header extends ConsumerWidget {
             textBaseline: TextBaseline.alphabetic,
             children: [
               Text(
-                onlyEligible ? '신청 가능한 정책' : '정책 목록',
+                _accent.listHeaderTitle(onlyEligible: onlyEligible),
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: AppFonts.bold),
               ),
               const SizedBox(width: 8),
@@ -344,7 +344,7 @@ class _Footer extends ConsumerWidget {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 48),
         child: EmptyView(
-          message: '조건에 맞는 정책이 없습니다.',
+          message: _accent.emptyListMessage,
           hint: '필터를 완화하거나 프리셋을 바꿔 보세요.',
           actionLabel: '필터 초기화',
           onAction: () => ref.read(filtersProvider.notifier).reset(),

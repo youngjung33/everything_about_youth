@@ -50,7 +50,7 @@ class Eligibility {
   final List<String> notes;
 }
 
-/// 정책 목록에 보여주는 요약 정보
+/// 공고 목록에 보여주는 요약 정보
 @immutable
 class PostingSummary {
   const PostingSummary({

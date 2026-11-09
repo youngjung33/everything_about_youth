@@ -167,7 +167,7 @@ export function buildFinanceMeta(dataUpdatedAt: string | null = null): FinanceMe
     })),
     sorts: [
       { value: "deadline", label: "마감 임박순" },
-      { value: "latest", label: "최신 정책순" },
+      { value: "latest", label: "최신 제도순" },
     ],
     sidos: [...SIDO_LIST],
     standards: {

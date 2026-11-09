@@ -34,12 +34,12 @@ import {
 import { createJobPosting } from "@/features/jobs/domain/identity";
 import type { JobPostingDraft, JobPosting } from "@/features/jobs/domain/job-posting";
 import {
-  buildFinanceMeta as buildJobsMeta,
-  toSchemeDetailDto as toPostingDetailDto,
-  toSchemeListDto as toPostingListDto,
-  type FinanceMetaDto as JobsMetaDto,
-  type SchemeDetailDto as PostingDetailDto,
-  type SchemeListDto as PostingListDto,
+  buildJobsMeta,
+  toPostingDetailDto,
+  toPostingListDto,
+  type JobsMetaDto,
+  type PostingDetailDto,
+  type PostingListDto,
 } from "@/features/jobs/presentation/api/dto";
 import {
   buildLivingMeta,
