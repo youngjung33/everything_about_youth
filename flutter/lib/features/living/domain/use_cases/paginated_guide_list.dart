@@ -1,7 +1,6 @@
 import '../applicant_profile.dart';
 import '../failures.dart';
 import '../living_filters.dart';
-import '../living_guide.dart';
 import '../guide_list_state.dart';
 import 'search_schemes.dart';
 

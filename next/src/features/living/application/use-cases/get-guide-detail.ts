@@ -1,4 +1,3 @@
-import type { ApplicantProfile } from "@/features/living/domain/eligibility/applicant";
 import { todayInKst } from "@/common/domain/date";
 import { getGuideStatus } from "@/features/living/domain/guide";
 import type { GuideListItem } from "./search-guides";
@@ -11,7 +10,7 @@ export class GetGuideDetail {
     private readonly clock: Clock,
   ) {}
 
-  async execute(id: string, _profile?: ApplicantProfile): Promise<GuideListItem | null> {
+  async execute(id: string): Promise<GuideListItem | null> {
     const program = await this.repo.findById(id);
     if (!program) return null;
     const today = todayInKst(this.clock.now());

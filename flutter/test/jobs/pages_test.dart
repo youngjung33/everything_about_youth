@@ -6,7 +6,6 @@ import 'package:everything_about_youth/core/network/api_user_message.dart';
 import 'package:everything_about_youth/core/widgets/state_views.dart';
 import 'package:everything_about_youth/features/jobs/domain/applicant_profile.dart';
 import 'package:everything_about_youth/features/jobs/domain/job_posting.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/finders.dart';

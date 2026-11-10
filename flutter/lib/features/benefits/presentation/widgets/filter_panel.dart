@@ -219,18 +219,17 @@ class _Chips extends StatelessWidget {
 }
 
 class _Field extends StatelessWidget {
-  const _Field({required this.controller, required this.label, this.hint, this.number = false});
+  const _Field({required this.controller, required this.label, this.hint});
 
   final TextEditingController controller;
   final String label;
   final String? hint;
-  final bool number;
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
-      keyboardType: number ? TextInputType.number : TextInputType.text,
+      keyboardType: TextInputType.text,
       decoration: InputDecoration(labelText: label, hintText: hint, border: const OutlineInputBorder()),
     );
   }

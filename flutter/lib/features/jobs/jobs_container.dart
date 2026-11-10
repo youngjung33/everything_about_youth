@@ -29,7 +29,7 @@ class JobsContainer {
   JobsContainer({
     required this.repository,
     required this.profileLocalStore,
-    required this.savedNoticeLocalStore,
+    required this.savedPostingLocalStore,
     required this.searchPostings,
     required this.getPostingDetail,
     required this.loadJobsMeta,
@@ -46,7 +46,7 @@ class JobsContainer {
 
   final JobsRepository repository;
   final ProfileLocalStore profileLocalStore;
-  final SavedPostingLocalStore savedNoticeLocalStore;
+  final SavedPostingLocalStore savedPostingLocalStore;
   final SavedPostingReminderPrefsStore reminderPrefs;
 
   final SearchJobPostingsUseCase searchPostings;
@@ -68,11 +68,11 @@ class JobsContainer {
   }) {
     final repository = MappingJobsRepository(ApiJobsRepository(apiClient));
     final profileLocalStore = ProfileStore(prefs, cipher);
-    final savedNoticeLocalStore = SavedPostingStore(prefs, cipher);
+    final savedPostingLocalStore = SavedPostingStore(prefs, cipher);
     return JobsContainer.fromStores(
       repository: repository,
       profileLocalStore: profileLocalStore,
-      savedNoticeLocalStore: savedNoticeLocalStore,
+      savedPostingLocalStore: savedPostingLocalStore,
       reminderPrefs: SavedPostingReminderPrefs(prefs),
     );
   }
@@ -80,7 +80,7 @@ class JobsContainer {
   factory JobsContainer.fromStores({
     required JobsRepository repository,
     required ProfileLocalStore profileLocalStore,
-    required SavedPostingLocalStore savedNoticeLocalStore,
+    required SavedPostingLocalStore savedPostingLocalStore,
     required SavedPostingReminderPrefsStore reminderPrefs,
   }) {
     final getPostingDetail = GetPostingDetailUseCase(repository);
@@ -88,15 +88,15 @@ class JobsContainer {
     return JobsContainer(
       repository: repository,
       profileLocalStore: profileLocalStore,
-      savedNoticeLocalStore: savedNoticeLocalStore,
+      savedPostingLocalStore: savedPostingLocalStore,
       searchPostings: searchPostings,
       getPostingDetail: getPostingDetail,
       loadJobsMeta: LoadJobsMetaUseCase(repository),
       loadSchedulePostings: LoadSchedulePostingsUseCase(repository),
       loadSimilarPostings: LoadSimilarPostingsUseCase(repository),
-      resolveSavedPostingIds: ResolveSavedPostingIdsUseCase(repository, savedNoticeLocalStore),
+      resolveSavedPostingIds: ResolveSavedPostingIdsUseCase(repository, savedPostingLocalStore),
       loadSavedPostingSummaries: LoadSavedPostingSummariesUseCase(repository, getPostingDetail),
-      toggleSavedPosting: ToggleSavedPostingUseCase(repository, savedNoticeLocalStore),
+      toggleSavedPosting: ToggleSavedPostingUseCase(repository, savedPostingLocalStore),
       loadProfile: LoadProfileUseCase(profileLocalStore),
       saveProfile: SaveProfileUseCase(profileLocalStore),
       paginatedPostingList: PaginatedPostingListUseCase(searchPostings),

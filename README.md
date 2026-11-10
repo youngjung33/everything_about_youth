@@ -9,7 +9,7 @@
 | `housing` | 임대주택 | **1차 구현** | LH·SH·마이홈 등 공고 통합, 내 조건 자격 판정, 관심 공고·일정·로컬 알림 |
 | `benefits` | 청년 혜택·정책 | **1차 구현** | 온통청년 OPEN API로 전국 청년정책 수집, 내 조건 판정, 관심·일정·로컬 알림 |
 | `finance` | 청년 주거·자금 | **1차 구현** | 큐레이션 catalog + 온통(금융·세금) |
-| `jobs` | 청년·공공 일자리 | **1차 구현** | curated catalog + `jobs:seed-demo` · 기능 플래그 기본 켜짐 |
+| `jobs` | 청년·공공 일자리 | **1차 구현** | curated catalog + `jobs:seed-demo` |
 | `living` | 이사·생활 | **1차 구현** | curated + `living:seed-demo`, 상세 `checklistSteps[]`, 플래그 기본 on |
 
 새 섹션을 만들 때는 `next/src/features/<id>/` + `features/registry.ts`, Flutter `features/<id>/` + `app/feature_modules.dart` 를 같은 `id` 로 추가합니다.

@@ -19,7 +19,7 @@ void main() {
     final container = JobsContainer.fromStores(
       repository: FakeJobsRepository(),
       profileLocalStore: MemoryJobsProfileStore(),
-      savedNoticeLocalStore: MemorySavedPostingLocalStore(),
+      savedPostingLocalStore: MemorySavedPostingLocalStore(),
       reminderPrefs: SavedPostingReminderPrefs(prefs),
     );
 
@@ -28,6 +28,6 @@ void main() {
     expect(container.toggleSavedPosting, isA<ToggleSavedPostingUseCase>());
     expect(container.reminderPrefs, isA<SavedPostingReminderPrefs>());
     expect(container.profileLocalStore, isA<ProfileLocalStore>());
-    expect(container.savedNoticeLocalStore, isA<SavedPostingLocalStore>());
+    expect(container.savedPostingLocalStore, isA<SavedPostingLocalStore>());
   });
 }

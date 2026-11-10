@@ -4,7 +4,6 @@ import 'package:everything_about_youth/features/housing/data/mapping_housing_rep
 import 'package:everything_about_youth/features/housing/domain/applicant_profile.dart';
 import 'package:everything_about_youth/features/housing/domain/failures.dart';
 import 'package:everything_about_youth/features/housing/domain/housing_filters.dart';
-import 'package:everything_about_youth/features/housing/domain/notice.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../support/fixtures.dart';

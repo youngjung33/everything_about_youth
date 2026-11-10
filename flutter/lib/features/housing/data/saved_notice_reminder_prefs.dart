@@ -10,7 +10,9 @@ class SavedNoticeReminderPrefs implements SavedNoticeReminderPrefsStore {
 
   final SharedPreferences _prefs;
 
+  @override
   bool get enabled => _prefs.getBool(key) ?? true;
 
+  @override
   Future<void> setEnabled(bool value) => _prefs.setBool(key, value);
 }

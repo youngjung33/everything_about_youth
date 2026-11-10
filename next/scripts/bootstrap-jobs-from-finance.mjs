@@ -1,13 +1,13 @@
 /**
  * finance → jobs (Next + Flutter). Run: node scripts/bootstrap-jobs-from-finance.mjs
  */
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, renameSync, statSync, writeFileSync } from "node:fs";
-import { basename, dirname, join, relative } from "node:path";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, renameSync, statSync, writeFileSync } from "node:fs";
+import { dirname, join, relative } from "node:path";
 
 const root = join(import.meta.dirname, "..");
 const nextRoot = join(root, "src");
 
-function walk(dir, files = [], skipDir = (name) => false) {
+function walk(dir, files = [], skipDir = () => false) {
   for (const name of readdirSync(dir)) {
     if (skipDir(name)) continue;
     const p = join(dir, name);

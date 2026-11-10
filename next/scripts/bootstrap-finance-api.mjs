@@ -2,7 +2,7 @@
  * Copy benefits API/app routes to finance. Run: node scripts/bootstrap-finance-api.mjs
  */
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 
 const next = join(import.meta.dirname, "..");
 const pairs = [

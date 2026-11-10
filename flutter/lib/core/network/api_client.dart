@@ -179,11 +179,12 @@ class ApiClient {
       final retryAfter = seconds is num ? seconds : int.tryParse(retryAfterHeader ?? '');
       final code = error['code'];
       final message = error['message'];
-      final knownCode = code is String && ApiErrorCode.serverCodes.contains(code);
+      final codeStr = code is String ? code : null;
+      final knownCode = codeStr != null && ApiErrorCode.serverCodes.contains(codeStr);
       return ApiException(
         message is String && message.isNotEmpty ? message : fallback,
         statusCode: statusCode,
-        code: knownCode ? code as String : ApiErrorCode.badResponse,
+        code: knownCode ? codeStr : ApiErrorCode.badResponse,
         requestId: error['requestId'] is String ? error['requestId'] as String : null,
         details: details,
         retryAfter: retryAfter == null ? null : Duration(seconds: retryAfter.toInt()),

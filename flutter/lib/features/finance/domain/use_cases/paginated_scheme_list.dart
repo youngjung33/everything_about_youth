@@ -1,7 +1,6 @@
 import '../applicant_profile.dart';
 import '../failures.dart';
 import '../finance_filters.dart';
-import '../finance_scheme.dart';
 import '../scheme_list_state.dart';
 import 'search_schemes.dart';
 

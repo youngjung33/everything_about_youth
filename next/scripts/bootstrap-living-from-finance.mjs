@@ -1,7 +1,7 @@
 /**
  * finance → living feature copy. Run from next/: node scripts/bootstrap-living-from-finance.mjs
  */
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, renameSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, relative } from "node:path";
 
 const root = join(import.meta.dirname, "..", "src", "features");

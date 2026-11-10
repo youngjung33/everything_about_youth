@@ -6,7 +6,6 @@ import 'package:everything_about_youth/core/network/api_error_code.dart';
 import 'package:everything_about_youth/core/network/api_user_message.dart';
 import 'package:everything_about_youth/core/widgets/state_views.dart';
 import 'package:everything_about_youth/features/housing/domain/applicant_profile.dart';
-import 'package:everything_about_youth/features/housing/domain/failures.dart';
 import 'package:everything_about_youth/features/housing/domain/housing_meta.dart';
 import 'package:everything_about_youth/features/housing/domain/notice.dart';
 import 'package:flutter/material.dart';

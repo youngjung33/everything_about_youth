@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 ///
 ///   app ──▶ features/* ──▶ core          (화살표 반대 방향 import 금지)
 ///   features/A ──✗──▶ features/B         (서비스끼리 금지)
-///   서비스 루트: <id>_module.dart(앱 어댑터), <id>_container.dart(조립, 선택)
+///   서비스 루트: `{id}_module.dart`(앱 어댑터), `{id}_container.dart`(조립, 선택)
 ///   서비스 안: presentation ▶ data ▶ domain  (domain 은 use case 중심)
 
 /// lib 기준 상대 경로 (예: `features/housing/domain/notice.dart`) 와 그 파일이 import 한 lib 기준 경로들

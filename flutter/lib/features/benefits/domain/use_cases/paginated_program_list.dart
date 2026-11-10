@@ -1,7 +1,6 @@
 import '../applicant_profile.dart';
 import '../failures.dart';
 import '../benefit_filters.dart';
-import '../benefit_program.dart';
 import '../program_list_state.dart';
 import 'search_programs.dart';
 

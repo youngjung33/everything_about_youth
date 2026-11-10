@@ -1,7 +1,7 @@
 /**
  * One-off: benefits → finance rename pass. Run from next/: node scripts/bootstrap-finance-from-benefits.mjs
  */
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, relative } from "node:path";
 
 const root = join(import.meta.dirname, "..", "src", "features");

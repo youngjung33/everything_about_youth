@@ -1,7 +1,6 @@
 import '../applicant_profile.dart';
 import '../failures.dart';
 import '../housing_filters.dart';
-import '../notice.dart';
 import '../notice_list_state.dart';
 import 'search_notices.dart';
 

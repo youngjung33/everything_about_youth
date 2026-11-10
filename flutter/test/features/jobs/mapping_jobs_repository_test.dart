@@ -4,7 +4,6 @@ import 'package:everything_about_youth/features/jobs/data/mapping_jobs_repositor
 import 'package:everything_about_youth/features/jobs/domain/applicant_profile.dart';
 import 'package:everything_about_youth/features/jobs/domain/failures.dart';
 import 'package:everything_about_youth/features/jobs/domain/jobs_filters.dart';
-import 'package:everything_about_youth/features/jobs/domain/job_posting.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../support/jobs_fixtures.dart';

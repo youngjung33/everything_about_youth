@@ -1,7 +1,6 @@
 import '../applicant_profile.dart';
 import '../failures.dart';
 import '../jobs_filters.dart';
-import '../job_posting.dart';
 import '../posting_list_state.dart';
 import 'search_job_postings.dart';
 

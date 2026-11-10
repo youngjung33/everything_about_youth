@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/copy/service_copy.dart';
 import '../../../../core/widgets/collected_summary.dart';
-import '../../../../core/format/format.dart';
 import '../../domain/living_guide.dart';
 import '../living_routes.dart';
 import 'badges.dart';

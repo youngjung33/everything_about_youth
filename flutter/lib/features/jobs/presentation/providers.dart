@@ -97,7 +97,7 @@ class PostingListController extends AsyncNotifier<PostingListState> {
 
 final postingListProvider = AsyncNotifierProvider<PostingListController, PostingListState>(PostingListController.new);
 
-final programDetailProvider = FutureProvider.family<PostingDetail, String>((ref, id) {
+final postingDetailProvider = FutureProvider.family<PostingDetail, String>((ref, id) {
   final profile = ref.watch(profileProvider);
   return _container(ref).getPostingDetail(id, profile: profile);
 });
@@ -131,7 +131,7 @@ final jobsSchedulePostingsProvider = FutureProvider<({String today, List<Posting
 );
 
 final similarPostingsProvider = FutureProvider.family<List<PostingSummary>, String>((ref, id) async {
-  final detail = await ref.watch(programDetailProvider(id).future);
+  final detail = await ref.watch(postingDetailProvider(id).future);
   return _container(ref).loadSimilarPostings(
     excludeId: id,
     hireTypeId: detail.summary.hireTypeId,

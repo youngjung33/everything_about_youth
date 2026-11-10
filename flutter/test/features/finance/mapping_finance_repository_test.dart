@@ -4,7 +4,6 @@ import 'package:everything_about_youth/features/finance/data/mapping_finance_rep
 import 'package:everything_about_youth/features/finance/domain/applicant_profile.dart';
 import 'package:everything_about_youth/features/finance/domain/failures.dart';
 import 'package:everything_about_youth/features/finance/domain/finance_filters.dart';
-import 'package:everything_about_youth/features/finance/domain/finance_scheme.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../support/finance_fixtures.dart';

@@ -206,10 +206,8 @@ class _Header extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filters = ref.watch(filtersProvider);
-    final profile = ref.watch(profileProvider);
     final meta = ref.watch(livingMetaProvider).value;
     final scheme = Theme.of(context).colorScheme;
-    final onlyEligible = filters.verdicts.length == 1 && filters.verdicts.contains('eligible');
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -227,7 +225,7 @@ class _Header extends ConsumerWidget {
                 onPressed: () => context.push(LivingRoutes.schedule),
               ),
               ServiceQuickAction(
-                label: '관심 안내',
+                label: _accent.savedQuickActionLabel,
                 icon: Icons.bookmarks_outlined,
                 onPressed: () => context.push(LivingRoutes.saved),
               ),
@@ -248,7 +246,7 @@ class _Header extends ConsumerWidget {
             textBaseline: TextBaseline.alphabetic,
             children: [
               Text(
-                _accent.listHeaderTitle(onlyEligible: onlyEligible),
+                _accent.listHeaderTitle(onlyEligible: false),
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: AppFonts.bold),
               ),
               const SizedBox(width: 8),

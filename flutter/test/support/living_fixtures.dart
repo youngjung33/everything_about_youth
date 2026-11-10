@@ -151,7 +151,7 @@ class FakeLivingRepository implements LivingRepository {
         }
       }
     }
-    throw const ApiException('정책을 찾을 수 없습니다.', statusCode: 404);
+    throw const ApiException('안내를 찾을 수 없습니다.', statusCode: 404);
   }
 
   @override

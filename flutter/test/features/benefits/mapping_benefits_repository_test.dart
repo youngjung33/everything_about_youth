@@ -4,7 +4,6 @@ import 'package:everything_about_youth/features/benefits/data/mapping_benefits_r
 import 'package:everything_about_youth/features/benefits/domain/applicant_profile.dart';
 import 'package:everything_about_youth/features/benefits/domain/failures.dart';
 import 'package:everything_about_youth/features/benefits/domain/benefit_filters.dart';
-import 'package:everything_about_youth/features/benefits/domain/benefit_program.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../support/benefits_fixtures.dart';

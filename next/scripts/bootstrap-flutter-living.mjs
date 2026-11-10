@@ -1,8 +1,8 @@
 /**
  * finance → living Flutter feature. Run: node scripts/bootstrap-flutter-living.mjs
  */
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, renameSync, statSync, writeFileSync } from "node:fs";
-import { basename, dirname, join, relative } from "node:path";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, renameSync, statSync, writeFileSync } from "node:fs";
+import { dirname, join, relative } from "node:path";
 
 const flutter = join(import.meta.dirname, "..", "..", "flutter");
 const srcDir = join(flutter, "lib", "features", "finance");

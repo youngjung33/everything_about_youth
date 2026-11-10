@@ -4,7 +4,6 @@ import 'package:everything_about_youth/features/living/data/mapping_living_repos
 import 'package:everything_about_youth/features/living/domain/applicant_profile.dart';
 import 'package:everything_about_youth/features/living/domain/failures.dart';
 import 'package:everything_about_youth/features/living/domain/living_filters.dart';
-import 'package:everything_about_youth/features/living/domain/living_guide.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../support/living_fixtures.dart';

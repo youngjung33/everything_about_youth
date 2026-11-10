@@ -235,7 +235,8 @@ class _ResidencePicker extends ConsumerWidget {
       return const Text('시도 목록을 불러오는 중…', style: TextStyle(fontSize: 13));
     }
     return DropdownButtonFormField<String?>(
-      value: value != null && sidos.contains(value) ? value : null,
+      key: ValueKey(value ?? ''),
+      initialValue: value != null && sidos.contains(value) ? value : null,
       decoration: const InputDecoration(labelText: '현재 거주 시·도', border: OutlineInputBorder()),
       items: [
         const DropdownMenuItem<String?>(value: null, child: Text('입력 안 함')),

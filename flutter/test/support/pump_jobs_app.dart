@@ -73,7 +73,7 @@ Future<ProviderContainer> pumpJobsApp(
           JobsContainer.fromStores(
             repository: MappingJobsRepository(repo),
             profileLocalStore: ProfileStore(prefs, resolvedCipher),
-            savedNoticeLocalStore: SavedPostingStore(prefs, resolvedCipher),
+            savedPostingLocalStore: SavedPostingStore(prefs, resolvedCipher),
             reminderPrefs: SavedPostingReminderPrefs(prefs),
           ),
         ),
