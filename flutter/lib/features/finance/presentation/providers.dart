@@ -97,7 +97,7 @@ class SchemeListController extends AsyncNotifier<SchemeListState> {
 
 final schemeListProvider = AsyncNotifierProvider<SchemeListController, SchemeListState>(SchemeListController.new);
 
-final programDetailProvider = FutureProvider.family<SchemeDetail, String>((ref, id) {
+final schemeDetailProvider = FutureProvider.family<SchemeDetail, String>((ref, id) {
   final profile = ref.watch(profileProvider);
   return _container(ref).getSchemeDetail(id, profile: profile);
 });
@@ -131,7 +131,7 @@ final financeScheduleSchemesProvider = FutureProvider<({String today, List<Schem
 );
 
 final similarSchemesProvider = FutureProvider.family<List<SchemeSummary>, String>((ref, id) async {
-  final detail = await ref.watch(programDetailProvider(id).future);
+  final detail = await ref.watch(schemeDetailProvider(id).future);
   return _container(ref).loadSimilarSchemes(
     excludeId: id,
     productTypeId: detail.summary.productTypeId,

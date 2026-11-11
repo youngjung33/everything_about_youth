@@ -10,7 +10,7 @@
 | `benefits` | 청년 혜택·정책 | **1차 구현** | 온통청년 OPEN API로 전국 청년정책 수집, 내 조건 판정, 관심·일정·로컬 알림 |
 | `finance` | 청년 주거·자금 | **1차 구현** | 큐레이션 catalog + 온통(금융·세금) |
 | `jobs` | 청년·공공 일자리 | **1차 구현** | curated catalog + `jobs:seed-demo` |
-| `living` | 이사·생활 | **1차 구현** | curated + `living:seed-demo`, 상세 `checklistSteps[]`, 플래그 기본 on |
+| `living` | 이사·생활 | **1차 구현** | curated + `living:seed-demo`, 상세 `checklistSteps[]` |
 
 새 섹션을 만들 때는 `next/src/features/<id>/` + `features/registry.ts`, Flutter `features/<id>/` + `app/feature_modules.dart` 를 같은 `id` 로 추가합니다.
 
@@ -65,7 +65,7 @@
 - **수집(1차 sync)**: **`curated`** (repo catalog 8건, 키 불필요) + **`ontong-finance`** (`BENEFITS_ONTONG_API_KEY`, 금융·세금 필터). `npm run finance:sync` · `-- --list`
 - **수집(개발·데모)**: `npm run finance:seed-demo` → `[데모]` 제도
 - **2차**: HF·HUG HTML 크롤, data.go.kr·지자체 API, robots 막힌 포털 — [next/README.md](next/README.md#청년-주거자금-섹션) «1차 수집 vs 2차 후보»
-- **앱·API**: Flutter `/finance`, `/api/v1/finance/*` (플래그 `npm run features -- on finance`)
+- **앱·API**: Flutter `/finance`, `/api/v1/finance/*` (플래그 기본 on, 끄기: `npm run features -- off finance`)
 
 #### 크롤링이 더 필요한가? (benefits·finance 공통)
 

@@ -73,7 +73,7 @@ Future<ProviderContainer> pumpBenefitsApp(
           BenefitsContainer.fromStores(
             repository: MappingBenefitsRepository(repo),
             profileLocalStore: ProfileStore(prefs, resolvedCipher),
-            savedNoticeLocalStore: SavedProgramStore(prefs, resolvedCipher),
+            savedProgramLocalStore: SavedProgramStore(prefs, resolvedCipher),
             reminderPrefs: SavedProgramReminderPrefs(prefs),
           ),
         ),

@@ -2,7 +2,7 @@ import 'package:everything_about_youth/features/living/data/saved_guide_reminder
 import 'package:everything_about_youth/features/living/domain/repositories/profile_local_store.dart';
 import 'package:everything_about_youth/features/living/domain/repositories/saved_guide_local_store.dart';
 import 'package:everything_about_youth/features/living/domain/use_cases/paginated_guide_list.dart';
-import 'package:everything_about_youth/features/living/domain/use_cases/search_schemes.dart';
+import 'package:everything_about_youth/features/living/domain/use_cases/search_guides.dart';
 import 'package:everything_about_youth/features/living/domain/use_cases/toggle_saved_guide.dart';
 import 'package:everything_about_youth/features/living/living_container.dart';
 import 'package:flutter_test/flutter_test.dart';

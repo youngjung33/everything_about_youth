@@ -19,7 +19,7 @@ void main() {
     final container = FinanceContainer.fromStores(
       repository: FakeFinanceRepository(),
       profileLocalStore: MemoryFinanceProfileStore(),
-      savedNoticeLocalStore: MemorySavedSchemeLocalStore(),
+      savedSchemeLocalStore: MemorySavedSchemeLocalStore(),
       reminderPrefs: SavedSchemeReminderPrefs(prefs),
     );
 
@@ -28,6 +28,6 @@ void main() {
     expect(container.toggleSavedScheme, isA<ToggleSavedSchemeUseCase>());
     expect(container.reminderPrefs, isA<SavedSchemeReminderPrefs>());
     expect(container.profileLocalStore, isA<ProfileLocalStore>());
-    expect(container.savedNoticeLocalStore, isA<SavedSchemeLocalStore>());
+    expect(container.savedSchemeLocalStore, isA<SavedSchemeLocalStore>());
   });
 }

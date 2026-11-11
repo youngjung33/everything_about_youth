@@ -7,13 +7,13 @@ import '../../support/living_fixtures.dart';
 void main() {
   group('GuideListState.fromPage', () {
     test('마지막 페이지면 hasMore 가 false', () {
-      final page = GuidePage.fromJson(schemePageJson(items: [schemeSummaryJson()], page: 3, totalPages: 3));
+      final page = GuidePage.fromJson(guidePageJson(items: [guideSummaryJson()], page: 3, totalPages: 3));
       expect(GuideListState.fromPage(page).hasMore, isFalse);
     });
 
     test('페이지 필드를 그대로 옮긴다', () {
       final page = GuidePage.fromJson(
-        schemePageJson(items: [schemeSummaryJson(id: 'a')], total: 10, page: 2, totalPages: 5),
+        guidePageJson(items: [guideSummaryJson(id: 'a')], total: 10, page: 2, totalPages: 5),
       );
       final state = GuideListState.fromPage(page);
       expect(state.items.single.id, 'a');
@@ -28,10 +28,10 @@ void main() {
   group('GuideListState.merged', () {
     test('다음 페이지를 이어 붙인다', () {
       final current = GuideListState.fromPage(
-        GuidePage.fromJson(schemePageJson(items: [schemeSummaryJson(id: 'a')], page: 1, totalPages: 2)),
+        GuidePage.fromJson(guidePageJson(items: [guideSummaryJson(id: 'a')], page: 1, totalPages: 2)),
       );
       final next = GuidePage.fromJson(
-        schemePageJson(items: [schemeSummaryJson(id: 'b')], page: 2, totalPages: 2),
+        guidePageJson(items: [guideSummaryJson(id: 'b')], page: 2, totalPages: 2),
       );
       final merged = GuideListState.merged(current, next);
       expect(merged.items.map((e) => e.id), ['a', 'b']);
@@ -40,10 +40,10 @@ void main() {
 
     test('id 중복은 제거한다', () {
       final current = GuideListState.fromPage(
-        GuidePage.fromJson(schemePageJson(items: [schemeSummaryJson(id: 'a'), schemeSummaryJson(id: 'b')], page: 1, totalPages: 2)),
+        GuidePage.fromJson(guidePageJson(items: [guideSummaryJson(id: 'a'), guideSummaryJson(id: 'b')], page: 1, totalPages: 2)),
       );
       final next = GuidePage.fromJson(
-        schemePageJson(items: [schemeSummaryJson(id: 'b'), schemeSummaryJson(id: 'c')], page: 2, totalPages: 2),
+        guidePageJson(items: [guideSummaryJson(id: 'b'), guideSummaryJson(id: 'c')], page: 2, totalPages: 2),
       );
       final merged = GuideListState.merged(current, next);
       expect(merged.items.map((e) => e.id), ['a', 'b', 'c']);

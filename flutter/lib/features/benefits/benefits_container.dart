@@ -29,7 +29,7 @@ class BenefitsContainer {
   BenefitsContainer({
     required this.repository,
     required this.profileLocalStore,
-    required this.savedNoticeLocalStore,
+    required this.savedProgramLocalStore,
     required this.searchPrograms,
     required this.getProgramDetail,
     required this.loadBenefitMeta,
@@ -46,7 +46,7 @@ class BenefitsContainer {
 
   final BenefitsRepository repository;
   final ProfileLocalStore profileLocalStore;
-  final SavedProgramLocalStore savedNoticeLocalStore;
+  final SavedProgramLocalStore savedProgramLocalStore;
   final SavedProgramReminderPrefsStore reminderPrefs;
 
   final SearchProgramsUseCase searchPrograms;
@@ -68,11 +68,11 @@ class BenefitsContainer {
   }) {
     final repository = MappingBenefitsRepository(ApiBenefitsRepository(apiClient));
     final profileLocalStore = ProfileStore(prefs, cipher);
-    final savedNoticeLocalStore = SavedProgramStore(prefs, cipher);
+    final savedProgramLocalStore = SavedProgramStore(prefs, cipher);
     return BenefitsContainer.fromStores(
       repository: repository,
       profileLocalStore: profileLocalStore,
-      savedNoticeLocalStore: savedNoticeLocalStore,
+      savedProgramLocalStore: savedProgramLocalStore,
       reminderPrefs: SavedProgramReminderPrefs(prefs),
     );
   }
@@ -80,7 +80,7 @@ class BenefitsContainer {
   factory BenefitsContainer.fromStores({
     required BenefitsRepository repository,
     required ProfileLocalStore profileLocalStore,
-    required SavedProgramLocalStore savedNoticeLocalStore,
+    required SavedProgramLocalStore savedProgramLocalStore,
     required SavedProgramReminderPrefsStore reminderPrefs,
   }) {
     final getProgramDetail = GetProgramDetailUseCase(repository);
@@ -88,15 +88,15 @@ class BenefitsContainer {
     return BenefitsContainer(
       repository: repository,
       profileLocalStore: profileLocalStore,
-      savedNoticeLocalStore: savedNoticeLocalStore,
+      savedProgramLocalStore: savedProgramLocalStore,
       searchPrograms: searchPrograms,
       getProgramDetail: getProgramDetail,
       loadBenefitMeta: LoadBenefitMetaUseCase(repository),
       loadSchedulePrograms: LoadScheduleProgramsUseCase(repository),
       loadSimilarPrograms: LoadSimilarProgramsUseCase(repository),
-      resolveSavedProgramIds: ResolveSavedProgramIdsUseCase(repository, savedNoticeLocalStore),
+      resolveSavedProgramIds: ResolveSavedProgramIdsUseCase(repository, savedProgramLocalStore),
       loadSavedProgramSummaries: LoadSavedProgramSummariesUseCase(repository, getProgramDetail),
-      toggleSavedProgram: ToggleSavedProgramUseCase(repository, savedNoticeLocalStore),
+      toggleSavedProgram: ToggleSavedProgramUseCase(repository, savedProgramLocalStore),
       loadProfile: LoadProfileUseCase(profileLocalStore),
       saveProfile: SaveProfileUseCase(profileLocalStore),
       paginatedProgramList: PaginatedProgramListUseCase(searchPrograms),

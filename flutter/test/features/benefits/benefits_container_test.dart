@@ -19,7 +19,7 @@ void main() {
     final container = BenefitsContainer.fromStores(
       repository: FakeBenefitsRepository(),
       profileLocalStore: MemoryBenefitsProfileStore(),
-      savedNoticeLocalStore: MemorySavedProgramLocalStore(),
+      savedProgramLocalStore: MemorySavedProgramLocalStore(),
       reminderPrefs: SavedProgramReminderPrefs(prefs),
     );
 
@@ -28,6 +28,6 @@ void main() {
     expect(container.toggleSavedProgram, isA<ToggleSavedProgramUseCase>());
     expect(container.reminderPrefs, isA<SavedProgramReminderPrefs>());
     expect(container.profileLocalStore, isA<ProfileLocalStore>());
-    expect(container.savedNoticeLocalStore, isA<SavedProgramLocalStore>());
+    expect(container.savedProgramLocalStore, isA<SavedProgramLocalStore>());
   });
 }

@@ -2,7 +2,7 @@ import '../applicant_profile.dart';
 import '../failures.dart';
 import '../living_filters.dart';
 import '../guide_list_state.dart';
-import 'search_schemes.dart';
+import 'search_guides.dart';
 
 /// 목록 1페이지·추가 페이지·늦은 응답 무시를 domain 에서 처리한다.
 class PaginatedGuideListUseCase {

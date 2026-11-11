@@ -5,9 +5,9 @@ import 'package:everything_about_youth/features/living/domain/living_meta.dart';
 import 'package:everything_about_youth/features/living/domain/living_repository.dart';
 import 'package:everything_about_youth/features/living/domain/living_guide.dart';
 
-Map<String, dynamic> schemeSummaryJson({
+Map<String, dynamic> guideSummaryJson({
   String id = 'b1',
-  String title = '청년 월세 지원',
+  String title = '전입신고 안내',
   String status = 'open',
   Map<String, dynamic>? eligibility,
 }) => {
@@ -15,10 +15,10 @@ Map<String, dynamic> schemeSummaryJson({
   'title': title,
   'organization': '서울시',
   'procedureTypeId': 'move_in',
-  'categoryLabel': '전세·주택자금대출',
-  'tags': ['월세', '청년'],
+  'categoryLabel': '전입·전출',
+  'tags': ['전입', '주소'],
   'status': status,
-  'statusLabel': status == 'open' ? '신청중' : '마감',
+  'statusLabel': status == 'open' ? '진행중' : '종료',
   'dday': 'D-8',
   'regions': [
     {'sido': '서울', 'sigungu': ''},
@@ -27,14 +27,14 @@ Map<String, dynamic> schemeSummaryJson({
   'applicationStart': '2026-10-01',
   'applicationEnd': '2026-10-20',
   'announcementDate': '2026-09-25',
-  'summary': '만 19~39세 무주택 청년 월세 지원',
+  'summary': '전입신고 절차와 필요 서류',
   'url': 'https://example.com/b1',
   'sourceLabels': ['데모 데이터'],
   'eligibility': eligibility,
 };
 
-Map<String, dynamic> schemeDetailJson({Map<String, dynamic>? eligibility}) => {
-  ...schemeSummaryJson(eligibility: eligibility),
+Map<String, dynamic> guideDetailJson({Map<String, dynamic>? eligibility}) => {
+  ...guideSummaryJson(eligibility: eligibility),
   'checklistSteps': [
     {'order': 1, 'title': '준비', 'summary': '서류 확인', 'url': null},
   ],
@@ -50,7 +50,7 @@ Map<String, dynamic> schemeDetailJson({Map<String, dynamic>? eligibility}) => {
   ],
 };
 
-Map<String, dynamic> schemePageJson({
+Map<String, dynamic> guidePageJson({
   required List<Map<String, dynamic>> items,
   int total = 0,
   int page = 1,
@@ -82,8 +82,8 @@ Map<String, dynamic> livingMetaJson() => {
   'sidos': ['서울', '경기'],
 };
 
-GuideSummary sampleGuideSummary({String id = 'b1', String title = '청년 전세자금'}) =>
-    GuideSummary.fromJson(schemeSummaryJson(id: id, title: title));
+GuideSummary sampleGuideSummary({String id = 'b1', String title = '전입신고 안내'}) =>
+    GuideSummary.fromJson(guideSummaryJson(id: id, title: title));
 
 class FakeLivingRepository implements LivingRepository {
   FakeLivingRepository({

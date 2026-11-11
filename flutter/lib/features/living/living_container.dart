@@ -20,7 +20,7 @@ import 'domain/use_cases/load_similar_schemes.dart';
 import 'domain/use_cases/resolve_saved_guide_ids.dart';
 import 'domain/use_cases/save_profile.dart';
 import 'domain/use_cases/paginated_guide_list.dart';
-import 'domain/use_cases/search_schemes.dart';
+import 'domain/use_cases/search_guides.dart';
 import 'domain/use_cases/toggle_saved_guide.dart';
 
 class LivingContainer {

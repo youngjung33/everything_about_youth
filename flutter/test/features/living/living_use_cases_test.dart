@@ -13,7 +13,7 @@ import 'package:everything_about_youth/features/living/domain/use_cases/load_sch
 import 'package:everything_about_youth/features/living/domain/use_cases/load_similar_schemes.dart';
 import 'package:everything_about_youth/features/living/domain/use_cases/resolve_saved_guide_ids.dart';
 import 'package:everything_about_youth/features/living/domain/use_cases/save_profile.dart';
-import 'package:everything_about_youth/features/living/domain/use_cases/search_schemes.dart';
+import 'package:everything_about_youth/features/living/domain/use_cases/search_guides.dart';
 import 'package:everything_about_youth/features/living/domain/use_cases/toggle_saved_guide.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -22,14 +22,14 @@ import '../../support/living_memory_stores.dart';
 
 void main() {
   group('SearchGuidesUseCase', () {
-    test('repository 오류는 그대로 전파한다', () {
+    test('repository ĂÂĂÂĂÂ¤ÄĹ¤ĂËĂÂÄĹ¤ĂÂĂÂ ĂÂĂÂĂÂ¸ÄĹ¤ĂÂĂÂÄĹ¤ĂÂĂÂ ĂÂĂÂ ĂÂÄÂ­ĂÂĂÂÄÂ­ĂÂĂÂÄĹ¤ĂÂĂÂ¤', () {
       final repo = FakeLivingRepository(searchError: const ApiException('fail'));
       final uc = SearchGuidesUseCase(repo);
       expect(uc(filters: LivingFilters.initial, profile: ApplicantProfile.empty), throwsA(isA<ApiException>()));
     });
 
-    test('repository search 를 위임한다', () async {
-      final repo = FakeLivingRepository(pages: [GuidePage.fromJson(schemePageJson(items: [schemeSummaryJson()]))]);
+    test('repository search ÄĹ¤ĂËÄšĹ ĂÂĂÂĂÂĂÂĂÂĂÂÄÂ­ĂÂĂÂÄĹ¤ĂÂĂÂ¤', () async {
+      final repo = FakeLivingRepository(pages: [GuidePage.fromJson(guidePageJson(items: [guideSummaryJson()]))]);
       final uc = SearchGuidesUseCase(repo);
       final page = await uc(filters: LivingFilters.initial, profile: ApplicantProfile.empty);
       expect(page.items, hasLength(1));
@@ -38,12 +38,12 @@ void main() {
   });
 
   group('LoadLivingMetaUseCase', () {
-    test('fetchMeta 실패 전파', () {
+    test('fetchMeta ĂÂĂÂĂÂ¤ÄÂ­ĂÂĂÂ¨ ĂÂĂÂ ĂÂÄÂ­ĂÂĂÂ', () {
       final repo = FakeLivingRepository(fetchMetaError: const ApiException('meta'));
       expect(LoadLivingMetaUseCase(repo)(), throwsA(isA<ApiException>()));
     });
 
-    test('fetchMeta 위임', () async {
+    test('fetchMeta ĂÂĂÂĂÂĂÂĂÂĂÂ', () async {
       final repo = FakeLivingRepository();
       final meta = await LoadLivingMetaUseCase(repo)();
       expect(meta.sidos, isNotEmpty);
@@ -51,7 +51,7 @@ void main() {
   });
 
   group('GetGuideDetailUseCase', () {
-    test('getGuide 실패 전파', () {
+    test('getGuide ĂÂĂÂĂÂ¤ÄÂ­ĂÂĂÂ¨ ĂÂĂÂ ĂÂÄÂ­ĂÂĂÂ', () {
       final repo = FakeLivingRepository(getGuideError: const ApiException('detail fail'));
       expect(
         GetGuideDetailUseCase(repo)('x', profile: ApplicantProfile.empty),
@@ -59,15 +59,15 @@ void main() {
       );
     });
 
-    test('getGuide 위임', () async {
-      final repo = FakeLivingRepository(pages: [GuidePage.fromJson(schemePageJson(items: [schemeSummaryJson(id: 'x')]))]);
+    test('getGuide ĂÂĂÂĂÂĂÂĂÂĂÂ', () async {
+      final repo = FakeLivingRepository(pages: [GuidePage.fromJson(guidePageJson(items: [guideSummaryJson(id: 'x')]))]);
       final detail = await GetGuideDetailUseCase(repo)('x', profile: ApplicantProfile.empty);
       expect(detail.summary.id, 'x');
     });
   });
 
   group('LoadProfileUseCase / SaveProfileUseCase', () {
-    test('load 와 save', () async {
+    test('load ĂÂĂÂĂÂ save', () async {
       final store = MemoryFinanceProfileStore();
       const profile = ApplicantProfile(age: 25);
       await SaveProfileUseCase(store)(profile);
@@ -76,16 +76,16 @@ void main() {
   });
 
   group('ResolveSavedGuideIdsUseCase', () {
-    test('회원·merge 실패면 LivingUserMessage 전파', () async {
+    test('ÄÂ­ĂÂĂÂĂÂĂÂĂÂÄÂĂÂmerge ĂÂĂÂĂÂ¤ÄÂ­ĂÂĂÂ¨ÄĹ¤ÄšÂ ĂÂ´ LivingUserMessage ĂÂĂÂ ĂÂÄÂ­ĂÂĂÂ', () async {
       final local = MemorySavedGuideLocalStore(['local1']);
-      final repo = FakeLivingRepository(mergeError: const LivingUserMessage('merge 실패'));
+      final repo = FakeLivingRepository(mergeError: const LivingUserMessage('merge ĂÂĂÂĂÂ¤ÄÂ­ĂÂĂÂ¨'));
       expect(
         ResolveSavedGuideIdsUseCase(repo, local)(isMember: true),
         throwsA(isA<LivingUserMessage>()),
       );
     });
 
-    test('비회원: 로컬 id 만', () async {
+    test('ÄĹ¤ÄšÄĂÂÄÂ­ĂÂĂÂĂÂĂÂĂÂ: ÄĹ¤ĂÂĂÂĂÂÄšÄ˝ÄšĹĄ id ÄĹ¤ĂÂ§ĂÂ', () async {
       final local = MemorySavedGuideLocalStore(['a', 'b']);
       final repo = FakeLivingRepository();
       final ids = await ResolveSavedGuideIdsUseCase(repo, local)(isMember: false);
@@ -93,13 +93,13 @@ void main() {
       expect(repo.mergeCalls, isEmpty);
     });
 
-    test('회원·로컬 비어 있음: 서버 id', () async {
+    test('ÄÂ­ĂÂĂÂĂÂĂÂĂÂÄÂĂÂÄĹ¤ĂÂĂÂĂÂÄšÄ˝ÄšĹĄ ÄĹ¤ÄšÄĂÂĂÂĂÂĂÂ´ ĂÂĂÂĂÂĂÂĂÂĂÂ: ĂÂĂÂĂÂÄĹ¤ĂÂĂÂ id', () async {
       final repo = FakeLivingRepository(savedIds: ['s1']);
       final ids = await ResolveSavedGuideIdsUseCase(repo, MemorySavedGuideLocalStore())(isMember: true);
       expect(ids, ['s1']);
     });
 
-    test('회원·로컬 있음: merge 후 로컬 비우고 서버 목록', () async {
+    test('ÄÂ­ĂÂĂÂĂÂĂÂĂÂÄÂĂÂÄĹ¤ĂÂĂÂĂÂÄšÄ˝ÄšĹĄ ĂÂĂÂĂÂĂÂĂÂĂÂ: merge ÄÂ­ĂÂĂÂ ÄĹ¤ĂÂĂÂĂÂÄšÄ˝ÄšĹĄ ÄĹ¤ÄšÄĂÂĂÂĂÂĂÂ°ĂÂÄšÂĂÂ  ĂÂĂÂĂÂÄĹ¤ĂÂĂÂ ÄĹ¤ÄšÂÄšÂ ÄĹ¤ĂÂĂÂ', () async {
       final local = MemorySavedGuideLocalStore(['local1']);
       final repo = FakeLivingRepository(savedIds: ['server']);
       final ids = await ResolveSavedGuideIdsUseCase(repo, local)(isMember: true);
@@ -112,7 +112,7 @@ void main() {
   });
 
   group('ToggleSavedGuideUseCase', () {
-    test('상한 초과면 error', () async {
+    test('ĂÂĂÂĂÂÄÂ­ĂÂĂÂ ĂÂĂÂ´ĂÂĂÂÄšÂÄšĹÄĹ¤ÄšÂ ĂÂ´ error', () async {
       final ids = [for (var i = 0; i < SavedGuideLocalStore.maxCount; i++) 'n$i'];
       final uc = ToggleSavedGuideUseCase(FakeLivingRepository(), MemorySavedGuideLocalStore());
       final r = await uc(id: 'new', isMember: false, currentIds: ids);
@@ -120,22 +120,22 @@ void main() {
       expect(r.ids, isNull);
     });
 
-    test('회원: save API 실패면 ids 갱신 없음', () async {
-      final repo = FakeLivingRepository(saveError: const LivingUserMessage('저장 실패'));
+    test('ÄÂ­ĂÂĂÂĂÂĂÂĂÂ: save API ĂÂĂÂĂÂ¤ÄÂ­ĂÂĂÂ¨ÄĹ¤ÄšÂ ĂÂ´ ids ĂÂĂÂ°ĂÂĂÂĂÂĂÂ  ĂÂĂÂĂÂĂÂĂÂĂÂ', () async {
+      final repo = FakeLivingRepository(saveError: const LivingUserMessage('ĂÂĂÂ ĂÂĂÂĂÂĂË ĂÂĂÂĂÂ¤ÄÂ­ĂÂĂÂ¨'));
       final uc = ToggleSavedGuideUseCase(repo, MemorySavedGuideLocalStore());
       final r = await uc(id: 'n1', isMember: true, currentIds: []);
-      expect(r.error, '저장 실패');
+      expect(r.error, 'ĂÂĂÂ ĂÂĂÂĂÂĂË ĂÂĂÂĂÂ¤ÄÂ­ĂÂĂÂ¨');
       expect(r.ids, isNull);
     });
 
-    test('회원: unsave API 실패', () async {
-      final repo = FakeLivingRepository(unsaveError: const LivingUserMessage('해제 실패'));
+    test('ÄÂ­ĂÂĂÂĂÂĂÂĂÂ: unsave API ĂÂĂÂĂÂ¤ÄÂ­ĂÂĂÂ¨', () async {
+      final repo = FakeLivingRepository(unsaveError: const LivingUserMessage('ÄÂ­ĂÂĂÂ´ĂÂĂÂ ĂÂ ĂÂĂÂĂÂ¤ÄÂ­ĂÂĂÂ¨'));
       final uc = ToggleSavedGuideUseCase(repo, MemorySavedGuideLocalStore());
       final r = await uc(id: 'n1', isMember: true, currentIds: ['n1']);
-      expect(r.error, '해제 실패');
+      expect(r.error, 'ÄÂ­ĂÂĂÂ´ĂÂĂÂ ĂÂ ĂÂĂÂĂÂ¤ÄÂ­ĂÂĂÂ¨');
     });
 
-    test('비회원: 추가하면 로컬에만 저장', () async {
+    test('ÄĹ¤ÄšÄĂÂÄÂ­ĂÂĂÂĂÂĂÂĂÂ: ĂÂÄšÂĂÂĂÂĂÂ°ĂÂÄÂ­ĂÂĂÂÄĹ¤ÄšÂ ĂÂ´ ÄĹ¤ĂÂĂÂĂÂÄšÄ˝ÄšĹĄĂÂĂÂĂÂÄĹ¤ĂÂ§ĂÂ ĂÂĂÂ ĂÂĂÂĂÂĂË', () async {
       final local = MemorySavedGuideLocalStore();
       final repo = FakeLivingRepository();
       final uc = ToggleSavedGuideUseCase(repo, local);
@@ -146,14 +146,14 @@ void main() {
       expect(repo.saveCalls, isEmpty);
     });
 
-    test('비회원: 제거', () async {
+    test('ÄĹ¤ÄšÄĂÂÄÂ­ĂÂĂÂĂÂĂÂĂÂ: ĂÂĂÂ ĂÂĂÂĂÂĂÂ°', () async {
       final local = MemorySavedGuideLocalStore(['n1', 'n2']);
       final uc = ToggleSavedGuideUseCase(FakeLivingRepository(), local);
       final r = await uc(id: 'n1', isMember: false, currentIds: ['n1', 'n2']);
       expect(r.ids, ['n2']);
     });
 
-    test('회원: save 성공 시 로컬 replace 하지 않음', () async {
+    test('ÄÂ­ĂÂĂÂĂÂĂÂĂÂ: save ĂÂĂÂĂÂĂÂÄšÂĂĹž ĂÂĂÂĂÂ ÄĹ¤ĂÂĂÂĂÂÄšÄ˝ÄšĹĄ replace ÄÂ­ĂÂĂÂĂÂĂÂ§ĂÂ ĂÂĂÂĂÂĂÂĂÂĂÂ', () async {
       final local = MemorySavedGuideLocalStore(['old']);
       final repo = FakeLivingRepository();
       final r = await ToggleSavedGuideUseCase(repo, local)(id: 'n1', isMember: true, currentIds: []);
@@ -162,7 +162,7 @@ void main() {
       expect(repo.saveCalls, ['n1']);
     });
 
-    test('이미 있는 id 를 다시 누르면 제거', () async {
+    test('ĂÂĂÂĂÂ´ÄĹ¤ÄšĹĽĂÂ¸ ĂÂĂÂĂÂÄĹ¤ĂÂĂÂ id ÄĹ¤ĂËÄšĹ ÄĹ¤ĂÂĂÂ¤ĂÂĂÂĂÂ ÄĹ¤ĂÂĂÂÄĹ¤ĂËĂÂ´ÄĹ¤ÄšÂ ĂÂ´ ĂÂĂÂ ĂÂĂÂĂÂĂÂ°', () async {
       final uc = ToggleSavedGuideUseCase(FakeLivingRepository(), MemorySavedGuideLocalStore(['a', 'b']));
       final r = await uc(id: 'a', isMember: false, currentIds: ['a', 'b']);
       expect(r.ids, ['b']);
@@ -170,7 +170,7 @@ void main() {
   });
 
   group('LoadSavedGuideSummariesUseCase', () {
-    test('id 가 비어 있으면 빈 목록', () async {
+    test('id ĂÂĂÂ°ĂÂ ÄĹ¤ÄšÄĂÂĂÂĂÂĂÂ´ ĂÂĂÂĂÂĂÂĂÂÄšĹÄĹ¤ÄšÂ ĂÂ´ ÄĹ¤ÄšÄĂÂ ÄĹ¤ÄšÂÄšÂ ÄĹ¤ĂÂĂÂ', () async {
       final repo = FakeLivingRepository();
       final uc = LoadSavedGuideSummariesUseCase(repo, GetGuideDetailUseCase(repo));
       final list = await uc(ids: [], profile: ApplicantProfile.empty, isMember: false);
@@ -178,8 +178,8 @@ void main() {
       expect(list.total, 0);
     });
 
-    test('비회원: getGuide 가 LivingUserMessage 이면 전파한다', () async {
-      final inner = FakeLivingRepository(getGuideError: const LivingUserMessage('상세 실패'));
+    test('ÄĹ¤ÄšÄĂÂÄÂ­ĂÂĂÂĂÂĂÂĂÂ: getGuide ĂÂĂÂ°ĂÂ LivingUserMessage ĂÂĂÂĂÂ´ÄĹ¤ÄšÂ ĂÂ´ ĂÂĂÂ ĂÂÄÂ­ĂÂĂÂÄÂ­ĂÂĂÂÄĹ¤ĂÂĂÂ¤', () async {
+      final inner = FakeLivingRepository(getGuideError: const LivingUserMessage('ĂÂĂÂĂÂĂÂĂÂĂÂ¸ ĂÂĂÂĂÂ¤ÄÂ­ĂÂĂÂ¨'));
       final repo = MappingLivingRepository(inner);
       final uc = LoadSavedGuideSummariesUseCase(repo, GetGuideDetailUseCase(repo));
       expect(
@@ -188,8 +188,8 @@ void main() {
       );
     });
 
-    test('회원: fetchSaved 실패 전파', () {
-      final repo = FakeLivingRepository(fetchSavedError: const LivingUserMessage('목록 실패'));
+    test('ÄÂ­ĂÂĂÂĂÂĂÂĂÂ: fetchSaved ĂÂĂÂĂÂ¤ÄÂ­ĂÂĂÂ¨ ĂÂĂÂ ĂÂÄÂ­ĂÂĂÂ', () {
+      final repo = FakeLivingRepository(fetchSavedError: const LivingUserMessage('ÄĹ¤ÄšÂÄšÂ ÄĹ¤ĂÂĂÂ ĂÂĂÂĂÂ¤ÄÂ­ĂÂĂÂ¨'));
       final uc = LoadSavedGuideSummariesUseCase(repo, GetGuideDetailUseCase(repo));
       expect(
         uc(ids: ['s1'], profile: ApplicantProfile.empty, isMember: true),
@@ -197,7 +197,7 @@ void main() {
       );
     });
 
-    test('비회원: 없는 공고는 건너뛴다', () async {
+    test('ÄĹ¤ÄšÄĂÂÄÂ­ĂÂĂÂĂÂĂÂĂÂ: ĂÂĂÂĂÂÄĹ¤ĂÂĂÂ ĂÂÄšÂĂĹžĂÂÄšÂĂÂ ÄĹ¤ĂÂĂÂ ĂÂĂÂĂÂ´ÄĹ¤ĂÂĂÂÄĹ¤ĂÂĂÂ´ÄĹ¤ĂÂĂÂ¤', () async {
       final inner = FakeLivingRepository();
       final repo = MappingLivingRepository(inner);
       final uc = LoadSavedGuideSummariesUseCase(repo, GetGuideDetailUseCase(repo));
@@ -205,9 +205,9 @@ void main() {
       expect(list.items, isEmpty);
     });
 
-    test('회원: fetchSaved', () async {
+    test('ÄÂ­ĂÂĂÂĂÂĂÂĂÂ: fetchSaved', () async {
       final repo = FakeLivingRepository(
-        pages: [GuidePage.fromJson(schemePageJson(items: [schemeSummaryJson(id: 's1')]))],
+        pages: [GuidePage.fromJson(guidePageJson(items: [guideSummaryJson(id: 's1')]))],
         savedIds: ['s1'],
       );
       final uc = LoadSavedGuideSummariesUseCase(repo, GetGuideDetailUseCase(repo));
@@ -217,7 +217,7 @@ void main() {
   });
 
   group('LoadSimilarGuidesUseCase', () {
-    test('search 실패 전파', () {
+    test('search ĂÂĂÂĂÂ¤ÄÂ­ĂÂĂÂ¨ ĂÂĂÂ ĂÂÄÂ­ĂÂĂÂ', () {
       final repo = FakeLivingRepository(searchError: const ApiException('similar fail'));
       expect(
         LoadSimilarGuidesUseCase(repo)(
@@ -229,10 +229,10 @@ void main() {
       );
     });
 
-    test('같은 supplyType 검색에서 자신과 최대 5개', () async {
-      final items = [for (var i = 0; i < 10; i++) schemeSummaryJson(id: 'n$i', title: 't$i')];
+    test('ĂÂĂÂ°ĂÂĂÂĂÂĂÂ supplyType ĂÂĂÂĂÂĂÂĂÂĂÂĂÂĂÂĂÂĂÂĂÂĂÂ ĂÂĂÂĂÂĂÂĂÂĂÂ ĂÂÄšÂÄšĹ ĂÂĂĹžĂÂÄĹ¤ĂÂĂÂ 5ĂÂĂÂ°ĂÂ', () async {
+      final items = [for (var i = 0; i < 10; i++) guideSummaryJson(id: 'n$i', title: 't$i')];
       final repo = FakeLivingRepository(
-        pages: [GuidePage.fromJson(schemePageJson(items: items))],
+        pages: [GuidePage.fromJson(guidePageJson(items: items))],
       );
       final similar = await LoadSimilarGuidesUseCase(repo)(
         excludeId: 'n0',
@@ -245,12 +245,12 @@ void main() {
   });
 
   group('LoadScheduleGuidesUseCase', () {
-    test('2페이지 조회 실패면 예외 전파', () async {
+    test('2ÄÂ­ĂÂĂÂĂÂĂÂĂÂ´ĂÂĂÂ§ĂÂ ĂÂĂÂĂÂ°ÄÂ­ĂÂĂÂ ĂÂĂÂĂÂ¤ÄÂ­ĂÂĂÂ¨ÄĹ¤ÄšÂ ĂÂ´ ĂÂĂÂĂÂĂÂĂÂĂÂ¸ ĂÂĂÂ ĂÂÄÂ­ĂÂĂÂ', () async {
       late FakeLivingRepository repo;
       repo = FakeLivingRepository(
         pages: [
-          GuidePage.fromJson(schemePageJson(items: [schemeSummaryJson(id: 'a')], page: 1, totalPages: 3)),
-          GuidePage.fromJson(schemePageJson(items: [schemeSummaryJson(id: 'b')], page: 2, totalPages: 3)),
+          GuidePage.fromJson(guidePageJson(items: [guideSummaryJson(id: 'a')], page: 1, totalPages: 3)),
+          GuidePage.fromJson(guidePageJson(items: [guideSummaryJson(id: 'b')], page: 2, totalPages: 3)),
         ],
         searchHook: (_, page) {
           if (page == 2) throw const ApiException('page2 fail');
@@ -263,19 +263,19 @@ void main() {
       );
     });
 
-    test('여러 페이지를 dedup 하며 합친다', () async {
+    test('ĂÂĂÂÄšĹĄÄĹ¤ĂÂÄšĹĄ ÄÂ­ĂÂĂÂĂÂĂÂĂÂ´ĂÂĂÂ§ĂÂÄĹ¤ĂËÄšĹ dedup ÄÂ­ĂÂĂÂÄĹ¤ÄšÂ ĂÂ° ÄÂ­ĂÂÄšÂ ĂÂÄšÄĂÂÄĹ¤ĂÂĂÂ¤', () async {
       final repo = FakeLivingRepository(
         pages: [
           GuidePage.fromJson(
-            schemePageJson(
-              items: [schemeSummaryJson(id: 'a'), schemeSummaryJson(id: 'b')],
+            guidePageJson(
+              items: [guideSummaryJson(id: 'a'), guideSummaryJson(id: 'b')],
               page: 1,
               totalPages: 2,
             ),
           ),
           GuidePage.fromJson(
-            schemePageJson(
-              items: [schemeSummaryJson(id: 'b'), schemeSummaryJson(id: 'c')],
+            guidePageJson(
+              items: [guideSummaryJson(id: 'b'), guideSummaryJson(id: 'c')],
               page: 2,
               totalPages: 2,
             ),

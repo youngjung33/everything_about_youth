@@ -5,14 +5,14 @@ import 'package:everything_about_youth/features/living/domain/applicant_profile.
 import 'package:everything_about_youth/features/living/domain/living_filters.dart';
 import 'package:everything_about_youth/features/living/domain/living_guide.dart';
 import 'package:everything_about_youth/features/living/domain/use_cases/paginated_guide_list.dart';
-import 'package:everything_about_youth/features/living/domain/use_cases/search_schemes.dart';
+import 'package:everything_about_youth/features/living/domain/use_cases/search_guides.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../support/living_fixtures.dart';
 
 GuidePage _page(List<String> ids, {int pageNo = 1, int totalPages = 2}) => GuidePage.fromJson(
-  schemePageJson(
-    items: [for (final id in ids) schemeSummaryJson(id: id, title: '공고 $id')],
+  guidePageJson(
+    items: [for (final id in ids) guideSummaryJson(id: id, title: '안내 $id')],
     page: pageNo,
     totalPages: totalPages,
   ),

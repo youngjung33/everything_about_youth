@@ -29,7 +29,7 @@ class FinanceContainer {
   FinanceContainer({
     required this.repository,
     required this.profileLocalStore,
-    required this.savedNoticeLocalStore,
+    required this.savedSchemeLocalStore,
     required this.searchSchemes,
     required this.getSchemeDetail,
     required this.loadFinanceMeta,
@@ -46,7 +46,7 @@ class FinanceContainer {
 
   final FinanceRepository repository;
   final ProfileLocalStore profileLocalStore;
-  final SavedSchemeLocalStore savedNoticeLocalStore;
+  final SavedSchemeLocalStore savedSchemeLocalStore;
   final SavedSchemeReminderPrefsStore reminderPrefs;
 
   final SearchSchemesUseCase searchSchemes;
@@ -68,11 +68,11 @@ class FinanceContainer {
   }) {
     final repository = MappingFinanceRepository(ApiFinanceRepository(apiClient));
     final profileLocalStore = ProfileStore(prefs, cipher);
-    final savedNoticeLocalStore = SavedSchemeStore(prefs, cipher);
+    final savedSchemeLocalStore = SavedSchemeStore(prefs, cipher);
     return FinanceContainer.fromStores(
       repository: repository,
       profileLocalStore: profileLocalStore,
-      savedNoticeLocalStore: savedNoticeLocalStore,
+      savedSchemeLocalStore: savedSchemeLocalStore,
       reminderPrefs: SavedSchemeReminderPrefs(prefs),
     );
   }
@@ -80,7 +80,7 @@ class FinanceContainer {
   factory FinanceContainer.fromStores({
     required FinanceRepository repository,
     required ProfileLocalStore profileLocalStore,
-    required SavedSchemeLocalStore savedNoticeLocalStore,
+    required SavedSchemeLocalStore savedSchemeLocalStore,
     required SavedSchemeReminderPrefsStore reminderPrefs,
   }) {
     final getSchemeDetail = GetSchemeDetailUseCase(repository);
@@ -88,15 +88,15 @@ class FinanceContainer {
     return FinanceContainer(
       repository: repository,
       profileLocalStore: profileLocalStore,
-      savedNoticeLocalStore: savedNoticeLocalStore,
+      savedSchemeLocalStore: savedSchemeLocalStore,
       searchSchemes: searchSchemes,
       getSchemeDetail: getSchemeDetail,
       loadFinanceMeta: LoadFinanceMetaUseCase(repository),
       loadScheduleSchemes: LoadScheduleSchemesUseCase(repository),
       loadSimilarSchemes: LoadSimilarSchemesUseCase(repository),
-      resolveSavedSchemeIds: ResolveSavedSchemeIdsUseCase(repository, savedNoticeLocalStore),
+      resolveSavedSchemeIds: ResolveSavedSchemeIdsUseCase(repository, savedSchemeLocalStore),
       loadSavedSchemeSummaries: LoadSavedSchemeSummariesUseCase(repository, getSchemeDetail),
-      toggleSavedScheme: ToggleSavedSchemeUseCase(repository, savedNoticeLocalStore),
+      toggleSavedScheme: ToggleSavedSchemeUseCase(repository, savedSchemeLocalStore),
       loadProfile: LoadProfileUseCase(profileLocalStore),
       saveProfile: SaveProfileUseCase(profileLocalStore),
       paginatedSchemeList: PaginatedSchemeListUseCase(searchSchemes),

@@ -26,7 +26,7 @@ class SchemeDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final async = ref.watch(programDetailProvider(id));
+    final async = ref.watch(schemeDetailProvider(id));
 
     return AppScaffold(
       appBar: AppTopBar(
@@ -57,7 +57,7 @@ class SchemeDetailPage extends ConsumerWidget {
       body: async.when(
         loading: () => LoadingView(message: _accent.detailLoadingMessage),
         error: (error, _) =>
-            ErrorView(message: errorMessage(error), onRetry: () => ref.invalidate(programDetailProvider(id))),
+            ErrorView(message: errorMessage(error), onRetry: () => ref.invalidate(schemeDetailProvider(id))),
         data: (detail) => _DetailBody(detail: detail),
       ),
     );

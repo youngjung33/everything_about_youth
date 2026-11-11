@@ -42,7 +42,7 @@ class RecordingNotificationService implements DeadlineNotificationService {
 }
 
 SavedGuideList _list(List<String> ids) => SavedGuideList(
-  items: [for (final id in ids) GuideSummary.fromJson(schemeSummaryJson(id: id))],
+  items: [for (final id in ids) GuideSummary.fromJson(guideSummaryJson(id: id))],
   total: ids.length,
   today: '2026-10-13',
 );

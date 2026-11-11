@@ -12,7 +12,7 @@ import '../../support/finance_fixtures.dart';
 
 SchemePage _page(List<String> ids, {int pageNo = 1, int totalPages = 2}) => SchemePage.fromJson(
   schemePageJson(
-    items: [for (final id in ids) schemeSummaryJson(id: id, title: '공고 $id')],
+    items: [for (final id in ids) schemeSummaryJson(id: id, title: '제도 $id')],
     page: pageNo,
     totalPages: totalPages,
   ),

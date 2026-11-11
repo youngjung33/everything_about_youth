@@ -73,7 +73,7 @@ Future<ProviderContainer> pumpFinanceApp(
           FinanceContainer.fromStores(
             repository: MappingFinanceRepository(repo),
             profileLocalStore: ProfileStore(prefs, resolvedCipher),
-            savedNoticeLocalStore: SavedSchemeStore(prefs, resolvedCipher),
+            savedSchemeLocalStore: SavedSchemeStore(prefs, resolvedCipher),
             reminderPrefs: SavedSchemeReminderPrefs(prefs),
           ),
         ),
