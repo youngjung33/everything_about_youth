@@ -11,7 +11,7 @@ import '../domain/finance_scheme.dart';
 import '../domain/scheme_list_state.dart';
 import '../finance_container.dart';
 
-/// 임대주택 **유일한 조립 Provider**. data·use case 는 [FinanceContainer] 에만 있다.
+/// 청년 주거·자금 **유일한 조립 Provider**. data·use case 는 [FinanceContainer] 에만 있다.
 final financeContainerProvider = Provider<FinanceContainer>(
   (ref) => FinanceContainer.live(
     apiClient: ref.watch(apiClientProvider),

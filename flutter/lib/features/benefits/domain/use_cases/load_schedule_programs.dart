@@ -3,7 +3,7 @@ import '../benefit_filters.dart';
 import '../benefits_repository.dart';
 import '../benefit_program.dart';
 
-/// 접수중·예정 공고를 일정 화면용으로 넉넉히 불러 온다.
+/// 접수중·예정 정책을 일정 화면용으로 넉넉히 불러 온다.
 class LoadScheduleProgramsUseCase {
   const LoadScheduleProgramsUseCase(this._repository);
 

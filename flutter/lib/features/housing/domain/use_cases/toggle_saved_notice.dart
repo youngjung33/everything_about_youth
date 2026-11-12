@@ -1,3 +1,4 @@
+import '../../../../core/design/service_accent.dart';
 import '../failures.dart';
 import '../housing_repository.dart';
 import '../repositories/saved_notice_local_store.dart';
@@ -27,7 +28,10 @@ class ToggleSavedNoticeUseCase {
       ids.remove(id);
     } else {
       if (ids.length >= SavedNoticeLocalStore.maxCount) {
-        return (ids: null, error: '관심 공고는 ${SavedNoticeLocalStore.maxCount}개까지 저장할 수 있습니다.');
+        return (
+          ids: null,
+          error: ServiceAccent.housing.savedMaxCountError(SavedNoticeLocalStore.maxCount),
+        );
       }
       if (isMember) {
         try {

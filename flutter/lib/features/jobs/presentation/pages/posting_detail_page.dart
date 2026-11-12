@@ -107,7 +107,7 @@ class _DetailBody extends StatelessWidget {
                     value: formatPeriod(posting.applicationStart, posting.applicationEnd),
                     width: 200,
                   ),
-                  MetaItem(label: '공고일', value: formatDate(posting.announcementDate), width: 200),
+                  MetaItem(label: _accent.announcementDateLabel, value: formatDate(posting.announcementDate), width: 200),
                 ],
               ),
             ),

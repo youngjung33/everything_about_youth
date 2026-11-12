@@ -23,7 +23,7 @@ import 'domain/use_cases/paginated_program_list.dart';
 import 'domain/use_cases/search_programs.dart';
 import 'domain/use_cases/toggle_saved_program.dart';
 
-/// 임대주택 섹션의 **조립(composition root)**.
+/// 청년 혜택 섹션의 **조립(composition root)**.
 /// 앱 어댑터(`benefits_module.dart`) 아래, domain / data / presentation 을 이어 준다.
 class BenefitsContainer {
   BenefitsContainer({

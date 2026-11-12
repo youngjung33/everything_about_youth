@@ -1,3 +1,4 @@
+import '../../../../core/design/service_accent.dart';
 import '../failures.dart';
 import '../jobs_repository.dart';
 import '../repositories/saved_posting_local_store.dart';
@@ -27,7 +28,10 @@ class ToggleSavedPostingUseCase {
       ids.remove(id);
     } else {
       if (ids.length >= SavedPostingLocalStore.maxCount) {
-        return (ids: null, error: '관심 공고는 ${SavedPostingLocalStore.maxCount}개까지 저장할 수 있습니다.');
+        return (
+          ids: null,
+          error: ServiceAccent.jobs.savedMaxCountError(SavedPostingLocalStore.maxCount),
+        );
       }
       if (isMember) {
         try {

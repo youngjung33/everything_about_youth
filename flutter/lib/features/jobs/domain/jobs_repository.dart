@@ -3,7 +3,7 @@ import 'jobs_filters.dart';
 import 'jobs_meta.dart';
 import 'job_posting.dart';
 
-/// 임대주택 공고 조회 포트. 구현체(HTTP API)는 data 레이어에 있다.
+/// 채용 공고 조회 포트. 구현체(HTTP API)는 data 레이어에 있다.
 abstract class JobsRepository {
   Future<JobsMeta> fetchMeta();
 

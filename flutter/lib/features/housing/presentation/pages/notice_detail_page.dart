@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/copy/service_copy.dart';
+import '../../../../core/design/service_accent.dart';
 import '../../../../core/format/format.dart';
 import '../../../../core/widgets/collected_summary.dart';
 import '../../../../core/launch.dart';
@@ -16,6 +17,8 @@ import '../widgets/eligibility_next_steps_card.dart';
 import '../widgets/saved_notice_button.dart';
 import '../../../../core/theme/app_fonts.dart';
 import '../../../../core/widgets/detail_primary_actions.dart';
+
+const _accent = ServiceAccent.housing;
 
 class NoticeDetailPage extends ConsumerWidget {
   const NoticeDetailPage({super.key, required this.id});
@@ -104,7 +107,7 @@ class _DetailBody extends StatelessWidget {
                     value: formatPeriod(notice.applicationStart, notice.applicationEnd),
                     width: 200,
                   ),
-                  MetaItem(label: '공고일', value: formatDate(notice.announcementDate), width: 200),
+                  MetaItem(label: _accent.announcementDateLabel, value: formatDate(notice.announcementDate), width: 200),
                   MetaItem(label: '당첨자 발표', value: formatDate(detail.winnerAnnouncementDate), width: 200),
                   MetaItem(label: '공급세대', value: formatHouseholds(notice.totalHouseholds), width: 200),
                   MetaItem(

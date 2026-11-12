@@ -3,7 +3,7 @@ import 'finance_filters.dart';
 import 'finance_meta.dart';
 import 'finance_scheme.dart';
 
-/// 임대주택 공고 조회 포트. 구현체(HTTP API)는 data 레이어에 있다.
+/// 청년 주거·자금 제도 조회 포트. 구현체(HTTP API)는 data 레이어에 있다.
 abstract class FinanceRepository {
   Future<FinanceMeta> fetchMeta();
 
@@ -14,13 +14,13 @@ abstract class FinanceRepository {
     int pageSize = 20,
   });
 
-  /// 공고가 없으면 `ApiException(isNotFound)` 를 던진다.
+  /// 제도가 없으면 `ApiException(isNotFound)` 를 던진다.
   Future<SchemeDetail> getScheme(String id, {required ApplicantProfile profile});
 
-  /// 로그인한 회원의 관심 공고 id (목록 하트 표시용)
+  /// 로그인한 회원의 관심 제도 id (목록 하트 표시용)
   Future<List<String>> fetchSavedIds();
 
-  /// 로그인한 회원의 관심 공고 목록. '내 조건'이 있으면 자격 판정 포함
+  /// 로그인한 회원의 관심 제도 목록. '내 조건'이 있으면 자격 판정 포함
   Future<SavedSchemeList> fetchSaved({required ApplicantProfile profile});
 
   Future<void> saveScheme(String id);

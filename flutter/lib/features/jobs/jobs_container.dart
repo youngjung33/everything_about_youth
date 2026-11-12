@@ -24,7 +24,7 @@ import 'domain/use_cases/search_job_postings.dart';
 import 'domain/use_cases/toggle_saved_posting.dart';
 
 /// 일자리 섹션의 **조립(composition root)**.
-/// 앱 어댑터(`benefits_module.dart`) 아래, domain / data / presentation 을 이어 준다.
+/// 앱 어댑터(`jobs_module.dart`) 아래, domain / data / presentation 을 이어 준다.
 class JobsContainer {
   JobsContainer({
     required this.repository,

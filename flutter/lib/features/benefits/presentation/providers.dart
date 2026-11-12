@@ -11,7 +11,7 @@ import '../domain/benefit_program.dart';
 import '../domain/program_list_state.dart';
 import '../benefits_container.dart';
 
-/// 임대주택 **유일한 조립 Provider**. data·use case 는 [BenefitsContainer] 에만 있다.
+/// 청년 혜택 **유일한 조립 Provider**. data·use case 는 [BenefitsContainer] 에만 있다.
 final benefitsContainerProvider = Provider<BenefitsContainer>(
   (ref) => BenefitsContainer.live(
     apiClient: ref.watch(apiClientProvider),

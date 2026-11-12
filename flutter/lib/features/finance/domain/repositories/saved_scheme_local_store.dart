@@ -1,4 +1,4 @@
-/// 비회원 관심 공고 id 기기 저장 포트. 구현은 [data] 레이어.
+/// 비회원 관심 제도 id 기기 저장 포트. 구현은 [data] 레이어.
 abstract interface class SavedSchemeLocalStore {
   static const maxCount = 100;
 

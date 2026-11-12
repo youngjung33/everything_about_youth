@@ -120,6 +120,27 @@ enum ServiceAccent {
 
   String get bootstrapListPrefetchName => '$itemNoun 목록 미리 불러오기';
 
+  String get scheduleEmptyMessage => '이 기간에 접수 시작·마감이 있는 $itemNoun$itemSubjectJosa 없습니다.';
+
+  String get scheduleEmptyHint => '필터를 넓히거나 나중에 다시 확인해 보세요.';
+
+  /// 상세 메타: housing·jobs 는 공고일, 나머지는 게시일.
+  String get announcementDateLabel => id == 'housing' || id == 'jobs' ? '공고일' : '게시일';
+
+  String get profileEligibilityDescription =>
+      '입력한 조건으로 $itemNoun별 신청 가능 여부를 판정합니다. 모든 항목은 선택이며, 입력하지 않은 항목은 "조건 확인 필요"로 표시됩니다.';
+
+  String savedMaxCountError(int max) {
+    final topic = switch (id) {
+      'benefits' => '정책은',
+      'finance' => '제도는',
+      'living' => '안내는',
+      'housing' || 'jobs' => '공고는',
+      _ => '$itemNoun은',
+    };
+    return '관심 $topic $max개까지 저장할 수 있습니다.';
+  }
+
   String get officialLinkButtonLabel =>
       id == 'housing' || id == 'jobs' ? ServiceCopy.officialNoticeButtonLabel : ServiceCopy.officialPolicyButtonLabel;
 

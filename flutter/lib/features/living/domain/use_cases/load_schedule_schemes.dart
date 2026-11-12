@@ -3,7 +3,7 @@ import '../living_filters.dart';
 import '../living_repository.dart';
 import '../living_guide.dart';
 
-/// 접수중·예정 공고를 일정 화면용으로 넉넉히 불러 온다.
+/// 접수중·예정 안내를 일정 화면용으로 넉넉히 불러 온다.
 class LoadScheduleGuidesUseCase {
   const LoadScheduleGuidesUseCase(this._repository);
 

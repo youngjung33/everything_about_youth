@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/security/field_cipher.dart';
 import '../domain/repositories/saved_scheme_local_store.dart';
 
-/// 비회원이 이 기기에만 저장한 관심 공고 id. 암호화해서 둔다.
+/// 비회원이 이 기기에만 저장한 관심 제도 id. 암호화해서 둔다.
 /// (웹: localStorage, 모바일: 앱 로컬 저장소. 키는 보안 저장소에 따로 있다 — [FieldCipher])
 ///
 /// 로그인한 회원의 목록은 서버에 있고, 로그인할 때 여기 값을 서버에 합친 뒤 비운다.

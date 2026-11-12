@@ -4,7 +4,7 @@ import '../finance_repository.dart';
 import '../finance_scheme.dart';
 import 'get_scheme_detail.dart';
 
-/// 관심 공고 화면용 요약 목록.
+/// 관심 제도 화면용 요약 목록.
 class LoadSavedSchemeSummariesUseCase {
   LoadSavedSchemeSummariesUseCase(this._repository, this._getDetail);
 

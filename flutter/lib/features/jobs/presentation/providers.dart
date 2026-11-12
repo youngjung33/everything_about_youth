@@ -11,7 +11,7 @@ import '../domain/job_posting.dart';
 import '../domain/posting_list_state.dart';
 import '../jobs_container.dart';
 
-/// 임대주택 **유일한 조립 Provider**. data·use case 는 [JobsContainer] 에만 있다.
+/// 일자리 **유일한 조립 Provider**. data·use case 는 [JobsContainer] 에만 있다.
 final jobsContainerProvider = Provider<JobsContainer>(
   (ref) => JobsContainer.live(
     apiClient: ref.watch(apiClientProvider),

@@ -1,8 +1,9 @@
+import '../../../../core/design/service_accent.dart';
 import '../failures.dart';
 import '../living_repository.dart';
 import '../repositories/saved_guide_local_store.dart';
 
-/// 관심 공고 저장/해제. 성공 시 갱신된 id 목록, 실패 시 사용자 문구.
+/// 관심 안내 저장/해제. 성공 시 갱신된 id 목록, 실패 시 사용자 문구.
 class ToggleSavedGuideUseCase {
   const ToggleSavedGuideUseCase(this._repository, this._local);
 
@@ -27,7 +28,10 @@ class ToggleSavedGuideUseCase {
       ids.remove(id);
     } else {
       if (ids.length >= SavedGuideLocalStore.maxCount) {
-        return (ids: null, error: '관심 공고는 ${SavedGuideLocalStore.maxCount}개까지 저장할 수 있습니다.');
+        return (
+          ids: null,
+          error: ServiceAccent.living.savedMaxCountError(SavedGuideLocalStore.maxCount),
+        );
       }
       if (isMember) {
         try {

@@ -11,7 +11,7 @@ import '../domain/living_guide.dart';
 import '../domain/guide_list_state.dart';
 import '../living_container.dart';
 
-/// 임대주택 **유일한 조립 Provider**. data·use case 는 [LivingContainer] 에만 있다.
+/// 이사·생활 **유일한 조립 Provider**. data·use case 는 [LivingContainer] 에만 있다.
 final livingContainerProvider = Provider<LivingContainer>(
   (ref) => LivingContainer.live(
     apiClient: ref.watch(apiClientProvider),

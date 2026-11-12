@@ -12,7 +12,7 @@ import '../../support/benefits_fixtures.dart';
 
 ProgramPage _page(List<String> ids, {int pageNo = 1, int totalPages = 2}) => ProgramPage.fromJson(
   programPageJson(
-    items: [for (final id in ids) programSummaryJson(id: id, title: '공고 $id')],
+    items: [for (final id in ids) programSummaryJson(id: id, title: '정책 $id')],
     page: pageNo,
     totalPages: totalPages,
   ),

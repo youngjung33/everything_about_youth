@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/design/service_accent.dart';
 import '../../../../core/format/format.dart';
 import '../../../../core/layout/app_scaffold.dart';
 import '../../../../core/layout/app_top_bar.dart';
@@ -52,10 +53,10 @@ class _PostingSchedulePageState extends ConsumerState<PostingSchedulePage> {
                 ),
               ),
               if (events.isEmpty)
-                const Expanded(
+                Expanded(
                   child: EmptyView(
-                    message: '이 기간에 접수 시작·마감이 있는 공고가 없습니다.',
-                    hint: '필터를 넓히거나 나중에 다시 확인해 보세요.',
+                    message: ServiceAccent.jobs.scheduleEmptyMessage,
+                    hint: ServiceAccent.jobs.scheduleEmptyHint,
                   ),
                 )
               else

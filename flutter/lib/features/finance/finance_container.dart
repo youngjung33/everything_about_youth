@@ -23,7 +23,7 @@ import 'domain/use_cases/paginated_scheme_list.dart';
 import 'domain/use_cases/search_schemes.dart';
 import 'domain/use_cases/toggle_saved_scheme.dart';
 
-/// 임대주택 섹션의 **조립(composition root)**.
+/// 청년 주거·자금 섹션의 **조립(composition root)**.
 /// 앱 어댑터(`benefits_module.dart`) 아래, domain / data / presentation 을 이어 준다.
 class FinanceContainer {
   FinanceContainer({

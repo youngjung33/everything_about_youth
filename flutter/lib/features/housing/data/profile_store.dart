@@ -10,7 +10,7 @@ import '../domain/repositories/profile_local_store.dart';
 /// (웹: localStorage, 모바일: 앱 로컬 저장소. 키는 보안 저장소에 따로 있다 — [FieldCipher])
 ///
 /// 복호화는 비동기라서 사용하기 전에 [load] 로 한 번 읽어 둬야 한다. 읽은 값은 메모리에 두고 [current] 로 바로 쓴다.
-/// (앱 시작 때 임대주택의 시작 작업이 [load] 를 부른다)
+/// (앱 시작 때 이 섹션 bootstrap 이 [load] 를 부른다)
 class ProfileStore implements ProfileLocalStore {
   ProfileStore(this._prefs, this._cipher);
 

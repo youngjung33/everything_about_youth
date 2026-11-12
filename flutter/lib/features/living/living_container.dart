@@ -23,6 +23,7 @@ import 'domain/use_cases/paginated_guide_list.dart';
 import 'domain/use_cases/search_guides.dart';
 import 'domain/use_cases/toggle_saved_guide.dart';
 
+/// 이사·생활 섹션의 **조립(composition root)**.
 class LivingContainer {
   LivingContainer({
     required this.repository,

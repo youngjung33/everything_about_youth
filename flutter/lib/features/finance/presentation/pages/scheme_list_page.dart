@@ -157,7 +157,7 @@ class _Results extends ConsumerWidget {
             controller: scroll,
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(16),
-            // 0: 머리글, 1..n: 공고, n+1: 바닥글
+            // 0: 머리글, 1..n: 제도, n+1: 바닥글
             itemCount: list.items.length + 2,
             itemBuilder: (context, index) {
               final Widget child;

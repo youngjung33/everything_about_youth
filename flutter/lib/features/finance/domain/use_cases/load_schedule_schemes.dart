@@ -3,7 +3,7 @@ import '../finance_filters.dart';
 import '../finance_repository.dart';
 import '../finance_scheme.dart';
 
-/// 접수중·예정 공고를 일정 화면용으로 넉넉히 불러 온다.
+/// 접수중·예정 제도를 일정 화면용으로 넉넉히 불러 온다.
 class LoadScheduleSchemesUseCase {
   const LoadScheduleSchemesUseCase(this._repository);
 

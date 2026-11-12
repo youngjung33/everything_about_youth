@@ -4,7 +4,7 @@ import '../benefits_repository.dart';
 import '../benefit_program.dart';
 import 'get_program_detail.dart';
 
-/// 관심 공고 화면용 요약 목록.
+/// 관심 정책 화면용 요약 목록.
 class LoadSavedProgramSummariesUseCase {
   LoadSavedProgramSummariesUseCase(this._repository, this._getDetail);
 

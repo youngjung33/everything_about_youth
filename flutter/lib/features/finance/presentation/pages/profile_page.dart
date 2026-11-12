@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/design/service_accent.dart';
 import '../../../../core/format/format.dart';
 import '../../../../core/layout/app_scaffold.dart';
 import '../../../../core/layout/app_top_bar.dart';
@@ -10,7 +11,9 @@ import '../../../../core/theme/app_fonts.dart';
 import '../providers.dart';
 import '../../domain/applicant_profile.dart';
 
-/// '내 조건' 입력. 이 기기에만 저장되며 서버에는 공고를 조회할 때 판정용으로만 전달된다.
+const _accent = ServiceAccent.finance;
+
+/// 청년 주거·자금 · 내 조건 입력. 기기에만 저장되며 서버에는 제도 조회 시 판정용으로만 전달된다.
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
 
@@ -92,7 +95,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             padding: const EdgeInsets.all(16),
             children: [
               Text(
-                '입력한 조건으로 공고별 신청 가능 여부를 판정합니다. 모든 항목은 선택이며, 입력하지 않은 항목은 "조건 확인 필요"로 표시됩니다.',
+                _accent.profileEligibilityDescription,
                 style: TextStyle(color: scheme.onSurfaceVariant),
               ),
               const SizedBox(height: 8),

@@ -4,7 +4,7 @@ import '../living_repository.dart';
 import '../living_guide.dart';
 import 'get_guide_detail.dart';
 
-/// 관심 공고 화면용 요약 목록.
+/// 관심 안내 화면용 요약 목록.
 class LoadSavedGuideSummariesUseCase {
   LoadSavedGuideSummariesUseCase(this._repository, this._getDetail);
 
