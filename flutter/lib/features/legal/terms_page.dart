@@ -13,7 +13,8 @@ class TermsPage extends LegalDocumentPage {
           ),
           LegalSection(
             heading: '2. 회원과 비회원',
-            body: '비회원은 조회 기능을 이용할 수 있습니다. 회원은 소셜 로그인으로 가입하며, 관심 공고를 서버에 저장할 수 있습니다.',
+            body:
+                '비회원은 조회 기능을 이용할 수 있습니다. 회원은 소셜 로그인으로 가입하며, 관심 항목(공고·정책·제도·안내 등)을 서버에 저장할 수 있습니다.',
           ),
           LegalSection(
             heading: '3. 금지 행위',

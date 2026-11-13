@@ -63,14 +63,14 @@ class _SavedPostingsPageState extends ConsumerState<SavedPostingsPage> {
                     child: EmptyView(message: _accent.savedEmptyMessage, hint: _accent.savedEmptyHint),
                   )
                 else
-                  for (final notice in list.items)
+                  for (final posting in list.items)
                     Align(
                       alignment: Alignment.topCenter,
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 900),
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 12),
-                          child: PostingCard(posting: notice),
+                          child: PostingCard(posting: posting),
                         ),
                       ),
                     ),

@@ -89,7 +89,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               Text('시작하기', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: AppFonts.bold)),
               const SizedBox(height: 8),
               Text(
-                '로그인하지 않아도 모든 공고를 조회할 수 있어요.',
+                '로그인하지 않아도 임대주택·혜택·일자리 등 정보를 조회할 수 있어요.',
                 style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
               ),
               const SizedBox(height: 24),

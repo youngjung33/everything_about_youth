@@ -63,14 +63,14 @@ class _SavedProgramsPageState extends ConsumerState<SavedProgramsPage> {
                     child: EmptyView(message: _accent.savedEmptyMessage, hint: _accent.savedEmptyHint),
                   )
                 else
-                  for (final notice in list.items)
+                  for (final program in list.items)
                     Align(
                       alignment: Alignment.topCenter,
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 900),
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 12),
-                          child: ProgramCard(program: notice),
+                          child: ProgramCard(program: program),
                         ),
                       ),
                     ),

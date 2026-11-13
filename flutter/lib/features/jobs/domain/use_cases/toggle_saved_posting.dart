@@ -3,7 +3,7 @@ import '../failures.dart';
 import '../jobs_repository.dart';
 import '../repositories/saved_posting_local_store.dart';
 
-/// 관심 공고 저장/해제. 성공 시 갱신된 id 목록, 실패 시 사용자 문구.
+/// 관심 채용 공고 저장/해제. 성공 시 갱신된 id 목록, 실패 시 사용자 문구.
 class ToggleSavedPostingUseCase {
   const ToggleSavedPostingUseCase(this._repository, this._local);
 

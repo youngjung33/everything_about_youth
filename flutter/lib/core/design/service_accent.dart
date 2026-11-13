@@ -111,8 +111,10 @@ enum ServiceAccent {
 
   String get savedQuickActionLabel => '관심 $itemNoun';
 
-  String savedBookmarkTooltip({required bool saved}) =>
-      saved ? '관심 $itemNoun에서 빼기' : '관심 $itemNoun으로 저장';
+  String savedBookmarkTooltip({required bool saved}) {
+    final ro = _euroRo(itemNoun);
+    return saved ? '관심 $itemNoun에서 빼기' : '관심 $itemNoun$ro 저장';
+  }
 
   String get searchFieldLabel => '검색어 ($itemNoun명/기관/요약)';
 
@@ -152,4 +154,14 @@ enum ServiceAccent {
   Color onContainerColor(BuildContext context) {
     return accent;
   }
+}
+
+/// 명사 + 「으로/로」 (받침 없음·ㄹ 받침 → 로).
+String _euroRo(String noun) {
+  if (noun.isEmpty) return '으로';
+  final code = noun.runes.last;
+  if (code < 0xAC00 || code > 0xD7A3) return '으로';
+  final jong = (code - 0xAC00) % 28;
+  if (jong == 0 || jong == 8) return '로';
+  return '으로';
 }

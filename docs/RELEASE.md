@@ -29,6 +29,36 @@
 5. **심사 통과 후** 서버 `APP_MIN_VERSION` 을 새 버전으로 올리고 재배포한다. (먼저 올리면 업데이트할 곳이 없는 사용자가 막힌다.)
 6. git tag: `git tag v1.2.3` && `git push origin v1.2.3`
 
+## 1차 마무리 — 배포 전 체크리스트 (자동 + 수동)
+
+### 자동 (릴리스 전 매번)
+
+```bash
+cd next    && npm test && npm run typecheck && npm run lint
+cd flutter && dart analyze && flutter test
+cd next    && npm run contracts:sync && npm test -- src/contracts/api-contract.test.ts
+cd flutter && flutter test test/contracts/
+flutter build web --release   # 선택: 실제 배포 타깃과 동일하게
+```
+
+### 서버 (수동)
+
+- [ ] `npm run db:migrate` · 데모/운영 sync (`*:seed-demo` 또는 `*:sync`) 로 목록에 데이터가 보이는지
+- [ ] `GET /api/v1/health` → `ready: true`
+- [ ] `npm run features` 로 5개 섹션 on/off 동작 확인
+- [ ] Flutter 웹/앱에서 `API_BASE_URL`·CORS(`API_CORS_ORIGIN`) 맞는지
+
+### 앱 (수동 스모크, 섹션별 2~3분)
+
+| 섹션 | 확인 |
+| --- | --- |
+| 공통 | 홈 카드 5개, 끈 섹션은 메뉴에서 사라짐 |
+| housing / benefits / finance / jobs | 목록 → 상세 → 북마크 → 관심 화면 → (해당 시) 내 조건·판정 |
+| living | 목록 → 상세 **체크리스트** · **내 조건 UI 없음** · 관심·일정 |
+| 로그인(선택) | SSO · 관심 동기화 |
+
+2차(실 API 키 전수, 크롤, 서버 푸시)는 이 체크리스트 **범위 밖**이다.
+
 ## 서버 배포 체크
 
 - `APP_ENV=prod`

@@ -17,10 +17,10 @@ class ProfileStore implements ProfileLocalStore {
   final SharedPreferences _prefs;
   final FieldCipher _cipher;
 
-  static const storageKey = 'eay.finance.profile.v1';
+  static const storageKey = 'eay.living.profile.v1';
 
   /// 암호문을 이 용도에 묶는다. 다른 값의 암호문을 여기에 끼워 넣어도 읽히지 않는다.
-  static const cipherContext = 'finance.profile';
+  static const cipherContext = 'living.profile';
 
   ApplicantProfile _current = ApplicantProfile.empty;
   bool _loaded = false;

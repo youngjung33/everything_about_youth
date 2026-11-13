@@ -116,7 +116,7 @@ class _DetailBody extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              ServiceCopy.financeDetailVerificationFooter,
+              ServiceCopy.detailVerificationFooter,
               style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.outline),
             ),
             const SizedBox(height: 24),

@@ -22,42 +22,20 @@ final livingContainerProvider = Provider<LivingContainer>(
 
 LivingContainer _container(Ref ref) => ref.watch(livingContainerProvider);
 
+/// 1차: 내 조건·판정 없음 — API 호출은 항상 빈 프로필.
+const ApplicantProfile _livingApiProfile = ApplicantProfile.empty;
+
 final livingMetaProvider = FutureProvider<LivingMeta>((ref) => _container(ref).loadLivingMeta());
-
-class ProfileNotifier extends Notifier<ApplicantProfile> {
-  bool _edited = false;
-
-  @override
-  ApplicantProfile build() {
-    final store = ref.read(livingContainerProvider).profileLocalStore;
-    if (!store.isLoaded) {
-      ref.read(livingContainerProvider).loadProfile().then((loaded) {
-        if (!_edited && ref.mounted) state = loaded;
-      });
-    }
-    return store.current;
-  }
-
-  Future<void> save(ApplicantProfile profile) async {
-    _edited = true;
-    state = profile;
-    await ref.read(livingContainerProvider).saveProfile(profile);
-  }
-}
-
-final profileProvider = NotifierProvider<ProfileNotifier, ApplicantProfile>(ProfileNotifier.new);
 
 class FiltersNotifier extends Notifier<LivingFilters> {
   @override
   LivingFilters build() => LivingFilters.initial;
 
-  void apply(LivingFilters filters) => state = filters;
-
-  void setVerdicts(Set<String> verdicts) => state = state.copyWith(verdicts: verdicts);
+  void apply(LivingFilters filters) => state = filters.copyWith(verdicts: const {});
 
   void setSort(String sort) => state = state.copyWith(sort: sort);
 
-  void reset() => state = LivingFilters.initial.copyWith(verdicts: state.verdicts, sort: state.sort);
+  void reset() => state = LivingFilters.initial;
 }
 
 final filtersProvider = NotifierProvider<FiltersNotifier, LivingFilters>(FiltersNotifier.new);
@@ -68,7 +46,7 @@ class GuideListController extends AsyncNotifier<GuideListState> {
     final list = _container(ref).paginatedGuideList;
     return list.loadFirstPage(
       filters: ref.watch(filtersProvider),
-      profile: ref.watch(profileProvider),
+      profile: _livingApiProfile,
     );
   }
 
@@ -84,7 +62,7 @@ class GuideListController extends AsyncNotifier<GuideListState> {
       capturedGeneration: generation,
       current: current,
       filters: ref.read(filtersProvider),
-      profile: ref.read(profileProvider),
+      profile: _livingApiProfile,
     );
     if (outcome.stale) return;
     if (outcome.loadMoreError != null) {
@@ -98,8 +76,7 @@ class GuideListController extends AsyncNotifier<GuideListState> {
 final guideListProvider = AsyncNotifierProvider<GuideListController, GuideListState>(GuideListController.new);
 
 final guideDetailProvider = FutureProvider.family<GuideDetail, String>((ref, id) {
-  final profile = ref.watch(profileProvider);
-  return _container(ref).getGuideDetail(id, profile: profile);
+  return _container(ref).getGuideDetail(id, profile: _livingApiProfile);
 });
 
 class SavedGuidesNotifier extends AsyncNotifier<List<String>> {
@@ -127,23 +104,14 @@ class SavedGuidesNotifier extends AsyncNotifier<List<String>> {
 final savedGuidesProvider = AsyncNotifierProvider<SavedGuidesNotifier, List<String>>(SavedGuidesNotifier.new);
 
 final livingScheduleGuidesProvider = FutureProvider<({String today, List<GuideSummary> items})>(
-  (ref) => _container(ref).loadScheduleGuides(profile: ref.watch(profileProvider)),
+  (ref) => _container(ref).loadScheduleGuides(profile: _livingApiProfile),
 );
-
-final similarGuidesProvider = FutureProvider.family<List<GuideSummary>, String>((ref, id) async {
-  final detail = await ref.watch(guideDetailProvider(id).future);
-  return _container(ref).loadSimilarGuides(
-    excludeId: id,
-    procedureTypeId: detail.summary.procedureTypeId,
-    profile: ref.watch(profileProvider),
-  );
-});
 
 final savedGuideListProvider = FutureProvider<SavedGuideList>((ref) async {
   final ids = await ref.watch(savedGuidesProvider.future);
   return _container(ref).loadSavedGuideSummaries(
     ids: ids,
-    profile: ref.watch(profileProvider),
+    profile: _livingApiProfile,
     isMember: ref.watch(authModeProvider).isMember,
   );
 });

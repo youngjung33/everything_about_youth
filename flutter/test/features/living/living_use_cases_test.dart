@@ -9,8 +9,8 @@ import 'package:everything_about_youth/features/living/domain/use_cases/get_guid
 import 'package:everything_about_youth/features/living/domain/use_cases/load_living_meta.dart';
 import 'package:everything_about_youth/features/living/domain/use_cases/load_profile.dart';
 import 'package:everything_about_youth/features/living/domain/use_cases/load_saved_guide_summaries.dart';
-import 'package:everything_about_youth/features/living/domain/use_cases/load_schedule_schemes.dart';
-import 'package:everything_about_youth/features/living/domain/use_cases/load_similar_schemes.dart';
+import 'package:everything_about_youth/features/living/domain/use_cases/load_schedule_guides.dart';
+import 'package:everything_about_youth/features/living/domain/use_cases/load_similar_guides.dart';
 import 'package:everything_about_youth/features/living/domain/use_cases/resolve_saved_guide_ids.dart';
 import 'package:everything_about_youth/features/living/domain/use_cases/save_profile.dart';
 import 'package:everything_about_youth/features/living/domain/use_cases/search_guides.dart';

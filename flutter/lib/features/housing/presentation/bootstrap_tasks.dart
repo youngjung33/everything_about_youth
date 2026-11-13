@@ -1,6 +1,9 @@
 import '../../../core/bootstrap/bootstrap_task.dart';
+import '../../../core/design/service_accent.dart';
 import 'providers.dart';
 import 'saved_notice_reminder_sync.dart';
+
+const _accent = ServiceAccent.housing;
 
 /// 임대주택 섹션이 앱 시작 때 끝내 둘 작업.
 /// 이 목록을 앱 조립부(`lib/app/bootstrap_tasks.dart`)가 모아서 실행한다.
@@ -15,7 +18,7 @@ final housingBootstrapTasks = <BootstrapTask>[
   ),
 
   BootstrapTask(
-    name: '관심 공고 불러오기',
+    name: _accent.bootstrapSavedTaskName,
     run: (ref) async {
       await ref.read(savedNoticesProvider.future);
       await syncSavedNoticeRemindersBootstrap(ref);
