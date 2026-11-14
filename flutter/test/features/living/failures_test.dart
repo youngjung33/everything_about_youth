@@ -7,6 +7,7 @@ void main() {
     test('LivingUserMessage 는 message 를 그대로', () {
       expect(livingErrorMessage(const LivingUserMessage('서버 오류')), '서버 오류');
       expect(livingErrorMessage(const LivingGuideNotFound('없음')), '없음');
+      expect(livingErrorMessage(const LivingGuideNotFound()), '안내를 찾을 수 없습니다.');
     });
 
     test('그 외는 일반 문구', () {

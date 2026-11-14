@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:everything_about_youth/core/copy/service_copy.dart';
+import 'package:everything_about_youth/core/design/service_accent.dart';
 import 'package:everything_about_youth/core/network/api_client.dart';
 import 'package:everything_about_youth/core/network/api_error_code.dart';
 import 'package:everything_about_youth/core/network/api_user_message.dart';
@@ -336,18 +337,19 @@ void main() {
     );
     await pumpApp(tester, repo, location: '/housing');
 
-    await tester.tap(find.byTooltip('관심 공고로 저장'));
+    final accent = ServiceAccent.housing;
+    await tester.tap(find.byTooltip(accent.savedBookmarkTooltip(saved: false)));
     await tester.pumpAndSettle();
-    expect(find.byTooltip('관심 공고에서 빼기'), findsOneWidget);
+    expect(find.byTooltip(accent.savedBookmarkTooltip(saved: true)), findsOneWidget);
 
-    await tester.tap(find.text('관심 공고'));
+    await tester.tap(find.text(accent.savedQuickActionLabel));
     await tester.pumpAndSettle();
-    expect(find.text('저장한 관심 공고가 없습니다.'), findsNothing);
+    expect(find.text(accent.savedEmptyMessage), findsNothing);
     expect(find.text('청년 행복주택 입주자 모집'), findsOneWidget);
   });
 
   testWidgets('관심 공고: 비어 있으면 안내를 보여준다', (tester) async {
     await pumpApp(tester, FakeHousingRepository(pages: [onePage([])]), location: '/housing/saved');
-    expect(find.text('저장한 관심 공고가 없습니다.'), findsOneWidget);
+    expect(find.text(ServiceAccent.housing.savedEmptyMessage), findsOneWidget);
   });
 }

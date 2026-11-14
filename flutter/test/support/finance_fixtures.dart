@@ -159,7 +159,7 @@ class FakeFinanceRepository implements FinanceRepository {
         }
       }
     }
-    throw const ApiException('정책을 찾을 수 없습니다.', statusCode: 404);
+    throw const ApiException('제도를 찾을 수 없습니다.', statusCode: 404);
   }
 
   @override

@@ -7,6 +7,7 @@ void main() {
     test('FinanceUserMessage 는 message 를 그대로', () {
       expect(financeErrorMessage(const FinanceUserMessage('서버 오류')), '서버 오류');
       expect(financeErrorMessage(const FinanceSchemeNotFound('없음')), '없음');
+      expect(financeErrorMessage(const FinanceSchemeNotFound()), '제도를 찾을 수 없습니다.');
     });
 
     test('그 외는 일반 문구', () {

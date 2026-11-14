@@ -19,9 +19,21 @@ void main() {
       expect(ServiceAccent.benefits.announcementDateLabel, '게시일');
     });
 
-    test('savedBookmarkTooltip: 공고는 로, 정책은 으로', () {
+    test('savedBookmarkTooltip: 섹션별 로·으로 조사', () {
       expect(ServiceAccent.housing.savedBookmarkTooltip(saved: false), '관심 공고로 저장');
+      expect(ServiceAccent.jobs.savedBookmarkTooltip(saved: false), '관심 공고로 저장');
       expect(ServiceAccent.benefits.savedBookmarkTooltip(saved: false), '관심 정책으로 저장');
+      expect(ServiceAccent.finance.savedBookmarkTooltip(saved: false), '관심 제도로 저장');
+      expect(ServiceAccent.living.savedBookmarkTooltip(saved: false), '관심 안내로 저장');
+      expect(ServiceAccent.housing.savedBookmarkTooltip(saved: true), '관심 공고에서 빼기');
+    });
+
+    test('savedEmptyMessage: 북마크 empty 화면 문구', () {
+      expect(ServiceAccent.housing.savedEmptyMessage, '저장한 관심 공고가 없습니다.');
+      expect(ServiceAccent.benefits.savedEmptyMessage, '저장한 관심 정책이 없습니다.');
+      expect(ServiceAccent.finance.savedEmptyMessage, '저장한 관심 제도가 없습니다.');
+      expect(ServiceAccent.jobs.savedEmptyMessage, '저장한 관심 공고가 없습니다.');
+      expect(ServiceAccent.living.savedEmptyMessage, '저장한 관심 안내가 없습니다.');
     });
   });
 }

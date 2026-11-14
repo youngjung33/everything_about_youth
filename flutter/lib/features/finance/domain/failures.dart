@@ -9,7 +9,7 @@ class FinanceUserMessage implements Exception {
 }
 
 class FinanceSchemeNotFound extends FinanceUserMessage {
-  const FinanceSchemeNotFound([super.message = '정책을 찾을 수 없습니다.']);
+  const FinanceSchemeNotFound([super.message = '제도를 찾을 수 없습니다.']);
 }
 
 String financeErrorMessage(Object error) {

@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:everything_about_youth/core/design/service_accent.dart';
 import 'package:everything_about_youth/core/network/api_client.dart';
 import 'package:everything_about_youth/core/network/api_error_code.dart';
 import 'package:everything_about_youth/core/network/api_user_message.dart';
 import 'package:everything_about_youth/core/widgets/state_views.dart';
 import 'package:everything_about_youth/features/living/domain/applicant_profile.dart';
 import 'package:everything_about_youth/features/living/domain/living_guide.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/finders.dart';
@@ -97,6 +99,72 @@ void main() {
     await tester.tap(find.text('다시 시도'));
     await tester.pumpAndSettle();
 
+    expect(find.text('전입신고 안내'), findsOneWidget);
+  });
+
+  testWidgets('목록: 좁은 화면에서는 필터가 바텀시트로 열린다', (tester) async {
+    await pumpLivingApp(
+      tester,
+      FakeLivingRepository(pages: [onePage([guideSummaryJson()])]),
+      location: '/living',
+      size: const Size(400, 900),
+    );
+
+    expect(find.text('검색'), findsNothing);
+    await tester.tap(find.byTooltip('필터'));
+    await tester.pumpAndSettle();
+    expect(find.text('검색'), findsWidgets);
+
+    await tester.tap(
+      find.descendant(of: find.byType(BottomSheet), matching: find.widgetWithText(FilledButton, '검색')),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('검색'), findsNothing);
+  });
+
+  testWidgets('목록: 내 조건 입력 배너가 없다 (1차)', (tester) async {
+    await pumpLivingApp(tester, FakeLivingRepository(pages: [onePage([guideSummaryJson()])]), location: '/living');
+    expect(find.text('입력하기'), findsNothing);
+    expect(find.textContaining('내 조건"을 입력하면'), findsNothing);
+  });
+
+  testWidgets('상세: 없는 안내는 오류 문구', (tester) async {
+    await pumpLivingApp(tester, FakeLivingRepository(), location: '/living/guides/none');
+    expect(find.text('안내를 찾을 수 없습니다.'), findsOneWidget);
+  });
+
+  testWidgets('상세: 카드를 누르면 체크리스트 단계가 보인다', (tester) async {
+    final repo = FakeLivingRepository(
+      pages: [onePage([guideSummaryJson()])],
+      detail: GuideDetail.fromJson(guideDetailJson()),
+    );
+    await pumpLivingApp(tester, repo, location: '/living');
+
+    await tester.tap(find.text('전입신고 안내'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('안내 상세'), findsOneWidget);
+    expect(find.text('진행 단계'), findsOneWidget);
+    expect(find.text('1. 준비'), findsOneWidget);
+    expect(find.text('서류 확인'), findsOneWidget);
+  });
+
+  testWidgets('관심 안내: 비어 있으면 안내를 보여준다', (tester) async {
+    await pumpLivingApp(tester, FakeLivingRepository(pages: [onePage([])]), location: '/living/saved');
+    expect(find.text(ServiceAccent.living.savedEmptyMessage), findsOneWidget);
+  });
+
+  testWidgets('관심 안내: 북마크로 저장하면 관심 안내 화면에 보인다', (tester) async {
+    await pumpLivingApp(tester, FakeLivingRepository(pages: [onePage([guideSummaryJson()])]), location: '/living');
+
+    final accent = ServiceAccent.living;
+    await tester.tap(find.byTooltip(accent.savedBookmarkTooltip(saved: false)));
+    await tester.pumpAndSettle();
+    expect(find.byTooltip(accent.savedBookmarkTooltip(saved: true)), findsOneWidget);
+
+    await tester.tap(find.text(accent.savedQuickActionLabel));
+    await tester.pumpAndSettle();
+    expect(find.text(accent.savedEmptyMessage), findsNothing);
     expect(find.text('전입신고 안내'), findsOneWidget);
   });
 }

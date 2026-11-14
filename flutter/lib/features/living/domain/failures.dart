@@ -9,7 +9,7 @@ class LivingUserMessage implements Exception {
 }
 
 class LivingGuideNotFound extends LivingUserMessage {
-  const LivingGuideNotFound([super.message = '정책을 찾을 수 없습니다.']);
+  const LivingGuideNotFound([super.message = '안내를 찾을 수 없습니다.']);
 }
 
 String livingErrorMessage(Object error) {
