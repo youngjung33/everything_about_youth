@@ -276,7 +276,7 @@ void main() {
     expect(container.read(noticeListProvider).requireValue.items.map((e) => e.id), ['x', 'y']);
   });
 
-  test('상세: 내 조건이 바뀌면 다시 조회한다', () async {
+  test('상세: id 가 있으면 조회에 성공한다', () async {
     final repo = FakeHousingRepository(detail: NoticeDetail.fromJson(detailJson()));
     final container = await makeContainer(repo);
     container.listen(noticeDetailProvider('n1'), (_, _) {});

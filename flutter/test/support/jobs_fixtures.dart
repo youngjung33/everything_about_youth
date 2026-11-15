@@ -159,7 +159,7 @@ class FakeJobsRepository implements JobsRepository {
         }
       }
     }
-    throw const ApiException('공고를 찾을 수 없습니다.', statusCode: 404);
+    throw const ApiException('채용 공고를 찾을 수 없습니다.', statusCode: 404);
   }
 
   @override

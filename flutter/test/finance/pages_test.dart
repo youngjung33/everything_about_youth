@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:everything_about_youth/core/copy/service_copy.dart';
 import 'package:everything_about_youth/core/design/service_accent.dart';
 import 'package:everything_about_youth/core/network/api_client.dart';
 import 'package:everything_about_youth/core/network/api_error_code.dart';
 import 'package:everything_about_youth/core/network/api_user_message.dart';
 import 'package:everything_about_youth/core/widgets/state_views.dart';
 import 'package:everything_about_youth/features/finance/domain/applicant_profile.dart';
+import 'package:everything_about_youth/features/finance/domain/finance_meta.dart';
 import 'package:everything_about_youth/features/finance/domain/finance_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -68,7 +70,7 @@ void main() {
     gate.complete(SchemeDetail.fromJson(schemeDetailJson()));
     await tester.pumpAndSettle();
     expect(find.byType(LoadingView), findsNothing);
-    expect(find.text('제도 상세'), findsOneWidget);
+    expect(find.text('제도 개요'), findsOneWidget);
   });
 
   testWidgets('목록: 카드에 제목·상태·지역이 보인다 (넓은 화면은 필터 사이드바)', (tester) async {
@@ -124,6 +126,24 @@ void main() {
     expect(find.text('검색'), findsNothing);
   });
 
+  testWidgets('카드를 누르면 상세로 이동하고 출처·공식 안내가 보인다', (tester) async {
+    final repo = FakeFinanceRepository(
+      pages: [onePage([schemeSummaryJson()])],
+      detail: SchemeDetail.fromJson(schemeDetailJson()),
+    );
+    await pumpFinanceApp(tester, repo, location: '/finance');
+
+    await tester.tap(find.text('청년 월세 지원'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('제도 상세'), findsOneWidget);
+    expect(find.text('제도 개요'), findsOneWidget);
+    final bodyScrollable = find.descendant(of: find.byType(ListView), matching: find.byType(Scrollable)).first;
+    await tester.scrollUntilVisible(find.text('출처'), 300, scrollable: bodyScrollable);
+    expect(find.text(ServiceCopy.officialPolicyButtonLabel), findsOneWidget);
+    expect(find.text('마감일 캘린더'), findsOneWidget);
+  });
+
   testWidgets('상세: 없는 제도는 오류 문구', (tester) async {
     await pumpFinanceApp(tester, FakeFinanceRepository(), location: '/finance/schemes/none');
     expect(find.text('제도를 찾을 수 없습니다.'), findsOneWidget);
@@ -150,6 +170,91 @@ void main() {
     expect(find.text('자격 판정으로 거르기'), findsOneWidget);
     expect(repo.searchCalls.last.profile.age, 29);
     expect(repo.searchCalls.last.profile.isHomeless, isTrue);
+  });
+
+  testWidgets('내 조건: 가구원수·월 소득·자산을 입력하면 소득 수준을 안내하고 서버 쿼리에 실린다', (tester) async {
+    final repo = FakeFinanceRepository(pages: [onePage([schemeSummaryJson()])]);
+    await pumpFinanceApp(tester, repo, location: '/finance/profile', size: const Size(600, 3200));
+    final scrollable = _profileScrollable;
+
+    await tester.scrollUntilVisible(find.byKey(const ValueKey('household-3')), 300, scrollable: scrollable);
+    await tester.enterText(find.widgetWithText(TextField, '가구 월 소득 (세전, 가구원 전체 합계)'), '650');
+    await tester.tap(find.byKey(const ValueKey('household-3')));
+    await tester.pump();
+    expect(find.byKey(const ValueKey('income-hint')), findsOneWidget);
+
+    await tester.scrollUntilVisible(find.text('저장'), 300, scrollable: scrollable);
+    await tester.tap(find.text('저장'));
+    await tester.pumpAndSettle();
+    expect(repo.searchCalls.last.profile.householdSize, 3);
+  });
+
+  testWidgets('내 조건: 신혼부부로 답했을 때만 맞벌이를 묻는다', (tester) async {
+    await pumpFinanceApp(
+      tester,
+      FakeFinanceRepository(pages: [onePage([schemeSummaryJson()])]),
+      location: '/finance/profile',
+      size: const Size(600, 3200),
+    );
+    final scrollable = _profileScrollable;
+    await tester.scrollUntilVisible(find.text('신혼부부 (혼인 7년 이내)'), 300, scrollable: scrollable);
+    await tester.tap(find.text('해당').first);
+    await tester.pump();
+    await tester.scrollUntilVisible(find.textContaining('맞벌이 (본인과 배우자'), 300, scrollable: scrollable);
+    expect(find.textContaining('맞벌이 (본인과 배우자'), findsOneWidget);
+  });
+
+  testWidgets('내 조건: 서버가 기준표를 주지 않아도 입력 화면은 동작한다', (tester) async {
+    final meta = financeMetaJson()..remove('standards');
+    await pumpFinanceApp(
+      tester,
+      FakeFinanceRepository(meta: FinanceMeta.fromJson(meta), pages: [onePage([schemeSummaryJson()])]),
+      location: '/finance/profile',
+      size: const Size(600, 3200),
+    );
+    await tester.tap(find.byKey(const ValueKey('household-2')));
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('내 조건: 작은 폰과 최대 글꼴에서도 넘치지 않고, 맨 아래 저장 버튼까지 닿을 수 있다', (tester) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 3;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await pumpFinanceApp(
+      tester,
+      FakeFinanceRepository(pages: [onePage([schemeSummaryJson()])]),
+      location: '/finance/profile',
+      size: const Size(320, 480),
+    );
+    await tester.dragUntilVisible(find.text('저장'), _profileScrollable, const Offset(0, -200));
+    expect(find.text('저장'), findsOneWidget);
+  });
+
+  testWidgets('판정이 있는 제도는 배지를 보여준다', (tester) async {
+    await pumpFinanceApp(
+      tester,
+      FakeFinanceRepository(
+        pages: [
+          onePage([
+            schemeSummaryJson(
+              eligibility: {
+                'verdict': 'eligible',
+                'verdictLabel': '신청 가능',
+                'reasons': <String>[],
+                'notes': <String>[],
+              },
+            ),
+          ]),
+        ],
+      ),
+      location: '/finance',
+    );
+    expect(find.text('신청 가능'), findsOneWidget);
+  });
+
+  testWidgets('일정: 접수 일정이 없으면 안내를 보여준다', (tester) async {
+    await pumpFinanceApp(tester, FakeFinanceRepository(pages: [onePage([])]), location: '/finance/schedule');
+    expect(find.text(ServiceAccent.finance.scheduleEmptyMessage), findsOneWidget);
   });
 
   testWidgets('관심 제도: 비어 있으면 안내를 보여준다', (tester) async {

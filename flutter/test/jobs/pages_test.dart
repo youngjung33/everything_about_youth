@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:everything_about_youth/core/copy/service_copy.dart';
 import 'package:everything_about_youth/core/design/service_accent.dart';
 import 'package:everything_about_youth/core/network/api_client.dart';
 import 'package:everything_about_youth/core/network/api_error_code.dart';
@@ -7,6 +8,7 @@ import 'package:everything_about_youth/core/network/api_user_message.dart';
 import 'package:everything_about_youth/core/widgets/state_views.dart';
 import 'package:everything_about_youth/features/jobs/domain/applicant_profile.dart';
 import 'package:everything_about_youth/features/jobs/domain/job_posting.dart';
+import 'package:everything_about_youth/features/jobs/domain/jobs_meta.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -73,7 +75,7 @@ void main() {
     gate.complete(PostingDetail.fromJson(postingDetailJson()));
     await tester.pumpAndSettle();
     expect(find.byType(LoadingView), findsNothing);
-    expect(find.text('공고 상세'), findsOneWidget);
+    expect(find.text('공고 개요'), findsOneWidget);
   });
 
   testWidgets('목록: 카드에 제목·유형·지역이 보인다 (넓은 화면은 필터 사이드바)', (tester) async {
@@ -138,9 +140,27 @@ void main() {
     expect(find.text('검색'), findsNothing);
   });
 
+  testWidgets('카드를 누르면 상세로 이동하고 출처·공식 안내가 보인다', (tester) async {
+    final repo = FakeJobsRepository(
+      pages: [onePage([postingSummaryJson()])],
+      detail: PostingDetail.fromJson(postingDetailJson()),
+    );
+    await pumpJobsApp(tester, repo, location: '/jobs');
+
+    await tester.tap(find.text('청년 인턴 채용'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('공고 상세'), findsOneWidget);
+    expect(find.text('공고 개요'), findsOneWidget);
+    final bodyScrollable = find.descendant(of: find.byType(ListView), matching: find.byType(Scrollable)).first;
+    await tester.scrollUntilVisible(find.text('출처'), 300, scrollable: bodyScrollable);
+    expect(find.text(ServiceCopy.officialNoticeButtonLabel), findsOneWidget);
+    expect(find.text('마감일 캘린더'), findsOneWidget);
+  });
+
   testWidgets('상세: 없는 공고는 오류 문구', (tester) async {
     await pumpJobsApp(tester, FakeJobsRepository(), location: '/jobs/postings/none');
-    expect(find.text('공고를 찾을 수 없습니다.'), findsOneWidget);
+    expect(find.text('채용 공고를 찾을 수 없습니다.'), findsOneWidget);
   });
 
   testWidgets('내 조건을 저장하면 요약이 보이고 판정 거르기 칩이 나타난다', (tester) async {
@@ -164,6 +184,85 @@ void main() {
     expect(find.text('자격 판정으로 거르기'), findsOneWidget);
     expect(repo.searchCalls.last.profile.age, 29);
     expect(repo.searchCalls.last.profile.isHomeless, isTrue);
+  });
+
+  testWidgets('내 조건: 가구원수·월 소득을 입력하면 소득 수준을 안내한다', (tester) async {
+    final repo = FakeJobsRepository(pages: [onePage([postingSummaryJson()])]);
+    await pumpJobsApp(tester, repo, location: '/jobs/profile', size: const Size(600, 3200));
+    final scrollable = _profileScrollable;
+    await tester.scrollUntilVisible(find.byKey(const ValueKey('household-3')), 300, scrollable: scrollable);
+    await tester.enterText(find.widgetWithText(TextField, '가구 월 소득 (세전, 가구원 전체 합계)'), '650');
+    await tester.tap(find.byKey(const ValueKey('household-3')));
+    await tester.pump();
+    expect(find.byKey(const ValueKey('income-hint')), findsOneWidget);
+  });
+
+  testWidgets('내 조건: 신혼부부로 답했을 때만 맞벌이를 묻는다', (tester) async {
+    await pumpJobsApp(
+      tester,
+      FakeJobsRepository(pages: [onePage([postingSummaryJson()])]),
+      location: '/jobs/profile',
+      size: const Size(600, 3200),
+    );
+    final scrollable = _profileScrollable;
+    await tester.scrollUntilVisible(find.text('신혼부부 (혼인 7년 이내)'), 300, scrollable: scrollable);
+    await tester.tap(find.text('해당').first);
+    await tester.pump();
+    await tester.scrollUntilVisible(find.textContaining('맞벌이 (본인과 배우자'), 300, scrollable: scrollable);
+    expect(find.textContaining('맞벌이 (본인과 배우자'), findsOneWidget);
+  });
+
+  testWidgets('내 조건: 서버가 기준표를 주지 않아도 입력 화면은 동작한다', (tester) async {
+    final meta = jobsMetaJson()..remove('standards');
+    await pumpJobsApp(
+      tester,
+      FakeJobsRepository(meta: JobsMeta.fromJson(meta), pages: [onePage([postingSummaryJson()])]),
+      location: '/jobs/profile',
+      size: const Size(600, 3200),
+    );
+    await tester.tap(find.byKey(const ValueKey('household-2')));
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('내 조건: 작은 폰과 최대 글꼴에서도 저장 버튼까지 닿을 수 있다', (tester) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 3;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await pumpJobsApp(
+      tester,
+      FakeJobsRepository(pages: [onePage([postingSummaryJson()])]),
+      location: '/jobs/profile',
+      size: const Size(320, 480),
+    );
+    await tester.dragUntilVisible(find.text('저장'), _profileScrollable, const Offset(0, -200));
+    expect(find.text('저장'), findsOneWidget);
+  });
+
+  testWidgets('판정이 있는 공고는 배지를 보여준다', (tester) async {
+    await pumpJobsApp(
+      tester,
+      FakeJobsRepository(
+        pages: [
+          onePage([
+            postingSummaryJson(
+              eligibility: {
+                'verdict': 'eligible',
+                'verdictLabel': '신청 가능',
+                'reasons': <String>[],
+                'notes': <String>[],
+              },
+            ),
+          ]),
+        ],
+      ),
+      location: '/jobs',
+    );
+    expect(find.text('신청 가능'), findsOneWidget);
+  });
+
+  testWidgets('일정: 접수 일정이 없으면 안내를 보여준다', (tester) async {
+    await pumpJobsApp(tester, FakeJobsRepository(pages: [onePage([])]), location: '/jobs/schedule');
+    expect(find.text(ServiceAccent.jobs.scheduleEmptyMessage), findsOneWidget);
   });
 
   testWidgets('관심 공고: 비어 있으면 안내를 보여준다', (tester) async {

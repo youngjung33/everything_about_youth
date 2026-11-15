@@ -7,6 +7,7 @@ void main() {
     test('JobsUserMessage 는 message 를 그대로', () {
       expect(jobsErrorMessage(const JobsUserMessage('서버 오류')), '서버 오류');
       expect(jobsErrorMessage(const JobPostingNotFound('없음')), '없음');
+      expect(jobsErrorMessage(const JobPostingNotFound()), '채용 공고를 찾을 수 없습니다.');
     });
 
     test('그 외는 일반 문구', () {

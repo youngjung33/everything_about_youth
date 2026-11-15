@@ -313,6 +313,23 @@ void main() {
     expect(File('lib/features/living/living_container.dart').existsSync(), isTrue);
   });
 
+  test('MSA: 5개 서비스는 동형 composition·presentation 골격을 갖는다', () {
+    const ids = ['housing', 'benefits', 'finance', 'jobs', 'living'];
+    for (final id in ids) {
+      expect(File('lib/features/$id/${id}_module.dart').existsSync(), isTrue, reason: '$id module');
+      expect(File('lib/features/$id/${id}_container.dart').existsSync(), isTrue, reason: '$id container');
+      expect(File('lib/features/$id/presentation/providers.dart').existsSync(), isTrue, reason: '$id providers');
+      expect(File('lib/features/$id/presentation/bootstrap_tasks.dart').existsSync(), isTrue, reason: '$id bootstrap');
+      expect(File('lib/features/$id/presentation/${id}_routes.dart').existsSync(), isTrue, reason: '$id routes');
+      expect(File('lib/features/$id/presentation/providers.dart').readAsStringSync(), contains('${id}ContainerProvider'));
+    }
+    const withProfileUi = {'housing', 'benefits', 'finance', 'jobs'};
+    for (final id in withProfileUi) {
+      expect(File('lib/features/$id/presentation/pages/profile_page.dart').existsSync(), isTrue, reason: '$id profile');
+    }
+    expect(File('lib/features/living/presentation/pages/profile_page.dart').existsSync(), isFalse);
+  });
+
   test('서비스의 유일한 접점은 <id>_module.dart 이다 (바깥은 서비스 안쪽 파일을 import 하지 않는다)', () {
     final bad = deps.where((d) {
       final target = _featureOf(d.to);

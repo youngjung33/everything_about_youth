@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:everything_about_youth/core/copy/service_copy.dart';
 import 'package:everything_about_youth/core/design/service_accent.dart';
 import 'package:everything_about_youth/core/network/api_client.dart';
 import 'package:everything_about_youth/core/network/api_error_code.dart';
@@ -66,7 +67,7 @@ void main() {
     gate.complete(GuideDetail.fromJson(guideDetailJson()));
     await tester.pumpAndSettle();
     expect(find.byType(LoadingView), findsNothing);
-    expect(find.text('안내 상세'), findsOneWidget);
+    expect(find.text('안내 개요'), findsOneWidget);
   });
 
   testWidgets('목록: 카드에 제목·상태·지역이 보인다 (넓은 화면은 필터 사이드바)', (tester) async {
@@ -147,6 +148,15 @@ void main() {
     expect(find.text('진행 단계'), findsOneWidget);
     expect(find.text('1. 준비'), findsOneWidget);
     expect(find.text('서류 확인'), findsOneWidget);
+    final bodyScrollable = find.descendant(of: find.byType(ListView), matching: find.byType(Scrollable)).first;
+    await tester.scrollUntilVisible(find.text('출처'), 300, scrollable: bodyScrollable);
+    expect(find.text(ServiceCopy.officialPolicyButtonLabel), findsOneWidget);
+    expect(find.text('마감일 캘린더'), findsOneWidget);
+  });
+
+  testWidgets('일정: 접수 일정이 없으면 안내를 보여준다', (tester) async {
+    await pumpLivingApp(tester, FakeLivingRepository(pages: [onePage([])]), location: '/living/schedule');
+    expect(find.text(ServiceAccent.living.scheduleEmptyMessage), findsOneWidget);
   });
 
   testWidgets('관심 안내: 비어 있으면 안내를 보여준다', (tester) async {

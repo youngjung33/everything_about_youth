@@ -137,9 +137,11 @@ void main() {
     expect(find.text('검색'), findsNothing);
     await tester.tap(find.byTooltip('필터'));
     await tester.pumpAndSettle();
-    expect(find.text('검색'), findsOneWidget);
+    expect(find.text('검색'), findsWidgets);
 
-    await tester.tap(find.text('검색'));
+    await tester.tap(
+      find.descendant(of: find.byType(BottomSheet), matching: find.widgetWithText(FilledButton, '검색')),
+    );
     await tester.pumpAndSettle();
     expect(find.text('검색'), findsNothing);
   });
@@ -329,6 +331,11 @@ void main() {
     expect(find.text('신청 가능'), findsOneWidget);
   });
 
+  testWidgets('관심 공고: 비어 있으면 안내를 보여준다', (tester) async {
+    await pumpApp(tester, FakeHousingRepository(pages: [onePage([])]), location: '/housing/saved');
+    expect(find.text(ServiceAccent.housing.savedEmptyMessage), findsOneWidget);
+  });
+
   testWidgets('관심 공고: 북마크로 저장하면 관심 공고 화면에 보인다', (tester) async {
     final repo = FakeHousingRepository(
       pages: [
@@ -346,10 +353,5 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(accent.savedEmptyMessage), findsNothing);
     expect(find.text('청년 행복주택 입주자 모집'), findsOneWidget);
-  });
-
-  testWidgets('관심 공고: 비어 있으면 안내를 보여준다', (tester) async {
-    await pumpApp(tester, FakeHousingRepository(pages: [onePage([])]), location: '/housing/saved');
-    expect(find.text(ServiceAccent.housing.savedEmptyMessage), findsOneWidget);
   });
 }

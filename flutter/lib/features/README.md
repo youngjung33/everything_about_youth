@@ -1,7 +1,7 @@
 # features
 
 청년이 혜택을 받을 수 있는 서비스(임대주택, 일자리, 금융 …) 하나가 폴더 하나다.  
-**지금 꽂힌 서비스는 `housing`·`benefits`·`finance`(플래그 기본 off)·`jobs`(플래그 기본 on)·`living`(플래그 기본 on)** 입니다. 자세한 데이터·env 는 루트 [README.md](../../README.md) 와 [next/README.md](../../../next/README.md) 를 보세요.
+**지금 꽂힌 서비스는 `housing`·`benefits`·`finance`·`jobs`·`living` 다섯 개**이며, 앱·서버 기능 플래그는 **모두 기본 켜짐**입니다. (`living` 1차는 내 조건 UI 없음.) 데이터·env 는 루트 [README.md](../../README.md) 와 [next/README.md](../../../next/README.md) 를 보세요.
 코어(`core`)는 서비스를 모르고, 서비스가 코어의 규격(`FeatureModule`)을 구현해서 꽂힌다.
 
 ```

@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:everything_about_youth/core/copy/service_copy.dart';
 import 'package:everything_about_youth/core/design/service_accent.dart';
 import 'package:everything_about_youth/core/network/api_client.dart';
 import 'package:everything_about_youth/core/network/api_error_code.dart';
 import 'package:everything_about_youth/core/network/api_user_message.dart';
 import 'package:everything_about_youth/core/widgets/state_views.dart';
 import 'package:everything_about_youth/features/benefits/domain/applicant_profile.dart';
+import 'package:everything_about_youth/features/benefits/domain/benefit_meta.dart';
 import 'package:everything_about_youth/features/benefits/domain/benefit_program.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -68,7 +70,7 @@ void main() {
     gate.complete(ProgramDetail.fromJson(programDetailJson()));
     await tester.pumpAndSettle();
     expect(find.byType(LoadingView), findsNothing);
-    expect(find.text('정책 상세'), findsOneWidget);
+    expect(find.text('정책 개요'), findsOneWidget);
   });
 
   testWidgets('목록: 카드에 제목·상태·지역이 보인다 (넓은 화면은 필터 사이드바)', (tester) async {
@@ -124,6 +126,25 @@ void main() {
     expect(find.text('검색'), findsNothing);
   });
 
+  testWidgets('카드를 누르면 상세로 이동하고 출처·공식 안내가 보인다', (tester) async {
+    final repo = FakeBenefitsRepository(
+      pages: [onePage([programSummaryJson()])],
+      detail: ProgramDetail.fromJson(programDetailJson()),
+    );
+    await pumpBenefitsApp(tester, repo, location: '/benefits');
+
+    await tester.tap(find.text('청년 월세 지원'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('정책 상세'), findsOneWidget);
+    expect(find.text('정책 개요'), findsOneWidget);
+    final bodyScrollable = find.descendant(of: find.byType(ListView), matching: find.byType(Scrollable)).first;
+    await tester.scrollUntilVisible(find.text('출처'), 300, scrollable: bodyScrollable);
+    expect(find.text('데모 데이터'), findsWidgets);
+    expect(find.text(ServiceCopy.officialPolicyButtonLabel), findsOneWidget);
+    expect(find.text('마감일 캘린더'), findsOneWidget);
+  });
+
   testWidgets('상세: 없는 정책은 오류 문구', (tester) async {
     await pumpBenefitsApp(tester, FakeBenefitsRepository(), location: '/benefits/programs/none');
     expect(find.text('정책을 찾을 수 없습니다.'), findsOneWidget);
@@ -150,6 +171,104 @@ void main() {
     expect(find.text('자격 판정으로 거르기'), findsOneWidget);
     expect(repo.searchCalls.last.profile.age, 29);
     expect(repo.searchCalls.last.profile.isHomeless, isTrue);
+  });
+
+  testWidgets('내 조건: 가구원수·월 소득·자산을 입력하면 소득 수준을 안내하고 서버 쿼리에 실린다', (tester) async {
+    final repo = FakeBenefitsRepository(pages: [onePage([programSummaryJson()])]);
+    await pumpBenefitsApp(tester, repo, location: '/benefits/profile', size: const Size(600, 3200));
+    final scrollable = _profileScrollable;
+
+    await tester.scrollUntilVisible(find.byKey(const ValueKey('household-3')), 300, scrollable: scrollable);
+    await tester.enterText(find.widgetWithText(TextField, '가구 월 소득 (세전, 가구원 전체 합계)'), '650');
+    await tester.pump();
+    expect(find.byKey(const ValueKey('income-hint')), findsNothing);
+
+    await tester.tap(find.byKey(const ValueKey('household-3')));
+    await tester.pump();
+    expect(find.byKey(const ValueKey('income-hint')), findsOneWidget);
+    expect(find.textContaining('2026년 기준 3인 가구'), findsOneWidget);
+
+    await tester.scrollUntilVisible(find.widgetWithText(TextField, '총자산 (부채를 뺀 금액)'), 300, scrollable: scrollable);
+    await tester.enterText(find.widgetWithText(TextField, '총자산 (부채를 뺀 금액)'), '5000');
+    await tester.scrollUntilVisible(find.text('저장'), 300, scrollable: scrollable);
+    await tester.tap(find.text('저장'));
+    await tester.pumpAndSettle();
+
+    final saved = repo.searchCalls.last.profile;
+    expect(saved.householdSize, 3);
+    expect(saved.monthlyIncomeMan, 650);
+    expect(saved.totalAssetMan, 5000);
+  });
+
+  testWidgets('내 조건: 신혼부부로 답했을 때만 맞벌이를 묻는다', (tester) async {
+    final repo = FakeBenefitsRepository(pages: [onePage([programSummaryJson()])]);
+    await pumpBenefitsApp(tester, repo, location: '/benefits/profile', size: const Size(600, 3200));
+    final scrollable = _profileScrollable;
+
+    expect(find.textContaining('맞벌이'), findsNothing);
+    await tester.scrollUntilVisible(find.text('신혼부부 (혼인 7년 이내)'), 300, scrollable: scrollable);
+    await tester.tap(find.text('해당').first);
+    await tester.pump();
+    await tester.scrollUntilVisible(find.textContaining('맞벌이 (본인과 배우자'), 300, scrollable: scrollable);
+    expect(find.textContaining('맞벌이 (본인과 배우자'), findsOneWidget);
+  });
+
+  testWidgets('내 조건: 서버가 기준표를 주지 않아도 입력 화면은 동작한다', (tester) async {
+    final meta = benefitsMetaJson()..remove('standards');
+    final repo = FakeBenefitsRepository(
+      meta: BenefitMeta.fromJson(meta),
+      pages: [onePage([programSummaryJson()])],
+    );
+    await pumpBenefitsApp(tester, repo, location: '/benefits/profile', size: const Size(600, 3200));
+    final scrollable = _profileScrollable;
+
+    await tester.scrollUntilVisible(find.byKey(const ValueKey('household-2')), 300, scrollable: scrollable);
+    await tester.enterText(find.widgetWithText(TextField, '가구 월 소득 (세전, 가구원 전체 합계)'), '300');
+    await tester.tap(find.byKey(const ValueKey('household-2')));
+    await tester.pump();
+
+    expect(find.byKey(const ValueKey('income-hint')), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('내 조건: 작은 폰과 최대 글꼴에서도 넘치지 않고, 맨 아래 저장 버튼까지 닿을 수 있다', (tester) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 3;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+    final repo = FakeBenefitsRepository(pages: [onePage([programSummaryJson()])]);
+    await pumpBenefitsApp(tester, repo, location: '/benefits/profile', size: const Size(320, 480));
+    expect(tester.takeException(), isNull);
+
+    await tester.dragUntilVisible(find.byKey(const ValueKey('household-8')), _profileScrollable, const Offset(0, -200));
+    await tester.dragUntilVisible(find.text('저장'), _profileScrollable, const Offset(0, -200));
+    await tester.pumpAndSettle();
+    expect(find.text('저장'), findsOneWidget);
+    expect(find.text('모두 지우기'), findsOneWidget);
+  });
+
+  testWidgets('판정이 있는 정책은 배지를 보여준다', (tester) async {
+    final repo = FakeBenefitsRepository(
+      pages: [
+        onePage([
+          programSummaryJson(
+            eligibility: {
+              'verdict': 'eligible',
+              'verdictLabel': '신청 가능',
+              'reasons': <String>[],
+              'notes': <String>[],
+            },
+          ),
+        ]),
+      ],
+    );
+    await pumpBenefitsApp(tester, repo, location: '/benefits');
+
+    expect(find.text('신청 가능'), findsOneWidget);
+  });
+
+  testWidgets('일정: 접수 일정이 없으면 안내를 보여준다', (tester) async {
+    await pumpBenefitsApp(tester, FakeBenefitsRepository(pages: [onePage([])]), location: '/benefits/schedule');
+    expect(find.text(ServiceAccent.benefits.scheduleEmptyMessage), findsOneWidget);
   });
 
   testWidgets('관심 정책: 비어 있으면 안내를 보여준다', (tester) async {
