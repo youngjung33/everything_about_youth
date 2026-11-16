@@ -1,6 +1,6 @@
 # 청년의 모든 것 (everything_about_youth)
 
-한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 서비스. **정보 우선:** 앱·API 본문(수집·판정·안내)을 먼저 보여 주고, 공식 URL 은 더 보기·검증용입니다. **지금 앱에 구현된 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)·청년 주거·자금(`finance`)·청년·공공 일자리(`jobs`)·이사·생활(`living`)** 입니다. **섹션 기능 플래그는 모두 기본 켜짐**이며, 운영에서 끄려면 `npm run features -- off <id>` 를 쓰면 됩니다. `living` 1차는 **curated + checklistSteps**(내 조건 판정 없음), `jobs` 는 finance 와 **동형 UX**(내 조건·관심·일정·로컬 알림)입니다.
+한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 서비스. **정보 우선:** 앱·API 본문(수집·판정·안내)을 먼저 보여 주고, 공식 URL 은 더 보기·검증용입니다. **지금 앱에 구현된 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)·청년 주거·자금(`finance`)·청년·공공 일자리(`jobs`)·이사·생활(`living`)** 입니다. **섹션 기능 플래그는 모두 기본 켜짐**이며, 운영에서 끄려면 `npm run features -- off <id>` 를 쓰면 됩니다. `living` 은 **curated + checklistSteps**·참고 판정(거주 지역 등), `jobs` 는 finance 와 **동형 UX**(내 조건·관심·일정·로컬 알림)입니다.
 
 ### 섹션 로드맵
 
@@ -10,7 +10,7 @@
 | `benefits` | 청년 혜택·정책 | **1차 구현** | 온통청년 OPEN API로 전국 청년정책 수집, 내 조건 판정, 관심·일정·로컬 알림 |
 | `finance` | 청년 주거·자금 | **1차 구현** | 큐레이션 catalog + 온통(금융·세금) |
 | `jobs` | 청년·공공 일자리 | **1차 구현** | curated catalog + `jobs:seed-demo` |
-| `living` | 이사·생활 | **1차 구현** | curated + `living:seed-demo`, 상세 `checklistSteps[]`, **내 조건·판정 UI 없음** |
+| `living` | 이사·생활 | **1차 구현** | curated + `living:seed-demo`, 상세 `checklistSteps[]`, 내 조건·참고 판정 |
 
 새 섹션을 만들 때는 `next/src/features/<id>/` + `features/registry.ts`, Flutter `features/<id>/` + `app/feature_modules.dart` 를 같은 `id` 로 추가합니다.
 
@@ -154,7 +154,7 @@ cd flutter && flutter test test/contracts/
 
 ## 앱 구조 (`flutter/lib`)
 
-"코어 + 꽂는 서비스" 구조입니다. 코어는 서비스를 모르고, 서비스(임대주택, 앞으로의 일자리·금융 …)가 코어의 규격을 구현해 꽂힙니다. 서비스 하나는 `features/<id>/` 폴더 하나이고, 그 안은 클린 아키텍처 레이어로 나눕니다. 자세한 규칙과 새 서비스 추가 방법은 [`flutter/lib/features/README.md`](flutter/lib/features/README.md).
+"코어 + 꽂는 서비스" 구조입니다. 코어는 서비스를 모르고, **5개 서비스**(housing·benefits·finance·jobs·living)가 코어의 `FeatureModule` 규격을 구현해 꽂힙니다. 서비스 하나는 `features/<id>/` 폴더 하나이고, 그 안은 클린 아키텍처 레이어로 나눕니다. 자세한 규칙과 새 서비스 추가 방법은 [`flutter/lib/features/README.md`](flutter/lib/features/README.md).
 
 ```
 app/                          조립부: 어떤 서비스를 꽂을지, 라우트와 가드를 정한다
@@ -173,12 +173,12 @@ core/                         서비스와 무관한 공용 코드 (features/app
   widgets/                    공용 위젯: AppLogo, 상태 화면 LoadingView(전체/영역), InlineLoading(작은 크기), ErrorView, EmptyView
 features/
   home/ splash/ unavailable/ update_required/  앱 셸 화면 (홈 카드, 시작 화면, 꺼짐/장애 안내, 강제 업데이트)
-  housing/                    임대주택 서비스
-    housing_module.dart       코어에 꽂는 앱 어댑터 (라우트, 홈 카드, 시작 작업)
-    housing_container.dart    use case·data 조립 (composition root)
-    domain/                   모델, use case, 저장소 포트 (순수 Dart)
-    data/                     API·기기 저장 구현
-    presentation/             화면, Riverpod(use case 호출)
+  housing/ benefits/ finance/ jobs/ living/   서비스 하나 = 폴더 하나 (MSA)
+    <id>_module.dart            코어에 꽂는 앱 어댑터 (라우트, 홈 카드, 시작 작업)
+    <id>_container.dart         use case·data 조립 (composition root)
+    domain/                     모델, use case, 저장소 포트 (순수 Dart)
+    data/                       API·기기 저장 구현
+    presentation/               화면, Riverpod — data import 금지
 ```
 
 의존 방향(`core ← features ← app`, 서비스끼리 금지, 서비스 안은 `presentation → data → domain`, **비즈니스 규칙은 domain use case**)은 `test/architecture_test.dart` 가 자동으로 검사합니다.

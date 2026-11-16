@@ -11,6 +11,32 @@ enum GuideStatus {
       GuideStatus.values.firstWhere((e) => e.name == code, orElse: () => GuideStatus.open);
 }
 
+enum Verdict {
+  eligible,
+  check,
+  ineligible;
+
+  static Verdict fromCode(String? code) =>
+      Verdict.values.firstWhere((e) => e.name == code, orElse: () => Verdict.check);
+}
+
+@immutable
+class Eligibility {
+  const Eligibility({required this.verdict, required this.verdictLabel, required this.reasons, required this.notes});
+
+  factory Eligibility.fromJson(Map<String, dynamic> json) => Eligibility(
+    verdict: Verdict.fromCode(asString(json['verdict'])),
+    verdictLabel: asString(json['verdictLabel']) ?? '',
+    reasons: asStringList(json['reasons']),
+    notes: asStringList(json['notes']),
+  );
+
+  final Verdict verdict;
+  final String verdictLabel;
+  final List<String> reasons;
+  final List<String> notes;
+}
+
 @immutable
 class Region {
   const Region({required this.sido, this.sigungu});
@@ -59,6 +85,7 @@ class GuideSummary {
     this.announcementDate,
     this.summary,
     this.url,
+    this.eligibility,
   });
 
   factory GuideSummary.fromJson(Map<String, dynamic> json) => GuideSummary(
@@ -79,6 +106,7 @@ class GuideSummary {
     summary: asString(json['summary']),
     url: asString(json['url']),
     sourceLabels: asStringList(json['sourceLabels']),
+    eligibility: json['eligibility'] is Map<String, dynamic> ? Eligibility.fromJson(asMap(json['eligibility'])) : null,
   );
 
   final String id;
@@ -98,6 +126,7 @@ class GuideSummary {
   final String? summary;
   final String? url;
   final List<String> sourceLabels;
+  final Eligibility? eligibility;
 }
 
 @immutable

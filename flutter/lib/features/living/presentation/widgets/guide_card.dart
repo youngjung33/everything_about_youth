@@ -34,9 +34,10 @@ class MetaItem extends StatelessWidget {
 }
 
 class GuideBadges extends StatelessWidget {
-  const GuideBadges({super.key, required this.guide});
+  const GuideBadges({super.key, required this.guide, this.largeEligibility = false});
 
   final GuideSummary guide;
+  final bool largeEligibility;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +49,7 @@ class GuideBadges extends StatelessWidget {
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         StatusBadge(status: guide.status, label: guide.statusLabel),
+        EligibilityBadge(eligibility: guide.eligibility, large: largeEligibility),
         if (showDday)
           Text(
             guide.dday!,

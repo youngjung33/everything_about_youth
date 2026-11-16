@@ -1,6 +1,6 @@
 # 청년의 모든 것 (everything_about_youth)
 
-한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 사이트. **API·앱이 동작하는 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)·청년 주거·자금(`finance`)·청년·공공 일자리(`jobs`)·이사·생활(`living`)** 입니다. **섹션 기능 플래그는 모두 기본 켜짐** (`features/registry.ts`, `npm run features`). `living` 1차는 curated + `checklistSteps`(내 조건 판정 없음), `jobs` 1차는 curated + `jobs:seed-demo`(finance 와 동형 UX).
+한국 청년이 이용할 수 있는 정보를 섹션별로 모으는 사이트. **API·앱이 동작하는 섹션은 임대주택(`housing`)·청년 혜택(`benefits`)·청년 주거·자금(`finance`)·청년·공공 일자리(`jobs`)·이사·생활(`living`)** 입니다. **섹션 기능 플래그는 모두 기본 켜짐** (`features/registry.ts`, `npm run features`). `living` 은 curated + `checklistSteps`·참고 판정, `jobs` 1차는 curated + `jobs:seed-demo`(finance 와 동형 UX).
 
 - Next.js 16 (App Router) + TypeScript
 - 클린 아키텍처 + **섹션(feature) 단위 폴더 구조**
@@ -81,7 +81,7 @@ drizzle/                     마이그레이션 (모든 섹션이 하나의 이�
 
 ```bash
 npm install
-# 환경변수는 .env.local 에 직접 작성 (아래 표 참고. .env.example 은 2차에서 추가 예정)
+# 환경변수는 `.env.example` 을 복사해 `.env.local` 에 채우거나, 아래 표를 참고해 직접 작성
 npm run housing:sync -- --list   # 수집 소스 상태 확인
 npm run housing:sync             # 사용 가능한 모든 소스 수집
 npm run dev                      # http://localhost:3000
@@ -376,7 +376,7 @@ benefits 의 **온통 일자리 분류 정책**은 `jobs` 로 옮기지 않습�
 
 ## 이사·생활 섹션
 
-전입·임대차·공과금 등 **절차 안내**를 `living_guides` SQLite 에 모읍니다. Flutter `/living`, API `/api/v1/living/guides/*`, 관리 `/living/admin/sync`. 상세 DTO 에 **`checklistSteps[]`** (title, summary, url). **1차 sync:** repo **`curated`** catalog (6건) + `npm run living:seed-demo`. 기능 플래그 `living` 은 **기본 켜짐**. **1차에는 내 조건 판정 없음** — 목록·상세 `eligibility` 는 항상 `null`, meta 에 `standards`/`verdicts` 없음.
+전입·임대차·공과금 등 **절차 안내**를 `living_guides` SQLite 에 모읍니다. Flutter `/living`, API `/api/v1/living/guides/*`, 관리 `/living/admin/sync`. 상세 DTO 에 **`checklistSteps[]`** (title, summary, url). **1차 sync:** repo **`curated`** catalog (6건) + `npm run living:seed-demo`. 기능 플래그 `living` 은 **기본 켜짐**. **참고 판정** — 프로필 쿼리가 있으면 목록·상세·관심에 `eligibility` 가 내려가고, meta 에 `verdicts` 가 있습니다 (`standards` 없음).
 
 | 소스 | 1차 |
 | --- | --- |

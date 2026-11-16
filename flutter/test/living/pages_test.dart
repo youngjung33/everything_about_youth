@@ -123,10 +123,13 @@ void main() {
     expect(find.text('검색'), findsNothing);
   });
 
-  testWidgets('목록: 내 조건 입력 배너가 없다 (1차)', (tester) async {
+  testWidgets('목록: 내 조건 입력 배너와 프로필 화면으로 들어간다', (tester) async {
     await pumpLivingApp(tester, FakeLivingRepository(pages: [onePage([guideSummaryJson()])]), location: '/living');
-    expect(find.text('입력하기'), findsNothing);
-    expect(find.textContaining('내 조건"을 입력하면'), findsNothing);
+    expect(find.text('입력하기'), findsOneWidget);
+    expect(find.textContaining('내 조건"을 입력하면'), findsOneWidget);
+    await tester.tap(find.text('입력하기'));
+    await tester.pumpAndSettle();
+    expect(find.text('내 조건'), findsOneWidget);
   });
 
   testWidgets('상세: 없는 안내는 오류 문구', (tester) async {

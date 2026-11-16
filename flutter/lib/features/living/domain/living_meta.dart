@@ -18,6 +18,7 @@ class LivingMeta {
   const LivingMeta({
     required this.procedureTypes,
     required this.statuses,
+    required this.verdicts,
     required this.sorts,
     required this.sidos,
     this.dataUpdatedAt,
@@ -26,6 +27,7 @@ class LivingMeta {
   factory LivingMeta.fromJson(Map<String, dynamic> json) => LivingMeta(
     procedureTypes: asList(json['procedureTypes'], Option.fromJson),
     statuses: asList(json['statuses'], Option.fromJson),
+    verdicts: asList(json['verdicts'], Option.fromJson),
     sorts: asList(json['sorts'], Option.fromJson),
     sidos: asStringList(json['sidos']),
     dataUpdatedAt: asString(json['dataUpdatedAt']),
@@ -33,6 +35,7 @@ class LivingMeta {
 
   final List<Option> procedureTypes;
   final List<Option> statuses;
+  final List<Option> verdicts;
   final List<Option> sorts;
   final List<String> sidos;
   final String? dataUpdatedAt;

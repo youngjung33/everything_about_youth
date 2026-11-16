@@ -25,11 +25,11 @@ export const SECTIONS: Section[] = [
     description: "주거·생활비·취업 연계 공공 지원을 모아 보고, 내 조건으로 신청 가능 여부를 확인합니다.",
     href: BENEFITS_BASE,
   },
-  // 아래는 Next 관리자·홈용 예정 섹션. 자세한 로드맵은 루트 README.
+  // finance·jobs·living 은 Flutter 앱·API 1차 구현. Next 공개 UI는 관리·sync 위주. 루트 README 참고.
   {
     id: "finance",
     title: "청년 주거·자금",
-    description: "전세·보증금·청약저축 등 주거 자금 제도·관심·일정 (플래그 기본 꺼짐·관리자 수집).",
+    description: "전세·보증금·청약저축 등 주거 자금 제도. Flutter 앱·API·관리자 수집(sync).",
     href: FINANCE_BASE,
   },
   {
@@ -41,7 +41,7 @@ export const SECTIONS: Section[] = [
   {
     id: "living",
     title: "이사·생활",
-    description: "전입신고·확정일자 등 절차 체크리스트와 공식 안내(관리: 수집 현황).",
+    description: "전입·임대차 등 절차 안내와 체크리스트, 내 조건 참고 판정.",
     href: LIVING_BASE,
   },
 ];

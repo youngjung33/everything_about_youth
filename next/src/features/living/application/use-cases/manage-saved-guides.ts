@@ -1,3 +1,5 @@
+import { evaluateEligibility } from "@/features/living/domain/eligibility/evaluate";
+import type { ApplicantProfile } from "@/features/living/domain/eligibility/applicant";
 import { getGuideStatus, type LivingGuide } from "@/features/living/domain/guide";
 import { todayInKst } from "@/common/domain/date";
 import type { Clock } from "@/common/application/system";
@@ -32,13 +34,13 @@ export class ManageSavedGuides {
     return (await this.saved.list(userId)).map((s) => s.guideId);
   }
 
-  async list(userId: string): Promise<GuideListItem[]> {
+  async list(userId: string, profile?: ApplicantProfile): Promise<GuideListItem[]> {
     const today = todayInKst(this.clock.now());
     const items: GuideListItem[] = [];
     for (const row of await this.saved.list(userId)) {
       const program = await this.guides.findById(row.guideId);
       if (!program) continue;
-      items.push(toItem(program, today));
+      items.push(toItem(program, today, profile));
     }
     return items;
   }
@@ -53,10 +55,10 @@ export class ManageSavedGuides {
   }
 }
 
-function toItem(program: LivingGuide, today: string): GuideListItem {
+function toItem(program: LivingGuide, today: string, profile?: ApplicantProfile): GuideListItem {
   return {
     program,
     status: getGuideStatus(program, today),
-    eligibility: null,
+    eligibility: profile ? evaluateEligibility(program, profile, today) : null,
   };
 }

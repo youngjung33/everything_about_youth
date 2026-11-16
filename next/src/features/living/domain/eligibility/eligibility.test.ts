@@ -24,6 +24,11 @@ describe("evaluateEligibility", () => {
     expect(r.verdict).toBe("check");
   });
 
+  it("거주 시도가 안내 지역과 다르면 ineligible", () => {
+    const r = evaluateEligibility(open, { residenceSido: "부산" }, today);
+    expect(r.verdict).toBe("ineligible");
+  });
+
   it("프로필 입력 시 참고 eligible", () => {
     const r = evaluateEligibility(open, { age: 28, residenceSido: "서울" }, today);
     expect(r.verdict).toBe("eligible");

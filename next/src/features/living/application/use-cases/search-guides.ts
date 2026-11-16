@@ -1,3 +1,5 @@
+import { evaluateEligibility, type EligibilityResult, type EligibilityVerdict } from "@/features/living/domain/eligibility/evaluate";
+import type { ApplicantProfile } from "@/features/living/domain/eligibility/applicant";
 import { todayInKst } from "@/common/domain/date";
 import type { GuideStatus } from "@/features/living/domain/enums";
 import { getGuideStatus, type LivingGuide } from "@/features/living/domain/guide";
@@ -9,6 +11,8 @@ export type GuideFilters = Omit<GuideSearchQuery, "today" | "sort" | "limit" | "
 export interface SearchGuidesInput {
   filters: GuideFilters;
   sort?: GuideSort;
+  profile?: ApplicantProfile;
+  verdicts?: EligibilityVerdict[];
   page?: number;
   pageSize?: number;
 }
@@ -16,7 +20,7 @@ export interface SearchGuidesInput {
 export interface GuideListItem {
   program: LivingGuide;
   status: GuideStatus;
-  eligibility: null;
+  eligibility: EligibilityResult | null;
 }
 
 export interface SearchGuidesOutput {
@@ -40,14 +44,28 @@ export class SearchGuides {
     const page = Math.max(1, input.page ?? 1);
     const pageSize = Math.min(100, Math.max(1, input.pageSize ?? DEFAULT_PAGE_SIZE));
     const sort = input.sort ?? "deadline";
+    const verdictFilter = input.verdicts && input.verdicts.length > 0 ? new Set(input.verdicts) : null;
 
     const toItem = (program: LivingGuide): GuideListItem => ({
       program,
       status: getGuideStatus(program, today),
-      eligibility: null,
+      eligibility: input.profile ? evaluateEligibility(program, input.profile, today) : null,
     });
 
     const baseQuery: GuideSearchQuery = { ...input.filters, today, sort };
+
+    if (verdictFilter && input.profile) {
+      const { items } = await this.repo.search(baseQuery);
+      const filtered = items.map(toItem).filter((i) => i.eligibility && verdictFilter.has(i.eligibility.verdict));
+      const total = filtered.length;
+      return {
+        items: filtered.slice((page - 1) * pageSize, page * pageSize),
+        total,
+        page,
+        pageSize,
+        totalPages: Math.max(1, Math.ceil(total / pageSize)),
+      };
+    }
 
     const { items, total } = await this.repo.search({ ...baseQuery, limit: pageSize, offset: (page - 1) * pageSize });
     return {

@@ -30,6 +30,20 @@
       "label": "기타"
     }
   ],
+  "verdicts": [
+    {
+      "value": "eligible",
+      "label": "신청 가능"
+    },
+    {
+      "value": "check",
+      "label": "조건 확인 필요"
+    },
+    {
+      "value": "ineligible",
+      "label": "신청 불가"
+    }
+  ],
   "statuses": [
     {
       "value": "upcoming",

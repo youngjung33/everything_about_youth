@@ -19,14 +19,25 @@ void main() {
       );
     });
 
-    test('schemeNotFound 코드도 LivingGuideNotFound', () async {
+    test('guideNotFound 코드는 LivingGuideNotFound', () async {
       final inner = FakeLivingRepository(
-        searchError: const ApiException('x', statusCode: 404, code: ApiErrorCode.schemeNotFound),
+        searchError: const ApiException('x', statusCode: 404, code: ApiErrorCode.guideNotFound),
       );
       final repo = MappingLivingRepository(inner);
       await expectLater(
         repo.searchGuides(filters: LivingFilters.initial, profile: ApplicantProfile.empty),
         throwsA(isA<LivingGuideNotFound>()),
+      );
+    });
+
+    test('schemeNotFound 는 LivingUserMessage (타 섹션 오류 코드)', () async {
+      final inner = FakeLivingRepository(
+        searchError: const ApiException('제도', statusCode: 404, code: ApiErrorCode.schemeNotFound),
+      );
+      final repo = MappingLivingRepository(inner);
+      await expectLater(
+        repo.searchGuides(filters: LivingFilters.initial, profile: ApplicantProfile.empty),
+        throwsA(isA<LivingUserMessage>().having((e) => e.message, 'message', '제도')),
       );
     });
 

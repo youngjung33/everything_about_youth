@@ -75,6 +75,11 @@ Map<String, dynamic> livingMetaJson() => {
     {'value': 'open', 'label': '진행중'},
     {'value': 'closed', 'label': '종료'},
   ],
+  'verdicts': [
+    {'value': 'eligible', 'label': '신청 가능'},
+    {'value': 'check', 'label': '조건 확인 필요'},
+    {'value': 'ineligible', 'label': '신청 불가'},
+  ],
   'sorts': [
     {'value': 'deadline', 'label': '마감 임박순'},
     {'value': 'latest', 'label': '최신 안내순'},

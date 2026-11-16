@@ -54,16 +54,19 @@ export async function handleListGuides(
     sort: parsed.sort,
     page: parsed.page,
     pageSize: parsePageSize(searchParams),
+    profile: parsed.hasProfile ? parsed.profile : undefined,
+    verdicts: parsed.hasProfile ? parsed.verdicts : undefined,
   });
   return { status: 200, body: toGuideListDto(result, todayInKst(deps.clock.now())) };
 }
 
 export async function handleGetGuide(
   id: string,
-  _searchParams: URLSearchParams,
+  searchParams: URLSearchParams,
   deps: LivingApiDeps,
 ): Promise<ApiResult<GuideDetailDto>> {
-  const item = await deps.getGuideDetail.execute(id);
+  const parsed = parseSearchParams(toRawSearchParams(searchParams));
+  const item = await deps.getGuideDetail.execute(id, parsed.hasProfile ? parsed.profile : undefined);
   if (!item) throw new ApiError("GUIDE_NOT_FOUND");
   return { status: 200, body: toGuideDetailDto(item, todayInKst(deps.clock.now())) };
 }
@@ -88,10 +91,11 @@ export async function handleListSavedIds(userId: string, deps: Pick<LivingApiDep
 
 export async function handleListSaved(
   userId: string,
-  _searchParams: URLSearchParams,
+  searchParams: URLSearchParams,
   deps: LivingApiDeps,
 ): Promise<ApiResult<SavedListDto>> {
-  const items = await deps.manageSavedGuides.list(userId);
+  const parsed = parseSearchParams(toRawSearchParams(searchParams));
+  const items = await deps.manageSavedGuides.list(userId, parsed.hasProfile ? parsed.profile : undefined);
   const today = todayInKst(deps.clock.now());
   return { status: 200, body: { items: items.map((i) => toGuideSummaryDto(i, today)), total: items.length, today } };
 }
@@ -130,7 +134,7 @@ export async function handleGuideCalendar(
   id: string,
   deps: Pick<LivingApiDeps, "getGuideDetail" | "clock">,
 ): Promise<Response> {
-  const item = await deps.getGuideDetail.execute(id);
+  const item = await deps.getGuideDetail.execute(id, undefined);
   if (!item) throw new ApiError("GUIDE_NOT_FOUND");
   const ics = deadlineIcs({
     guideId: item.program.id,

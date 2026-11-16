@@ -1,7 +1,7 @@
 # features
 
 청년이 혜택을 받을 수 있는 서비스(임대주택, 일자리, 금융 …) 하나가 폴더 하나다.  
-**지금 꽂힌 서비스는 `housing`·`benefits`·`finance`·`jobs`·`living` 다섯 개**이며, 앱·서버 기능 플래그는 **모두 기본 켜짐**입니다. (`living` 1차는 내 조건 UI 없음.) 데이터·env 는 루트 [README.md](../../README.md) 와 [next/README.md](../../../next/README.md) 를 보세요.
+**지금 꽂힌 서비스는 `housing`·`benefits`·`finance`·`jobs`·`living` 다섯 개**이며, 앱·서버 기능 플래그는 **모두 기본 켜짐**입니다. (`living` 은 참고 판정·내 조건 UI 포함.) 데이터·env 는 루트 [README.md](../../README.md) 와 [next/README.md](../../../next/README.md) 를 보세요.
 코어(`core`)는 서비스를 모르고, 서비스가 코어의 규격(`FeatureModule`)을 구현해서 꽂힌다.
 
 ```
@@ -10,10 +10,10 @@ core/bootstrap/          시작 작업 (서비스별로 격리해서 실행)
 core/providers/          서비스가 받아 쓰는 공용 인프라 (API 클라이언트, 기기 저장소, 설정)
 features/<id>/           서비스 하나
   <id>_module.dart       코어에 꽂히는 **앱 어댑터** (라우트, 홈 카드, 시작 작업)
-  <id>_container.dart    (선택) use case·data 조립 — 임대주택: `housing_container.dart`
+  <id>_container.dart    use case·data 조립 (composition root)
   domain/                모델, 규칙, **use case**, 저장소 포트   (순수 Dart)
   data/                  API·기기 저장 구현
-  presentation/          화면, Riverpod — **`housingContainerProvider` 하나만** (data import 금지)
+  presentation/          화면, Riverpod — **`<id>ContainerProvider` 하나만** (data import 금지)
 features/home, splash, unavailable   앱 셸 화면 (서비스가 아님)
 ```
 

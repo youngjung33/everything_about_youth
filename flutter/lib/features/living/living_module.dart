@@ -8,6 +8,7 @@ import 'presentation/living_routes.dart';
 import 'presentation/pages/guide_detail_page.dart';
 import 'presentation/pages/guide_list_page.dart';
 import 'presentation/pages/guide_schedule_page.dart';
+import 'presentation/pages/profile_page.dart';
 import 'presentation/pages/saved_guides_page.dart';
 
 class LivingModule extends FeatureModule {
@@ -39,6 +40,7 @@ class LivingModule extends FeatureModule {
       routes: [
         GoRoute(path: 'saved', builder: (context, state) => const SavedGuidesPage()),
         GoRoute(path: 'schedule', builder: (context, state) => const GuideSchedulePage()),
+        GoRoute(path: 'profile', builder: (context, state) => const ProfilePage()),
         GoRoute(
           path: 'guides/:id',
           builder: (context, state) => GuideDetailPage(id: state.pathParameters['id']!),

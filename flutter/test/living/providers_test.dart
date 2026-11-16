@@ -11,6 +11,7 @@ import 'package:everything_about_youth/features/living/data/mapping_living_repos
 import 'package:everything_about_youth/features/living/data/profile_store.dart';
 import 'package:everything_about_youth/features/living/data/saved_guide_store.dart';
 import 'package:everything_about_youth/features/living/living_container.dart';
+import 'package:everything_about_youth/features/living/domain/applicant_profile.dart';
 import 'package:everything_about_youth/features/living/domain/failures.dart';
 import 'package:everything_about_youth/features/living/domain/living_filters.dart';
 import 'package:everything_about_youth/features/living/domain/living_guide.dart';
@@ -146,6 +147,50 @@ void main() {
     expect(repo.searchCalls, hasLength(2));
     expect(repo.searchCalls.last.filters.sidos, {'서울'});
     expect(repo.searchCalls.last.page, 1);
+  });
+
+  test('내 조건을 저장하면 목록을 다시 조회하고 서버 쿼리에 실린다', () async {
+    final repo = FakeLivingRepository(
+      pages: [
+        page(['a'], totalPages: 1),
+      ],
+    );
+    final container = await makeContainer(repo);
+    container.listen(guideListProvider, (_, _) {});
+    await container.read(guideListProvider.future);
+
+    await container.read(profileProvider.notifier).save(const ApplicantProfile(residenceSido: '서울'));
+    await container.read(guideListProvider.future);
+
+    expect(repo.searchCalls.last.profile.residenceSido, '서울');
+    final stored = container.read(sharedPreferencesProvider).getString(ProfileStore.storageKey)!;
+    expect(stored, isNot(contains('서울')));
+  });
+
+  test('내 조건: 시작 작업이 읽어 둔 값이 provider 의 처음 값이 된다', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final cipher = AesGcmFieldCipher(MemoryCipherKeyStore());
+    await ProfileStore(prefs, cipher).save(const ApplicantProfile(age: 33, residenceSido: '서울'));
+
+    final container = ProviderContainer(
+      overrides: [
+        livingContainerProvider.overrideWithValue(
+          LivingContainer.fromStores(
+            repository: MappingLivingRepository(FakeLivingRepository()),
+            profileLocalStore: ProfileStore(prefs, cipher),
+            savedGuideLocalStore: SavedGuideStore(prefs, cipher),
+            reminderPrefs: SavedGuideReminderPrefs(prefs),
+          ),
+        ),
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        fieldCipherProvider.overrideWithValue(cipher),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await container.read(livingContainerProvider).profileLocalStore.load();
+    expect(container.read(profileProvider), const ApplicantProfile(age: 33, residenceSido: '서울'));
   });
 
 

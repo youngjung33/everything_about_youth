@@ -25,14 +25,14 @@ class ApiLivingRepository implements LivingRepository {
   }) async {
     final json = await _client.getJson(
       '$_base/guides',
-      query: {...filters.toQuery(), 'page': page, 'pageSize': pageSize},
+      query: {...filters.toQuery(), ...profile.toQuery(), 'page': page, 'pageSize': pageSize},
     );
     return GuidePage.fromJson(json);
   }
 
   @override
   Future<GuideDetail> getGuide(String id, {required ApplicantProfile profile}) async {
-    final json = await _client.getJson('$_base/guides/${Uri.encodeComponent(id)}');
+    final json = await _client.getJson('$_base/guides/${Uri.encodeComponent(id)}', query: profile.toQuery());
     return GuideDetail.fromJson(json);
   }
 
@@ -44,7 +44,7 @@ class ApiLivingRepository implements LivingRepository {
 
   @override
   Future<SavedGuideList> fetchSaved({required ApplicantProfile profile}) async {
-    final json = await _client.getJson('$_base/saved');
+    final json = await _client.getJson('$_base/saved', query: profile.toQuery());
     return SavedGuideList.fromJson(json);
   }
 

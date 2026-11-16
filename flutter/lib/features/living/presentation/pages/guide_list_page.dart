@@ -206,8 +206,10 @@ class _Header extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filters = ref.watch(filtersProvider);
+    final profile = ref.watch(profileProvider);
     final meta = ref.watch(livingMetaProvider).value;
     final scheme = Theme.of(context).colorScheme;
+    final onlyEligible = filters.verdicts.length == 1 && filters.verdicts.contains('eligible');
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -229,6 +231,11 @@ class _Header extends ConsumerWidget {
                 icon: Icons.bookmarks_outlined,
                 onPressed: () => context.push(LivingRoutes.saved),
               ),
+              ServiceQuickAction(
+                label: '내 조건',
+                icon: Icons.person_outline,
+                onPressed: () => context.push(LivingRoutes.profile),
+              ),
               if (MediaQuery.sizeOf(context).width < kWideLayoutWidth)
                 ServiceQuickAction(
                   label: '필터',
@@ -246,7 +253,7 @@ class _Header extends ConsumerWidget {
             textBaseline: TextBaseline.alphabetic,
             children: [
               Text(
-                _accent.listHeaderTitle(onlyEligible: false),
+                _accent.listHeaderTitle(onlyEligible: onlyEligible),
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: AppFonts.bold),
               ),
               const SizedBox(width: 8),
@@ -264,6 +271,50 @@ class _Header extends ConsumerWidget {
           const SizedBox(height: 4),
           const LivingFilterPresetChips(),
           const SizedBox(height: 10),
+          Card(
+            color: scheme.primaryContainer.withValues(alpha: 0.35),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Row(
+                children: [
+                  Icon(Icons.person_outline, size: 20, color: scheme.primary),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      profile.isEmpty ? '"내 조건"을 입력하면 참고 판정을 제공합니다.' : '내 조건: ${profile.summary}',
+                      style: const TextStyle(fontSize: 13),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => context.push(LivingRoutes.profile),
+                    child: Text(profile.isEmpty ? '입력하기' : '수정'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (!profile.isEmpty && meta != null) ...[
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Text('자격 판정으로 거르기', style: TextStyle(fontSize: 12, color: scheme.outline)),
+                for (final v in meta.verdicts)
+                  FilterChip(
+                    label: Text(v.label),
+                    selected: filters.verdicts.contains(v.value),
+                    visualDensity: VisualDensity.compact,
+                    onSelected: (on) {
+                      final next = {...filters.verdicts};
+                      on ? next.add(v.value) : next.remove(v.value);
+                      ref.read(filtersProvider.notifier).setVerdicts(next);
+                    },
+                  ),
+              ],
+            ),
+          ],
           if (meta != null && meta.sorts.isNotEmpty) ...[
             const SizedBox(height: 10),
             SegmentedButton<String>(

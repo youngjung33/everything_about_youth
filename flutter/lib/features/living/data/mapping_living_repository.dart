@@ -18,7 +18,7 @@ class MappingLivingRepository implements LivingRepository {
     try {
       return await run;
     } on ApiException catch (e) {
-      if (e.isNotFound || e.code == ApiErrorCode.schemeNotFound || e.code == ApiErrorCode.guideNotFound) {
+      if (e.isNotFound || e.code == ApiErrorCode.guideNotFound) {
         throw LivingGuideNotFound(apiExceptionUserMessage(e));
       }
       throw LivingUserMessage(apiExceptionUserMessage(e));

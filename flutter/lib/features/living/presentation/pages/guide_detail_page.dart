@@ -83,9 +83,13 @@ class _DetailBody extends StatelessWidget {
           children: [
             Text(guide.title, style: textTheme.headlineSmall?.copyWith(fontWeight: AppFonts.bold)),
             const SizedBox(height: 10),
-            GuideBadges(guide: guide),
+            GuideBadges(guide: guide, largeEligibility: true),
             const SizedBox(height: 8),
             CollectedSummary(summary: guide.summary),
+            if (guide.eligibility != null) ...[
+              const SizedBox(height: 16),
+              _EligibilityCard(eligibility: guide.eligibility!),
+            ],
             const SizedBox(height: 16),
             ChecklistStepsSection(steps: detail.checklistSteps),
             const SizedBox(height: 16),
@@ -121,6 +125,38 @@ class _DetailBody extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             const SizedBox(height: 72),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _EligibilityCard extends StatelessWidget {
+  const _EligibilityCard({required this.eligibility});
+
+  final Eligibility eligibility;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Card(
+      color: scheme.surfaceContainerHighest,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(eligibility.verdictLabel, style: TextStyle(fontWeight: AppFonts.bold, fontSize: 16)),
+            if (eligibility.reasons.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              for (final r in eligibility.reasons) Text('· $r'),
+            ],
+            if (eligibility.notes.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              for (final n in eligibility.notes)
+                Text(n, style: TextStyle(fontSize: 12, color: scheme.outline)),
+            ],
           ],
         ),
       ),

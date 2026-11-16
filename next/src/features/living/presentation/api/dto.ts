@@ -10,8 +10,17 @@ import {
 } from "@/features/living/domain/enums";
 import { googleCalendarDeadlineUrl } from "@/features/living/domain/calendar";
 import type { ChecklistStep } from "@/features/living/domain/guide";
+import type { EligibilityResult } from "@/features/living/domain/eligibility/evaluate";
+import { VERDICT_LABELS } from "@/features/living/domain/eligibility/evaluate";
 import type { GuideListItem, SearchGuidesOutput } from "@/features/living/application/use-cases/search-guides";
 import { regionLabel } from "../region-label";
+
+export interface EligibilityDto {
+  verdict: string;
+  verdictLabel: string;
+  reasons: string[];
+  notes: string[];
+}
 
 export interface RegionDto {
   sido: string;
@@ -43,7 +52,7 @@ export interface GuideSummaryDto {
   summary: string | null;
   url: string | null;
   sourceLabels: string[];
-  eligibility: null;
+  eligibility: EligibilityDto | null;
 }
 
 export interface GuideSourceDto {
@@ -78,8 +87,19 @@ export interface LivingMetaDto {
   dataUpdatedAt: string | null;
   procedureTypes: OptionDto[];
   statuses: OptionDto[];
+  verdicts: OptionDto[];
   sorts: OptionDto[];
   sidos: string[];
+}
+
+function toEligibilityDto(result: EligibilityResult | null): EligibilityDto | null {
+  if (!result) return null;
+  return {
+    verdict: result.verdict,
+    verdictLabel: VERDICT_LABELS[result.verdict],
+    reasons: result.reasons,
+    notes: result.notes,
+  };
 }
 
 function toChecklistStepDto(step: ChecklistStep): ChecklistStepDto {
@@ -92,7 +112,7 @@ function toChecklistStepDto(step: ChecklistStep): ChecklistStepDto {
 }
 
 export function toGuideSummaryDto(item: GuideListItem, today: IsoDate): GuideSummaryDto {
-  const { program, status } = item;
+  const { program, status, eligibility } = item;
   return {
     id: program.id,
     title: program.title,
@@ -111,7 +131,7 @@ export function toGuideSummaryDto(item: GuideListItem, today: IsoDate): GuideSum
     summary: program.summary,
     url: program.url,
     sourceLabels: [...new Set(program.sources.map((s) => SOURCE_LABELS[s.source]))],
-    eligibility: null,
+    eligibility: toEligibilityDto(eligibility),
   };
 }
 
@@ -152,6 +172,10 @@ export function buildLivingMeta(dataUpdatedAt: string | null = null): LivingMeta
     dataUpdatedAt,
     procedureTypes: PROCEDURE_TYPE_IDS.map((value) => ({ value, label: PROCEDURE_TYPE_LABELS[value] })),
     statuses: GUIDE_STATUSES.map((value) => ({ value, label: GUIDE_STATUS_LABELS[value] })),
+    verdicts: (Object.keys(VERDICT_LABELS) as Array<keyof typeof VERDICT_LABELS>).map((value) => ({
+      value,
+      label: VERDICT_LABELS[value],
+    })),
     sorts: [
       { value: "deadline", label: "마감 임박순" },
       { value: "latest", label: "최신 안내순" },

@@ -50,11 +50,21 @@ describe("SearchGuides", () => {
     expect(r.pageSize).toBe(100);
   });
 
-  it("eligibility 는 항상 null", async () => {
+  it("프로필 없으면 eligibility 는 null", async () => {
     const guides = [createGuide(draft("one"))];
     const uc = new SearchGuides(new FakeRepo(guides), clock);
     const r = await uc.execute({ filters: {} });
     expect(r.items[0]!.eligibility).toBeNull();
+  });
+
+  it("거주 시도가 맞지 않으면 ineligible", async () => {
+    const guides = [createGuide(draft("seoul"))];
+    const uc = new SearchGuides(new FakeRepo(guides), clock);
+    const r = await uc.execute({
+      filters: {},
+      profile: { residenceSido: "부산" },
+    });
+    expect(r.items[0]!.eligibility?.verdict).toBe("ineligible");
   });
 
   it("목록·페이지 정보를 돌려준다", async () => {

@@ -10,6 +10,7 @@ export interface ProcedureTypeRule {
 /** 절차 유형별 참고 안내 (1차 living 은 판정 최소화) */
 export const PROCEDURE_TYPE_RULES: Record<ProcedureTypeId, ProcedureTypeRule> = {
   move_in: {
+    requiresResidenceMatch: true,
     alwaysCheck: "전입신고는 관할 주민센터·정부24 절차와 필요 서류를 기관 안내에서 확인하세요.",
   },
   lease: {

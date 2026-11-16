@@ -122,12 +122,17 @@ describe("living API handlers", () => {
     expect(list.body.items[0]!.id).toBe(guides[0]!.id);
     expect(list.body.items[0]!.eligibility).toBeNull();
 
+    const listWithProfile = await handleListGuides(new URLSearchParams({ residence: "서울" }), deps);
+    expect(listWithProfile.body.items[0]!.eligibility).not.toBeNull();
+    expect(listWithProfile.body.items[0]!.eligibility!.verdict).toBeDefined();
+
     const detail = await handleGetGuide(guides[0]!.id, new URLSearchParams(), deps);
     expect(detail.body.title).toBe("전입신고");
     expect(detail.body.checklistSteps).toHaveLength(1);
 
     const meta = await handleGetMeta(deps);
     expect(meta.body.procedureTypes.length).toBeGreaterThan(0);
+    expect(meta.body.verdicts.length).toBe(3);
     expect(meta.body).not.toHaveProperty("standards");
   });
 

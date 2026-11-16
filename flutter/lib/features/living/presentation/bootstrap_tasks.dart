@@ -8,6 +8,15 @@ const _accent = ServiceAccent.living;
 /// 이사·생활 섹션이 앱 시작 때 끝내 둘 작업.
 final livingBootstrapTasks = <BootstrapTask>[
   BootstrapTask(
+    name: '내 조건 불러오기',
+    critical: true,
+    run: (ref) async {
+      await ref.read(livingContainerProvider).loadProfile();
+      ref.read(profileProvider);
+    },
+  ),
+
+  BootstrapTask(
     name: _accent.bootstrapSavedTaskName,
     run: (ref) async {
       await ref.read(savedGuidesProvider.future);
