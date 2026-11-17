@@ -81,7 +81,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final current = _current();
     return AppScaffold(
       appBar: AppTopBar(title: const Text('내 조건')),
       body: Align(

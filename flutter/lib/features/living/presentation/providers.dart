@@ -102,6 +102,15 @@ final guideDetailProvider = FutureProvider.family<GuideDetail, String>((ref, id)
   return _container(ref).getGuideDetail(id, profile: profile);
 });
 
+final similarGuidesProvider = FutureProvider.family<List<GuideSummary>, String>((ref, id) async {
+  final detail = await ref.watch(guideDetailProvider(id).future);
+  return _container(ref).loadSimilarGuides(
+    excludeId: id,
+    procedureTypeId: detail.summary.procedureTypeId,
+    profile: ref.watch(profileProvider),
+  );
+});
+
 class SavedGuidesNotifier extends AsyncNotifier<List<String>> {
   @override
   Future<List<String>> build() async {

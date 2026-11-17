@@ -29,6 +29,16 @@ describe("evaluateEligibility", () => {
     expect(r.verdict).toBe("ineligible");
   });
 
+  it("지역 안내가 있는 절차는 거주 시도 없으면 check", () => {
+    const r = evaluateEligibility(
+      { ...open, procedureTypeId: "waste", regions: [{ sido: "서울", sigungu: null }] },
+      { age: 25 },
+      today,
+    );
+    expect(r.verdict).toBe("check");
+    expect(r.reasons).toContain("거주 시도 입력 필요 (지역 안내가 있는 절차)");
+  });
+
   it("프로필 입력 시 참고 eligible", () => {
     const r = evaluateEligibility(open, { age: 28, residenceSido: "서울" }, today);
     expect(r.verdict).toBe("eligible");

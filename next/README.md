@@ -376,7 +376,7 @@ benefits 의 **온통 일자리 분류 정책**은 `jobs` 로 옮기지 않습�
 
 ## 이사·생활 섹션
 
-전입·임대차·공과금 등 **절차 안내**를 `living_guides` SQLite 에 모읍니다. Flutter `/living`, API `/api/v1/living/guides/*`, 관리 `/living/admin/sync`. 상세 DTO 에 **`checklistSteps[]`** (title, summary, url). **1차 sync:** repo **`curated`** catalog (6건) + `npm run living:seed-demo`. 기능 플래그 `living` 은 **기본 켜짐**. **참고 판정** — 프로필 쿼리가 있으면 목록·상세·관심에 `eligibility` 가 내려가고, meta 에 `verdicts` 가 있습니다 (`standards` 없음).
+전입·임대차·공과금 등 **절차 안내**를 `living_guides` SQLite 에 모읍니다. Flutter `/living`, API `/api/v1/living/guides/*`, 관리 `/living/admin/sync`. 상세 DTO 에 **`checklistSteps[]`** (title, summary, url). **1차 sync:** repo **`curated`** catalog (8건) + `npm run living:seed-demo`. 기능 플래그 `living` 은 **기본 켜짐**. **참고 판정** — 프로필 쿼리가 있으면 목록·상세·관심에 `eligibility` 가 내려가고, meta 에 `verdicts` 가 있습니다 (`standards` 없음).
 
 | 소스 | 1차 |
 | --- | --- |

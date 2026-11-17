@@ -17,6 +17,8 @@ import '../support/pump_living_app.dart';
 
 GuidePage onePage(List<Map<String, dynamic>> items) => GuidePage.fromJson(guidePageJson(items: items));
 
+Finder get _profileScrollable => find.descendant(of: find.byType(ListView), matching: find.byType(Scrollable)).first;
+
 class _SlowDetailRepository extends FakeLivingRepository {
   _SlowDetailRepository(this._detail);
 
@@ -123,13 +125,93 @@ void main() {
     expect(find.text('검색'), findsNothing);
   });
 
-  testWidgets('목록: 내 조건 입력 배너와 프로필 화면으로 들어간다', (tester) async {
-    await pumpLivingApp(tester, FakeLivingRepository(pages: [onePage([guideSummaryJson()])]), location: '/living');
-    expect(find.text('입력하기'), findsOneWidget);
-    expect(find.textContaining('내 조건"을 입력하면'), findsOneWidget);
+  testWidgets('내 조건을 저장하면 요약이 보이고 판정 거르기 칩이 나타난다', (tester) async {
+    final repo = FakeLivingRepository(pages: [onePage([guideSummaryJson()])]);
+    await pumpLivingApp(tester, repo, location: '/living');
+
+    expect(find.textContaining('참고 판정을 제공합니다'), findsOneWidget);
+    expect(find.text('자격 판정으로 거르기'), findsNothing);
+
     await tester.tap(find.text('입력하기'));
     await tester.pumpAndSettle();
     expect(find.text('내 조건'), findsOneWidget);
+
+    await tester.enterText(find.widgetWithText(TextField, '만 나이'), '29');
+    await tester.tap(find.text('무주택'));
+    await tester.scrollUntilVisible(find.text('저장'), 300, scrollable: _profileScrollable);
+    await tester.tap(find.text('저장'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('내 조건: 만 29세 · 무주택'), findsOneWidget);
+    expect(find.text('자격 판정으로 거르기'), findsOneWidget);
+    expect(repo.searchCalls.last.profile.age, 29);
+    expect(repo.searchCalls.last.profile.isHomeless, isTrue);
+  });
+
+  testWidgets('내 조건: 신혼부부로 답했을 때만 맞벌이를 묻는다', (tester) async {
+    await pumpLivingApp(
+      tester,
+      FakeLivingRepository(pages: [onePage([guideSummaryJson()])]),
+      location: '/living/profile',
+      size: const Size(600, 3200),
+    );
+    final scrollable = _profileScrollable;
+    await tester.scrollUntilVisible(find.text('신혼부부 (혼인 7년 이내)'), 300, scrollable: scrollable);
+    await tester.tap(find.text('해당').first);
+    await tester.pump();
+    await tester.scrollUntilVisible(find.textContaining('맞벌이 (본인과 배우자'), 300, scrollable: scrollable);
+    expect(find.textContaining('맞벌이 (본인과 배우자'), findsOneWidget);
+  });
+
+  testWidgets('내 조건: 거주 시·도를 고를 수 있다', (tester) async {
+    await pumpLivingApp(
+      tester,
+      FakeLivingRepository(pages: [onePage([guideSummaryJson()])]),
+      location: '/living/profile',
+      size: const Size(600, 2000),
+    );
+    await tester.scrollUntilVisible(find.text('현재 거주 시·도'), 300, scrollable: _profileScrollable);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(DropdownButtonFormField<String?>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('서울').last);
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('내 조건: 작은 폰과 최대 글꼴에서도 저장 버튼까지 닿을 수 있다', (tester) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 3;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await pumpLivingApp(
+      tester,
+      FakeLivingRepository(pages: [onePage([guideSummaryJson()])]),
+      location: '/living/profile',
+      size: const Size(320, 480),
+    );
+    await tester.dragUntilVisible(find.text('저장'), _profileScrollable, const Offset(0, -200));
+    expect(find.text('저장'), findsOneWidget);
+  });
+
+  testWidgets('판정이 있는 안내는 배지를 보여준다', (tester) async {
+    await pumpLivingApp(
+      tester,
+      FakeLivingRepository(
+        pages: [
+          onePage([
+            guideSummaryJson(
+              eligibility: {
+                'verdict': 'eligible',
+                'verdictLabel': '신청 가능',
+                'reasons': <String>[],
+                'notes': <String>[],
+              },
+            ),
+          ]),
+        ],
+      ),
+      location: '/living',
+    );
+    expect(find.text('신청 가능'), findsOneWidget);
   });
 
   testWidgets('상세: 없는 안내는 오류 문구', (tester) async {

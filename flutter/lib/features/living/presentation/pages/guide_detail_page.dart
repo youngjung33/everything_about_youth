@@ -13,6 +13,7 @@ import '../../domain/living_guide.dart';
 import '../widgets/guide_card.dart';
 import '../widgets/saved_guide_button.dart';
 import '../widgets/checklist_steps_section.dart';
+import '../widgets/eligibility_next_steps_card.dart';
 import '../../../../core/widgets/detail_primary_actions.dart';
 import '../../../../core/design/service_accent.dart';
 import '../../../../core/theme/app_fonts.dart';
@@ -90,6 +91,8 @@ class _DetailBody extends StatelessWidget {
               const SizedBox(height: 16),
               _EligibilityCard(eligibility: guide.eligibility!),
             ],
+            const SizedBox(height: 16),
+            EligibilityNextStepsSection(detail: detail),
             const SizedBox(height: 16),
             ChecklistStepsSection(steps: detail.checklistSteps),
             const SizedBox(height: 16),

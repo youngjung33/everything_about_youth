@@ -14,18 +14,23 @@ export const PROCEDURE_TYPE_RULES: Record<ProcedureTypeId, ProcedureTypeRule> = 
     alwaysCheck: "전입신고는 관할 주민센터·정부24 절차와 필요 서류를 기관 안내에서 확인하세요.",
   },
   lease: {
+    requiresResidenceMatch: true,
     alwaysCheck: "확정일자·임대차 계약 순서와 등기부등본 확인이 중요합니다.",
   },
   moving: {
+    requiresResidenceMatch: true,
     alwaysCheck: "이사 당일 실측·하자 기록, 열쇠·관리비·주차 등을 계약서와 맞춰 확인하세요.",
   },
   utilities: {
+    requiresResidenceMatch: true,
     alwaysCheck: "전기·가스·수도·인터넷 명의 변경·해지 절차는 사업자마다 다릅니다.",
   },
   registry: {
+    requiresResidenceMatch: true,
     alwaysCheck: "등기·주민센터 업무는 관할 기관 안내를 따르세요.",
   },
   waste: {
+    requiresResidenceMatch: true,
     alwaysCheck: "쓰레기 배출·재활용 규정은 지자체·관리사무소 기준을 확인하세요.",
   },
   other: {

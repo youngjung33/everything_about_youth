@@ -193,6 +193,61 @@ void main() {
     expect(container.read(profileProvider), const ApplicantProfile(age: 33, residenceSido: '서울'));
   });
 
+  test('내 조건: 읽기가 끝나기 전에 먼저 불러도, 끝나면 값이 반영된다', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final cipher = AesGcmFieldCipher(MemoryCipherKeyStore());
+    await ProfileStore(prefs, cipher).save(const ApplicantProfile(age: 41));
+
+    final container = ProviderContainer(
+      overrides: [
+        livingContainerProvider.overrideWithValue(
+          LivingContainer.fromStores(
+            repository: MappingLivingRepository(FakeLivingRepository()),
+            profileLocalStore: ProfileStore(prefs, cipher),
+            savedGuideLocalStore: SavedGuideStore(prefs, cipher),
+            reminderPrefs: SavedGuideReminderPrefs(prefs),
+          ),
+        ),
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        fieldCipherProvider.overrideWithValue(cipher),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    expect(container.read(profileProvider).isEmpty, isTrue);
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    expect(container.read(profileProvider).age, 41);
+  });
+
+  test('내 조건: 사용자가 먼저 저장했다면 늦게 끝난 읽기가 덮어쓰지 않는다', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final cipher = AesGcmFieldCipher(MemoryCipherKeyStore());
+    await ProfileStore(prefs, cipher).save(const ApplicantProfile(age: 41));
+
+    final container = ProviderContainer(
+      overrides: [
+        livingContainerProvider.overrideWithValue(
+          LivingContainer.fromStores(
+            repository: MappingLivingRepository(FakeLivingRepository()),
+            profileLocalStore: ProfileStore(prefs, cipher),
+            savedGuideLocalStore: SavedGuideStore(prefs, cipher),
+            reminderPrefs: SavedGuideReminderPrefs(prefs),
+          ),
+        ),
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        fieldCipherProvider.overrideWithValue(cipher),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    container.read(profileProvider);
+    await container.read(profileProvider.notifier).save(const ApplicantProfile(age: 22));
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    expect(container.read(profileProvider).age, 22);
+  });
+
 
 
 

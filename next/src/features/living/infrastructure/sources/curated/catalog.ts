@@ -150,6 +150,33 @@ export const CURATED_CATALOG: CuratedCatalogEntry[] = [
     ],
   },
   {
+    slug: "jumin-registration-copy",
+    title: "주민등록 등·초본 발급",
+    organization: "행정안전부·주민센터",
+    procedureTypeId: "registry",
+    tags: ["등본", "초본", "주민센터", "정부24"],
+    summary:
+      "전입·이사 때 등본·초본이 필요합니다. 관할 주민센터 방문 또는 정부24·무인발급기에서 발급할 수 있으며, 용도·수령 방법을 확인하세요.",
+    url: "https://www.gov.kr/portal/service/serviceInfo/PTR000050336",
+    steps: [
+      {
+        title: "발급 용도 확인",
+        summary: "가족관계·주소 확인 등 필요한 증명 종류(등본·초본)를 정합니다.",
+        url: null,
+      },
+      {
+        title: "정부24·주민센터 신청",
+        summary: "본인 인증 후 발급·수령 방법(출력·방문·우편)을 선택합니다.",
+        url: "https://www.gov.kr/portal/service/serviceInfo/PTR000050336",
+      },
+      {
+        title: "전입신고·주소 일치",
+        summary: "전입신고 후 등본 주소가 실제 거주지와 일치하는지 확인합니다.",
+        url: null,
+      },
+    ],
+  },
+  {
     slug: "waste-recycling",
     title: "쓰레기·재활용(종량제) 안내",
     organization: "지방자치단체",
@@ -176,7 +203,38 @@ export const CURATED_CATALOG: CuratedCatalogEntry[] = [
       },
     ],
   },
+  {
+    slug: "seoul-waste-guide",
+    title: "서울시 종량제·대형폐기물 배출",
+    organization: "서울특별시",
+    procedureTypeId: "waste",
+    tags: ["서울", "종량제", "대형폐기물"],
+    summary:
+      "서울 거주 기준 종량제 봉투 규격·배출 요일·대형폐기물 인터넷 신고 방법을 안내합니다. 관할 구청 환경과나 120으로 자치구별 세부를 확인하세요.",
+    url: "https://www.seoul.go.kr",
+    steps: [
+      {
+        title: "자치구 환경과 안내",
+        summary: "거주 구청 종량제 규격·요일·시간대를 확인합니다.",
+        url: "https://www.seoul.go.kr",
+      },
+      {
+        title: "대형폐기물 신고",
+        summary: "서울시 대형폐기물 인터넷 신고·스티커 구매 방법을 확인합니다.",
+        url: null,
+      },
+      {
+        title: "이사 잔여물 정리",
+        summary: "박스·가구는 분리·신고 후 배출합니다.",
+        url: null,
+      },
+    ],
+  },
 ];
+
+const REGION_BY_SLUG: Record<string, { sido: string; sigungu: string | null }[]> = {
+  "seoul-waste-guide": [{ sido: "서울", sigungu: null }],
+};
 
 export function curatedDrafts(fetchedAt: string): LivingGuideDraft[] {
   return CURATED_CATALOG.map((e) => ({
@@ -184,7 +242,7 @@ export function curatedDrafts(fetchedAt: string): LivingGuideDraft[] {
     organization: e.organization,
     procedureTypeId: e.procedureTypeId,
     tags: e.tags,
-    regions: [],
+    regions: REGION_BY_SLUG[e.slug] ?? [],
     applicationStart: null,
     applicationEnd: null,
     announcementDate: null,
