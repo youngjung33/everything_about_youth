@@ -1,11 +1,13 @@
 import type { ApplicantProfile } from "@/features/living/domain/eligibility/applicant";
 import { isProfileEmpty } from "@/features/living/domain/eligibility/applicant";
+import { MAX_HOUSEHOLD_SIZE } from "@/features/living/domain/eligibility/standards";
 import type { EligibilityVerdict } from "@/features/living/domain/eligibility/evaluate";
 import { PROCEDURE_TYPE_IDS, GUIDE_STATUSES, type ProcedureTypeId, type GuideStatus } from "@/features/living/domain/enums";
 import { SIDO_LIST, type Sido } from "@/common/domain/region";
 import type { GuideSort } from "@/features/living/application/ports/guide-repository";
 import type { GuideFilters } from "@/features/living/application/use-cases/search-guides";
 
+/** 목록·상세·관심 조회 쿼리 파싱. `v=` 판정 필터·프로필 키는 jobs/housing 과 동형, living meta에는 `standards` 없음. */
 export type RawSearchParams = Record<string, string | string[] | undefined>;
 
 export const PROFILE_KEYS = [
@@ -93,7 +95,7 @@ export function parseSearchParams(raw: RawSearchParams): ParsedSearch {
     isMarried: triState(one(raw.married)),
     isNewlywed: triState(one(raw.newlywed)),
     isStudent: triState(one(raw.student)),
-    householdSize: integerOrUndefined(one(raw.household), 1, 8),
+    householdSize: integerOrUndefined(one(raw.household), 1, MAX_HOUSEHOLD_SIZE),
     monthlyIncomeWon: manToWon(one(raw.monthly), MAX_MONTHLY_INCOME_MAN),
     isDualIncome: triState(one(raw.dual)),
     totalAssetWon: manToWon(one(raw.asset), MAX_ASSET_MAN),

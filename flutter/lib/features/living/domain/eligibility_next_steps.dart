@@ -3,6 +3,8 @@ import 'package:meta/meta.dart';
 import '../../../core/copy/service_copy.dart';
 import 'living_guide.dart';
 
+/// 판정 결과 기반 **다음에 할 일** 문구. jobs/finance 동형 — 소득 기준표 없이 절차·체크리스트 중
+
 @immutable
 class EligibilityNextSteps {
   const EligibilityNextSteps({

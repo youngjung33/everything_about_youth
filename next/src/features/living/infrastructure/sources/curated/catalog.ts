@@ -1,6 +1,15 @@
 import type { ProcedureTypeId } from "@/features/living/domain/enums";
 import type { ChecklistStep, LivingGuideDraft } from "@/features/living/domain/guide";
 
+/**
+ * living 1차 curated catalog.
+ *
+ * - **단일 출처**: `living:sync --source=curated` 가 이 배열만 DB(`living_guides`)로 넣습니다.
+ * - **지역(`regions`)**: 대부분 전국 공통 절차 → `curatedDrafts` 에서 빈 배열. 지자체·시도 한정 안내만 `REGION_BY_SLUG` 에 매핑합니다.
+ * - **`checklistSteps`**: 앱 상세 화면 체크리스트 UI용. `order` 는 `curatedDrafts` 에서 1부터 부여합니다.
+ * - **판정**: `regions` 가 비어 있으면 거주지 불일치 판정을 쓰지 않음(`requiresResidenceMatch` + `evaluate.ts`).
+ */
+
 export interface CuratedCatalogEntry {
   slug: string;
   title: string;
@@ -232,10 +241,15 @@ export const CURATED_CATALOG: CuratedCatalogEntry[] = [
   },
 ];
 
+/**
+ * 슬러그별 `regions` 보강. catalog 항목에 시도가 고정된 안내만 여기에 추가한다.
+ * (신규 지자체 전용 항목 추가 시 slug → 시·도 한 쌍을 등록할 것.)
+ */
 const REGION_BY_SLUG: Record<string, { sido: string; sigungu: string | null }[]> = {
   "seoul-waste-guide": [{ sido: "서울", sigungu: null }],
 };
 
+/** catalog 엔트리 → sync용 draft. `sources[]` 에 `curated` + slug 로 추적한다. */
 export function curatedDrafts(fetchedAt: string): LivingGuideDraft[] {
   return CURATED_CATALOG.map((e) => ({
     title: e.title,

@@ -148,6 +148,18 @@ void main() {
     expect(repo.searchCalls.last.profile.isHomeless, isTrue);
   });
 
+  testWidgets('내 조건: 기준표(meta standards) 없어도 입력 화면은 동작한다', (tester) async {
+    await pumpLivingApp(
+      tester,
+      FakeLivingRepository(pages: [onePage([guideSummaryJson()])]),
+      location: '/living/profile',
+      size: const Size(600, 3200),
+    );
+    await tester.tap(find.byKey(const ValueKey('household-2')));
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('내 조건: 신혼부부로 답했을 때만 맞벌이를 묻는다', (tester) async {
     await pumpLivingApp(
       tester,

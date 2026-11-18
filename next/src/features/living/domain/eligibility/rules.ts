@@ -7,7 +7,13 @@ export interface ProcedureTypeRule {
   alwaysCheck?: string;
 }
 
-/** 절차 유형별 참고 안내 (1차 living 은 판정 최소화) */
+/**
+ * 절차 유형별 참고 판정 규칙 (1차).
+ *
+ * - `requiresResidenceMatch`: 안내 `regions` 가 비어 있지 않을 때만 evaluate 가 거주 `residenceSido` 와 비교합니다.
+ *   전국 공통 catalog(대부분)는 regions=[] 이므로 거주 불일치로 막지 않습니다.
+ * - `alwaysCheck`: 판정과 관계없이 상세 `notes` 로 내려가는 기관 확인 문구입니다.
+ */
 export const PROCEDURE_TYPE_RULES: Record<ProcedureTypeId, ProcedureTypeRule> = {
   move_in: {
     requiresResidenceMatch: true,

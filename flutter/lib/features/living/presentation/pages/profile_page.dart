@@ -13,6 +13,7 @@ import '../../domain/applicant_profile.dart';
 const _accent = ServiceAccent.living;
 
 /// 이사·생활 · 내 조건 입력. 기기에만 저장되며 서버에는 안내 조회 시 참고 판정용으로만 전달된다.
+/// 1차 판정은 **거주 시·도 vs 안내 지역** 위주이며, meta에 소득 `standards` 는 없다(jobs 소득 hint UI 없음).
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
 

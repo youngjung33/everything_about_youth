@@ -46,16 +46,21 @@ src/
     jobs/                    ← 청년·공공 일자리 (finance 와 동형, 별도 DB)
       jobs-container.ts
       domain/ · application/ · infrastructure/ · presentation/
+    living/                  ← 이사·생활 절차 안내 (jobs 와 동형 UX, 별도 DB)
+      living-container.ts
+      domain/ · application/ · infrastructure/ · presentation/
   app/                       ← Next.js 라우트 (조립만)
     page.tsx                   섹션 목록 홈
     housing/                   /housing, /housing/notices/[id], /housing/admin/sync
     benefits/                  /benefits/admin/sync (앱·API는 /api/v1/benefits)
     finance/                   /finance/admin/sync (앱·API는 /api/v1/finance)
     jobs/                      /jobs/admin/sync (앱·API는 /api/v1/jobs)
+    living/                    /living/admin/sync (앱·API는 /api/v1/living)
     api/v1/housing/sync/       수동 수집 API
     api/v1/benefits/           혜택 JSON API
     api/v1/finance/            주거·자금 JSON API
     api/v1/jobs/               일자리 JSON API
+    api/v1/living/             이사·생활 JSON API
     sections.ts                섹션 등록부 (홈/헤더 메뉴)
 scripts/
   migrate.ts, load-env.ts      공통
@@ -63,6 +68,7 @@ scripts/
   benefits/                    청년 혜택 CLI (sync, seed-demo)
   finance/                     청년 주거·자금 CLI (sync, seed-demo)
   jobs/                        일자리 CLI (sync, seed-demo)
+  living/                      이사·생활 CLI (sync, seed-demo)
 drizzle/                     마이그레이션 (모든 섹션이 하나의 이력으로 관리)
 ```
 
@@ -192,6 +198,13 @@ DB 마이그레이션은 앱/스크립트 시작 시 자동 적용됩니다(`npm
 | --- | --- |
 | `JOBS_SYNC_SOURCES` | 활성 소스 제한 (`curated`). `demo` 는 sync 소스 아님 — `jobs:seed-demo` 로만 넣음. 비우면 등록된 소스 전부 |
 | `JOBS_SYNC_INTERVAL_MINUTES` | 자동 수집 간격(분). `0`(기본)이면 끔. 켜려면 **30 이상**. `jobs` 기능이 **켜져 있을 때만** 스케줄러 동작 |
+
+이사·생활
+
+| 변수 | 설명 |
+| --- | --- |
+| `LIVING_SYNC_SOURCES` | 활성 소스 제한 (`curated`). `demo` 는 sync 소스 아님 — `living:seed-demo` 로만 넣음. 비우면 등록된 소스 전부 |
+| `LIVING_SYNC_INTERVAL_MINUTES` | 자동 수집 간격(분). `0`(기본)이면 끔. 켜려면 **30 이상**. `living` 기능이 **켜져 있을 때만** 스케줄러 동작 |
 
 온통청년 OPEN API (benefits·finance `ontong-finance`):
 
@@ -376,14 +389,34 @@ benefits 의 **온통 일자리 분류 정책**은 `jobs` 로 옮기지 않습�
 
 ## 이사·생활 섹션
 
-전입·임대차·공과금 등 **절차 안내**를 `living_guides` SQLite 에 모읍니다. Flutter `/living`, API `/api/v1/living/guides/*`, 관리 `/living/admin/sync`. 상세 DTO 에 **`checklistSteps[]`** (title, summary, url). **1차 sync:** repo **`curated`** catalog (8건) + `npm run living:seed-demo`. 기능 플래그 `living` 은 **기본 켜짐**. **참고 판정** — 프로필 쿼리가 있으면 목록·상세·관심에 `eligibility` 가 내려가고, meta 에 `verdicts` 가 있습니다 (`standards` 없음).
+전입·임대차·공과금 등 **절차 안내**를 `living_guides` SQLite 에 모읍니다. Flutter `/living`, API `/api/v1/living/guides/*`, 관리 `/living/admin/sync`. 상세 DTO 에 **`checklistSteps[]`** (title, summary, url). jobs/finance 와 **동형 UX**(목록·필터·내 조건·관심·일정·로컬 알림). **공개 Next 목록 페이지는 없습니다.** 기능 플래그 `living` 은 **기본 켜짐**.
 
-| 소스 | 1차 |
-| --- | --- |
-| `curated` | `npm run living:sync -- --source=curated` |
-| 데모 | `npm run living:seed-demo` (sync 아님) |
+**정보 우선:** sync 로 DB에 넣는 `title`·`organization`·`summary`·`checklistSteps`·`regions`·`tags` 가 앱 본문입니다. `url` 은 더 보기·검증용입니다.
 
-환경: `LIVING_SYNC_SOURCES`, `LIVING_SYNC_INTERVAL_MINUTES` (0 또는 30+). `db:migrate` 후 `0007_living_guides` 적용.
+### 데이터 출처와 검증 상태
+
+| 소스 | 방식 | 1차 sync |
+| --- | --- | --- |
+| `curated` | repo catalog (`infrastructure/sources/curated/catalog.ts`, **8건**) | **등록됨** · 키 불필요 · `npm run living:sync -- --source=curated` |
+| 데모 | `npm run living:seed-demo` | sync 아님 · 화면 확인용 `[데모]` |
+
+`container.ts` 의 `allSources`: **`curated`**. `LIVING_SYNC_SOURCES` 가 비우면 등록 소스를 시도합니다.
+
+### 1차 수집 vs 2차 후보
+
+| 제안 id | 출처 | 비고 |
+| --- | --- | --- |
+| `gov24-procedures` | 정부24 절차 API·안내 | 필드 매핑·약관 검증 후 |
+| `local-waste-apis` | 시·도별 종량제 Open API | 지역별 스키마 상이 |
+| `postal-move-crawl` | 우체국 이전 서비스 등 | robots·약관 확인 후 |
+
+`npm run living:sync -- --list` 로 확인합니다. `db:migrate` 후 `0007_living_guides` 적용.
+
+### 핵심 동작
+
+- **절차 유형(`procedureTypeId`)**: `move_in`, `lease`, `moving`, `utilities`, `registry`, `waste`, `other` — meta·필터·자격 규칙에 사용.
+- **참고 판정**: 거주 시·도 vs 안내 `regions`, 마감, 절차별 `alwaysCheck` 안내(`domain/eligibility/`). meta 에 **`verdicts` 만** 있고 **`standards`(소득 기준표)는 없음** — 내 조건의 소득·가구 필드는 앞으로의 규칙 확장·동형 UX용.
+- **`checklistSteps`**: curated catalog → sync → 상세 API → Flutter 상세 체크리스트 카드.
 
 ## JSON API (Flutter 앱용)
 

@@ -2,8 +2,8 @@ import 'package:everything_about_youth/features/living/domain/applicant_profile.
 import 'package:everything_about_youth/features/living/domain/repositories/profile_local_store.dart';
 import 'package:everything_about_youth/features/living/domain/repositories/saved_guide_local_store.dart';
 
-class MemoryFinanceProfileStore implements ProfileLocalStore {
-  MemoryFinanceProfileStore([this._current = ApplicantProfile.empty]) : _loaded = true;
+class MemoryLivingProfileStore implements ProfileLocalStore {
+  MemoryLivingProfileStore([this._current = ApplicantProfile.empty]) : _loaded = true;
 
   ApplicantProfile _current;
   bool _loaded;

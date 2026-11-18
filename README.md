@@ -51,6 +51,14 @@
 
 [공공데이터포털 «한국고용정보원_온통청년_청년정책»](https://www.data.go.kr/data/15143273/openapi.do) 은 **LINK** 유형입니다. 소개·활용 통계용이고, **실제 호출·키는 youthcenter.go.kr** 입니다. `apis.data.go.kr/.../youthPlcyList` 류 **구 엔드포인트는 동작하지 않으므로 쓰지 않습니다.**
 
+### 이사·생활(living) — jobs 와 동형
+
+- **화면:** 목록·상세·필터·내 조건·**참고 판정**(거주 지역 등)·체크리스트·관심·일정·로컬 알림.
+- **수집(1차 sync)**: repo **`curated`** catalog (전입·임대차·공과금 등 **8건** + `checklistSteps`). `npm run living:sync` · `-- --list` · `-- --source=curated`
+- **수집(개발·데모)**: `npm run living:seed-demo` → `[데모]` 안내
+- **2차**: 정부24·지자체 종량제 API·HTML 안내 등 — [next/README.md](next/README.md#이사생활-섹션)
+- **앱·API**: Flutter `/living`, `/api/v1/living/*` (플래그 기본 on). meta 에 소득 `standards` 없음(판정 최소화).
+
 ### 청년·공공 일자리(jobs) — finance 와 동형
 
 - **화면:** 목록·상세·필터·내 조건(프로필)·참고 자격·관심·일정·로컬 알림.

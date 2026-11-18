@@ -4,6 +4,8 @@ import { isProfileEmpty, type ApplicantProfile } from "./applicant";
 import { PRODUCT_TYPE_RULES } from "./rules";
 import type { ProcedureTypeId } from "../enums";
 
+/** living 참고 판정 — 1차는 소득·자산 규칙 없음. `rules.ts`의 `requiresResidenceMatch`·마감·alwaysCheck 안내만 반영. */
+
 export type EligibilityVerdict = "eligible" | "check" | "ineligible";
 
 export const VERDICT_LABELS: Record<EligibilityVerdict, string> = {

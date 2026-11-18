@@ -18,7 +18,7 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     final container = LivingContainer.fromStores(
       repository: FakeLivingRepository(),
-      profileLocalStore: MemoryFinanceProfileStore(),
+      profileLocalStore: MemoryLivingProfileStore(),
       savedGuideLocalStore: MemorySavedGuideLocalStore(),
       reminderPrefs: SavedGuideReminderPrefs(prefs),
     );

@@ -163,8 +163,11 @@ void main() {
     await container.read(guideListProvider.future);
 
     expect(repo.searchCalls.last.profile.residenceSido, '서울');
+    // 기기에는 암호문으로 저장되고, 같은 키로만 풀린다.
     final stored = container.read(sharedPreferencesProvider).getString(ProfileStore.storageKey)!;
     expect(stored, isNot(contains('서울')));
+    final clear = await container.read(fieldCipherProvider).decrypt(stored, context: ProfileStore.cipherContext);
+    expect(clear, contains('서울'));
   });
 
   test('내 조건: 시작 작업이 읽어 둔 값이 provider 의 처음 값이 된다', () async {

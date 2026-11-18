@@ -1,6 +1,6 @@
 import { SOURCE_LABELS } from "@/features/living/domain/enums";
 import { getLivingContainer } from "@/features/living/living-container";
-import { LivingSyncButton } from "@/features/living/presentation/components/SyncButton";
+import { LivingSyncButton } from "@/features/living/presentation/components/SyncButtonClient";
 
 export const dynamic = "force-dynamic";
 
