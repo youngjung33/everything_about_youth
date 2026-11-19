@@ -6,6 +6,7 @@ import { SourceSkippedError, type NoticeSourcePort } from "../ports/notice-sourc
 import type { SyncRunRepository, SyncRunStatus } from "../ports/sync-run-repository";
 import type { Clock, Logger } from "@/common/application/system";
 
+/** 소스별 수집 실행 결과 요약 */
 export interface SourceSyncResult {
   source: SourceId;
   status: Exclude<SyncRunStatus, "running">;
@@ -26,6 +27,7 @@ export function dedupeBatch(notices: Notice[]): Notice[] {
   return result;
 }
 
+/** 외부 소스에서 공고를 가져와 저장소에 반영한다. */
 export class SyncNoticesFromSource {
   constructor(
     private readonly sources: NoticeSourcePort[],

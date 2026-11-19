@@ -12,6 +12,7 @@ import type { AuthConfig } from "../config/auth-config";
 /** HS256 로 서명하는 JWT. 알고리즘을 고정해서 `alg: none` 이나 다른 알고리즘으로 바꿔치기한 토큰을 거절한다. */
 const ALGORITHM = "HS256";
 
+/** jose 기반 JWT 발급·검증. */
 export class JoseTokenService implements TokenService {
   private readonly key: Uint8Array;
 
@@ -56,3 +57,4 @@ export class JoseTokenService implements TokenService {
     }
   }
 }
+

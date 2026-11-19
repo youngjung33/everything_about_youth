@@ -20,6 +20,7 @@ class SavedSchemesPage extends ConsumerStatefulWidget {
   ConsumerState<SavedSchemesPage> createState() => _SavedSchemesPageState();
 }
 
+/// 위젯의 편집·로딩 등 내부 상태.
 class _SavedSchemesPageState extends ConsumerState<SavedSchemesPage> {
   @override
   Widget build(BuildContext context) {

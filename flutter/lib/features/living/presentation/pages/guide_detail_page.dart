@@ -20,10 +20,11 @@ import '../../../../core/theme/app_fonts.dart';
 
 const _accent = ServiceAccent.living;
 
+/// GuideDetail 화면.
 class GuideDetailPage extends ConsumerWidget {
   const GuideDetailPage({super.key, required this.id});
 
-  final String id;
+  final String id; // 항목 식별자
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -65,6 +66,7 @@ class GuideDetailPage extends ConsumerWidget {
   }
 }
 
+/// 상세 본문(설명·판정·액션) 영역.
 class _DetailBody extends StatelessWidget {
   const _DetailBody({required this.detail});
 
@@ -135,6 +137,7 @@ class _DetailBody extends StatelessWidget {
   }
 }
 
+/// 자격 판정 요약 카드.
 class _EligibilityCard extends StatelessWidget {
   const _EligibilityCard({required this.eligibility});
 
@@ -167,6 +170,7 @@ class _EligibilityCard extends StatelessWidget {
   }
 }
 
+/// 화면 섹션 제목·구분.
 class _Section extends StatelessWidget {
   const _Section({required this.title, required this.child});
 
@@ -189,6 +193,7 @@ class _Section extends StatelessWidget {
   }
 }
 
+/// 출처·원문 링크 한 줄.
 class _SourceRow extends StatelessWidget {
   const _SourceRow({required this.source});
 

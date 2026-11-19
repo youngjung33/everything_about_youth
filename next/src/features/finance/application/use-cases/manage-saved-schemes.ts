@@ -7,10 +7,13 @@ import type { SchemeRepository } from "../ports/scheme-repository";
 import type { SavedSchemeRepository } from "../ports/saved-scheme-repository";
 import type { SchemeListItem } from "./search-schemes";
 
+/** 회원 한 명이 저장할 수 있는 관심 상품 수. 남용과 목록 조회 부담을 막는다. */
 export const MAX_SAVED_PROGRAMS = 100;
 
+/** 관심 저장 시도 결과 */
 export type SaveSchemeResult = { status: "saved" } | { status: "already" } | { status: "not_found" } | { status: "limit"; max: number };
 
+/** 관심 금융·자금 상품 저장·목록·동기화 병합 */
 export class ManageSavedSchemes {
   constructor(
     private readonly saved: SavedSchemeRepository,

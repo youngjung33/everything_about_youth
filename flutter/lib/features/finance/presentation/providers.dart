@@ -24,6 +24,7 @@ FinanceContainer _container(Ref ref) => ref.watch(financeContainerProvider);
 
 final financeMetaProvider = FutureProvider<FinanceMeta>((ref) => _container(ref).loadFinanceMeta());
 
+/// 지원자 프로필 입력값과 저장 상태(Riverpod).
 class ProfileNotifier extends Notifier<ApplicantProfile> {
   bool _edited = false;
 
@@ -47,6 +48,7 @@ class ProfileNotifier extends Notifier<ApplicantProfile> {
 
 final profileProvider = NotifierProvider<ProfileNotifier, ApplicantProfile>(ProfileNotifier.new);
 
+/// Filters 상태를 갱신하는 Riverpod Notifier.
 class FiltersNotifier extends Notifier<FinanceFilters> {
   @override
   FinanceFilters build() => FinanceFilters.initial;
@@ -62,6 +64,7 @@ class FiltersNotifier extends Notifier<FinanceFilters> {
 
 final filtersProvider = NotifierProvider<FiltersNotifier, FinanceFilters>(FiltersNotifier.new);
 
+/// 목록 필터·페이지·검색 세대를 관리하는 Riverpod 컨트롤러.
 class SchemeListController extends AsyncNotifier<SchemeListState> {
   @override
   Future<SchemeListState> build() async {
@@ -102,6 +105,7 @@ final schemeDetailProvider = FutureProvider.family<SchemeDetail, String>((ref, i
   return _container(ref).getSchemeDetail(id, profile: profile);
 });
 
+/// SavedSchemes 상태를 갱신하는 Riverpod Notifier.
 class SavedSchemesNotifier extends AsyncNotifier<List<String>> {
   @override
   Future<List<String>> build() async {

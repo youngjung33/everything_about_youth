@@ -5,8 +5,8 @@ import '../repositories/saved_program_local_store.dart';
 class ResolveSavedProgramIdsUseCase {
   const ResolveSavedProgramIdsUseCase(this._repository, this._local);
 
-  final BenefitsRepository _repository;
-  final SavedProgramLocalStore _local;
+  final BenefitsRepository _repository; // domain 저장소 포트
+  final SavedProgramLocalStore _local; // 기기 로컬 저장
 
   Future<List<String>> call({required bool isMember}) async {
     final local = await _local.load();

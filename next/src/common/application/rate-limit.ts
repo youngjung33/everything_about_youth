@@ -6,6 +6,7 @@ export interface RateLimitPolicy {
   windowMs: number;
 }
 
+/** 남은 호출·리셋 시각. */
 export interface RateLimitResult {
   allowed: boolean;
   limit: number;
@@ -17,6 +18,7 @@ export interface RateLimitResult {
   retryAfterSec: number;
 }
 
+/** 슬라이딩 윈도 호출 제한. */
 export interface RateLimiter {
   /** 요청 한 번을 세고 허용 여부를 돌려준다. */
   check(key: string, policy: RateLimitPolicy): RateLimitResult;
@@ -89,3 +91,4 @@ export class FixedWindowRateLimiter implements RateLimiter {
     }
   }
 }
+

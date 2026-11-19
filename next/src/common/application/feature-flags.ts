@@ -13,6 +13,7 @@ export interface FeatureFlagStore {
   clearOverride(id: string): Promise<void>;
 }
 
+/** 기능 on/off·사용자 메시지. */
 export interface FeatureState {
   id: string;
   enabled: boolean;
@@ -21,6 +22,7 @@ export interface FeatureState {
   overridden: boolean;
 }
 
+/** 등록되지 않은 feature id. */
 export class UnknownFeatureError extends Error {
   constructor(public readonly featureId: string, known: string[]) {
     super(`알 수 없는 서비스입니다: ${featureId} (사용 가능: ${known.join(", ")})`);
@@ -84,3 +86,4 @@ export class FeatureFlags {
     }
   }
 }
+

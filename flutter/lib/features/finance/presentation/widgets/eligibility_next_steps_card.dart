@@ -9,6 +9,7 @@ import '../../domain/finance_scheme.dart';
 import '../finance_routes.dart';
 import 'scheme_card.dart';
 
+/// 상세 화면에서 자격 다음 단계 문구 블록.
 class EligibilityNextStepsSection extends ConsumerWidget {
   const EligibilityNextStepsSection({super.key, required this.detail});
 

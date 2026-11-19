@@ -6,6 +6,7 @@ import { SqliteProgramRepository } from "./persistence/sqlite/sqlite-program-rep
 import { SqliteSavedProgramRepository } from "./persistence/sqlite/sqlite-saved-program-repository";
 import { SqliteSyncRunRepository } from "./persistence/sqlite/sqlite-sync-run-repository";
 
+/** 청년 혜택 SQLite 리포지토리. 2차 Postgres 는 이 함수만 분기 */
 export function createBenefitsRepositories(persistence: AppPersistence): {
   programs: ProgramRepository;
   savedPrograms: SavedProgramRepository;

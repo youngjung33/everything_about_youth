@@ -105,4 +105,5 @@ class AccountMenu extends ConsumerWidget {
   }
 }
 
+/// 계정 메뉴에서 고를 수 있는 동작
 enum _AccountAction { logout, delete }

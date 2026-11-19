@@ -13,6 +13,7 @@ import '../../domain/program_schedule.dart';
 import '../benefits_routes.dart';
 import '../widgets/program_card.dart';
 
+/// ProgramSchedule 화면.
 class ProgramSchedulePage extends ConsumerStatefulWidget {
   const ProgramSchedulePage({super.key});
 
@@ -20,6 +21,7 @@ class ProgramSchedulePage extends ConsumerStatefulWidget {
   ConsumerState<ProgramSchedulePage> createState() => _ProgramSchedulePageState();
 }
 
+/// 위젯의 편집·로딩 등 내부 상태.
 class _ProgramSchedulePageState extends ConsumerState<ProgramSchedulePage> {
   ScheduleRangeMode _mode = ScheduleRangeMode.week;
 

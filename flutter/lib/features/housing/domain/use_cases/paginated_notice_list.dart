@@ -8,7 +8,7 @@ import 'search_notices.dart';
 class PaginatedNoticeListUseCase {
   PaginatedNoticeListUseCase(this._search);
 
-  final SearchNoticesUseCase _search;
+  final SearchNoticesUseCase _search; // 목록 검색 use case
 
   int _queryGeneration = 0;
 

@@ -2,6 +2,7 @@ import { getRuntimeEnv } from "@/common/infrastructure/config/runtime-env-config
 import { getCommonContainer, sqliteOf } from "@/common/infrastructure/container";
 import type { ApiResult } from "./respond";
 
+/** GET /health 응답. */
 export interface HealthDto {
   /** 프로세스는 살아 있다 */
   status: "ok";
@@ -36,3 +37,4 @@ export function handleHealth(): ApiResult<HealthDto> {
     },
   };
 }
+

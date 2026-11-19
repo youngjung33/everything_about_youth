@@ -85,6 +85,11 @@ Map<String, dynamic> livingMetaJson() => {
     {'value': 'latest', 'label': '최신 안내순'},
   ],
   'sidos': ['서울', '경기'],
+  'standards': {
+    'year': 2026,
+    'maxHouseholdSize': 8,
+    'urbanWorkerIncome': [3813363, 5866270, 8168429, 8802202, 9326985, 9906263, 10485541, 11064819],
+  },
 };
 
 GuideSummary sampleGuideSummary({String id = 'b1', String title = '전입신고 안내'}) =>

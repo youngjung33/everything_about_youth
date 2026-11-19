@@ -70,6 +70,7 @@ function parseTags(raw: Json): string[] {
   return [...new Set(kw.split(/[,·|/]/).map((s) => s.trim()).filter(Boolean))].slice(0, 20);
 }
 
+/** 온통청년 목록 행 하나를 금융 상품 초안으로 변환. 금융 정책이 아니면 null. */
 export function mapOntongFinanceItem(raw: Json, ctx: { fetchedAt: string; baseUrl: string }): FinanceSchemeDraft | null {
   const externalId = deepStr(raw, "plcyId", "plcyNo", "bizId", "policyId");
   const title = deepStr(raw, "plcyNm", "plcyTitle", "bizNm", "title");
@@ -103,6 +104,7 @@ export function mapOntongFinanceItem(raw: Json, ctx: { fetchedAt: string; baseUr
   };
 }
 
+/** 온통청년 목록 행 배열을 금융 상품 초안 목록으로 변환 */
 export function mapOntongFinanceItems(rows: Json[], ctx: { fetchedAt: string; baseUrl?: string }): FinanceSchemeDraft[] {
   const baseUrl = ctx.baseUrl ?? "https://www.youthcenter.go.kr";
   const out: FinanceSchemeDraft[] = [];

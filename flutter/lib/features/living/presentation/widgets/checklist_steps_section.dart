@@ -5,6 +5,7 @@ import '../../../../core/launch.dart';
 import '../../../../core/theme/app_fonts.dart';
 import '../../domain/living_guide.dart';
 
+/// 가이드 상세의 체크리스트 단계 목록.
 class ChecklistStepsSection extends StatelessWidget {
   const ChecklistStepsSection({super.key, required this.steps});
 

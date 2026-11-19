@@ -6,23 +6,28 @@ import { getProgramStatus, type BenefitProgram } from "@/features/benefits/domai
 import type { Clock } from "@/common/application/system";
 import type { ProgramRepository, ProgramSearchQuery, ProgramSort } from "../ports/program-repository";
 
+/** 목록 검색 필터(today·sort·페이지 제외) */
 export type ProgramFilters = Omit<ProgramSearchQuery, "today" | "sort" | "limit" | "offset">;
 
+/** 목록 API·화면 입력 */
 export interface SearchProgramsInput {
   filters: ProgramFilters;
   sort?: ProgramSort;
   profile?: ApplicantProfile;
+  /** 지정하면 해당 판정 결과만 남긴다 (profile 필요) */
   verdicts?: EligibilityVerdict[];
   page?: number;
   pageSize?: number;
 }
 
+/** 목록·상세 한 행 */
 export interface ProgramListItem {
   program: BenefitProgram;
   status: ProgramStatus;
   eligibility: EligibilityResult | null;
 }
 
+/** 페이징 포함 목록 결과 */
 export interface SearchProgramsOutput {
   items: ProgramListItem[];
   total: number;
@@ -31,8 +36,10 @@ export interface SearchProgramsOutput {
   totalPages: number;
 }
 
+/** 기본 페이지 크기 */
 export const DEFAULT_PAGE_SIZE = 20;
 
+/** 정책 목록 검색·자격 판정(옵션) 유스케이스 */
 export class SearchPrograms {
   constructor(
     private readonly repo: ProgramRepository,

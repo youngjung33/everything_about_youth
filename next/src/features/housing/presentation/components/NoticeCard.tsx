@@ -12,6 +12,7 @@ import { regionLabel } from "../region-label";
 import { noticePath } from "../routes";
 import { EligibilityBadge } from "./EligibilityBadge";
 
+/** 목록 카드 한 건. 상세 링크에 detailQuery(내 조건)를 이어 붙인다. */
 export function NoticeCard(props: { item: NoticeListItem; today: IsoDate; detailQuery: string }) {
   const { notice, status, eligibility } = props.item;
   const summary = summarizeUnits(notice);

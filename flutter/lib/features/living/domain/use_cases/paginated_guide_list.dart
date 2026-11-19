@@ -8,7 +8,7 @@ import 'search_guides.dart';
 class PaginatedGuideListUseCase {
   PaginatedGuideListUseCase(this._search);
 
-  final SearchGuidesUseCase _search;
+  final SearchGuidesUseCase _search; // 목록 검색 use case
 
   int _queryGeneration = 0;
 

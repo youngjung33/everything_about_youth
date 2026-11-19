@@ -8,7 +8,7 @@ import 'search_job_postings.dart';
 class PaginatedPostingListUseCase {
   PaginatedPostingListUseCase(this._search);
 
-  final SearchJobPostingsUseCase _search;
+  final SearchJobPostingsUseCase _search; // 목록 검색 use case
 
   int _queryGeneration = 0;
 

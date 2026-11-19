@@ -3,6 +3,7 @@ import type { SavedScheme, SavedSchemeRepository } from "@/features/finance/appl
 import type { SqliteDb } from "@/common/infrastructure/persistence/sqlite/client";
 import { savedFinanceSchemes } from "./schema";
 
+/** SQLite 관심 금융·자금 상품 저장소 */
 export class SqliteSavedSchemeRepository implements SavedSchemeRepository {
   constructor(private readonly db: SqliteDb) {}
 

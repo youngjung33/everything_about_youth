@@ -3,6 +3,7 @@ import type { SavedNotice, SavedNoticeRepository } from "@/features/housing/appl
 import type { SqliteDb } from "@/common/infrastructure/persistence/sqlite/client";
 import { savedNotices } from "./schema";
 
+/** 회원 관심 공고 SQLite 저장소 */
 export class SqliteSavedNoticeRepository implements SavedNoticeRepository {
   constructor(private readonly db: SqliteDb) {}
 

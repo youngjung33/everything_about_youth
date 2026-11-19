@@ -4,6 +4,7 @@
  */
 import { buildCalendarEventDetails } from "@/common/domain/calendar-event-details";
 
+/** Google 캘린더 마감 일정 추가 URL */
 export function googleCalendarDeadlineUrl(input: {
   title: string;
   applicationEnd: string | null;
@@ -23,6 +24,7 @@ export function googleCalendarDeadlineUrl(input: {
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
+/** 신청 마감 ICS 파일 본문 */
 export function deadlineIcs(input: {
   programId: string;
   title: string;

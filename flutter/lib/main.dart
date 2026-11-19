@@ -16,6 +16,8 @@ import 'core/notifications/notification_launcher.dart';
 import 'core/update/app_info.dart';
 import 'features/housing/presentation/saved_notice_reminder_sync.dart';
 
+/// 앱 진입점. 바인딩·설정·ProviderScope 를 준비한 뒤 [EveryThingAboutYouthApp] 을 실행한다.
+/// 앱 진입점. 바인딩·설정·ProviderScope 를 준비한 뒤 [EveryThingAboutYouthApp] 을 실행한다.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final appConfig = AppConfig.fromEnvironment();

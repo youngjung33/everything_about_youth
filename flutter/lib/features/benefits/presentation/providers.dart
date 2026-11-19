@@ -24,6 +24,7 @@ BenefitsContainer _container(Ref ref) => ref.watch(benefitsContainerProvider);
 
 final benefitsMetaProvider = FutureProvider<BenefitMeta>((ref) => _container(ref).loadBenefitMeta());
 
+/// 지원자 프로필 입력값과 저장 상태(Riverpod).
 class ProfileNotifier extends Notifier<ApplicantProfile> {
   bool _edited = false;
 
@@ -47,6 +48,7 @@ class ProfileNotifier extends Notifier<ApplicantProfile> {
 
 final profileProvider = NotifierProvider<ProfileNotifier, ApplicantProfile>(ProfileNotifier.new);
 
+/// Filters 상태를 갱신하는 Riverpod Notifier.
 class FiltersNotifier extends Notifier<BenefitFilters> {
   @override
   BenefitFilters build() => BenefitFilters.initial;
@@ -62,6 +64,7 @@ class FiltersNotifier extends Notifier<BenefitFilters> {
 
 final filtersProvider = NotifierProvider<FiltersNotifier, BenefitFilters>(FiltersNotifier.new);
 
+/// 목록 필터·페이지·검색 세대를 관리하는 Riverpod 컨트롤러.
 class ProgramListController extends AsyncNotifier<ProgramListState> {
   @override
   Future<ProgramListState> build() async {
@@ -102,6 +105,7 @@ final programDetailProvider = FutureProvider.family<ProgramDetail, String>((ref,
   return _container(ref).getProgramDetail(id, profile: profile);
 });
 
+/// SavedPrograms 상태를 갱신하는 Riverpod Notifier.
 class SavedProgramsNotifier extends AsyncNotifier<List<String>> {
   @override
   Future<List<String>> build() async {

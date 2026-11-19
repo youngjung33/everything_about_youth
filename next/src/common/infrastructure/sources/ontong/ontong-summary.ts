@@ -3,6 +3,7 @@ import { findDeep, type Json } from "@/common/infrastructure/http/mapping";
 /** 목록 API 요약만으로는 부족할 때 상세 API를 호출한다. */
 export const ONTONG_MIN_SUMMARY_CHARS = 80;
 
+/** 목록 요약만으로는 부족해 상세 HTML 수집이 필요한지. */
 export function needsOntongSummaryEnrichment(summary: string | null | undefined): boolean {
   return (summary?.trim() ?? "").length < ONTONG_MIN_SUMMARY_CHARS;
 }
@@ -42,10 +43,12 @@ export function buildOntongSummaryText(root: Json, existing: string | null | und
   return merged || null;
 }
 
+/** 온통 목록 JSON 행에서 요약 문자열 추출. */
 export function readOntongListSummary(row: Json): string | null {
   return deepStr(row, "plcyExplnCn", "plcySmryCn", "expln", "summary");
 }
 
+/** 온통 정책 id 추출(상세 URL 조합). */
 export function readOntongPolicyId(row: Json): string | null {
   return deepStr(row, "plcyId", "plcyNo", "bizId", "policyId");
 }
@@ -64,3 +67,4 @@ export function needsOntongDetailEnrichment(row: Json): boolean {
 
   return false;
 }
+

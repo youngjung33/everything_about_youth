@@ -6,6 +6,7 @@ import { SourceSkippedError, type ProgramSourcePort } from "../ports/program-sou
 import type { SyncRunRepository, SyncRunStatus } from "../ports/sync-run-repository";
 import type { Clock, Logger } from "@/common/application/system";
 
+/** 소스별 수집 실행 결과 요약 */
 export interface SourceSyncResult {
   source: SourceId;
   status: Exclude<SyncRunStatus, "running">;
@@ -15,6 +16,7 @@ export interface SourceSyncResult {
   error?: string;
 }
 
+/** 같은 배치 안의 중복 정책을 병합한다. */
 export function dedupeBatch(programs: BenefitProgram[]): BenefitProgram[] {
   const result: BenefitProgram[] = [];
   for (const program of programs) {
@@ -25,6 +27,7 @@ export function dedupeBatch(programs: BenefitProgram[]): BenefitProgram[] {
   return result;
 }
 
+/** 외부 소스에서 정책을 가져와 저장소에 반영한다. */
 export class SyncProgramsFromSource {
   constructor(
     private readonly sources: ProgramSourcePort[],
@@ -34,6 +37,7 @@ export class SyncProgramsFromSource {
     private readonly logger: Logger,
   ) {}
 
+  /** sourceIds 를 생략하면 등록된 모든 소스를 순차 실행한다. 한 소스 실패는 다른 소스에 영향 없음. */
   async execute(sourceIds?: SourceId[]): Promise<SourceSyncResult[]> {
     const targets = this.sources.filter((s) => !sourceIds || sourceIds.length === 0 || sourceIds.includes(s.id));
     const results: SourceSyncResult[] = [];

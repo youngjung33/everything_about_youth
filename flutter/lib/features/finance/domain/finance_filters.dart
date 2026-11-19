@@ -18,7 +18,7 @@ class FinanceFilters {
   static const defaultStatuses = {'open', 'upcoming'};
   static const initial = FinanceFilters();
 
-  final Set<String> sidos;
+  final Set<String> sidos; // 시·도 필터
   final String sigungu;
   final Set<String> productTypeIds;
   final Set<String> tags;

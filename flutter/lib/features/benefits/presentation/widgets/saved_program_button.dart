@@ -7,6 +7,7 @@ import '../saved_program_reminder_sync.dart';
 
 const _accent = ServiceAccent.benefits;
 
+/// 관심 저장 토글 버튼.
 class SavedProgramButton extends ConsumerWidget {
   const SavedProgramButton({super.key, required this.programId, this.compact = true});
 

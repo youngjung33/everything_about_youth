@@ -6,6 +6,7 @@ import { evaluateEligibility } from "@/features/benefits/domain/eligibility/eval
 import type { ProgramRepository } from "../ports/program-repository";
 import type { Clock } from "@/common/application/system";
 
+/** 정책 단건 조회. profile 이 있으면 자격 판정을 포함한다. */
 export class GetProgramDetail {
   constructor(
     private readonly repo: ProgramRepository,

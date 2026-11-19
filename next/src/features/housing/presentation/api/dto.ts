@@ -79,6 +79,7 @@ export interface UnitTypeDto {
   monthlyRent: number | null;
 }
 
+/** 단지·주택형 묶음 */
 export interface ComplexDto {
   name: string | null;
   address: string | null;
@@ -89,6 +90,7 @@ export interface ComplexDto {
   units: UnitTypeDto[];
 }
 
+/** 수집 출처 한 건 */
 export interface NoticeSourceDto {
   source: string;
   sourceLabel: string;
@@ -153,6 +155,7 @@ function toEligibilityDto(result: EligibilityResult | null): EligibilityDto | nu
   };
 }
 
+/** 목록·관심 API용 요약 DTO */
 export function toNoticeSummaryDto(item: NoticeListItem, today: IsoDate): NoticeSummaryDto {
   const { notice, status, eligibility } = item;
   const units = summarizeUnits(notice);
@@ -184,6 +187,7 @@ export function toNoticeSummaryDto(item: NoticeListItem, today: IsoDate): Notice
   };
 }
 
+/** 상세 API DTO */
 export function toNoticeDetailDto(item: NoticeListItem, today: IsoDate): NoticeDetailDto {
   const { notice } = item;
   return {
@@ -220,6 +224,7 @@ export function toNoticeDetailDto(item: NoticeListItem, today: IsoDate): NoticeD
   };
 }
 
+/** 목록 API DTO */
 export function toNoticeListDto(result: SearchNoticesOutput, today: IsoDate): NoticeListDto {
   return {
     items: result.items.map((i) => toNoticeSummaryDto(i, today)),
@@ -231,6 +236,7 @@ export function toNoticeListDto(result: SearchNoticesOutput, today: IsoDate): No
   };
 }
 
+/** GET /meta 응답 본문 */
 export function buildMeta(dataUpdatedAt: string | null = null): HousingMetaDto {
   return {
     dataUpdatedAt,

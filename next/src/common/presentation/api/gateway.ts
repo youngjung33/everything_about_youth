@@ -10,6 +10,7 @@ import { chooseRateLimit, clientIp, rateLimitHeaders } from "./rate-limit-policy
 import { CLIENT_ID_HEADER, REQUEST_ID_HEADER } from "./respond";
 import { SUPPORTED_API_VERSIONS, splitApiPath } from "./version";
 
+/** API 프록시 조립 의존성. */
 export interface GatewayDeps {
   tokens: TokenService;
   policy: AppPolicy;
@@ -101,3 +102,4 @@ export async function runGateway(request: NextRequest, deps: GatewayDeps): Promi
   for (const [name, value] of Object.entries({ ...common, ...limitHeaders })) response.headers.set(name, value);
   return response;
 }
+

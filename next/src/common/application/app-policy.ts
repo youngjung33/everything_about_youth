@@ -16,15 +16,19 @@ export interface AppPolicy {
   message: string | null;
 }
 
+/** 클라이언트 OS·플랫폼. */
 export type AppPlatform = "android" | "ios" | "web" | "unknown";
 
+/** User-Agent·플랫폼 문자열 정규화. */
 export function normalizePlatform(raw: string | null | undefined): AppPlatform {
   const value = raw?.trim().toLowerCase();
   return value === "android" || value === "ios" || value === "web" ? value : "unknown";
 }
 
+/** none | optional | required. */
 export type UpdateStatus = "none" | "optional" | "required";
 
+/** 강제·선택 업데이트 판정. */
 export interface UpdateDecision {
   status: UpdateStatus;
   storeUrl: string | null;
@@ -57,3 +61,4 @@ export function evaluateUpdateFromHeaders(
     policy,
   );
 }
+

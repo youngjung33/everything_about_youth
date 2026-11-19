@@ -6,6 +6,7 @@ import { evaluateEligibility } from "@/features/housing/domain/eligibility/evalu
 import type { NoticeRepository } from "../ports/notice-repository";
 import type { Clock } from "@/common/application/system";
 
+/** 공고 단건 조회. profile 이 있으면 자격 판정을 포함한다. */
 export class GetNoticeDetail {
   constructor(
     private readonly repo: NoticeRepository,

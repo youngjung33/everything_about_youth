@@ -4,6 +4,7 @@ import { form, readIdToken, requestJson, type ProviderDeps } from "./http";
 
 const AUDIENCE = "https://appleid.apple.com";
 
+/** Sign in with Apple client·key 설정. */
 export interface AppleConfig {
   /** Services ID (웹/앱 공용 로그인용 식별자) */
   clientId: string;
@@ -65,3 +66,4 @@ export function createAppleProvider(config: AppleConfig, deps: ProviderDeps): Ss
     },
   };
 }
+

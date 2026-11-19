@@ -3,10 +3,11 @@ import '../finance_filters.dart';
 import '../finance_repository.dart';
 import '../finance_scheme.dart';
 
+/// 현재 상품과 비슷한 금융·주거 후보를 조회한다.
 class LoadSimilarSchemesUseCase {
   const LoadSimilarSchemesUseCase(this._repository);
 
-  final FinanceRepository _repository;
+  final FinanceRepository _repository; // domain 저장소 포트
 
   Future<List<SchemeSummary>> call({
     required String excludeId,

@@ -22,6 +22,7 @@ enum Verdict {
       Verdict.values.firstWhere((e) => e.name == code, orElse: () => Verdict.check);
 }
 
+/// 지역(시·도·시군구) 표시 단위.
 @immutable
 class Region {
   const Region({required this.sido, this.sigungu});
@@ -29,10 +30,11 @@ class Region {
   factory Region.fromJson(Map<String, dynamic> json) =>
       Region(sido: asString(json['sido']) ?? '', sigungu: asString(json['sigungu']));
 
-  final String sido;
+  final String sido; // 시·도 필터
   final String? sigungu;
 }
 
+/// 프로필·항목 기준 자격 판정 결과와 사유.
 @immutable
 class Eligibility {
   const Eligibility({required this.verdict, required this.verdictLabel, required this.reasons, required this.notes});
@@ -95,7 +97,7 @@ class PostingSummary {
     eligibility: json['eligibility'] is Map<String, dynamic> ? Eligibility.fromJson(asMap(json['eligibility'])) : null,
   );
 
-  final String id;
+  final String id; // 항목 식별자
   final String title;
   final String organization;
   final String hireTypeId;
@@ -115,6 +117,7 @@ class PostingSummary {
   final Eligibility? eligibility;
 }
 
+/// 원문·출처 기관 정보.
 @immutable
 class PostingSource {
   const PostingSource({
@@ -142,6 +145,7 @@ class PostingSource {
   String? get fetchedDate => fetchedAt.length >= 10 ? fetchedAt.substring(0, 10) : null;
 }
 
+/// 상세 화면에 필요한 전체 필드.
 @immutable
 class PostingDetail {
   const PostingDetail({
@@ -161,6 +165,7 @@ class PostingDetail {
   final String? googleCalendarUrl;
 }
 
+/// API 페이지네이션 응답 한 페이지.
 @immutable
 class PostingPage {
   const PostingPage({
@@ -189,6 +194,7 @@ class PostingPage {
   final String today;
 }
 
+/// 관심 저장 목록 API 응답.
 @immutable
 class SavedPostingList {
   const SavedPostingList({required this.items, required this.total, required this.today});

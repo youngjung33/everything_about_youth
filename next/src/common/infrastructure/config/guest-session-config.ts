@@ -6,6 +6,7 @@ const schema = z.object({
   AUTH_GUEST_SESSION_MAX_ROWS: z.preprocess(emptyToUndefined, z.coerce.number().int().min(100).default(10_000)),
 });
 
+/** 비회원 세션 보존·상한 일수. */
 export interface GuestSessionConfig {
   /** 이 기간보다 오래 접속하지 않은 비회원 세션 행을 지운다. */
   maxAgeDays: number;
@@ -13,7 +14,10 @@ export interface GuestSessionConfig {
   maxRows: number;
 }
 
+/** 환경변수에서 비회원 세션 정책 로드. */
 export function loadGuestSessionConfig(env: Record<string, string | undefined> = process.env): GuestSessionConfig {
   const parsed = schema.parse(env);
   return { maxAgeDays: parsed.AUTH_GUEST_SESSION_MAX_AGE_DAYS, maxRows: parsed.AUTH_GUEST_SESSION_MAX_ROWS };
 }
+
+

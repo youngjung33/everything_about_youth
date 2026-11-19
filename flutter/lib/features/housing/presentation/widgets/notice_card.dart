@@ -14,8 +14,8 @@ import '../../../../core/theme/app_fonts.dart';
 class MetaItem extends StatelessWidget {
   const MetaItem({super.key, required this.label, required this.value, this.width = 150});
 
-  final String label;
-  final String value;
+  final String label; // 화면에 보이는 한글 라벨
+  final String value; // 코드 값
   final double width;
 
   @override
@@ -65,6 +65,7 @@ class NoticeBadges extends StatelessWidget {
   }
 }
 
+/// 목록·상세에서 쓰는 Notice 카드 위젯.
 class NoticeCard extends StatelessWidget {
   const NoticeCard({super.key, required this.notice, this.onTap});
 

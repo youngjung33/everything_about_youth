@@ -22,6 +22,7 @@ class UnavailablePage extends ConsumerStatefulWidget {
   ConsumerState<UnavailablePage> createState() => _UnavailablePageState();
 }
 
+/// 위젯의 편집·로딩 등 내부 상태.
 class _UnavailablePageState extends ConsumerState<UnavailablePage> {
   bool _retrying = false;
 

@@ -1,24 +1,34 @@
 import type { Logger } from "@/common/application/system";
 
+/** 타이머. 테스트에서 시간을 직접 움직이려고 뺐다. */
 export interface Timers {
   set(callback: () => void, delayMs: number): unknown;
   clear(handle: unknown): void;
 }
 
 export interface SyncSchedulerDeps {
+  /** 수집 간격(ms). 한 번 끝난 뒤 이만큼 있다가 다시 한다. */
   intervalMs: number;
+  /** 서버 기동 후 첫 수집까지 대기(ms) */
   startupDelayMs: number;
+  /** 마지막 성공 수집 종료 시각. 없으면 null */
   lastSuccessAt(): Promise<Date | null>;
+  /** 서비스 off 이면 수집하지 않음 */
   isEnabled(): Promise<boolean>;
+  /** 실제 수집 실행 */
   run(): Promise<void>;
   now(): Date;
   logger: Logger;
   timers: Timers;
 }
 
+/** 수동 tick 결과 */
 export type TickResult = "ran" | "busy" | "disabled" | "failed";
 
-/** 청년 혜택 정책을 일정 간격으로 자동 수집한다. */
+/**
+ * 청년 혜택 정책을 일정 간격으로 자동 수집한다.
+ * 겹쳐 실행하지 않고, 재시작 시 남은 간격을 존중하며, 실패해도 다음 주기에 재시도한다.
+ */
 export class SyncScheduler {
   private handle: unknown = null;
   private running = false;

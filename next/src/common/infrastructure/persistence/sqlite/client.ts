@@ -7,6 +7,7 @@ import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 /** 섹션(feature)별 스키마와 무관한 공용 DB 핸들. 각 섹션의 리포지토리가 자기 테이블만 사용한다. */
 export type SqliteDb = BetterSQLite3Database;
 
+/** better-sqlite3 연결·마이그레이션. */
 export interface SqliteConnection {
   db: SqliteDb;
   raw: Database.Database;
@@ -16,6 +17,7 @@ export interface SqliteConnection {
 /** 모든 섹션의 마이그레이션이 하나의 폴더(drizzle/)에 순서대로 쌓인다. */
 export const MIGRATIONS_FOLDER = path.resolve(process.cwd(), "drizzle");
 
+/** 파일 경로로 DB 연결·WAL 활성화. */
 export function openSqlite(filePath: string): SqliteConnection {
   if (filePath !== ":memory:") {
     fs.mkdirSync(path.dirname(path.resolve(filePath)), { recursive: true });
@@ -27,6 +29,8 @@ export function openSqlite(filePath: string): SqliteConnection {
   return { db, raw, close: () => raw.close() };
 }
 
+/** SQL 마이그레이션 폴더를 순서대로 적용. */
 export function runMigrations(db: SqliteDb, folder: string = MIGRATIONS_FOLDER): void {
   migrate(db, { migrationsFolder: folder });
 }
+

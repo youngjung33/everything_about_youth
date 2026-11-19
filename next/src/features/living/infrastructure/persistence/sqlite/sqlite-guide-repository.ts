@@ -11,7 +11,8 @@ import type { Sido } from "@/common/domain/region";
 import type { SqliteDb } from "@/common/infrastructure/persistence/sqlite/client";
 import { livingGuides, livingGuideRegions, livingGuideSources, livingGuideTags } from "./schema";
 
-const CHUNK = 500;
+/** SQLite 기반 생활·행정 안내 저장소. Postgres 이전 시 쿼리 조건 로직만 포팅한다. */
+const CHUNK = 500; // IN 절·배치 조회 분할 크기
 
 function chunk<T>(items: T[], size = CHUNK): T[][] {
   const out: T[][] = [];
@@ -23,6 +24,7 @@ function escapeLike(value: string): string {
   return value.replace(/[\\%_]/g, (c) => `\\${c}`);
 }
 
+/** {@link GuideRepository} SQLite 구현 */
 export class SqliteGuideRepository implements GuideRepository {
   constructor(private readonly db: SqliteDb) {}
 

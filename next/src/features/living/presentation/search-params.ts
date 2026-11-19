@@ -7,9 +7,15 @@ import { SIDO_LIST, type Sido } from "@/common/domain/region";
 import type { GuideSort } from "@/features/living/application/ports/guide-repository";
 import type { GuideFilters } from "@/features/living/application/use-cases/search-guides";
 
-/** 목록·상세·관심 조회 쿼리 파싱. `v=` 판정 필터·프로필 키는 jobs/housing 과 동형, living meta에는 `standards` 없음. */
+/** 목록·상세·관심 조회 쿼리 파싱. `v=` 판정 필터·프로필 키는 jobs/housing 과 동형. */
 export type RawSearchParams = Record<string, string | string[] | undefined>;
 
+/**
+ * URL 의 '내 조건' 파라미터 키 (localStorage 저장 대상)
+ *  - household: 가구원수(1~8), monthly: 세대 월 소득(만원), dual: 맞벌이(y/n)
+ *  - asset: 총자산(만원), car: 자동차 가액(만원, 없으면 0), account: 청약통장(y/n)
+ *  - income: 도시근로자 월평균소득 대비 비율(%). household·monthly 이전 버전 호환용
+ */
 export const PROFILE_KEYS = [
   "age",
   "home",
@@ -70,6 +76,7 @@ function integerOrUndefined(value: string, min: number, max: number): number | u
   return n === undefined || !Number.isInteger(n) ? undefined : n;
 }
 
+/** URL 쿼리를 필터·프로필·페이지 폼 값으로 파싱한다. */
 export function parseSearchParams(raw: RawSearchParams): ParsedSearch {
   const sidos = pick(many(raw.sido), SIDO_LIST);
   const procedureTypeIds = pick(many(raw.category), PROCEDURE_TYPE_IDS);
@@ -118,6 +125,7 @@ export function parseSearchParams(raw: RawSearchParams): ParsedSearch {
   };
 }
 
+/** 기존 쿼리에서 일부 값만 바꾼 쿼리 문자열을 만든다. undefined/null 은 삭제. */
 export function buildQuery(raw: RawSearchParams, overrides: Record<string, string | string[] | number | null | undefined> = {}): string {
   const qs = new URLSearchParams();
   const merged: Record<string, string | string[] | number | null | undefined> = { ...raw, ...overrides };

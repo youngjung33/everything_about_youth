@@ -8,8 +8,8 @@ import 'get_scheme_detail.dart';
 class LoadSavedSchemeSummariesUseCase {
   LoadSavedSchemeSummariesUseCase(this._repository, this._getDetail);
 
-  final FinanceRepository _repository;
-  final GetSchemeDetailUseCase _getDetail;
+  final FinanceRepository _repository; // domain 저장소 포트
+  final GetSchemeDetailUseCase _getDetail; // 상세 조회 use case
 
   Future<SavedSchemeList> call({
     required List<String> ids,

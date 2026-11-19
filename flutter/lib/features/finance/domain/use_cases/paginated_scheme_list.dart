@@ -8,7 +8,7 @@ import 'search_schemes.dart';
 class PaginatedSchemeListUseCase {
   PaginatedSchemeListUseCase(this._search);
 
-  final SearchSchemesUseCase _search;
+  final SearchSchemesUseCase _search; // 목록 검색 use case
 
   int _queryGeneration = 0;
 

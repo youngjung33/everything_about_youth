@@ -18,7 +18,7 @@ class JobsFilters {
   static const defaultStatuses = {'open', 'upcoming'};
   static const initial = JobsFilters();
 
-  final Set<String> sidos;
+  final Set<String> sidos; // 시·도 필터
   final String sigungu;
   final Set<String> hireTypeIds;
   final Set<String> tags;

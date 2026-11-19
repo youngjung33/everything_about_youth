@@ -18,6 +18,7 @@ class OptionalUpdateBanner extends ConsumerStatefulWidget {
   ConsumerState<OptionalUpdateBanner> createState() => _OptionalUpdateBannerState();
 }
 
+/// 위젯의 편집·로딩 등 내부 상태.
 class _OptionalUpdateBannerState extends ConsumerState<OptionalUpdateBanner> {
   String? _dismissedKey;
 

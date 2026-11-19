@@ -11,9 +11,10 @@ export interface SchemeSourceRef {
   fetchedAt: string;
 }
 
+/** 금융·자금 지원 상품(정책) 엔티티 */
 export interface FinanceScheme {
   id: string;
-  mergeKey: string;
+  mergeKey: string; // 중복 병합 키
   title: string;
   organization: string;
   productTypeId: ProductTypeId;
@@ -30,6 +31,7 @@ export interface FinanceScheme {
   sources: SchemeSourceRef[];
 }
 
+/** 수집 직후 id·mergeKey 가 없는 초안 */
 export type FinanceSchemeDraft = Omit<FinanceScheme, "id" | "mergeKey">;
 
 /** 접수 상태. 날짜가 모두 없으면 상시모집으로 보고 신청중으로 취급한다. */

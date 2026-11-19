@@ -5,8 +5,8 @@ import '../repositories/saved_guide_local_store.dart';
 class ResolveSavedGuideIdsUseCase {
   const ResolveSavedGuideIdsUseCase(this._repository, this._local);
 
-  final LivingRepository _repository;
-  final SavedGuideLocalStore _local;
+  final LivingRepository _repository; // domain 저장소 포트
+  final SavedGuideLocalStore _local; // 기기 로컬 저장
 
   Future<List<String>> call({required bool isMember}) async {
     final local = await _local.load();

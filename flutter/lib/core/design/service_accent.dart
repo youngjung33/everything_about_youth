@@ -73,7 +73,7 @@ enum ServiceAccent {
     required this.icon,
   });
 
-  final String id;
+  final String id; // 항목 식별자
   final String title;
   /// 헤더 가로 메뉴용 짧은 이름(잘림 방지). 홈 카드 등에는 [title] 을 쓴다.
   final String navTitle;

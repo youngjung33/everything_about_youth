@@ -19,6 +19,7 @@ export const FEATURES: FeatureDefinition[] = [
   livingFeature,
 ];
 
+/** 정의 목록과 저장소로 FeatureFlags 인스턴스를 만든다. */
 export function createFeatureFlags(common: CommonContainer, definitions: FeatureDefinition[] = FEATURES): FeatureFlags {
   return new FeatureFlags(definitions, createFeatureFlagStore(common.persistence), common.clock, common.logger);
 }

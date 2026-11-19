@@ -89,6 +89,7 @@ function integerOrUndefined(value: string, min: number, max: number): number | u
   return n === undefined || !Number.isInteger(n) ? undefined : n;
 }
 
+/** URL 쿼리를 필터·프로필·페이지 폼 값으로 파싱한다. */
 export function parseSearchParams(raw: RawSearchParams): ParsedSearch {
   const sidos = pick(many(raw.sido), SIDO_LIST);
   const supplyTypes = pick(many(raw.supply), SUPPLY_TYPES);

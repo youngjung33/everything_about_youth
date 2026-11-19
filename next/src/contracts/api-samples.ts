@@ -60,8 +60,10 @@ import type { FinanceScheme } from "@/features/finance/domain/scheme";
 
 /** 계약 JSON 과 서버 테스트가 같은 시각·데이터를 쓴다. */
 export const CONTRACT_CLOCK: Clock = { now: () => new Date("2026-10-12T03:00:00Z") };
+/** API 계약 테스트용 고정 시각. */
 export const CONTRACT_TODAY = "2026-10-12";
 
+/** contractNoticeDraft — contracts JSON·API 스냅샷 고정값. */
 export function contractNoticeDraft(): NoticeDraft {
   return {
     title: "서울 행복주택 모집",
@@ -105,6 +107,7 @@ function contractNotice(): Notice {
   return createNotice(contractNoticeDraft());
 }
 
+/** contractNoticeListDto — contracts JSON·API 스냅샷 고정값. */
 export function contractNoticeListDto(): NoticeListDto {
   const notice = contractNotice();
   return toNoticeListDto(
@@ -119,6 +122,7 @@ export function contractNoticeListDto(): NoticeListDto {
   );
 }
 
+/** contractNoticeDetailDto — contracts JSON·API 스냅샷 고정값. */
 export function contractNoticeDetailDto(): NoticeDetailDto {
   const notice = contractNotice();
   return toNoticeDetailDto(
@@ -127,6 +131,7 @@ export function contractNoticeDetailDto(): NoticeDetailDto {
   );
 }
 
+/** contractHousingMetaDto — contracts JSON·API 스냅샷 고정값. */
 export function contractHousingMetaDto(): HousingMetaDto {
   return buildMeta("2026-10-12T01:00:00.000Z");
 }
@@ -136,10 +141,12 @@ export function contractAppConfigDto(): AppConfigDto {
   return handleGetAppConfig({ version: "1.0.0", platform: "android" }, loadAppPolicy({})).body;
 }
 
+/** contractFeaturesDto — contracts JSON·API 스냅샷 고정값. */
 export function contractFeaturesDto(): FeaturesDto {
   return { features: [{ id: HOUSING_FEATURE_ID, enabled: true }] };
 }
 
+/** contractSessionDto — contracts JSON·API 스냅샷 고정값. */
 export function contractSessionDto(): SessionDto {
   return {
     tokenType: "Bearer",
@@ -151,6 +158,7 @@ export function contractSessionDto(): SessionDto {
   };
 }
 
+/** contractProgramDraft — contracts JSON·API 스냅샷 고정값. */
 export function contractProgramDraft(): BenefitProgramDraft {
   return {
     title: "청년 월세 지원",
@@ -179,6 +187,7 @@ function contractProgram(): BenefitProgram {
   return createProgram(contractProgramDraft());
 }
 
+/** contractProgramListDto — contracts JSON·API 스냅샷 고정값. */
 export function contractProgramListDto(): ProgramListDto {
   const program = contractProgram();
   return toProgramListDto(
@@ -193,15 +202,18 @@ export function contractProgramListDto(): ProgramListDto {
   );
 }
 
+/** contractProgramDetailDto — contracts JSON·API 스냅샷 고정값. */
 export function contractProgramDetailDto(): ProgramDetailDto {
   const program = contractProgram();
   return toProgramDetailDto({ program, status: "open", eligibility: null }, CONTRACT_TODAY);
 }
 
+/** contractBenefitsMetaDto — contracts JSON·API 스냅샷 고정값. */
 export function contractBenefitsMetaDto(): BenefitsMetaDto {
   return buildBenefitsMeta("2026-10-12T01:00:00.000Z");
 }
 
+/** contractSchemeDraft — contracts JSON·API 스냅샷 고정값. */
 export function contractSchemeDraft(): FinanceSchemeDraft {
   return {
     title: "청년 전세자금 대출",
@@ -230,6 +242,7 @@ function contractScheme(): FinanceScheme {
   return createScheme(contractSchemeDraft());
 }
 
+/** contractSchemeListDto — contracts JSON·API 스냅샷 고정값. */
 export function contractSchemeListDto(): SchemeListDto {
   const scheme = contractScheme();
   return toSchemeListDto(
@@ -244,15 +257,18 @@ export function contractSchemeListDto(): SchemeListDto {
   );
 }
 
+/** contractSchemeDetailDto — contracts JSON·API 스냅샷 고정값. */
 export function contractSchemeDetailDto(): SchemeDetailDto {
   const scheme = contractScheme();
   return toSchemeDetailDto({ program: scheme, status: "open", eligibility: null }, CONTRACT_TODAY);
 }
 
+/** contractFinanceMetaDto — contracts JSON·API 스냅샷 고정값. */
 export function contractFinanceMetaDto(): FinanceMetaDto {
   return buildFinanceMeta("2026-10-12T01:00:00.000Z");
 }
 
+/** contractPostingDraft — contracts JSON·API 스냅샷 고정값. */
 export function contractPostingDraft(): JobPostingDraft {
   return {
     title: "공기업 신입 NCS 채용",
@@ -281,6 +297,7 @@ function contractPosting(): JobPosting {
   return createJobPosting(contractPostingDraft());
 }
 
+/** contractPostingListDto — contracts JSON·API 스냅샷 고정값. */
 export function contractPostingListDto(): PostingListDto {
   const posting = contractPosting();
   return toPostingListDto(
@@ -295,15 +312,18 @@ export function contractPostingListDto(): PostingListDto {
   );
 }
 
+/** contractPostingDetailDto — contracts JSON·API 스냅샷 고정값. */
 export function contractPostingDetailDto(): PostingDetailDto {
   const posting = contractPosting();
   return toPostingDetailDto({ program: posting, status: "open", eligibility: null }, CONTRACT_TODAY);
 }
 
+/** contractJobsMetaDto — contracts JSON·API 스냅샷 고정값. */
 export function contractJobsMetaDto(): JobsMetaDto {
   return buildJobsMeta("2026-10-12T01:00:00.000Z");
 }
 
+/** contractGuideDraft — contracts JSON·API 스냅샷 고정값. */
 export function contractGuideDraft(): LivingGuideDraft {
   return {
     title: "전입신고 안내",
@@ -336,6 +356,7 @@ function contractGuide() {
   return createGuide(contractGuideDraft());
 }
 
+/** contractGuideListDto — contracts JSON·API 스냅샷 고정값. */
 export function contractGuideListDto(): GuideListDto {
   const guide = contractGuide();
   return toGuideListDto(
@@ -350,11 +371,14 @@ export function contractGuideListDto(): GuideListDto {
   );
 }
 
+/** contractGuideDetailDto — contracts JSON·API 스냅샷 고정값. */
 export function contractGuideDetailDto(): GuideDetailDto {
   const guide = contractGuide();
   return toGuideDetailDto({ program: guide, status: "open", eligibility: null }, CONTRACT_TODAY);
 }
 
+/** contractLivingMetaDto — contracts JSON·API 스냅샷 고정값. */
 export function contractLivingMetaDto(): LivingMetaDto {
   return buildLivingMeta("2026-10-12T01:00:00.000Z");
 }
+

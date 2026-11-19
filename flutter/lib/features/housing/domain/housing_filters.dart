@@ -24,7 +24,7 @@ class HousingFilters {
 
   static const initial = HousingFilters();
 
-  final Set<String> sidos;
+  final Set<String> sidos; // 시·도 필터
   final String sigungu;
   final Set<String> supplyTypes;
   final Set<String> housingTypes;

@@ -9,15 +9,16 @@ import '../../../../core/theme/app_fonts.dart';
 class FilterPanel extends StatefulWidget {
   const FilterPanel({super.key, required this.meta, required this.initial, required this.onApply, this.onReset});
 
-  final HousingMeta meta;
-  final HousingFilters initial;
-  final ValueChanged<HousingFilters> onApply;
-  final VoidCallback? onReset;
+  final HousingMeta meta; // 필터·라벨 메타
+  final HousingFilters initial; // 적용 전 필터 초기값
+  final ValueChanged<HousingFilters> onApply; // 확인 시 부모에 필터 반영
+  final VoidCallback? onReset; // 필터 초기화 콜백
 
   @override
   State<FilterPanel> createState() => _FilterPanelState();
 }
 
+/// 위젯의 편집·로딩 등 내부 상태.
 class _FilterPanelState extends State<FilterPanel> {
   late Set<String> _sidos;
   late Set<String> _supplyTypes;
@@ -192,6 +193,7 @@ class _FilterPanelState extends State<FilterPanel> {
   }
 }
 
+/// 필터 패널 섹션(제목+내용).
 class _Group extends StatelessWidget {
   const _Group({required this.title, required this.child});
 
@@ -214,6 +216,7 @@ class _Group extends StatelessWidget {
   }
 }
 
+/// 다중 선택 칩 한 줄.
 class _Chips extends StatelessWidget {
   const _Chips({required this.options, required this.selected, required this.onChanged});
 
@@ -239,11 +242,12 @@ class _Chips extends StatelessWidget {
   }
 }
 
+/// 숫자·텍스트 입력 필드 한 줄.
 class _Field extends StatelessWidget {
   const _Field({required this.controller, required this.label, this.hint, this.number = false});
 
   final TextEditingController controller;
-  final String label;
+  final String label; // 화면에 보이는 한글 라벨
   final String? hint;
   final bool number;
 

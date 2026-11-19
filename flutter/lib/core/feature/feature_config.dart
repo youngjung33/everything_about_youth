@@ -38,6 +38,7 @@ abstract interface class FeatureConfigCache {
   Future<void> write(Map<String, bool> config);
 }
 
+/// 기능 플래그를 SharedPreferences 에 캐시한다.
 class SharedPrefsFeatureConfigCache implements FeatureConfigCache {
   SharedPrefsFeatureConfigCache(this._prefs);
 

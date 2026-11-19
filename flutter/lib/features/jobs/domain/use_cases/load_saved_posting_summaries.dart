@@ -8,8 +8,8 @@ import 'get_job_posting_detail.dart';
 class LoadSavedPostingSummariesUseCase {
   LoadSavedPostingSummariesUseCase(this._repository, this._getDetail);
 
-  final JobsRepository _repository;
-  final GetPostingDetailUseCase _getDetail;
+  final JobsRepository _repository; // domain 저장소 포트
+  final GetPostingDetailUseCase _getDetail; // 상세 조회 use case
 
   Future<SavedPostingList> call({
     required List<String> ids,

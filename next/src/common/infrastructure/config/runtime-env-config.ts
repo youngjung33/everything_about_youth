@@ -2,6 +2,7 @@ import { z } from "zod";
 import { emptyToUndefined } from "./env";
 
 const APP_ENVS = ["dev", "stage", "prod"] as const;
+/** local | staging | production. */
 export type AppEnv = (typeof APP_ENVS)[number];
 
 const schema = z.object({
@@ -9,6 +10,7 @@ const schema = z.object({
   NODE_ENV: z.preprocess(emptyToUndefined, z.string().optional()),
 });
 
+/** APP_ENV·배포 구분. */
 export interface RuntimeEnv {
   appEnv: AppEnv;
 }
@@ -35,3 +37,5 @@ export function getRuntimeEnv(): RuntimeEnv {
   if (!cached) cached = loadRuntimeEnv();
   return cached;
 }
+
+

@@ -3,6 +3,7 @@ import type { FeatureFlagStore } from "@/common/application/feature-flags";
 import type { SqliteDb } from "./client";
 import { featureFlags } from "./schema";
 
+/** SQLite 기능 플래그 저장소. */
 export class SqliteFeatureFlagStore implements FeatureFlagStore {
   constructor(private readonly db: SqliteDb) {}
 
@@ -23,3 +24,4 @@ export class SqliteFeatureFlagStore implements FeatureFlagStore {
     this.db.delete(featureFlags).where(eq(featureFlags.id, id)).run();
   }
 }
+

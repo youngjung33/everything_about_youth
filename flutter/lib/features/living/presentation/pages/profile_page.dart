@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/design/service_accent.dart';
 import '../../../../core/layout/app_scaffold.dart';
 import '../../../../core/layout/app_top_bar.dart';
+import '../../../../core/format/format.dart';
 import '../../../../core/theme/app_fonts.dart';
 import '../providers.dart';
 import '../../domain/applicant_profile.dart';
@@ -13,7 +14,7 @@ import '../../domain/applicant_profile.dart';
 const _accent = ServiceAccent.living;
 
 /// 이사·생활 · 내 조건 입력. 기기에만 저장되며 서버에는 안내 조회 시 참고 판정용으로만 전달된다.
-/// 1차 판정은 **거주 시·도 vs 안내 지역** 위주이며, meta에 소득 `standards` 는 없다(jobs 소득 hint UI 없음).
+/// 판정은 거주지·연령·마감 등(`evaluate`)이며, 소득 hint 는 meta `standards` 기준표를 씁니다.
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
 
@@ -21,6 +22,7 @@ class ProfilePage extends ConsumerStatefulWidget {
   ConsumerState<ProfilePage> createState() => _ProfilePageState();
 }
 
+/// 위젯의 편집·로딩 등 내부 상태.
 class _ProfilePageState extends ConsumerState<ProfilePage> {
   late ApplicantProfile _draft;
   late final TextEditingController _age;
@@ -82,6 +84,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final current = _current();
     return AppScaffold(
       appBar: AppTopBar(title: const Text('내 조건')),
       body: Align(
@@ -167,6 +170,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 suffix: '만원',
                 onChanged: () => setState(() {}),
               ),
+              _IncomeHint(profile: current),
               if (_draft.isNewlywed == true) ...[
                 const SizedBox(height: 16),
                 _TriState(
@@ -223,10 +227,40 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   }
 }
 
+/// 입력한 소득이 도시근로자 월평균소득의 몇 %인지 보여준다. 기준표는 서버 meta `standards`.
+class _IncomeHint extends ConsumerWidget {
+  const _IncomeHint({required this.profile});
+
+  final ApplicantProfile profile;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final standards = ref.watch(livingMetaProvider).value?.standards;
+    final size = profile.householdSize;
+    final income = profile.monthlyIncomeMan;
+    if (standards == null || size == null || income == null) return const SizedBox.shrink();
+
+    final base = standards.urbanWorkerIncomeFor(size);
+    final ratio = standards.urbanWorkerRatioPercent(householdSize: size, monthlyIncomeMan: income);
+    if (base == null || ratio == null) return const SizedBox.shrink();
+
+    final posting = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Text(
+        '${standards.year}년 기준 $size인 가구 도시근로자 월평균소득(${formatWon(base)})의 약 $ratio%예요.',
+        key: const ValueKey('income-hint'),
+        style: TextStyle(fontSize: 12, color: posting.primary),
+      ),
+    );
+  }
+}
+
+/// 거주지 시·도·시군구 선택.
 class _ResidencePicker extends ConsumerWidget {
   const _ResidencePicker({required this.value, required this.onChanged});
 
-  final String? value;
+  final String? value; // 코드 값
   final ValueChanged<String?> onChanged;
 
   @override
@@ -248,6 +282,7 @@ class _ResidencePicker extends ConsumerWidget {
   }
 }
 
+/// 화면 섹션 제목·구분.
 class _SectionTitle extends StatelessWidget {
   const _SectionTitle(this.text);
 
@@ -274,7 +309,7 @@ class _AmountField extends StatelessWidget {
   });
 
   final TextEditingController controller;
-  final String label;
+  final String label; // 화면에 보이는 한글 라벨
   final String hint;
   final String suffix;
   final String? helper;
@@ -311,7 +346,7 @@ class _TriState extends StatelessWidget {
   final String title;
   final String yes;
   final String no;
-  final bool? value;
+  final bool? value; // 코드 값
   final ValueChanged<bool?> onChanged;
 
   static const _unset = 'unset';

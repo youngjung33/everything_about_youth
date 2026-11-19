@@ -5,8 +5,8 @@ import '../repositories/saved_posting_local_store.dart';
 class ResolveSavedPostingIdsUseCase {
   const ResolveSavedPostingIdsUseCase(this._repository, this._local);
 
-  final JobsRepository _repository;
-  final SavedPostingLocalStore _local;
+  final JobsRepository _repository; // domain 저장소 포트
+  final SavedPostingLocalStore _local; // 기기 로컬 저장
 
   Future<List<String>> call({required bool isMember}) async {
     final local = await _local.load();

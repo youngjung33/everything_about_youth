@@ -13,6 +13,7 @@ import '../../domain/scheme_schedule.dart';
 import '../finance_routes.dart';
 import '../widgets/scheme_card.dart';
 
+/// SchemeSchedule 화면.
 class SchemeSchedulePage extends ConsumerStatefulWidget {
   const SchemeSchedulePage({super.key});
 
@@ -20,6 +21,7 @@ class SchemeSchedulePage extends ConsumerStatefulWidget {
   ConsumerState<SchemeSchedulePage> createState() => _SchemeSchedulePageState();
 }
 
+/// 위젯의 편집·로딩 등 내부 상태.
 class _SchemeSchedulePageState extends ConsumerState<SchemeSchedulePage> {
   ScheduleRangeMode _mode = ScheduleRangeMode.week;
 

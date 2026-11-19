@@ -6,24 +6,28 @@ import { getNoticeStatus, type Notice } from "@/features/housing/domain/notice";
 import type { Clock } from "@/common/application/system";
 import type { NoticeRepository, NoticeSearchQuery, NoticeSort } from "../ports/notice-repository";
 
+/** 목록 검색 필터(today·sort·페이지 제외) */
 export type NoticeFilters = Omit<NoticeSearchQuery, "today" | "sort" | "limit" | "offset">;
 
+/** 목록 API·화면 입력 */
 export interface SearchNoticesInput {
-  filters: NoticeFilters;
-  sort?: NoticeSort;
-  profile?: ApplicantProfile;
+  filters: NoticeFilters; // 필터
+  sort?: NoticeSort; // 정렬
+  profile?: ApplicantProfile; // 내 조건
   /** 지정하면 해당 판정 결과의 공고만 남긴다 (profile 필요) */
   verdicts?: EligibilityVerdict[];
-  page?: number;
-  pageSize?: number;
+  page?: number; // 1부터
+  pageSize?: number; // 건수(상한 100)
 }
 
+/** 목록·상세 한 행 */
 export interface NoticeListItem {
   notice: Notice;
   status: NoticeStatus;
   eligibility: EligibilityResult | null;
 }
 
+/** 페이징 포함 목록 결과 */
 export interface SearchNoticesOutput {
   items: NoticeListItem[];
   total: number;
@@ -32,8 +36,10 @@ export interface SearchNoticesOutput {
   totalPages: number;
 }
 
+/** 기본 페이지 크기 */
 export const DEFAULT_PAGE_SIZE = 20;
 
+/** 공고 목록 검색·자격 판정(옵션) 유스케이스 */
 export class SearchNotices {
   constructor(
     private readonly repo: NoticeRepository,

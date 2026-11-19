@@ -36,6 +36,7 @@ class UpdateRequirement {
   int get hashCode => Object.hash(message, storeUrl, minVersion);
 }
 
+/// 접수·진행 상태
 enum UpdateStatus {
   none,
   optional,
@@ -86,6 +87,7 @@ abstract interface class AppUpdateRemote {
   Future<AppUpdateInfo> fetch();
 }
 
+/// 서버 응답으로 강제·선택 업데이트 여부를 판별한다.
 class ApiAppUpdateRemote implements AppUpdateRemote {
   ApiAppUpdateRemote(this._api);
 

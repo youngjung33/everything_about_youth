@@ -3,11 +3,13 @@ import Link from "next/link";
 import { ProfileStorage } from "@/features/housing/presentation/components/ProfileStorage";
 import { HOUSING_BASE, HOUSING_SYNC_ADMIN_PATH } from "@/features/housing/presentation/routes";
 
+/** 브라우저 탭 제목·설명(Next Metadata). */
 export const metadata: Metadata = {
   title: "임대주택 | 청년의 모든 것",
   description: "한국 청년이 신청할 수 있는 임대·분양 공고를 한 곳에서 조회합니다.",
 };
 
+/** 임대주택 섹션 공통 레이아웃·메타. */
 export default function HousingLayout({ children }: LayoutProps<"/housing">) {
   return (
     <>
@@ -23,3 +25,5 @@ export default function HousingLayout({ children }: LayoutProps<"/housing">) {
     </>
   );
 }
+
+

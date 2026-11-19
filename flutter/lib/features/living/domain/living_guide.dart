@@ -2,6 +2,7 @@ import 'package:meta/meta.dart';
 
 import '../../../core/json.dart';
 
+/// 가이드 진행 상태
 enum GuideStatus {
   upcoming,
   open,
@@ -11,6 +12,7 @@ enum GuideStatus {
       GuideStatus.values.firstWhere((e) => e.name == code, orElse: () => GuideStatus.open);
 }
 
+/// 자격 판정 결과
 enum Verdict {
   eligible,
   check,
@@ -20,6 +22,7 @@ enum Verdict {
       Verdict.values.firstWhere((e) => e.name == code, orElse: () => Verdict.check);
 }
 
+/// 프로필·항목 기준 자격 판정 결과와 사유.
 @immutable
 class Eligibility {
   const Eligibility({required this.verdict, required this.verdictLabel, required this.reasons, required this.notes});
@@ -37,6 +40,7 @@ class Eligibility {
   final List<String> notes;
 }
 
+/// 지역(시·도·시군구) 표시 단위.
 @immutable
 class Region {
   const Region({required this.sido, this.sigungu});
@@ -44,10 +48,11 @@ class Region {
   factory Region.fromJson(Map<String, dynamic> json) =>
       Region(sido: asString(json['sido']) ?? '', sigungu: asString(json['sigungu']));
 
-  final String sido;
+  final String sido; // 시·도 필터
   final String? sigungu;
 }
 
+/// 이사·생활 가이드의 체크리스트 한 단계.
 @immutable
 class ChecklistStep {
   const ChecklistStep({required this.order, required this.title, required this.summary, this.url});
@@ -65,6 +70,7 @@ class ChecklistStep {
   final String? url;
 }
 
+/// 목록·카드에 쓰는 요약 정보.
 @immutable
 class GuideSummary {
   const GuideSummary({
@@ -109,7 +115,7 @@ class GuideSummary {
     eligibility: json['eligibility'] is Map<String, dynamic> ? Eligibility.fromJson(asMap(json['eligibility'])) : null,
   );
 
-  final String id;
+  final String id; // 항목 식별자
   final String title;
   final String organization;
   final String procedureTypeId;
@@ -129,6 +135,7 @@ class GuideSummary {
   final Eligibility? eligibility;
 }
 
+/// 원문·출처 기관 정보.
 @immutable
 class GuideSource {
   const GuideSource({
@@ -156,6 +163,7 @@ class GuideSource {
   String? get fetchedDate => fetchedAt.length >= 10 ? fetchedAt.substring(0, 10) : null;
 }
 
+/// 상세 화면에 필요한 전체 필드.
 @immutable
 class GuideDetail {
   const GuideDetail({
@@ -178,6 +186,7 @@ class GuideDetail {
   final String? googleCalendarUrl;
 }
 
+/// API 페이지네이션 응답 한 페이지.
 @immutable
 class GuidePage {
   const GuidePage({
@@ -206,6 +215,7 @@ class GuidePage {
   final String today;
 }
 
+/// 관심 저장 목록 API 응답.
 @immutable
 class SavedGuideList {
   const SavedGuideList({required this.items, required this.total, required this.today});

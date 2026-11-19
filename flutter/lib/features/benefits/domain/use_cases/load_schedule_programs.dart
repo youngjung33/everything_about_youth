@@ -7,7 +7,7 @@ import '../benefit_program.dart';
 class LoadScheduleProgramsUseCase {
   const LoadScheduleProgramsUseCase(this._repository);
 
-  final BenefitsRepository _repository;
+  final BenefitsRepository _repository; // domain 저장소 포트
 
   static const pageSize = 80;
   static const maxPages = 5;

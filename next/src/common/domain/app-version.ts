@@ -4,6 +4,7 @@
  */
 export type AppVersion = readonly [major: number, minor: number, patch: number];
 
+/** semver 문자열 파싱. */
 export function parseAppVersion(raw: string | null | undefined): AppVersion | null {
   if (!raw) return null;
   const match = /^\s*(\d{1,6})\.(\d{1,6})(?:\.(\d{1,6}))?(?:[+-].*)?\s*$/.exec(raw);
@@ -11,6 +12,7 @@ export function parseAppVersion(raw: string | null | undefined): AppVersion | nu
   return [Number(match[1]), Number(match[2]), Number(match[3] ?? 0)];
 }
 
+/** [AppVersion] → 표시·비교용 문자열. */
 export function formatAppVersion(version: AppVersion): string {
   return version.join(".");
 }
@@ -22,3 +24,4 @@ export function compareAppVersions(a: AppVersion, b: AppVersion): number {
   }
   return 0;
 }
+

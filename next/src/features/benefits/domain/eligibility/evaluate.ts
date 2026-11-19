@@ -5,17 +5,22 @@ import { CATEGORY_RULES, YOUTH_MAX_AGE, YOUTH_MIN_AGE } from "./rules";
 import { STANDARDS_YEAR, formatWon, incomeLimitWon } from "./standards";
 import type { CategoryId } from "../enums";
 
+/** 자격 판정 결과 코드 */
 export type EligibilityVerdict = "eligible" | "check" | "ineligible";
 
+/** 판정 한글 라벨 */
 export const VERDICT_LABELS: Record<EligibilityVerdict, string> = {
   eligible: "신청 가능",
   check: "조건 확인 필요",
   ineligible: "신청 불가",
 };
 
+/** 자격 판정 결과 */
 export interface EligibilityResult {
   verdict: EligibilityVerdict;
+  /** 판정 사유(불가/확인 필요) */
   reasons: string[];
+  /** 항상 참고할 안내 */
   notes: string[];
 }
 
@@ -43,6 +48,10 @@ function checkIncome(percent: number, profile: ApplicantProfile): Outcome {
   return out;
 }
 
+/**
+ * 정책과 신청자 조건으로 신청 가능 여부 판정 (순수 함수).
+ * 불충족 → ineligible, 입력 부족 → check, 충족 → eligible
+ */
 export function evaluateEligibility(
   program: Pick<BenefitProgram, "categoryId" | "applicationStart" | "applicationEnd" | "regions">,
   profile: ApplicantProfile,
@@ -106,6 +115,7 @@ export function evaluateEligibility(
   return { verdict: "eligible", reasons: ["입력하신 조건이 일반 청년 정책 기준을 충족합니다."], notes };
 }
 
+/** 분야별 자격 규칙 조회 */
 export function ruleForCategory(categoryId: CategoryId) {
   return CATEGORY_RULES[categoryId];
 }

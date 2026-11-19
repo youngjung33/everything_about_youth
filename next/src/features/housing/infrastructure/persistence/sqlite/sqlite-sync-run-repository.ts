@@ -4,6 +4,7 @@ import type { SourceId } from "@/features/housing/domain/enums";
 import type { SqliteDb } from "@/common/infrastructure/persistence/sqlite/client";
 import { syncRuns } from "./schema";
 
+/** DB 행 → 도메인 SyncRun */
 function toRun(r: typeof syncRuns.$inferSelect): SyncRun {
   return {
     id: r.id,
@@ -18,6 +19,7 @@ function toRun(r: typeof syncRuns.$inferSelect): SyncRun {
   };
 }
 
+/** 수집 실행 이력 SQLite 저장소 */
 export class SqliteSyncRunRepository implements SyncRunRepository {
   constructor(private readonly db: SqliteDb) {}
 

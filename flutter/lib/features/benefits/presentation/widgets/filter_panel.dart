@@ -6,18 +6,21 @@ import '../../domain/benefit_filters.dart';
 import '../../domain/benefit_meta.dart';
 import '../../../../core/theme/app_fonts.dart';
 
+/// 검색 조건 입력. 편집 중인 값은 이 위젯 안에만 있고 [onApply] 를 눌러야 목록에 반영된다.
+/// (청년 혜택: 넓은 화면 사이드바·좁은 화면 바텀시트에서 공용)
 class FilterPanel extends StatefulWidget {
   const FilterPanel({super.key, required this.meta, required this.initial, required this.onApply, this.onReset});
 
-  final BenefitMeta meta;
-  final BenefitFilters initial;
-  final ValueChanged<BenefitFilters> onApply;
-  final VoidCallback? onReset;
+  final BenefitMeta meta; // 필터·라벨 메타
+  final BenefitFilters initial; // 적용 전 필터 초기값
+  final ValueChanged<BenefitFilters> onApply; // 확인 시 부모에 필터 반영
+  final VoidCallback? onReset; // 필터 초기화 콜백
 
   @override
   State<FilterPanel> createState() => _FilterPanelState();
 }
 
+/// 위젯의 편집·로딩 등 내부 상태.
 class _FilterPanelState extends State<FilterPanel> {
   late Set<String> _sidos;
   late Set<String> _categoryIds;
@@ -172,6 +175,7 @@ class _FilterPanelState extends State<FilterPanel> {
   }
 }
 
+/// 필터 패널 섹션(제목+내용).
 class _Group extends StatelessWidget {
   const _Group({required this.title, required this.child});
 
@@ -194,6 +198,7 @@ class _Group extends StatelessWidget {
   }
 }
 
+/// 다중 선택 칩 한 줄.
 class _Chips extends StatelessWidget {
   const _Chips({required this.options, required this.selected, required this.onChanged});
 
@@ -218,11 +223,12 @@ class _Chips extends StatelessWidget {
   }
 }
 
+/// 숫자·텍스트 입력 필드 한 줄.
 class _Field extends StatelessWidget {
   const _Field({required this.controller, required this.label, this.hint});
 
   final TextEditingController controller;
-  final String label;
+  final String label; // 화면에 보이는 한글 라벨
   final String? hint;
 
   @override

@@ -7,7 +7,7 @@ import '../notice.dart';
 class LoadScheduleNoticesUseCase {
   const LoadScheduleNoticesUseCase(this._repository);
 
-  final HousingRepository _repository;
+  final HousingRepository _repository; // domain 저장소 포트
 
   static const pageSize = 80;
   static const maxPages = 5;

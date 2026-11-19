@@ -13,6 +13,7 @@ import '../../domain/posting_schedule.dart';
 import '../jobs_routes.dart';
 import '../widgets/posting_card.dart';
 
+/// PostingSchedule 화면.
 class PostingSchedulePage extends ConsumerStatefulWidget {
   const PostingSchedulePage({super.key});
 
@@ -20,6 +21,7 @@ class PostingSchedulePage extends ConsumerStatefulWidget {
   ConsumerState<PostingSchedulePage> createState() => _PostingSchedulePageState();
 }
 
+/// 위젯의 편집·로딩 등 내부 상태.
 class _PostingSchedulePageState extends ConsumerState<PostingSchedulePage> {
   ScheduleRangeMode _mode = ScheduleRangeMode.week;
 

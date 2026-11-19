@@ -12,6 +12,7 @@ import { loadLivingConfig, type LivingConfig } from "./config";
 import { createLivingRepositories } from "./create-repositories";
 import { CuratedSource } from "./sources/curated/curated-source";
 
+/** 생활정보 섹션에 주입되는 유스케이스·저장소 묶음 */
 export interface LivingContainer {
   config: LivingConfig;
   clock: Clock;
@@ -19,6 +20,7 @@ export interface LivingContainer {
   guides: GuideRepository;
   savedGuides: SavedGuideRepository;
   syncRuns: SyncRunRepository;
+  /** 등록된 모든 소스 (활성 여부와 무관) */
   allSources: GuideSourcePort[];
   searchGuides: SearchGuides;
   getGuideDetail: GetGuideDetail;
@@ -30,6 +32,7 @@ export interface LivingOverrides {
   config?: Partial<LivingConfig>;
 }
 
+/** 생활정보 섹션의 의존성 조립 지점. 공통 의존성은 CommonContainer 에서 받는다. */
 export function createLivingContainer(common: CommonContainer, overrides: LivingOverrides = {}): LivingContainer {
   const { clock, logger } = common;
   const config = { ...loadLivingConfig(), ...overrides.config };
@@ -55,9 +58,10 @@ export function createLivingContainer(common: CommonContainer, overrides: Living
   };
 }
 
-const globalKey = Symbol.for("everything_about_youth.living-container");
+const globalKey = Symbol.for("everything_about_youth.living-container"); // HMR 간 싱글톤 키
 type GlobalWithContainer = typeof globalThis & { [globalKey]?: LivingContainer };
 
+/** Next.js 개발 모드의 HMR 에서도 하나만 유지한다. */
 export function getLivingContainer(): LivingContainer {
   const g = globalThis as GlobalWithContainer;
   if (!g[globalKey]) g[globalKey] = createLivingContainer(getCommonContainer());

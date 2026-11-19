@@ -3,6 +3,7 @@ import { formatAppVersion } from "@/common/domain/app-version";
 import { API_VERSION } from "./version";
 import type { ApiResult } from "./respond";
 
+/** GET /app-config 응답. */
 export interface AppConfigDto {
   api: { version: string };
   update: {
@@ -42,3 +43,4 @@ export function handleGetAppConfig(
     },
   };
 }
+

@@ -3,10 +3,11 @@ import '../jobs_filters.dart';
 import '../jobs_repository.dart';
 import '../job_posting.dart';
 
+/// 현재 공고와 비슷한 일자리 후보를 조회한다.
 class LoadSimilarPostingsUseCase {
   const LoadSimilarPostingsUseCase(this._repository);
 
-  final JobsRepository _repository;
+  final JobsRepository _repository; // domain 저장소 포트
 
   Future<List<PostingSummary>> call({
     required String excludeId,

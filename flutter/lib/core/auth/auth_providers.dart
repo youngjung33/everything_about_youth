@@ -38,6 +38,7 @@ final authActionsProvider = Provider<AuthActions>(
   ),
 );
 
+/// 로그인·로그아웃·토큰 갱신 액션.
 class AuthActions {
   AuthActions({required this.flow, required this.session, required this.api, required this.setMode});
 

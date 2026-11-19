@@ -28,6 +28,7 @@ class AppHeader extends AppTopBar {
       );
 }
 
+/// 레이아웃 보조 위젯.
 class _DrawerToggle extends StatelessWidget {
   const _DrawerToggle();
 
@@ -42,6 +43,7 @@ class _DrawerToggle extends StatelessWidget {
   }
 }
 
+/// 앱 헤더·드로어 UI 조각.
 class _HeaderTitle extends StatelessWidget {
   const _HeaderTitle({required this.items, required this.location, required this.inlineMenu});
 
@@ -90,6 +92,7 @@ class _HeaderTitle extends StatelessWidget {
   }
 }
 
+/// 앱 헤더·드로어 UI 조각.
 class _MenuButton extends StatelessWidget {
   const _MenuButton({required this.item, required this.selected});
 

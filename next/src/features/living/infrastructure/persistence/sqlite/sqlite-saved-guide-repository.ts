@@ -3,6 +3,7 @@ import type { SavedGuide, SavedGuideRepository } from "@/features/living/applica
 import type { SqliteDb } from "@/common/infrastructure/persistence/sqlite/client";
 import { savedLivingGuides } from "./schema";
 
+/** SQLite 관심 생활·행정 안내 저장소 */
 export class SqliteSavedGuideRepository implements SavedGuideRepository {
   constructor(private readonly db: SqliteDb) {}
 

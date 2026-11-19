@@ -17,7 +17,7 @@ class HousingModule extends FeatureModule {
   /// [bootstrapTasks] 를 넘기면 기본 시작 작업 대신 그것을 쓴다. (테스트에서 서버 호출을 막을 때)
   const HousingModule({List<BootstrapTask>? bootstrapTasks}) : _bootstrapTasks = bootstrapTasks;
 
-  final List<BootstrapTask>? _bootstrapTasks;
+  final List<BootstrapTask>? _bootstrapTasks; // 테스트·주입용 시작 작업 목록. null 이면 기본값
 
   @override
   String get id => 'housing';

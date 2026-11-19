@@ -16,6 +16,7 @@ class _RouterRefresh extends ChangeNotifier {
   void notify() => notifyListeners();
 }
 
+/// 앱 루트 위젯. 라우터·테마·기능 플래그·업데이트 게이트를 묶는다.
 class EveryThingAboutYouthApp extends ConsumerStatefulWidget {
   const EveryThingAboutYouthApp({super.key, this.initialLocation = '/'});
 
@@ -26,6 +27,7 @@ class EveryThingAboutYouthApp extends ConsumerStatefulWidget {
   ConsumerState<EveryThingAboutYouthApp> createState() => _EveryThingAboutYouthAppState();
 }
 
+/// 위젯의 편집·로딩 등 내부 상태.
 class _EveryThingAboutYouthAppState extends ConsumerState<EveryThingAboutYouthApp> {
   final _refresh = _RouterRefresh();
   late final GoRouter _router;

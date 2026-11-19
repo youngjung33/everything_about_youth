@@ -7,10 +7,13 @@ import type { ProgramRepository } from "../ports/program-repository";
 import type { SavedProgramRepository } from "../ports/saved-program-repository";
 import type { ProgramListItem } from "./search-programs";
 
+/** 회원 한 명이 저장할 수 있는 관심 정책 수 */
 export const MAX_SAVED_PROGRAMS = 100;
 
+/** 저장 시도 결과 */
 export type SaveProgramResult = { status: "saved" } | { status: "already" } | { status: "not_found" } | { status: "limit"; max: number };
 
+/** 관심 정책 저장·목록 유스케이스 */
 export class ManageSavedPrograms {
   constructor(
     private readonly saved: SavedProgramRepository,
@@ -34,6 +37,7 @@ export class ManageSavedPrograms {
     return (await this.saved.list(userId)).map((s) => s.programId);
   }
 
+  /** 저장 순(최근 우선). 삭제된 정책은 건너뜀. profile 있으면 자격 판정 포함 */
   async list(userId: string, profile?: ApplicantProfile): Promise<ProgramListItem[]> {
     const today = todayInKst(this.clock.now());
     const items: ProgramListItem[] = [];

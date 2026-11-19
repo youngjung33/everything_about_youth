@@ -11,18 +11,22 @@ import type { Sido } from "@/common/domain/region";
 import type { SqliteDb } from "@/common/infrastructure/persistence/sqlite/client";
 import { complexes, noticeHousingTypes, noticeRegions, noticeSources, notices, unitTypes } from "./schema";
 
-const CHUNK = 500;
+/** SQLite 기반 공고 저장소. Postgres 이전 시 쿼리 조건 로직만 포팅한다. */
+const CHUNK = 500; // IN 절·배치 조회 분할 크기
 
+/** 배열을 고정 크기 청크로 나눈다. */
 function chunk<T>(items: T[], size = CHUNK): T[][] {
   const out: T[][] = [];
   for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
   return out;
 }
 
+/** LIKE 패턴에서 %, _ 이스케이프 */
 function escapeLike(value: string): string {
   return value.replace(/[\\%_]/g, (c) => `\\${c}`);
 }
 
+/** 공고 검색·조회·upsert SQLite 구현 */
 export class SqliteNoticeRepository implements NoticeRepository {
   constructor(private readonly db: SqliteDb) {}
 
@@ -366,6 +370,7 @@ export class SqliteNoticeRepository implements NoticeRepository {
   }
 }
 
+/** raw JSON 파싱 실패 시 원문 문자열을 반환 */
 function safeParse(text: string): unknown {
   try {
     return JSON.parse(text);

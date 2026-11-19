@@ -37,6 +37,7 @@ export const notices = sqliteTable(
   ],
 );
 
+/** 공고별 대상 지역 */
 export const noticeRegions = sqliteTable(
   "notice_regions",
   {
@@ -50,6 +51,7 @@ export const noticeRegions = sqliteTable(
   (t) => [primaryKey({ columns: [t.noticeId, t.sido, t.sigungu] }), index("notice_regions_sido_idx").on(t.sido, t.sigungu)],
 );
 
+/** 공고 주택유형(다중) */
 export const noticeHousingTypes = sqliteTable(
   "notice_housing_types",
   {
@@ -61,6 +63,7 @@ export const noticeHousingTypes = sqliteTable(
   (t) => [primaryKey({ columns: [t.noticeId, t.housingType] }), index("notice_housing_types_idx").on(t.housingType)],
 );
 
+/** 단지(아파트 단지 등) */
 export const complexes = sqliteTable(
   "complexes",
   {
@@ -79,6 +82,7 @@ export const complexes = sqliteTable(
   (t) => [index("complexes_notice_idx").on(t.noticeId)],
 );
 
+/** 주택형(평형·세대) */
 export const unitTypes = sqliteTable(
   "unit_types",
   {
@@ -96,6 +100,7 @@ export const unitTypes = sqliteTable(
   (t) => [index("unit_types_complex_idx").on(t.complexId)],
 );
 
+/** 수집 출처·외부 ID */
 export const noticeSources = sqliteTable(
   "notice_sources",
   {
@@ -115,6 +120,7 @@ export const noticeSources = sqliteTable(
  * 회원이 관심 공고로 저장한 목록.
  * users / notices 는 공용·섹션 테이블이지만 같은 SQLite 파일이라 외래 키를 건다. 회원 탈퇴·공고 삭제 때 같이 지워진다.
  */
+/** 회원 관심 공고 */
 export const savedNotices = sqliteTable(
   "saved_notices",
   {
@@ -129,6 +135,7 @@ export const savedNotices = sqliteTable(
   (t) => [primaryKey({ columns: [t.userId, t.noticeId] }), index("saved_notices_user_idx").on(t.userId, t.createdAt)],
 );
 
+/** 수집 실행 이력 */
 export const syncRuns = sqliteTable("sync_runs", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   source: text("source").notNull(),

@@ -4,8 +4,9 @@ import type { Complex, NoticeDraft, UnitType } from "@/features/housing/domain/n
 import { parseRegionFromAddress, parseSido, type Region } from "@/common/domain/region";
 import { num, str, type Json } from "@/common/infrastructure/http/mapping";
 
+/** 매핑 시 공통 메타 */
 export interface MyhomeMapContext {
-  fetchedAt: string;
+  fetchedAt: string; // 수집 시각 ISO
 }
 
 function positive(n: number | null): number | null {

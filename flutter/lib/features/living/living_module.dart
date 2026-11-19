@@ -11,10 +11,12 @@ import 'presentation/pages/guide_schedule_page.dart';
 import 'presentation/pages/profile_page.dart';
 import 'presentation/pages/saved_guides_page.dart';
 
+/// 이사·생활 서비스가 코어에 꽂히는 **앱 어댑터**. 라우트·홈 카드·시작 작업만 담당한다.
+/// use case·저장소 조립은 [LivingContainer], UI 상태는 `presentation/providers.dart`.
 class LivingModule extends FeatureModule {
   const LivingModule({List<BootstrapTask>? bootstrapTasks}) : _bootstrapTasks = bootstrapTasks;
 
-  final List<BootstrapTask>? _bootstrapTasks;
+  final List<BootstrapTask>? _bootstrapTasks; // 테스트·주입용 시작 작업 목록. null 이면 기본값
 
   @override
   String get id => 'living';

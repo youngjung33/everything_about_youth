@@ -31,6 +31,7 @@ export interface SearchJobPostingsOutput {
   totalPages: number;
 }
 
+/** 기본 페이지 크기 */
 export const DEFAULT_PAGE_SIZE = 20;
 
 export class SearchJobPostings {

@@ -4,8 +4,10 @@ import type { Complex, NoticeDraft, UnitType } from "@/features/housing/domain/n
 import { parseRegionFromAddress, parseSido, type Region } from "@/common/domain/region";
 import { manwonToWon, num, str, toNumber, type Json } from "@/common/infrastructure/http/mapping";
 
+/** 청약홈 API 주택군 구분 */
 export type ApplyhomeKind = "apt" | "urbty" | "remndr" | "pblPvtRent";
 
+/** 상세·모델 API 경로 쌍 */
 export interface ApplyhomeEndpoint {
   kind: ApplyhomeKind;
   detail: string;
@@ -20,8 +22,9 @@ export const APPLYHOME_ENDPOINTS: ApplyhomeEndpoint[] = [
   { kind: "pblPvtRent", detail: "getPblPvtRentLttotPblancDetail", model: "getPblPvtRentLttotPblancMdl" },
 ];
 
+/** 매핑 시 공통 메타 */
 export interface ApplyhomeMapContext {
-  fetchedAt: string;
+  fetchedAt: string; // 수집 시각 ISO
 }
 
 /** 접수 관련 날짜 컬럼들에서 가장 이른 시작일 / 가장 늦은 종료일을 계산한다. (특별공급·1순위·2순위 등 포함) */
@@ -83,6 +86,7 @@ function buildApplyhomeEligibilityExcerpt(input: {
   return parts.join("\n");
 }
 
+/** 청약홈 상세 JSON 한 건 → NoticeDraft */
 export function mapApplyhomeDetail(item: Json, kind: ApplyhomeKind, ctx: ApplyhomeMapContext): NoticeDraft | null {
   const manageNo = str(item, "HOUSE_MANAGE_NO");
   const title = str(item, "HOUSE_NM");

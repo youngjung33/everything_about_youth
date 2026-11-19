@@ -71,6 +71,7 @@ class HomePage extends ConsumerWidget {
   }
 }
 
+/// 레이아웃 보조 위젯.
 class _FeatureCard extends ConsumerStatefulWidget {
   const _FeatureCard({required this.feature, this.accent});
 
@@ -81,6 +82,7 @@ class _FeatureCard extends ConsumerStatefulWidget {
   ConsumerState<_FeatureCard> createState() => _FeatureCardState();
 }
 
+/// 위젯의 편집·로딩 등 내부 상태.
 class _FeatureCardState extends ConsumerState<_FeatureCard> {
   bool _retrying = false;
 

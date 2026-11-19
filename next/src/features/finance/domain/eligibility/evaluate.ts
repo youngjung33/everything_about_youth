@@ -43,6 +43,12 @@ function checkIncome(percent: number, profile: ApplicantProfile): Outcome {
   return out;
 }
 
+/**
+ * 금융·자금 상품와 신청자 조건으로 신청 가능 여부를 판정한다. (순수 함수)
+ *  - 하나라도 명확히 불충족 → ineligible
+ *  - 불충족은 없지만 입력이 비어 판정 불가 → check
+ *  - 모두 충족 → eligible
+ */
 export function evaluateEligibility(
   program: Pick<FinanceScheme, "productTypeId" | "applicationStart" | "applicationEnd" | "regions">,
   profile: ApplicantProfile,

@@ -53,6 +53,7 @@ class InlineLoading extends StatelessWidget {
   }
 }
 
+/// 오류 메시지와 선택적 '다시 시도' 버튼.
 class ErrorView extends StatelessWidget {
   const ErrorView({super.key, required this.message, this.onRetry});
 
@@ -79,6 +80,7 @@ class ErrorView extends StatelessWidget {
   }
 }
 
+/// 결과가 없을 때 안내 문구.
 class EmptyView extends StatelessWidget {
   const EmptyView({super.key, required this.message, this.hint, this.actionLabel, this.onAction});
 

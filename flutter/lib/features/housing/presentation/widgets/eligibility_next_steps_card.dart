@@ -9,6 +9,7 @@ import '../../domain/notice.dart';
 import '../housing_routes.dart';
 import 'notice_card.dart';
 
+/// 상세 화면에서 자격 다음 단계 문구 블록.
 class EligibilityNextStepsSection extends ConsumerWidget {
   const EligibilityNextStepsSection({super.key, required this.detail});
 

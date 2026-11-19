@@ -1,7 +1,9 @@
 import { decodeJwt } from "jose";
 
+/** SSO 제공자 HTTP 호출 함수 타입. */
 export type FetchFn = typeof fetch;
 
+/** SSO 제공자 HTTP·client 설정. */
 export interface ProviderDeps {
   fetch: FetchFn;
   now: () => Date;
@@ -36,6 +38,7 @@ export async function requestJson(fetchFn: FetchFn, url: string, init: RequestIn
   return record;
 }
 
+/** application/x-www-form-urlencoded 본문 POST. */
 export function form(params: Record<string, string>): RequestInit {
   return {
     method: "POST",
@@ -44,10 +47,12 @@ export function form(params: Record<string, string>): RequestInit {
   };
 }
 
+/** Bearer 토큰 헤더로 GET. */
 export function bearer(token: string): RequestInit {
   return { headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } };
 }
 
+/** null/빈 문자열이면 오류. */
 export function requireString(value: unknown, what: string): string {
   if (typeof value !== "string" || value.length === 0) throw new Error(`로그인 업체의 응답에 ${what} 이 없습니다.`);
   return value;
@@ -76,3 +81,5 @@ export function readIdToken(
   if (claims.nonce !== expected.nonce) throw new Error("id_token 의 nonce 가 일치하지 않습니다.");
   return requireString(claims.sub, "sub");
 }
+
+

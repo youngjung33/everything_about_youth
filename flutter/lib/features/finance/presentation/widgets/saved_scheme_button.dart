@@ -7,6 +7,7 @@ import '../saved_scheme_reminder_sync.dart';
 
 const _accent = ServiceAccent.finance;
 
+/// 관심 저장 토글 버튼.
 class SavedSchemeButton extends ConsumerWidget {
   const SavedSchemeButton({super.key, required this.schemeId, this.compact = true});
 

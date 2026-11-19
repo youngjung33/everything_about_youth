@@ -8,8 +8,8 @@ import 'jobs_filters.dart';
 class JobsFilterPreset {
   const JobsFilterPreset({required this.id, required this.label, required this.hireTypeIds});
 
-  final String id;
-  final String label;
+  final String id; // 항목 식별자
+  final String label; // 화면에 보이는 한글 라벨
   final Set<String> hireTypeIds;
 
   JobsFilters applyTo(JobsFilters current) => current.copyWith(hireTypeIds: hireTypeIds);

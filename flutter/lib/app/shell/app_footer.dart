@@ -17,7 +17,7 @@ class AppFooter extends StatelessWidget {
   final bool wide;
 
   /// 저작권 연도. 테스트에서 고정할 때만 넘기고, 보통은 올해.
-  final int? year;
+  final int? year; // 기준표 적용 연도
 
   static const disclaimer = ServiceCopy.footerDisclaimer;
 

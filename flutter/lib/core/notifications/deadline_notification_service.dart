@@ -14,11 +14,12 @@ abstract interface class DeadlineNotificationService {
   Future<void> syncSavedNotices(Iterable<SavedNoticeReminderTarget> targets);
 }
 
+/// 마감 알림을 걸 공고 한 건.
 @immutable
 class SavedNoticeReminderTarget {
   const SavedNoticeReminderTarget({required this.id, required this.title, this.applicationStart, this.applicationEnd});
 
-  final String id;
+  final String id; // 항목 식별자
   final String title;
   final String? applicationStart;
   final String? applicationEnd;
@@ -174,6 +175,7 @@ class LocalDeadlineNotificationService implements DeadlineNotificationService {
   }
 }
 
+/// 웹 등 알림 미지원 환경용 no-op 구현.
 class NoopDeadlineNotificationService implements DeadlineNotificationService {
   @override
   Future<void> initialize({void Function(String noticeId)? onOpenNotice}) async {}

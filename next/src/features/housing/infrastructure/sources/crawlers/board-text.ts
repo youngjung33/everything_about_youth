@@ -6,6 +6,7 @@ const DAY_ONLY = /(\d{1,2})\s*일/;
 
 const PERIOD_LABELS = ["접수기간", "신청기간", "접수 기간", "신청 기간", "청약접수", "접수일정", "접수 일정", "모집기간", "접수일"];
 
+/** 연속 공백을 한 칸으로 */
 export function compactText(text: string): string {
   return text.replace(/\s+/g, " ").trim();
 }
@@ -47,11 +48,13 @@ export function extractApplicationPeriod(text: string): { start: IsoDate | null;
   return { start: null, end: null };
 }
 
+/** 본문에서 공고일 추출 */
 export function extractAnnouncementDate(text: string): IsoDate | null {
   const m = compactText(text).match(/(?:모집\s*공고일|공고일)\s*[:：]?\s*(\d{4}\s*[.\-/년]\s*\d{1,2}\s*[.\-/월]\s*\d{1,2})/);
   return m ? parseIsoDate(m[1]) : null;
 }
 
+/** 공급 세대수 추출 */
 export function extractHouseholds(text: string): number | null {
   const m = compactText(text).match(/공급\s*(?:호수|세대수?|규모|물량)\s*[:：]?\s*(\d[\d,]*)\s*(?:세대|호)/);
   if (!m) return null;
@@ -81,11 +84,13 @@ export function isRecruitmentTitle(title: string): boolean {
   return INCLUDE_TITLE.test(t);
 }
 
+/** 서울 시군구 목록(제목 파싱용) */
 export const SEOUL_GU = [
   "강남구", "강동구", "강북구", "강서구", "관악구", "광진구", "구로구", "금천구", "노원구", "도봉구", "동대문구", "동작구", "마포구",
   "서대문구", "서초구", "성동구", "성북구", "송파구", "양천구", "영등포구", "용산구", "은평구", "종로구", "중구", "중랑구",
 ];
 
+/** 인천 시군구 목록 */
 export const INCHEON_SIGUNGU = ["중구", "동구", "미추홀구", "연수구", "남동구", "부평구", "계양구", "서구", "강화군", "옹진군"];
 
 /** 제목에서 시군구 이름을 찾는다. 긴 이름 우선(예: '동대문구' 가 '동구' 보다 먼저). */

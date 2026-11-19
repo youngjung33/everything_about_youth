@@ -12,6 +12,7 @@ import {
 const LIST_PATH = "/opi/youthPlcyList.do";
 const DETAIL_PATH = "/opi/youthPlcyDetail.do";
 
+/** 온통 상세 HTML 수집 옵션. */
 export interface OntongDetailFetchOptions {
   apiKey: string;
   baseUrl?: string;
@@ -115,3 +116,4 @@ export async function enrichOntongListRows(rows: Json[], opts: OntongDetailFetch
 
   return out;
 }
+

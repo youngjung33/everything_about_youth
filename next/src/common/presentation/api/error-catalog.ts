@@ -7,6 +7,7 @@ export interface ServerErrorCodeEntry {
   message: string;
 }
 
+/** 앱이 표시할 수 있는 서버 오류 코드 카탈로그. */
 export function listServerErrorCodes(): ServerErrorCodeEntry[] {
   return (Object.keys(ERROR_CODES) as ErrorCode[]).map((code) => ({
     code,
@@ -23,4 +24,6 @@ export const CLIENT_ONLY_ERROR_CODES = [
   "UNKNOWN",
 ] as const;
 
+/** 클라이언트 전용(서버 미전달) 오류 코드. */
 export type ClientOnlyErrorCode = (typeof CLIENT_ONLY_ERROR_CODES)[number];
+

@@ -8,8 +8,8 @@ import 'get_program_detail.dart';
 class LoadSavedProgramSummariesUseCase {
   LoadSavedProgramSummariesUseCase(this._repository, this._getDetail);
 
-  final BenefitsRepository _repository;
-  final GetProgramDetailUseCase _getDetail;
+  final BenefitsRepository _repository; // domain 저장소 포트
+  final GetProgramDetailUseCase _getDetail; // 상세 조회 use case
 
   Future<SavedProgramList> call({
     required List<String> ids,

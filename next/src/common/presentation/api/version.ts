@@ -7,8 +7,10 @@
  * - 앱은 이 문자열을 한 곳(`core/network/api_version.dart`)에서만 안다.
  */
 export const API_VERSION = "v1";
+/** 모듈 상수 SUPPORTED_API_VERSIONS. */
 export const SUPPORTED_API_VERSIONS: readonly string[] = [API_VERSION];
 
+/** 모듈 상수 API_PREFIX. */
 export const API_PREFIX = `/api/${API_VERSION}`;
 
 /** `apiPath("/features")` → `/api/v1/features` */
@@ -26,3 +28,4 @@ export function splitApiPath(pathname: string): { version: string | null; rest: 
   if (!match) return { version: null, rest: pathname.slice("/api".length) };
   return { version: match[1]!, rest: match[2] ?? "/" };
 }
+

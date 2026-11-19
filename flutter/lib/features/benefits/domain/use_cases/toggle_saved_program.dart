@@ -7,8 +7,8 @@ import '../repositories/saved_program_local_store.dart';
 class ToggleSavedProgramUseCase {
   const ToggleSavedProgramUseCase(this._repository, this._local);
 
-  final BenefitsRepository _repository;
-  final SavedProgramLocalStore _local;
+  final BenefitsRepository _repository; // domain 저장소 포트
+  final SavedProgramLocalStore _local; // 기기 로컬 저장
 
   Future<({List<String>? ids, String? error})> call({
     required String id,

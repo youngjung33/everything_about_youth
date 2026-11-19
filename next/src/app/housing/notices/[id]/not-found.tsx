@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { HOUSING_BASE } from "@/features/housing/presentation/routes";
 
+/** 없는 공고 상세일 때 404 UI. */
 export default function NoticeNotFound() {
   return (
     <div className="empty">
@@ -9,3 +10,4 @@ export default function NoticeNotFound() {
     </div>
   );
 }
+

@@ -9,11 +9,12 @@ import 'badges.dart';
 import 'saved_guide_button.dart';
 import '../../../../core/theme/app_fonts.dart';
 
+/// 카드에 보조로 붙는 메타 한 줄(지역·기간 등).
 class MetaItem extends StatelessWidget {
   const MetaItem({super.key, required this.label, required this.value, this.width = 150});
 
-  final String label;
-  final String value;
+  final String label; // 화면에 보이는 한글 라벨
+  final String value; // 코드 값
   final double width;
 
   @override
@@ -33,6 +34,7 @@ class MetaItem extends StatelessWidget {
   }
 }
 
+/// 카드 상단 상태·판정 배지 묶음.
 class GuideBadges extends StatelessWidget {
   const GuideBadges({super.key, required this.guide, this.largeEligibility = false});
 
@@ -62,6 +64,7 @@ class GuideBadges extends StatelessWidget {
   }
 }
 
+/// 목록·상세에서 쓰는 Guide 카드 위젯.
 class GuideCard extends StatelessWidget {
   const GuideCard({super.key, required this.guide, this.onTap});
 

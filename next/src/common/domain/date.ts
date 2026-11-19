@@ -3,6 +3,7 @@ export type IsoDate = string;
 
 const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
 
+/** Date → KST 기준 오늘 ISO 날짜. */
 export function todayInKst(now: Date): IsoDate {
   return new Date(now.getTime() + KST_OFFSET_MS).toISOString().slice(0, 10);
 }
@@ -38,3 +39,4 @@ export function parseDateRange(text: string | null | undefined): { start: IsoDat
   const dates = matches.filter((d): d is IsoDate => d !== null);
   return { start: dates[0] ?? null, end: dates.length > 1 ? (dates[dates.length - 1] ?? null) : null };
 }
+

@@ -3,19 +3,22 @@ import type { Clock } from "./system";
 /** 토큰 종류. 액세스 토큰은 API 호출용, 리프레시 토큰은 액세스 토큰을 다시 받는 데만 쓴다. */
 export type TokenUse = "access" | "refresh";
 
+/** JWT payload 에 넣는 공통 클레임. */
 export interface TokenClaims {
   /** 기기(설치) 식별자. 서버가 발급한다. */
   sub: string;
-  use: TokenUse;
-  jti: string;
+  use: TokenUse; // access | refresh
+  jti: string; // 토큰 인스턴스 id(재사용 추적)
 }
 
+/** 발급 직후 클라이언트에 넘기는 토큰 한 덩어리. */
 export interface IssuedToken {
-  token: string;
+  token: string; // JWT 문자열
   /** 만료까지 남은 초 */
   expiresIn: number;
 }
 
+/** verify 실패 원인(만료 vs 서명·형식 오류). */
 export class InvalidTokenError extends Error {
   constructor(public readonly reason: "expired" | "invalid", message?: string) {
     super(message ?? (reason === "expired" ? "토큰이 만료되었습니다." : "토큰이 올바르지 않습니다."));
@@ -29,9 +32,10 @@ export interface TokenService {
   verify(token: string, use: TokenUse): Promise<TokenClaims>;
 }
 
+/** 저장소에 있는 세션(기기) 행. */
 export interface AuthClient {
-  id: string;
-  revoked: boolean;
+  id: string; // 세션(클라이언트) id — JWT sub
+  revoked: boolean; // true 이면 refresh 거절
   /** SSO 로 로그인한 세션이면 그 회원의 id, 비회원이면 null */
   userId: string | null;
 }
@@ -44,6 +48,7 @@ export interface GuestSessionPruneOptions {
   maxRows: number;
 }
 
+/** 세션 행 영속화(생성·조회·폐기·비회원 정리). */
 export interface AuthClientStore {
   create(id: string, at: string, userId?: string): Promise<void>;
   find(id: string): Promise<AuthClient | null>;
@@ -55,19 +60,22 @@ export interface AuthClientStore {
   pruneGuestSessions(options: GuestSessionPruneOptions): Promise<number>;
 }
 
+/** startSession / refresh 응답 DTO(앱·웹 공통). */
 export interface SessionTokens {
   tokenType: "Bearer";
   accessToken: string;
   /** 액세스 토큰 만료까지 남은 초 */
   accessExpiresIn: number;
   refreshToken: string;
-  refreshExpiresIn: number;
+  refreshExpiresIn: number; // 리프레시 만료까지 초
   /** 로그인한 회원의 세션이면 true, 비회원이면 false. 앱이 "내 세션이 비회원으로 바뀌었는가"를 알아채는 데 쓴다. */
   member: boolean;
 }
 
+/** refresh 거절 등 클라이언트에 돌려줄 인증 오류 코드. */
 export type AuthErrorCode = "invalid_refresh";
 
+/** [AuthErrorCode] 를 담는 인증 도메인 오류. */
 export class AuthError extends Error {
   constructor(public readonly code: AuthErrorCode, message: string) {
     super(message);
@@ -83,8 +91,8 @@ export class AuthError extends Error {
  * 토큰 검증과 갱신은 둘이 같다.
  */
 export interface GuestSessionMaintenance {
-  maxAgeDays: number;
-  maxRows: number;
+  maxAgeDays: number; // 이 날짜보다 오래된 비회원 세션 삭제
+  maxRows: number; // 비회원 행 상한(초과 시 LRU 삭제)
 }
 
 export class AuthService {
@@ -151,3 +159,5 @@ export class AuthService {
     return this.clock.now().toISOString();
   }
 }
+
+

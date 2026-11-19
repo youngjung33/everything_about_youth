@@ -8,8 +8,8 @@ import 'get_guide_detail.dart';
 class LoadSavedGuideSummariesUseCase {
   LoadSavedGuideSummariesUseCase(this._repository, this._getDetail);
 
-  final LivingRepository _repository;
-  final GetGuideDetailUseCase _getDetail;
+  final LivingRepository _repository; // domain 저장소 포트
+  final GetGuideDetailUseCase _getDetail; // 상세 조회 use case
 
   Future<SavedGuideList> call({
     required List<String> ids,

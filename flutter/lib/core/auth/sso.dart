@@ -13,10 +13,10 @@ enum SsoProvider {
   const SsoProvider(this.id, this.label);
 
   /// 서버 API 에서 쓰는 이름
-  final String id;
+  final String id; // 항목 식별자
 
   /// 화면에 보이는 이름
-  final String label;
+  final String label; // 화면에 보이는 한글 라벨
 }
 
 /// 사용자가 로그인 창을 닫거나 로그인 업체에서 "취소"를 눌렀다. 오류가 아니므로 조용히 넘어간다.

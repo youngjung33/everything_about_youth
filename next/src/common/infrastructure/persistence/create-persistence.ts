@@ -1,6 +1,7 @@
 import type { AppConfig } from "../config/env";
 import { openSqlite, runMigrations, type SqliteConnection } from "./sqlite/client";
 
+/** 영속화 백엔드 종류. */
 export type DbDriver = AppConfig["dbDriver"];
 
 /** 1차: SQLite 파일. 2차: `supabase` = Supabase 호스팅 Postgres(인증·RLS 없음, Next service role). */
@@ -9,14 +10,17 @@ export type SqliteAppPersistence = {
   sqlite: SqliteConnection;
 };
 
+/** Supabase 연결 설정. */
 export type SupabaseAppPersistence = {
   driver: "supabase";
   /** 2차: `SUPABASE_DATABASE_URL` 로 연결. Drizzle Postgres 리포지토리가 여기를 쓴다. */
   databaseUrl: string;
 };
 
+/** SQLite 또는 Supabase 영속화 묶음. */
 export type AppPersistence = SqliteAppPersistence | SupabaseAppPersistence;
 
+/** Supabase 모드가 아니면 SqliteConnection 을 요구. */
 export function requireSqlite(persistence: AppPersistence): SqliteConnection {
   if (persistence.driver !== "sqlite") {
     throw new Error("이 코드 경로는 SQLite 1차 전용입니다. Postgres 리포지토리로 교체하세요.");
@@ -43,3 +47,5 @@ export function createPersistence(config: AppConfig, env: Record<string, string 
   runMigrations(sqlite.db);
   return { driver: "sqlite", sqlite };
 }
+
+

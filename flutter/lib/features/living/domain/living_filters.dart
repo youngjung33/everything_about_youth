@@ -18,7 +18,7 @@ class LivingFilters {
   static const defaultStatuses = {'open', 'upcoming'};
   static const initial = LivingFilters();
 
-  final Set<String> sidos;
+  final Set<String> sidos; // 시·도 필터
   final String sigungu;
   final Set<String> procedureTypeIds;
   final Set<String> tags;

@@ -4,6 +4,7 @@ import { todayInKst } from "@/common/domain/date";
 import type { BenefitProgram } from "@/features/benefits/domain/program";
 import type { Clock } from "@/common/application/system";
 
+/** 이미 조회한 정책 하나에 대해 자격 판정만 수행하는 유스케이스 (클라이언트 API용) */
 export class EvaluateEligibility {
   constructor(private readonly clock: Clock) {}
 

@@ -11,9 +11,11 @@ export interface FieldCipher {
   decrypt(token: string, context: string): string;
 }
 
+/** 필드 암·복호화 실패. */
 export class FieldCipherError extends Error {
   constructor(message: string) {
     super(message);
     this.name = "FieldCipherError";
   }
 }
+

@@ -18,6 +18,7 @@ function toRun(r: typeof financeSyncRuns.$inferSelect): SyncRun {
   };
 }
 
+/** 수집 실행 이력 SQLite 저장소 */
 export class SqliteSyncRunRepository implements SyncRunRepository {
   constructor(private readonly db: SqliteDb) {}
 

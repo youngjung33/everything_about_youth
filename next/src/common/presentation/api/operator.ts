@@ -4,8 +4,10 @@ import { ApiError } from "./errors";
 /** 운영자 요청에 담는 헤더. 값은 서버의 `OPERATOR_TOKEN` 과 같아야 한다. */
 export const OPERATOR_TOKEN_HEADER = "x-operator-token";
 
+/** 모듈 상수 MIN_OPERATOR_TOKEN_LENGTH. */
 export const MIN_OPERATOR_TOKEN_LENGTH = 24;
 
+/** 관리·수집 API 토큰 판정. */
 export type OperatorDecision = "allowed" | "disabled" | "forbidden";
 
 function digest(value: string): Buffer {
@@ -42,3 +44,4 @@ export function assertOperator(request: Request, env: Record<string, string | un
   if (decision === "disabled") throw new ApiError("OPERATOR_DISABLED");
   if (decision === "forbidden") throw new ApiError("FORBIDDEN");
 }
+

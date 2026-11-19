@@ -6,12 +6,14 @@ import { getSchemeStatus, type FinanceScheme } from "@/features/finance/domain/s
 import type { Clock } from "@/common/application/system";
 import type { SchemeRepository, SchemeSearchQuery, SchemeSort } from "../ports/scheme-repository";
 
+/** 저장소 검색 쿼리에서 페이징·정렬·기준일을 뺀 필터 묶음 */
 export type SchemeFilters = Omit<SchemeSearchQuery, "today" | "sort" | "limit" | "offset">;
 
 export interface SearchSchemesInput {
   filters: SchemeFilters;
   sort?: SchemeSort;
   profile?: ApplicantProfile;
+  /** 지정하면 해당 판정 결과의 상품만 남긴다 (profile 필요) */
   verdicts?: EligibilityVerdict[];
   page?: number;
   pageSize?: number;
@@ -31,8 +33,10 @@ export interface SearchSchemesOutput {
   totalPages: number;
 }
 
+/** 기본 페이지 크기 */
 export const DEFAULT_PAGE_SIZE = 20;
 
+/** 금융·자금 상품 목록 검색·필터·(선택)자격 판정 */
 export class SearchSchemes {
   constructor(
     private readonly repo: SchemeRepository,

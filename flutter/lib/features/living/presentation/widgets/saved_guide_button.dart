@@ -7,6 +7,7 @@ import '../saved_guide_reminder_sync.dart';
 
 const _accent = ServiceAccent.living;
 
+/// 관심 저장 토글 버튼.
 class SavedGuideButton extends ConsumerWidget {
   const SavedGuideButton({super.key, required this.guideId, this.compact = true});
 

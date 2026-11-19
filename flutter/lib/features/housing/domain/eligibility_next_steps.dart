@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 import '../../../core/copy/service_copy.dart';
 import 'notice.dart';
 
+/// 자격 판정 후 사용자에게 보여 줄 제목·행동·서류·면책 문구.
 @immutable
 class EligibilityNextSteps {
   const EligibilityNextSteps({

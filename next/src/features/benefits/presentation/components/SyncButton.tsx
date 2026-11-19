@@ -4,11 +4,14 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { BENEFITS_SYNC_API_PATH } from "../routes";
 
+/** 동기화 API 응답 형태 */
 interface SyncResponse {
   results?: Array<{ source: string; status: string; fetched: number; inserted: number; updated: number; error?: string }>;
+  /** 통합 오류: { error: { code, message } } */
   error?: { code?: string; message?: string };
 }
 
+/** 관리 화면 수동 동기화 버튼 */
 export function BenefitsSyncButton(props: { source?: string; label?: string }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);

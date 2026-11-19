@@ -13,6 +13,7 @@ import '../../domain/guide_schedule.dart';
 import '../living_routes.dart';
 import '../widgets/guide_card.dart';
 
+/// GuideSchedule 화면.
 class GuideSchedulePage extends ConsumerStatefulWidget {
   const GuideSchedulePage({super.key});
 
@@ -20,6 +21,7 @@ class GuideSchedulePage extends ConsumerStatefulWidget {
   ConsumerState<GuideSchedulePage> createState() => _GuideSchedulePageState();
 }
 
+/// 위젯의 편집·로딩 등 내부 상태.
 class _GuideSchedulePageState extends ConsumerState<GuideSchedulePage> {
   ScheduleRangeMode _mode = ScheduleRangeMode.week;
 

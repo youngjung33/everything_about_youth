@@ -133,7 +133,8 @@ describe("living API handlers", () => {
     const meta = await handleGetMeta(deps);
     expect(meta.body.procedureTypes.length).toBeGreaterThan(0);
     expect(meta.body.verdicts.length).toBe(3);
-    expect(meta.body).not.toHaveProperty("standards");
+    expect(meta.body.standards.year).toBeGreaterThan(2000);
+    expect(meta.body.standards.urbanWorkerIncome).toHaveLength(8);
   });
 
   it("캘린더 ICS", async () => {

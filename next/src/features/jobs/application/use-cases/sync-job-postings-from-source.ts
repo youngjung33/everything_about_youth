@@ -6,6 +6,7 @@ import { SourceSkippedError, type JobPostingSourcePort } from "../ports/posting-
 import type { SyncRunRepository, SyncRunStatus } from "../ports/sync-run-repository";
 import type { Clock, Logger } from "@/common/application/system";
 
+/** 소스별 수집 실행 결과 요약 */
 export interface SourceSyncResult {
   source: SourceId;
   status: Exclude<SyncRunStatus, "running">;

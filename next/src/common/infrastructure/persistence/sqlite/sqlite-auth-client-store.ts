@@ -3,6 +3,7 @@ import type { AuthClient, AuthClientStore, GuestSessionPruneOptions } from "@/co
 import type { SqliteDb } from "./client";
 import { authClients } from "./schema";
 
+/** SQLite 세션(기기) 저장소. */
 export class SqliteAuthClientStore implements AuthClientStore {
   constructor(private readonly db: SqliteDb) {}
 
@@ -60,3 +61,4 @@ export class SqliteAuthClientStore implements AuthClientStore {
     return deleted;
   }
 }
+

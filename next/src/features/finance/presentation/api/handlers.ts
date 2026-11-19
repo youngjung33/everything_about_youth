@@ -19,6 +19,7 @@ import {
   type SchemeSummaryDto,
 } from "./dto";
 
+/** HTTP 와 무관한 API 처리 로직. 라우트 파일은 이 결과를 Response 로 감싸기만 한다. */
 export interface FinanceApiDeps {
   searchSchemes: SearchSchemes;
   getSchemeDetail: GetSchemeDetail;
@@ -27,8 +28,10 @@ export interface FinanceApiDeps {
   clock: Clock;
 }
 
+/** API 목록 한 페이지 최대 건수 */
 export const MAX_API_PAGE_SIZE = 50;
 
+/** `?sido=서울&sido=경기` 처럼 반복된 키를 배열로 유지해 웹 페이지와 같은 파서를 재사용한다. */
 export function toRawSearchParams(searchParams: URLSearchParams): RawSearchParams {
   const raw: Record<string, string | string[]> = {};
   for (const key of new Set(searchParams.keys())) {
@@ -71,6 +74,7 @@ export async function handleGetScheme(
   return { status: 200, body: toSchemeDetailDto(item, todayInKst(deps.clock.now())) };
 }
 
+/** GET /api/v1/finance/meta  (필터 선택지와 라벨) */
 export async function handleGetMeta(deps: Pick<FinanceApiDeps, "syncRuns">): Promise<ApiResult<FinanceMetaDto>> {
   return { status: 200, body: buildFinanceMeta(await deps.syncRuns.lastSuccessAt()) };
 }
@@ -85,10 +89,12 @@ export interface SavedListDto {
   today: string;
 }
 
+/** GET /api/v1/finance/saved/ids  — 목록 하트 표시용 */
 export async function handleListSavedIds(userId: string, deps: Pick<FinanceApiDeps, "manageSavedSchemes">): Promise<ApiResult<SavedIdsDto>> {
   return { status: 200, body: { ids: await deps.manageSavedSchemes.listIds(userId) } };
 }
 
+/** GET /api/v1/finance/saved  — 관심 금융·자금 상품 목록. '내 조건' 쿼리가 있으면 자격 판정 포함 */
 export async function handleListSaved(
   userId: string,
   searchParams: URLSearchParams,
@@ -122,6 +128,7 @@ export async function handleUnsaveScheme(
   return { status: 200, body: { saved: false } };
 }
 
+/** PUT /api/v1/finance/saved  { ids: string[] }  — 비회원 기기 목록을 회원에 합친다 */
 export async function handleMergeSaved(
   userId: string,
   body: { ids: string[] },

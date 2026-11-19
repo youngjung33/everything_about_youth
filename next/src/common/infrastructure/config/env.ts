@@ -27,6 +27,7 @@ export interface AppConfig {
   crawlIgnoreRobotsHosts: string[];
 }
 
+/** .env·process.env 에서 앱 설정 로드. */
 export function loadConfig(env: Record<string, string | undefined> = process.env): AppConfig {
   const parsed = schema.parse(env);
   return {
@@ -41,3 +42,4 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
       .filter(Boolean),
   };
 }
+

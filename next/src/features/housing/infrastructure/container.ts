@@ -36,6 +36,7 @@ export interface HousingContainer {
   syncNotices: SyncNoticesFromSource;
 }
 
+/** 테스트·로컬용 설정 덮어쓰기 */
 export interface HousingOverrides {
   config?: Partial<HousingConfig>;
 }

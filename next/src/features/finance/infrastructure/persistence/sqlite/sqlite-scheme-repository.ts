@@ -11,8 +11,10 @@ import type { Sido } from "@/common/domain/region";
 import type { SqliteDb } from "@/common/infrastructure/persistence/sqlite/client";
 import { financeSchemes, financeSchemeRegions, financeSchemeSources, financeSchemeTags } from "./schema";
 
-const CHUNK = 500;
+/** SQLite 기반 금융·자금 상품 저장소. Postgres 이전 시 쿼리 조건 로직만 포팅한다. */
+const CHUNK = 500; // IN 절·배치 조회 분할 크기
 
+/** 배열을 고정 크기 청크로 나눈다. */
 function chunk<T>(items: T[], size = CHUNK): T[][] {
   const out: T[][] = [];
   for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
@@ -23,6 +25,7 @@ function escapeLike(value: string): string {
   return value.replace(/[\\%_]/g, (c) => `\\${c}`);
 }
 
+/** {@link SchemeRepository} SQLite 구현 */
 export class SqliteSchemeRepository implements SchemeRepository {
   constructor(private readonly db: SqliteDb) {}
 

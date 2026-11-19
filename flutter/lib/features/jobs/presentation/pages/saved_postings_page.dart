@@ -20,6 +20,7 @@ class SavedPostingsPage extends ConsumerStatefulWidget {
   ConsumerState<SavedPostingsPage> createState() => _SavedPostingsPageState();
 }
 
+/// 위젯의 편집·로딩 등 내부 상태.
 class _SavedPostingsPageState extends ConsumerState<SavedPostingsPage> {
   @override
   Widget build(BuildContext context) {

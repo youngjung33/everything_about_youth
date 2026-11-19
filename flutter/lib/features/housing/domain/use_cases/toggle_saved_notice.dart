@@ -7,8 +7,8 @@ import '../repositories/saved_notice_local_store.dart';
 class ToggleSavedNoticeUseCase {
   const ToggleSavedNoticeUseCase(this._repository, this._local);
 
-  final HousingRepository _repository;
-  final SavedNoticeLocalStore _local;
+  final HousingRepository _repository; // domain 저장소 포트
+  final SavedNoticeLocalStore _local; // 기기 로컬 저장
 
   Future<({List<String>? ids, String? error})> call({
     required String id,

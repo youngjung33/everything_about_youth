@@ -7,11 +7,13 @@ import { enrichOntongListRows } from "@/common/infrastructure/sources/ontong/ont
 import { parseOntongBody } from "@/common/infrastructure/sources/ontong/ontong-parse";
 import { mapOntongItems } from "./ontong-mapper";
 
+/** 온통청년 Open API */
 const BASE_URL = "https://www.youthcenter.go.kr";
 const LIST_PATH = "/opi/youthPlcyList.do";
-const PAGE_SIZE = 100;
-const MAX_PAGES = 30;
+const PAGE_SIZE = 100; // 페이지당 건수
+const MAX_PAGES = 30; // 안전 상한
 
+/** 온통청년 소스 옵션 */
 export interface OntongSourceOptions {
   apiKey?: string;
   logger?: Logger;
@@ -23,6 +25,7 @@ function parseBody(text: string): Json {
   return parseOntongBody(text);
 }
 
+/** 온통청년 청년정책 목록 수집 */
 export class OntongSource implements ProgramSourcePort {
   readonly id = "ontong" as const;
   readonly label = "온통청년";

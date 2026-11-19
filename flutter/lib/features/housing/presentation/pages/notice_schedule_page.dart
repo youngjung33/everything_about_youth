@@ -13,6 +13,7 @@ import '../../domain/notice_schedule.dart';
 import '../housing_routes.dart';
 import '../widgets/notice_card.dart';
 
+/// NoticeSchedule 화면.
 class NoticeSchedulePage extends ConsumerStatefulWidget {
   const NoticeSchedulePage({super.key});
 
@@ -20,6 +21,7 @@ class NoticeSchedulePage extends ConsumerStatefulWidget {
   ConsumerState<NoticeSchedulePage> createState() => _NoticeSchedulePageState();
 }
 
+/// 위젯의 편집·로딩 등 내부 상태.
 class _NoticeSchedulePageState extends ConsumerState<NoticeSchedulePage> {
   ScheduleRangeMode _mode = ScheduleRangeMode.week;
 

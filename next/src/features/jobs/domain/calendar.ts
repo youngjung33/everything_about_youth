@@ -24,6 +24,7 @@ export function googleCalendarDeadlineUrl(input: {
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
+/** 캘린더 앱이 여는 ICS (하루 종일, 아시아/서울). 접수 마감일이 없으면 null */
 export function deadlineIcs(input: {
   postingId: string;
   title: string;

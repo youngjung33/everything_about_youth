@@ -3,6 +3,7 @@ import type { SavedProgram, SavedProgramRepository } from "@/features/benefits/a
 import type { SqliteDb } from "@/common/infrastructure/persistence/sqlite/client";
 import { savedBenefitPrograms } from "./schema";
 
+/** 회원 관심 정책 SQLite 저장소 */
 export class SqliteSavedProgramRepository implements SavedProgramRepository {
   constructor(private readonly db: SqliteDb) {}
 

@@ -1,5 +1,6 @@
 import type { Logger } from "@/common/application/system";
 
+/** 타이머. 테스트에서 시간을 직접 움직이려고 뺐다. */
 export interface Timers {
   set(callback: () => void, delayMs: number): unknown;
   clear(handle: unknown): void;

@@ -2,6 +2,7 @@ import { SOURCE_LABELS } from "@/features/finance/domain/enums";
 import { getFinanceContainer } from "@/features/finance/finance-container";
 import { FinanceSyncButton } from "@/features/finance/presentation/components/SyncButton";
 
+/** 요청마다 최신 데이터·기능 플래그를 반영한다(정적 캐시 없음). */
 export const dynamic = "force-dynamic";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -16,6 +17,7 @@ function formatTime(iso: string | null): string {
   return new Date(iso).toLocaleString("ko-KR", { timeZone: "Asia/Seoul", hour12: false });
 }
 
+/** 주거·자금 공고·데이터 수집 관리 화면. */
 export default async function FinanceSyncAdminPage() {
   const container = getFinanceContainer();
   const [latest, recent] = await Promise.all([container.syncRuns.latestPerSource(), container.syncRuns.listRecent(20)]);
@@ -109,3 +111,5 @@ export default async function FinanceSyncAdminPage() {
     </div>
   );
 }
+
+

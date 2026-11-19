@@ -14,10 +14,12 @@ function cyrb53(str: string, seed = 0): number {
   return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 }
 
+/** 기관명을 병합키용으로 정규화한다. */
 export function normalizeOrganization(org: string): string {
   return org.replace(/\s+/g, "").toLowerCase();
 }
 
+/** 제목에서 괄호 정정 표기 등을 제거하고 비교용 문자열을 만든다. */
 export function normalizeTitle(title: string): string {
   return title
     .replace(/[\[(（【]\s*(정정|변경|재공고|연장|수정)[^\])）】]*[\])）】]/g, "")
@@ -25,6 +27,7 @@ export function normalizeTitle(title: string): string {
     .toLowerCase();
 }
 
+/** 동일 채용 공고 판별용 병합키 */
 export function buildMergeKey(draft: Pick<JobPostingDraft, "sources"> & { mergeKeyHint?: string }): string {
   const primary = draft.sources[0];
   if (primary) return `${primary.source}:${primary.externalId}`;

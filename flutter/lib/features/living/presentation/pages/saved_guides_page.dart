@@ -20,6 +20,7 @@ class SavedGuidesPage extends ConsumerStatefulWidget {
   ConsumerState<SavedGuidesPage> createState() => _SavedGuidesPageState();
 }
 
+/// 위젯의 편집·로딩 등 내부 상태.
 class _SavedGuidesPageState extends ConsumerState<SavedGuidesPage> {
   @override
   Widget build(BuildContext context) {

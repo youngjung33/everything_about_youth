@@ -4,7 +4,9 @@ import { apiHandler, respond } from "@/common/presentation/api/respond";
 import { parseJsonBody } from "@/common/presentation/api/validate";
 import { handleStartSso } from "@/common/presentation/api/sso";
 
+/** 요청마다 최신 데이터·기능 플래그를 반영한다(정적 캐시 없음). */
 export const dynamic = "force-dynamic";
+/** SQLite 등 네이티브 모듈을 쓰므로 Node.js 런타임. */
 export const runtime = "nodejs";
 
 /** 로그인을 시작한다. 앱이 브라우저로 열 로그인 주소를 돌려준다. */
@@ -15,3 +17,5 @@ export const POST = apiHandler(async (request) => {
   const base = config.publicBaseUrl ?? new URL(request.url).origin;
   return respond(await handleStartSso(body, service, base));
 });
+
+

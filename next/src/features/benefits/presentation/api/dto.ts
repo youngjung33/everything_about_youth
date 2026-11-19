@@ -15,6 +15,10 @@ import { googleCalendarDeadlineUrl } from "@/features/benefits/domain/calendar";
 import type { ProgramListItem, SearchProgramsOutput } from "@/features/benefits/application/use-cases/search-programs";
 import { regionLabel } from "../region-label";
 
+/**
+ * 모바일/웹(Flutter) JSON 계약. 코드와 한글 라벨 동시 제공.
+ * 금액 원, 날짜 YYYY-MM-DD(KST).
+ */
 export interface EligibilityDto {
   verdict: string;
   verdictLabel: string;
@@ -27,6 +31,7 @@ export interface RegionDto {
   sigungu: string | null;
 }
 
+/** 목록·관심 API용 요약 */
 export interface ProgramSummaryDto {
   id: string;
   title: string;
@@ -36,6 +41,7 @@ export interface ProgramSummaryDto {
   tags: string[];
   status: string;
   statusLabel: string;
+  /** "D-3", "오늘 마감" 등. 없으면 null */
   dday: string | null;
   regions: RegionDto[];
   regionLabel: string;
@@ -45,9 +51,11 @@ export interface ProgramSummaryDto {
   summary: string | null;
   url: string | null;
   sourceLabels: string[];
+  /** 내 조건을 보냈을 때만 */
   eligibility: EligibilityDto | null;
 }
 
+/** 수집 출처 한 건 */
 export interface ProgramSourceDto {
   source: string;
   sourceLabel: string;
@@ -61,6 +69,7 @@ export interface ProgramDetailDto extends ProgramSummaryDto {
   sources: ProgramSourceDto[];
 }
 
+/** 목록 API 페이로드 */
 export interface ProgramListDto {
   items: ProgramSummaryDto[];
   total: number;
@@ -81,6 +90,7 @@ export interface EligibilityStandardsDto {
   urbanWorkerIncome: number[];
 }
 
+/** GET /meta 응답 */
 export interface BenefitsMetaDto {
   dataUpdatedAt: string | null;
   categories: OptionDto[];
@@ -101,6 +111,7 @@ function toEligibilityDto(result: EligibilityResult | null): EligibilityDto | nu
   };
 }
 
+/** ProgramListItem → 요약 DTO */
 export function toProgramSummaryDto(item: ProgramListItem, today: IsoDate): ProgramSummaryDto {
   const { program, status, eligibility } = item;
   return {
@@ -125,6 +136,7 @@ export function toProgramSummaryDto(item: ProgramListItem, today: IsoDate): Prog
   };
 }
 
+/** 상세 DTO */
 export function toProgramDetailDto(item: ProgramListItem, today: IsoDate): ProgramDetailDto {
   const { program } = item;
   return {
@@ -145,6 +157,7 @@ export function toProgramDetailDto(item: ProgramListItem, today: IsoDate): Progr
   };
 }
 
+/** 목록 DTO */
 export function toProgramListDto(result: SearchProgramsOutput, today: IsoDate): ProgramListDto {
   return {
     items: result.items.map((i) => toProgramSummaryDto(i, today)),
@@ -156,6 +169,7 @@ export function toProgramListDto(result: SearchProgramsOutput, today: IsoDate): 
   };
 }
 
+/** 필터 선택지·기준표 메타 */
 export function buildMeta(dataUpdatedAt: string | null = null): BenefitsMetaDto {
   return {
     dataUpdatedAt,

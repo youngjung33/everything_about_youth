@@ -2,6 +2,7 @@ import type { FeatureFlags } from "@/common/application/feature-flags";
 import { ApiError } from "./errors";
 import type { ApiResult } from "./respond";
 
+/** GET /features 응답. */
 export interface FeaturesDto {
   features: { id: string; enabled: boolean }[];
 }
@@ -22,3 +23,4 @@ export async function handleGetFeatures(flags: FeatureFlags): Promise<ApiResult<
 export async function assertFeatureEnabled(flags: FeatureFlags, id: string): Promise<void> {
   if (!(await flags.isEnabled(id))) throw new ApiError("SERVICE_DISABLED");
 }
+

@@ -7,12 +7,14 @@ import '../../../../core/theme/app_fonts.dart';
 /// 배지 색상 (배경, 글자)
 typedef BadgeColors = ColorPair;
 
+/// 상태·판정 값에 맞는 배지 색 쌍을 반환한다.
 BadgeColors statusColors(ProgramStatus status) => switch (status) {
   ProgramStatus.open => AppColors.success,
   ProgramStatus.upcoming => AppColors.info,
   ProgramStatus.closed => AppColors.neutral,
 };
 
+/// 상태·판정 값에 맞는 배지 색 쌍을 반환한다.
 BadgeColors verdictColors(Verdict verdict) => switch (verdict) {
   Verdict.eligible => AppColors.success,
   Verdict.check => AppColors.warning,
@@ -50,11 +52,12 @@ class Pill extends StatelessWidget {
   }
 }
 
+/// 모집·진행 상태 라벨 배지.
 class StatusBadge extends StatelessWidget {
   const StatusBadge({super.key, required this.status, required this.label});
 
   final ProgramStatus status;
-  final String label;
+  final String label; // 화면에 보이는 한글 라벨
 
   @override
   Widget build(BuildContext context) {

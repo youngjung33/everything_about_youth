@@ -9,6 +9,7 @@ const schema = z.object({
   JWT_REFRESH_TTL_SEC: z.preprocess(emptyToUndefined, z.coerce.number().int().min(60).default(30 * 24 * 60 * 60)),
 });
 
+/** JWT·세션 수명 설정. */
 export interface AuthConfig {
   secret: string;
   issuer: string;
@@ -17,6 +18,7 @@ export interface AuthConfig {
   refreshTtlSec: number;
 }
 
+/** 모듈 상수 MIN_SECRET_LENGTH. */
 export const MIN_SECRET_LENGTH = 32;
 
 /** 개발에서 JWT_SECRET 이 없을 때만 쓰는 값. 운영에서는 절대 쓰이지 않는다(없으면 시작을 거부한다). */
@@ -52,3 +54,5 @@ export function loadAuthConfig(env: Record<string, string | undefined> = process
     refreshTtlSec: parsed.JWT_REFRESH_TTL_SEC,
   };
 }
+
+

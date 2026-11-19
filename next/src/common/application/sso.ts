@@ -14,6 +14,7 @@
  */
 
 export const SSO_PROVIDER_IDS = ["google", "apple", "naver", "kakao"] as const;
+/** 허용 SSO 제공자 id. */
 export type SsoProviderId = (typeof SSO_PROVIDER_IDS)[number];
 
 /** 로그인 화면에 보이는 이름. 목록 순서가 화면 순서다. */
@@ -24,6 +25,7 @@ export const SSO_PROVIDER_LABELS: Record<SsoProviderId, string> = {
   kakao: "카카오",
 };
 
+/** unknown 이 허용 SSO id 인지. */
 export function isSsoProviderId(value: unknown): value is SsoProviderId {
   return typeof value === "string" && (SSO_PROVIDER_IDS as readonly string[]).includes(value);
 }
@@ -57,12 +59,14 @@ export interface SsoState {
   callbackUri: string;
 }
 
+/** OAuth state·nonce 암·복호화. */
 export interface SsoStateCodec {
   sign(state: SsoState): Promise<string>;
   /** 서명·만료를 검사한다. 실패하면 `SsoError("invalid_state")`. */
   verify(token: string): Promise<SsoState>;
 }
 
+/** SSO 플로우 클라이언트 오류 코드. */
 export type SsoErrorCode =
   | "provider_unavailable"
   | "invalid_request"
@@ -71,6 +75,7 @@ export type SsoErrorCode =
   | "invalid_ticket"
   | "login_required";
 
+/** [SsoErrorCode] SSO 도메인 오류. */
 export class SsoError extends Error {
   constructor(
     public readonly code: SsoErrorCode,
@@ -96,6 +101,7 @@ export interface SsoTicketStore {
   consume(ticketHash: string, now: string): Promise<{ userId: string; challenge: string } | null>;
 }
 
+/** redirect URI allowlist. */
 export interface RedirectRules {
   /** 정확히 일치해야 하는 주소 (예: `everythingaboutyouth://auth`, `https://app.example.com/auth.html`) */
   allowed: readonly string[];
@@ -130,9 +136,12 @@ export function isAllowedRedirectUri(uri: string, rules: RedirectRules): boolean
 
 // ── PKCE ────────────────────────────────────────────────────────────────
 
+/** 모듈 상수 PKCE_CHALLENGE_PATTERN. */
 export const PKCE_CHALLENGE_PATTERN = /^[A-Za-z0-9_-]{43}$/;
+/** 모듈 상수 PKCE_VERIFIER_PATTERN. */
 export const PKCE_VERIFIER_PATTERN = /^[A-Za-z0-9\-._~]{43,128}$/;
 
+/** Uint8Array → base64url(PKCE). */
 export function base64Url(bytes: Uint8Array): string {
   let binary = "";
   for (const byte of bytes) binary += String.fromCharCode(byte);
@@ -149,3 +158,4 @@ export async function sha256Base64Url(text: string): Promise<string> {
 export function randomToken(): string {
   return base64Url(crypto.getRandomValues(new Uint8Array(32)));
 }
+

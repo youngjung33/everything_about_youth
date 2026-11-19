@@ -2,6 +2,7 @@ import 'package:meta/meta.dart';
 
 import '../../../core/json.dart';
 
+/// 값(코드)과 한글 라벨 쌍
 @immutable
 class Option {
   const Option({required this.value, required this.label});
@@ -9,10 +10,11 @@ class Option {
   factory Option.fromJson(Map<String, dynamic> json) =>
       Option(value: asString(json['value']) ?? '', label: asString(json['label']) ?? '');
 
-  final String value;
-  final String label;
+  final String value; // 코드 값
+  final String label; // 화면에 보이는 한글 라벨
 }
 
+/// 자격 판정에 쓰는 소득 기준표(참고용). 서버가 단일 출처이며, 입력 화면에서 소득 수준을 안내할 때만 쓴다.
 @immutable
 class EligibilityStandards {
   const EligibilityStandards({
@@ -34,9 +36,9 @@ class EligibilityStandards {
     );
   }
 
-  final int year;
-  final int maxHouseholdSize;
-  final List<int> urbanWorkerIncome;
+  final int year; // 기준표 적용 연도
+  final int maxHouseholdSize; // 기준표에 포함된 최대 가구원 수
+  final List<int> urbanWorkerIncome; // 전년도 도시근로자 가구원수별 월평균소득 100% (원). 인덱스 0 = 1인 가구
 
   int? urbanWorkerIncomeFor(int householdSize) {
     final index = householdSize - 1;
@@ -51,6 +53,7 @@ class EligibilityStandards {
   }
 }
 
+/// 필터 선택지와 라벨. 서버(`/api/v1/programs/meta` 등)가 단일 출처이므로 앱에 라벨 표를 복제하지 않는다.
 @immutable
 class BenefitMeta {
   const BenefitMeta({
@@ -79,7 +82,7 @@ class BenefitMeta {
   final List<Option> statuses;
   final List<Option> verdicts;
   final List<Option> sorts;
-  final List<String> sidos;
-  final EligibilityStandards? standards;
-  final String? dataUpdatedAt;
+  final List<String> sidos; // 시·도 필터
+  final EligibilityStandards? standards; // 소득 기준표. 서버가 주지 않으면 null
+  final String? dataUpdatedAt; // 데이터 마지막 수집 시각(ISO 8601 UTC). 없으면 null
 }

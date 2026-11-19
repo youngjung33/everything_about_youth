@@ -3,11 +3,13 @@ import Link from "next/link";
 import { SECTIONS } from "./sections";
 import "./globals.css";
 
+/** 브라우저 탭 제목·설명(Next Metadata). */
 export const metadata: Metadata = {
   title: "청년의 모든 것",
   description: "한국 청년이 이용할 수 있는 정보를 한 곳에서 모아봅니다.",
 };
 
+/** 전역 HTML 셸·상단 네비게이션. */
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ko">
@@ -31,3 +33,5 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     </html>
   );
 }
+
+

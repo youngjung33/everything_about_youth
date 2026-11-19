@@ -6,8 +6,10 @@ import { Pagination } from "@/features/housing/presentation/components/Paginatio
 import { SyncButton } from "@/features/housing/presentation/components/SyncButton";
 import { parseSearchParams, profileQuery } from "@/features/housing/presentation/search-params";
 
+/** 요청마다 최신 데이터·기능 플래그를 반영한다(정적 캐시 없음). */
 export const dynamic = "force-dynamic";
 
+/** 임대주택 공고 검색·목록 페이지. */
 export default async function HomePage(props: PageProps<"/housing">) {
   const raw = await props.searchParams;
   const parsed = parseSearchParams(raw);
@@ -69,3 +71,5 @@ export default async function HomePage(props: PageProps<"/housing">) {
     </div>
   );
 }
+
+

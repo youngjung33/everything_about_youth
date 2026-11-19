@@ -5,8 +5,8 @@ import '../repositories/saved_notice_local_store.dart';
 class ResolveSavedNoticeIdsUseCase {
   const ResolveSavedNoticeIdsUseCase(this._repository, this._local);
 
-  final HousingRepository _repository;
-  final SavedNoticeLocalStore _local;
+  final HousingRepository _repository; // domain 저장소 포트
+  final SavedNoticeLocalStore _local; // 기기 로컬 저장
 
   Future<List<String>> call({required bool isMember}) async {
     final local = await _local.load();

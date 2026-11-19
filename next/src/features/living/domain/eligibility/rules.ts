@@ -1,11 +1,16 @@
 import type { ProcedureTypeId } from "../enums";
+import { YOUTH_MAX_AGE, YOUTH_MIN_AGE } from "./standards";
 
 export interface ProcedureTypeRule {
   minAge?: number;
   maxAge?: number;
+  /** 청년 전용 지원·안내에 연령 입력을 요구할 때 */
+  requiresYouth?: boolean;
   requiresResidenceMatch?: boolean;
   alwaysCheck?: string;
 }
+
+export { YOUTH_MAX_AGE, YOUTH_MIN_AGE };
 
 /**
  * 절차 유형별 참고 판정 규칙 (1차).
@@ -20,6 +25,7 @@ export const PROCEDURE_TYPE_RULES: Record<ProcedureTypeId, ProcedureTypeRule> = 
     alwaysCheck: "전입신고는 관할 주민센터·정부24 절차와 필요 서류를 기관 안내에서 확인하세요.",
   },
   lease: {
+    minAge: 19,
     requiresResidenceMatch: true,
     alwaysCheck: "확정일자·임대차 계약 순서와 등기부등본 확인이 중요합니다.",
   },

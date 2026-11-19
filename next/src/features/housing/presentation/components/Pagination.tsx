@@ -2,6 +2,7 @@ import Link from "next/link";
 import { HOUSING_BASE } from "../routes";
 import { buildQuery, type RawSearchParams } from "../search-params";
 
+/** 목록 페이지 네비게이션. totalPages ≤ 1 이면 null. */
 export function Pagination(props: { page: number; totalPages: number; raw: RawSearchParams }) {
   const { page, totalPages, raw } = props;
   if (totalPages <= 1) return null;

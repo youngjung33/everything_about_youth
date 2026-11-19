@@ -14,6 +14,7 @@ import { createFinanceRepositories } from "./create-repositories";
 import { CuratedSource } from "./sources/curated/curated-source";
 import { OntongFinanceSource } from "./sources/ontong/ontong-finance-source";
 
+/** 금융·자금 섹션에 주입되는 유스케이스·저장소 묶음 */
 export interface FinanceContainer {
   config: FinanceConfig;
   clock: Clock;
@@ -21,6 +22,7 @@ export interface FinanceContainer {
   schemes: SchemeRepository;
   savedSchemes: SavedSchemeRepository;
   syncRuns: SyncRunRepository;
+  /** 등록된 모든 소스 (활성 여부와 무관) */
   allSources: SchemeSourcePort[];
   searchSchemes: SearchSchemes;
   getSchemeDetail: GetSchemeDetail;
@@ -33,6 +35,7 @@ export interface FinanceOverrides {
   config?: Partial<FinanceConfig>;
 }
 
+/** 금융·자금 섹션의 의존성 조립 지점. 공통 의존성은 CommonContainer 에서 받는다. */
 export function createFinanceContainer(common: CommonContainer, overrides: FinanceOverrides = {}): FinanceContainer {
   const { clock, logger } = common;
   const config = { ...loadFinanceConfig(), ...overrides.config };
@@ -62,9 +65,10 @@ export function createFinanceContainer(common: CommonContainer, overrides: Finan
   };
 }
 
-const globalKey = Symbol.for("everything_about_youth.finance-container");
+const globalKey = Symbol.for("everything_about_youth.finance-container"); // HMR 간 싱글톤 키
 type GlobalWithContainer = typeof globalThis & { [globalKey]?: FinanceContainer };
 
+/** Next.js 개발 모드의 HMR 에서도 하나만 유지한다. */
 export function getFinanceContainer(): FinanceContainer {
   const g = globalThis as GlobalWithContainer;
   if (!g[globalKey]) g[globalKey] = createFinanceContainer(getCommonContainer());

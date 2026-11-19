@@ -1,6 +1,7 @@
 import type { BenefitProgram, BenefitProgramDraft, ProgramSourceRef } from "./program";
 import { uniqueRegions } from "@/common/domain/region";
 
+/** 53bit 비암호화 해시 (cyrb53). 결정적 ID 생성용. */
 function cyrb53(str: string, seed = 0): number {
   let h1 = 0xdeadbeef ^ seed;
   let h2 = 0x41c6ce57 ^ seed;
@@ -14,10 +15,12 @@ function cyrb53(str: string, seed = 0): number {
   return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 }
 
+/** 기관명 정규화 */
 export function normalizeOrganization(org: string): string {
   return org.replace(/\s+/g, "").toLowerCase();
 }
 
+/** 제목 정규화(병합키용) */
 export function normalizeTitle(title: string): string {
   return title
     .replace(/[\[(（【]\s*(정정|변경|재공고|연장|수정)[^\])）】]*[\])）】]/g, "")
@@ -25,19 +28,23 @@ export function normalizeTitle(title: string): string {
     .toLowerCase();
 }
 
+/** 동일 정책 판별 병합키 */
 export function buildMergeKey(draft: Pick<BenefitProgramDraft, "title" | "organization" | "applicationEnd">): string {
   return [normalizeTitle(draft.title), normalizeOrganization(draft.organization), draft.applicationEnd ?? ""].join("|");
 }
 
+/** 병합키로부터 안정적인 정책 ID */
 export function buildProgramId(mergeKey: string): string {
   return `b_${cyrb53(mergeKey).toString(36)}`;
 }
 
+/** 초안에 id·mergeKey 부여 */
 export function createProgram(draft: BenefitProgramDraft): BenefitProgram {
   const mergeKey = buildMergeKey(draft);
   return { ...draft, mergeKey, id: buildProgramId(mergeKey) };
 }
 
+/** 같은 정책: 병합키 같거나 동일 소스·외부 ID 공유 */
 export function isSameProgram(a: BenefitProgram, b: BenefitProgram): boolean {
   if (a.mergeKey === b.mergeKey) return true;
   return a.sources.some((sa) => b.sources.some((sb) => sa.source === sb.source && sa.externalId === sb.externalId));
@@ -50,6 +57,7 @@ function unionSources(existing: ProgramSourceRef[], incoming: ProgramSourceRef[]
   return [...map.values()];
 }
 
+/** 기존 정책에 신규 수집분 병합. id 는 기존 유지 */
 export function mergeProgram(existing: BenefitProgram, incoming: BenefitProgram): BenefitProgram {
   const tags = [...new Set([...existing.tags, ...incoming.tags])];
   return {

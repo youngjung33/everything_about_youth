@@ -8,8 +8,8 @@ import 'housing_filters.dart';
 class HousingFilterPreset {
   const HousingFilterPreset({required this.id, required this.label, required this.supplyTypes});
 
-  final String id;
-  final String label;
+  final String id; // 항목 식별자
+  final String label; // 화면에 보이는 한글 라벨
   final Set<String> supplyTypes;
 
   HousingFilters applyTo(HousingFilters current) => current.copyWith(supplyTypes: supplyTypes);

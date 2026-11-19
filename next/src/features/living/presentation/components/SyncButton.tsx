@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { LIVING_SYNC_API_PATH } from "../routes";
 
+/** 관리 화면에서 수동 수집 API 를 호출하는 버튼 */
 export function LivingSyncButton(props: { source?: string; label?: string }) {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");

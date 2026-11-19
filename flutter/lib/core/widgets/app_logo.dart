@@ -44,6 +44,7 @@ class AppLogo extends StatelessWidget {
   }
 }
 
+/// 레이아웃 보조 위젯.
 class _Mark extends StatelessWidget {
   const _Mark({required this.size});
 

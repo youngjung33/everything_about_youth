@@ -6,6 +6,7 @@ import { SqliteGuideRepository } from "./persistence/sqlite/sqlite-guide-reposit
 import { SqliteSavedGuideRepository } from "./persistence/sqlite/sqlite-saved-guide-repository";
 import { SqliteSyncRunRepository } from "./persistence/sqlite/sqlite-sync-run-repository";
 
+/** 생활정보 SQLite 리포지토리. 2차 Postgres 는 이 함수만 living 쪽에서 분기한다. */
 export function createLivingRepositories(persistence: AppPersistence): {
   guides: GuideRepository;
   savedGuides: SavedGuideRepository;

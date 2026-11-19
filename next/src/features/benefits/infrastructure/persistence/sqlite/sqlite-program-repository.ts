@@ -11,18 +11,21 @@ import type { Sido } from "@/common/domain/region";
 import type { SqliteDb } from "@/common/infrastructure/persistence/sqlite/client";
 import { benefitPrograms, programRegions, programSources, programTags } from "./schema";
 
-const CHUNK = 500;
+const CHUNK = 500; // IN 절 분할
 
+/** 배열을 고정 크기 청크로 나눈다. */
 function chunk<T>(items: T[], size = CHUNK): T[][] {
   const out: T[][] = [];
   for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
   return out;
 }
 
+/** LIKE 와일드카드 이스케이프 */
 function escapeLike(value: string): string {
   return value.replace(/[\\%_]/g, (c) => `\\${c}`);
 }
 
+/** 정책 검색·조회·upsert SQLite 구현 */
 export class SqliteProgramRepository implements ProgramRepository {
   constructor(private readonly db: SqliteDb) {}
 

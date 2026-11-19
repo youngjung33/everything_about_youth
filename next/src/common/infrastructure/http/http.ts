@@ -1,5 +1,7 @@
+/** 모듈 상수 sleep. */
 export const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
+/** fetch 래퍼 옵션(timeout·재시도). */
 export interface HttpOptions {
   headers?: Record<string, string>;
   timeoutMs?: number;
@@ -10,6 +12,7 @@ export interface HttpOptions {
   encoding?: string;
 }
 
+/** HTTP 상태·본문을 담는 fetch 오류. */
 export class HttpError extends Error {
   constructor(
     message: string,
@@ -54,3 +57,5 @@ export async function httpGetText(url: string, options: HttpOptions = {}): Promi
   const message = lastError instanceof Error ? lastError.message : String(lastError);
   throw new HttpError(`요청 실패 ${redactUrl(url)}: ${message}`);
 }
+
+

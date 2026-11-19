@@ -2,8 +2,10 @@ import 'package:meta/meta.dart';
 
 import 'living_guide.dart';
 
+/// 접수 시작·마감 이벤트 구분
 enum ScheduleEventKind { applicationStart, applicationEnd }
 
+/// 캘린더 한 칸에 표시할 마감·시작 이벤트.
 @immutable
 class SchemeScheduleEvent {
   const SchemeScheduleEvent({
@@ -22,6 +24,7 @@ class SchemeScheduleEvent {
   };
 }
 
+/// 캘린더에 보여 줄 기간(주/월)
 enum ScheduleRangeMode { week, month }
 
 /// [today] 는 서버 `YYYY-MM-DD`. [mode] 안의 접수 시작·마감 이벤트를 날짜순으로 모은다.

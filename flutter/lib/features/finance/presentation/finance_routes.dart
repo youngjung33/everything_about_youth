@@ -1,3 +1,4 @@
+/// go_router 경로·이름 상수.
 class FinanceRoutes {
   const FinanceRoutes._();
 

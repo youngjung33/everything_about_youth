@@ -7,13 +7,14 @@ import { errorResponseFrom } from "./errors";
  * (그래서 성공 경로에서 `body` 의 타입이 하나로 정해진다)
  */
 export interface ApiResult<T> {
-  status: number;
-  body: T;
+  status: number; // HTTP 상태 코드
+  body: T; // JSON 본문
 }
 
 /** 요청 번호 헤더. proxy 가 요청마다 만들어 붙이고, 응답 헤더로도 돌려준다. */
 export const REQUEST_ID_HEADER = "x-request-id";
 
+/** 프록시가 붙인 x-request-id 헤더 값. */
 export function requestIdOf(request: Request): string | null {
   return request.headers.get(REQUEST_ID_HEADER);
 }
@@ -24,6 +25,7 @@ export function requestIdOf(request: Request): string | null {
  */
 export const CLIENT_ID_HEADER = "x-client-id";
 
+/** 게이트웨이가 검증한 세션 id 헤더 값. */
 export function clientIdOf(request: Request): string | null {
   return request.headers.get(CLIENT_ID_HEADER);
 }
@@ -67,3 +69,4 @@ export function apiHandler<Ctx = unknown>(
     }
   };
 }
+

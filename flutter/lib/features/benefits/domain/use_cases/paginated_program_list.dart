@@ -8,7 +8,7 @@ import 'search_programs.dart';
 class PaginatedProgramListUseCase {
   PaginatedProgramListUseCase(this._search);
 
-  final SearchProgramsUseCase _search;
+  final SearchProgramsUseCase _search; // 목록 검색 use case
 
   int _queryGeneration = 0;
 

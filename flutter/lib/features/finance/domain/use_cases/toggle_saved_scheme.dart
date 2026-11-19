@@ -7,8 +7,8 @@ import '../repositories/saved_scheme_local_store.dart';
 class ToggleSavedSchemeUseCase {
   const ToggleSavedSchemeUseCase(this._repository, this._local);
 
-  final FinanceRepository _repository;
-  final SavedSchemeLocalStore _local;
+  final FinanceRepository _repository; // domain 저장소 포트
+  final SavedSchemeLocalStore _local; // 기기 로컬 저장
 
   Future<({List<String>? ids, String? error})> call({
     required String id,

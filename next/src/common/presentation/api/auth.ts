@@ -47,6 +47,7 @@ export const PUBLIC_API_PATHS: readonly string[] = [...AUTH_ENTRY_PATHS, APP_CON
 /** 앱이 쓰는 JWT 보호 대상이 아닌 운영자용 경로 */
 export const OPERATOR_API_PATHS: readonly string[] = [apiPath("/housing/sync")];
 
+/** Authorization: Bearer … 헤더에서 토큰만 추출. */
 export function extractBearerToken(header: string | null | undefined): string | null {
   if (!header) return null;
   const match = /^Bearer\s+(\S+)$/i.exec(header.trim());
@@ -55,6 +56,7 @@ export function extractBearerToken(header: string | null | undefined): string | 
 
 type AuthFailureCode = Extract<ErrorCode, "AUTH_REQUIRED" | "AUTH_TOKEN_EXPIRED" | "AUTH_TOKEN_INVALID">;
 
+/** Bearer 검증 결과(성공 클레임 | 실패 사유). */
 export type AuthorizationResult =
   | { ok: true; clientId: string | null }
   | { ok: false; code: AuthFailureCode; wwwAuthenticate: string };
@@ -103,6 +105,7 @@ export async function requireMemberUserId(request: Request, clients: AuthClientS
   return client.userId;
 }
 
+/** GET /auth/session 응답. */
 export interface SessionDto {
   tokenType: "Bearer";
   accessToken: string;
@@ -112,6 +115,7 @@ export interface SessionDto {
   member: boolean;
 }
 
+/** [SessionTokens] → API DTO. */
 export function toDto(t: SessionTokens): SessionDto {
   return { ...t };
 }
@@ -131,3 +135,4 @@ export async function handleRefresh(body: { refreshToken: string }, auth: AuthSe
     throw e;
   }
 }
+

@@ -1,8 +1,10 @@
+/** 관심 정책 한 건 */
 export interface SavedProgram {
   programId: string;
   savedAt: string;
 }
 
+/** 회원 관심 정책 저장소 포트 */
 export interface SavedProgramRepository {
   list(userId: string): Promise<SavedProgram[]>;
   isSaved(userId: string, programId: string): Promise<boolean>;

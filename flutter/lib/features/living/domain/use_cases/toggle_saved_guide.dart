@@ -7,8 +7,8 @@ import '../repositories/saved_guide_local_store.dart';
 class ToggleSavedGuideUseCase {
   const ToggleSavedGuideUseCase(this._repository, this._local);
 
-  final LivingRepository _repository;
-  final SavedGuideLocalStore _local;
+  final LivingRepository _repository; // domain 저장소 포트
+  final SavedGuideLocalStore _local; // 기기 로컬 저장
 
   Future<({List<String>? ids, String? error})> call({
     required String id,

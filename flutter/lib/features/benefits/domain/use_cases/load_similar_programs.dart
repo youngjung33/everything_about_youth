@@ -3,10 +3,11 @@ import '../benefit_filters.dart';
 import '../benefits_repository.dart';
 import '../benefit_program.dart';
 
+/// 현재 프로그램과 비슷한 혜택 후보를 조회한다.
 class LoadSimilarProgramsUseCase {
   const LoadSimilarProgramsUseCase(this._repository);
 
-  final BenefitsRepository _repository;
+  final BenefitsRepository _repository; // domain 저장소 포트
 
   Future<List<ProgramSummary>> call({
     required String excludeId,

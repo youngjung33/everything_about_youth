@@ -41,6 +41,7 @@ final plainApiClientProvider = Provider<ApiClient>((ref) => _newClient(ref));
 /// 바꾸는 일(로그인, 로그아웃, 탈퇴)은 `authActionsProvider` 가 한다. 화면은 읽기만 한다.
 final authModeProvider = NotifierProvider<AuthModeNotifier, AuthMode>(AuthModeNotifier.new);
 
+/// AuthMode 상태를 갱신하는 Riverpod Notifier.
 class AuthModeNotifier extends Notifier<AuthMode> {
   @override
   AuthMode build() => AuthModeStore(ref.watch(sharedPreferencesProvider)).read();

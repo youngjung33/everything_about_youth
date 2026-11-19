@@ -8,7 +8,7 @@ import '../../core/feature/feature_module.dart';
 class AppMenuItem {
   const AppMenuItem({required this.label, required this.icon, required this.path});
 
-  final String label;
+  final String label; // 화면에 보이는 한글 라벨
   final IconData icon;
   final String path;
 

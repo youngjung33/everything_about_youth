@@ -1,3 +1,4 @@
+import type { Region } from "@/common/domain/region";
 import type { ProcedureTypeId } from "@/features/living/domain/enums";
 import type { ChecklistStep, LivingGuideDraft } from "@/features/living/domain/guide";
 
@@ -213,6 +214,60 @@ export const CURATED_CATALOG: CuratedCatalogEntry[] = [
     ],
   },
   {
+    slug: "move-out-report",
+    title: "전출신고 (이사 나갈 때)",
+    organization: "행정안전부·주민센터",
+    procedureTypeId: "move_in",
+    tags: ["전출", "주민센터", "정부24"],
+    summary:
+      "새 주소로 이사하기 **전** 또는 이사한 뒤에도 전출신고가 필요할 수 있습니다. 전입지에서 전입신고와 순서가 겹치지 않게 관할 주민센터 또는 정부24 안내를 확인하세요.",
+    url: "https://www.gov.kr",
+    steps: [
+      {
+        title: "이사 일정과 신고 시점",
+        summary: "전출·전입 신고 순서(옛 주소 → 새 주소)를 정부24·주민센터 안내와 맞춥니다.",
+        url: "https://www.gov.kr",
+      },
+      {
+        title: "서류·동행",
+        summary: "신분증, 임대차 종료 확인(해당 시) 등 필요 서류를 준비합니다.",
+        url: null,
+      },
+      {
+        title: "전입지 전입신고 예약",
+        summary: "전출 후 14일 이내 전입신고 계획을 세웁니다.",
+        url: "https://www.gov.kr/portal/service/serviceInfo/PTR000050333",
+      },
+    ],
+  },
+  {
+    slug: "postal-relocation",
+    title: "우체국 이전서비스 (우편물·택배)",
+    organization: "우정사업본부",
+    procedureTypeId: "other",
+    tags: ["우편", "이사", "e-priority"],
+    summary:
+      "이사 후 1년간 구 주소로 오는 우편을 새 주소로 받습니다. 인터넷·모바일 ‘이사청구 1번’ 또는 방문 신청이 가능하며, 신청일·수령 방법을 안내에 맞춰야 합니다.",
+    url: "https://www.epost.go.kr",
+    steps: [
+      {
+        title: "신청 기간",
+        summary: "이사 전후 가능 기간을 우체국 안내에서 확인합니다.",
+        url: "https://www.epost.go.kr",
+      },
+      {
+        title: "온라인·방문 신청",
+        summary: "본인 인증 후 새 주소·시작일을 입력합니다.",
+        url: null,
+      },
+      {
+        title: "등기·택배 별도",
+        summary: "등기우편·일부 택배는 이전서비스 대상이 아닐 수 있어 발송인 연락이 필요합니다.",
+        url: null,
+      },
+    ],
+  },
+  {
     slug: "seoul-waste-guide",
     title: "서울시 종량제·대형폐기물 배출",
     organization: "서울특별시",
@@ -245,7 +300,7 @@ export const CURATED_CATALOG: CuratedCatalogEntry[] = [
  * 슬러그별 `regions` 보강. catalog 항목에 시도가 고정된 안내만 여기에 추가한다.
  * (신규 지자체 전용 항목 추가 시 slug → 시·도 한 쌍을 등록할 것.)
  */
-const REGION_BY_SLUG: Record<string, { sido: string; sigungu: string | null }[]> = {
+const REGION_BY_SLUG: Record<string, Region[]> = {
   "seoul-waste-guide": [{ sido: "서울", sigungu: null }],
 };
 

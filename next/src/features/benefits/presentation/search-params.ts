@@ -9,6 +9,10 @@ import type { ProgramFilters } from "@/features/benefits/application/use-cases/s
 
 export type RawSearchParams = Record<string, string | string[] | undefined>;
 
+/**
+ * URL '내 조건' 파라미터 키 (localStorage 저장 대상)
+ * residence: 거주 시도 (benefits 지역 한정 정책용)
+ */
 export const PROFILE_KEYS = [
   "age",
   "home",
@@ -24,10 +28,12 @@ export const PROFILE_KEYS = [
   "residence",
 ] as const;
 
+/** 금액 입력 상한(만원) */
 const MAX_MONTHLY_INCOME_MAN = 100_000;
 const MAX_ASSET_MAN = 10_000_000;
 export const VERDICTS: EligibilityVerdict[] = ["eligible", "check", "ineligible"];
 
+/** 파싱된 목록 쿼리 */
 export interface ParsedSearch {
   filters: ProgramFilters;
   sort: ProgramSort;
@@ -35,6 +41,7 @@ export interface ParsedSearch {
   profile: ApplicantProfile;
   hasProfile: boolean;
   verdicts: EligibilityVerdict[];
+  /** 폼에 다시 채울 값 */
   form: {
     sidos: Sido[];
     sigungu: string;
@@ -69,6 +76,7 @@ function integerOrUndefined(value: string, min: number, max: number): number | u
   return n === undefined || !Number.isInteger(n) ? undefined : n;
 }
 
+/** URL 쿼리를 필터·프로필·페이지로 파싱 */
 export function parseSearchParams(raw: RawSearchParams): ParsedSearch {
   const sidos = pick(many(raw.sido), SIDO_LIST);
   const categoryIds = pick(many(raw.category), CATEGORY_IDS);
@@ -117,6 +125,7 @@ export function parseSearchParams(raw: RawSearchParams): ParsedSearch {
   };
 }
 
+/** 쿼리 일부만 바꾼 문자열. undefined/null 은 삭제 */
 export function buildQuery(raw: RawSearchParams, overrides: Record<string, string | string[] | number | null | undefined> = {}): string {
   const qs = new URLSearchParams();
   const merged: Record<string, string | string[] | number | null | undefined> = { ...raw, ...overrides };
@@ -129,6 +138,7 @@ export function buildQuery(raw: RawSearchParams, overrides: Record<string, strin
   return s ? `?${s}` : "";
 }
 
+/** 상세 링크용 '내 조건' 쿼리만 */
 export function profileQuery(raw: RawSearchParams): string {
   const qs = new URLSearchParams();
   for (const key of PROFILE_KEYS) {

@@ -11,14 +11,18 @@ export function createAuthClientStore(persistence: AppPersistence): AuthClientSt
   return new SqliteAuthClientStore(requireSqlite(persistence).db);
 }
 
+/** SSO 회원 저장소 인스턴스. */
 export function createUserStore(persistence: AppPersistence): UserStore {
   return new SqliteUserStore(requireSqlite(persistence).db);
 }
 
+/** SSO 일회용 티켓 저장소. */
 export function createSsoTicketStore(persistence: AppPersistence): SsoTicketStore {
   return new SqliteSsoTicketStore(requireSqlite(persistence).db);
 }
 
+/** 기능 플래그 저장소. */
 export function createFeatureFlagStore(persistence: AppPersistence): FeatureFlagStore {
   return new SqliteFeatureFlagStore(requireSqlite(persistence).db);
 }
+

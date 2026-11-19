@@ -9,6 +9,7 @@ interface SyncResponse {
   error?: { code?: string; message?: string };
 }
 
+/** 관리 화면에서 수동 수집 API 를 호출하는 버튼 */
 export function FinanceSyncButton(props: { source?: string; label?: string }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);

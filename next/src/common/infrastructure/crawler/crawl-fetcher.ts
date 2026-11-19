@@ -1,6 +1,7 @@
 import { httpGetText, sleep } from "../http/http";
 import { ALLOW_ALL, parseRobots, type RobotsPolicy } from "./robots";
 
+/** robots.txt 에 의해 크롤이 금지된 URL. */
 export class RobotsDisallowedError extends Error {
   constructor(url: string) {
     super(`robots.txt 가 접근을 금지합니다: ${url}`);
@@ -8,8 +9,10 @@ export class RobotsDisallowedError extends Error {
   }
 }
 
+/** 크롤러가 가져온 텍스트(HTML·JSON). */
 export type FetchText = (url: string) => Promise<string>;
 
+/** 크롤 fetcher 지연·User-Agent. */
 export interface CrawlFetcherOptions {
   userAgent: string;
   /** 같은 호스트에 대한 요청 간 최소 간격(ms) */
@@ -86,3 +89,5 @@ export function createCrawlFetcher(options: CrawlFetcherOptions): FetchText {
     return text;
   };
 }
+
+

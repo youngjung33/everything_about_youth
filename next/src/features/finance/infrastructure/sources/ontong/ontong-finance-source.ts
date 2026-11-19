@@ -10,7 +10,7 @@ import { mapOntongFinanceItems } from "./ontong-finance-mapper";
 const BASE_URL = "https://www.youthcenter.go.kr";
 const LIST_PATH = "/opi/youthPlcyList.do";
 const PAGE_SIZE = 100;
-const MAX_PAGES = 30;
+const MAX_PAGES = 30; // 상한 페이지(과도한 호출 방지)
 
 export interface OntongFinanceSourceOptions {
   apiKey?: string;
@@ -19,10 +19,12 @@ export interface OntongFinanceSourceOptions {
   delayMs?: number;
 }
 
+/** 온통청년 응답 본문을 JSON 으로 파싱 */
 function parseBody(text: string): Json {
   return parseOntongBody(text);
 }
 
+/** 온통청년 Open API 금융·자금 정책 목록 소스 */
 export class OntongFinanceSource implements SchemeSourcePort {
   readonly id = "ontong-finance" as const;
   readonly label = "온통청년";

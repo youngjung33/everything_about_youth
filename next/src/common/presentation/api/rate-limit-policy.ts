@@ -22,6 +22,7 @@ export const RATE_LIMITS = {
   anonymous: { name: "anonymous", limit: 30, windowMs: MINUTE },
 } as const satisfies Record<string, RateLimitPolicy>;
 
+/** rate-limit 윈도를 적용할 HTTP 메서드·경로 패턴. */
 export interface RateLimitTarget {
   policy: RateLimitPolicy;
   /** 정책 안에서 구분하는 키 (`device:…` 또는 `ip:…`) */
@@ -59,3 +60,4 @@ export function rateLimitHeaders(result: RateLimitResult, now: number): Record<s
     "RateLimit-Reset": String(Math.max(0, Math.ceil((result.resetAtMs - now) / 1000))),
   };
 }
+

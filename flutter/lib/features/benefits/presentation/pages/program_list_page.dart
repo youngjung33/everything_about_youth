@@ -26,6 +26,7 @@ import '../../../../core/theme/app_fonts.dart';
 const double kWideLayoutWidth = 960;
 const _accent = ServiceAccent.benefits;
 
+/// ProgramList 화면.
 class ProgramListPage extends ConsumerStatefulWidget {
   const ProgramListPage({super.key});
 
@@ -33,6 +34,7 @@ class ProgramListPage extends ConsumerStatefulWidget {
   ConsumerState<ProgramListPage> createState() => _ProgramListPageState();
 }
 
+/// 위젯의 편집·로딩 등 내부 상태.
 class _ProgramListPageState extends ConsumerState<ProgramListPage> {
   final _scroll = ScrollController();
 
@@ -138,6 +140,7 @@ class _ProgramListPageState extends ConsumerState<ProgramListPage> {
   }
 }
 
+/// 목록 화면 레이아웃 조각.
 class _Results extends ConsumerWidget {
   const _Results({required this.scroll});
 
@@ -183,6 +186,7 @@ class _Results extends ConsumerWidget {
   }
 }
 
+/// 목록 화면 레이아웃 조각.
 class _Header extends ConsumerWidget {
   const _Header({required this.total});
 
@@ -331,6 +335,7 @@ class _Header extends ConsumerWidget {
   }
 }
 
+/// 목록 화면 레이아웃 조각.
 class _Footer extends ConsumerWidget {
   const _Footer({required this.list});
 

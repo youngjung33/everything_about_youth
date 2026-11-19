@@ -7,7 +7,7 @@ import '../finance_scheme.dart';
 class LoadScheduleSchemesUseCase {
   const LoadScheduleSchemesUseCase(this._repository);
 
-  final FinanceRepository _repository;
+  final FinanceRepository _repository; // domain 저장소 포트
 
   static const pageSize = 80;
   static const maxPages = 5;

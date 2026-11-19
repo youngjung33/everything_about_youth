@@ -31,6 +31,7 @@ export const POSTING_STATUS_LABELS: Record<PostingStatus, string> = {
 export const SOURCE_IDS = ["curated", "demo"] as const;
 export type SourceId = (typeof SOURCE_IDS)[number];
 
+/** 데이터 소스 표시명 */
 export const SOURCE_LABELS: Record<SourceId, string> = {
   curated: "큐레이션 catalog",
   demo: "데모 데이터",

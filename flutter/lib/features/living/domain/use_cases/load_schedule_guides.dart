@@ -7,7 +7,7 @@ import '../living_guide.dart';
 class LoadScheduleGuidesUseCase {
   const LoadScheduleGuidesUseCase(this._repository);
 
-  final LivingRepository _repository;
+  final LivingRepository _repository; // domain 저장소 포트
 
   static const pageSize = 80;
   static const maxPages = 5;

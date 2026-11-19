@@ -70,6 +70,7 @@ function parseTags(raw: Json): string[] {
   return [...new Set(kw.split(/[,·|/]/).map((s) => s.trim()).filter(Boolean))].slice(0, 20);
 }
 
+/** 온통청년 API 한 건 → Draft. 파싱 불가 시 null */
 export function mapOntongItem(raw: Json, ctx: { fetchedAt: string; baseUrl: string }): BenefitProgramDraft | null {
   const externalId = deepStr(raw, "plcyId", "plcyNo", "bizId", "policyId");
   const title = deepStr(raw, "plcyNm", "plcyTitle", "bizNm", "title");
@@ -97,6 +98,7 @@ export function mapOntongItem(raw: Json, ctx: { fetchedAt: string; baseUrl: stri
   };
 }
 
+/** API 레코드를 BenefitProgramDraft[] 로 변환 */
 export function mapOntongItems(rows: Json[], ctx: { fetchedAt: string; baseUrl?: string }): BenefitProgramDraft[] {
   const baseUrl = ctx.baseUrl ?? "https://www.youthcenter.go.kr";
   const out: BenefitProgramDraft[] = [];

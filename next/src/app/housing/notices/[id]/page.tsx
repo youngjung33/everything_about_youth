@@ -10,8 +10,10 @@ import { formatArea, formatDate, formatDday, formatPeriod, formatWon } from "@/c
 import { HOUSING_BASE } from "@/features/housing/presentation/routes";
 import { parseSearchParams } from "@/features/housing/presentation/search-params";
 
+/** 요청마다 최신 데이터·기능 플래그를 반영한다(정적 캐시 없음). */
 export const dynamic = "force-dynamic";
 
+/** 임대주택 공고 상세 페이지. */
 export default async function NoticeDetailPage(props: PageProps<"/housing/notices/[id]">) {
   const { id } = await props.params;
   const raw = await props.searchParams;
@@ -176,3 +178,5 @@ export default async function NoticeDetailPage(props: PageProps<"/housing/notice
     </article>
   );
 }
+
+

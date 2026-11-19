@@ -7,6 +7,7 @@ import '../saved_posting_reminder_sync.dart';
 
 const _accent = ServiceAccent.jobs;
 
+/// 관심 저장 토글 버튼.
 class SavedPostingButton extends ConsumerWidget {
   const SavedPostingButton({super.key, required this.postingId, this.compact = true});
 

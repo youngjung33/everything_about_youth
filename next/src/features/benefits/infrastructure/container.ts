@@ -13,6 +13,7 @@ import { loadBenefitsConfig, type BenefitsConfig } from "./config";
 import { createBenefitsRepositories } from "./create-repositories";
 import { OntongSource } from "./sources/ontong/ontong-source";
 
+/** 청년 혜택 섹션 의존성 묶음 */
 export interface BenefitsContainer {
   config: BenefitsConfig;
   clock: Clock;
@@ -20,6 +21,7 @@ export interface BenefitsContainer {
   programs: ProgramRepository;
   savedPrograms: SavedProgramRepository;
   syncRuns: SyncRunRepository;
+  /** 등록된 모든 소스 (활성 여부 무관) */
   allSources: ProgramSourcePort[];
   searchPrograms: SearchPrograms;
   getProgramDetail: GetProgramDetail;
@@ -28,10 +30,12 @@ export interface BenefitsContainer {
   syncPrograms: SyncProgramsFromSource;
 }
 
+/** 테스트·로컬용 설정 덮어쓰기 */
 export interface BenefitsOverrides {
   config?: Partial<BenefitsConfig>;
 }
 
+/** 청년 혜택 의존성 조립. 공통 의존성은 CommonContainer 에서 받는다. */
 export function createBenefitsContainer(common: CommonContainer, overrides: BenefitsOverrides = {}): BenefitsContainer {
   const { clock, logger } = common;
   const config = { ...loadBenefitsConfig(), ...overrides.config };
@@ -61,6 +65,7 @@ export function createBenefitsContainer(common: CommonContainer, overrides: Bene
 const globalKey = Symbol.for("everything_about_youth.benefits-container");
 type GlobalWithContainer = typeof globalThis & { [globalKey]?: BenefitsContainer };
 
+/** Next.js HMR 에서도 싱글톤 유지 */
 export function getBenefitsContainer(): BenefitsContainer {
   const g = globalThis as GlobalWithContainer;
   if (!g[globalKey]) g[globalKey] = createBenefitsContainer(getCommonContainer());

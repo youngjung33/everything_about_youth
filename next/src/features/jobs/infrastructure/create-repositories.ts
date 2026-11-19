@@ -6,6 +6,7 @@ import { SqliteJobPostingRepository } from "./persistence/sqlite/sqlite-posting-
 import { SqliteSavedJobPostingRepository } from "./persistence/sqlite/sqlite-saved-posting-repository";
 import { SqliteSyncRunRepository } from "./persistence/sqlite/sqlite-sync-run-repository";
 
+/** 일자리 SQLite 리포지토리. 2차 Postgres 는 이 함수만 jobs 쪽에서 분기한다. */
 export function createJobsRepositories(persistence: AppPersistence): {
   postings: JobPostingRepository;
   savedPostings: SavedJobPostingRepository;

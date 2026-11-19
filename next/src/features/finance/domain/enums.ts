@@ -31,6 +31,7 @@ export const SCHEME_STATUS_LABELS: Record<SchemeStatus, string> = {
 export const SOURCE_IDS = ["curated", "ontong-finance", "demo"] as const;
 export type SourceId = (typeof SOURCE_IDS)[number];
 
+/** 데이터 소스 표시명 */
 export const SOURCE_LABELS: Record<SourceId, string> = {
   curated: "큐레이션 catalog",
   "ontong-finance": "온통청년(금융·세금)",

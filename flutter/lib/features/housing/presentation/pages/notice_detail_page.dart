@@ -20,10 +20,11 @@ import '../../../../core/widgets/detail_primary_actions.dart';
 
 const _accent = ServiceAccent.housing;
 
+/// NoticeDetail 화면.
 class NoticeDetailPage extends ConsumerWidget {
   const NoticeDetailPage({super.key, required this.id});
 
-  final String id;
+  final String id; // 항목 식별자
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -65,6 +66,7 @@ class NoticeDetailPage extends ConsumerWidget {
   }
 }
 
+/// 상세 본문(설명·판정·액션) 영역.
 class _DetailBody extends StatelessWidget {
   const _DetailBody({required this.detail});
 
@@ -146,6 +148,7 @@ class _DetailBody extends StatelessWidget {
   }
 }
 
+/// 화면 섹션 제목·구분.
 class _Section extends StatelessWidget {
   const _Section({required this.title, required this.child});
 
@@ -173,6 +176,7 @@ class _Section extends StatelessWidget {
   }
 }
 
+/// 자격 판정 요약 카드.
 class _EligibilityCard extends StatelessWidget {
   const _EligibilityCard({required this.eligibility});
 
@@ -202,6 +206,7 @@ class _EligibilityCard extends StatelessWidget {
   }
 }
 
+/// 불릿 리스트 한 줄.
 class _Bullet extends StatelessWidget {
   const _Bullet({required this.text, required this.color});
 
@@ -225,6 +230,7 @@ class _Bullet extends StatelessWidget {
   }
 }
 
+/// 단지·주택형 상세 블록.
 class _ComplexView extends StatelessWidget {
   const _ComplexView({required this.complex});
 
@@ -292,6 +298,7 @@ class _ComplexView extends StatelessWidget {
   }
 }
 
+/// 출처·원문 링크 한 줄.
 class _SourceRow extends StatelessWidget {
   const _SourceRow({required this.source});
 

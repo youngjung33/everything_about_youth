@@ -21,6 +21,7 @@ class ProfilePage extends ConsumerStatefulWidget {
   ConsumerState<ProfilePage> createState() => _ProfilePageState();
 }
 
+/// 위젯의 편집·로딩 등 내부 상태.
 class _ProfilePageState extends ConsumerState<ProfilePage> {
   late ApplicantProfile _draft;
   late final TextEditingController _age;
@@ -228,6 +229,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   }
 }
 
+/// 화면 섹션 제목·구분.
 class _SectionTitle extends StatelessWidget {
   const _SectionTitle(this.text);
 
@@ -254,7 +256,7 @@ class _AmountField extends StatelessWidget {
   });
 
   final TextEditingController controller;
-  final String label;
+  final String label; // 화면에 보이는 한글 라벨
   final String hint;
   final String suffix;
   final String? helper;
@@ -320,7 +322,7 @@ class _TriState extends StatelessWidget {
   final String title;
   final String yes;
   final String no;
-  final bool? value;
+  final bool? value; // 코드 값
   final ValueChanged<bool?> onChanged;
 
   static const _unset = 'unset';

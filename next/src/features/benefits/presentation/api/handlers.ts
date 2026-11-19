@@ -19,6 +19,7 @@ import {
   type ProgramSummaryDto,
 } from "./dto";
 
+/** HTTP 와 무관한 API 처리. 라우트는 Response 로 감싸기만 */
 export interface BenefitsApiDeps {
   searchPrograms: SearchPrograms;
   getProgramDetail: GetProgramDetail;
@@ -27,8 +28,10 @@ export interface BenefitsApiDeps {
   clock: Clock;
 }
 
+/** 목록 API pageSize 상한 */
 export const MAX_API_PAGE_SIZE = 50;
 
+/** 반복 쿼리 키를 배열로 유지해 웹 파서 재사용 */
 export function toRawSearchParams(searchParams: URLSearchParams): RawSearchParams {
   const raw: Record<string, string | string[]> = {};
   for (const key of new Set(searchParams.keys())) {
@@ -44,6 +47,10 @@ function parsePageSize(searchParams: URLSearchParams): number {
   return Math.min(MAX_API_PAGE_SIZE, Math.floor(n));
 }
 
+/**
+ * GET /api/v1/benefits/programs
+ * 필터·정렬·페이지·내 조건·판정(v) 은 웹 목록과 동일. pageSize 1~50.
+ */
 export async function handleListPrograms(
   searchParams: URLSearchParams,
   deps: BenefitsApiDeps,
@@ -60,6 +67,7 @@ export async function handleListPrograms(
   return { status: 200, body: toProgramListDto(result, todayInKst(deps.clock.now())) };
 }
 
+/** GET /api/v1/benefits/programs/:id (내 조건 있으면 자격 판정) */
 export async function handleGetProgram(
   id: string,
   searchParams: URLSearchParams,
@@ -71,24 +79,29 @@ export async function handleGetProgram(
   return { status: 200, body: toProgramDetailDto(item, todayInKst(deps.clock.now())) };
 }
 
+/** GET /api/v1/benefits/meta */
 export async function handleGetMeta(deps: Pick<BenefitsApiDeps, "syncRuns">): Promise<ApiResult<BenefitsMetaDto>> {
   return { status: 200, body: buildMeta(await deps.syncRuns.lastSuccessAt()) };
 }
 
+/** 관심 ID 목록 */
 export interface SavedIdsDto {
   ids: string[];
 }
 
+/** 관심 정책 목록 응답 */
 export interface SavedListDto {
   items: ProgramSummaryDto[];
   total: number;
   today: string;
 }
 
+/** GET /api/v1/benefits/saved/ids — 하트 표시용 */
 export async function handleListSavedIds(userId: string, deps: Pick<BenefitsApiDeps, "manageSavedPrograms">): Promise<ApiResult<SavedIdsDto>> {
   return { status: 200, body: { ids: await deps.manageSavedPrograms.listIds(userId) } };
 }
 
+/** GET /api/v1/benefits/saved — 관심 목록. 내 조건 있으면 자격 포함 */
 export async function handleListSaved(
   userId: string,
   searchParams: URLSearchParams,
@@ -100,6 +113,7 @@ export async function handleListSaved(
   return { status: 200, body: { items: items.map((i) => toProgramSummaryDto(i, today)), total: items.length, today } };
 }
 
+/** PUT /api/v1/benefits/saved/:id */
 export async function handleSaveProgram(
   userId: string,
   programId: string,
@@ -113,6 +127,7 @@ export async function handleSaveProgram(
   return { status: 200, body: { saved: true } };
 }
 
+/** DELETE /api/v1/benefits/saved/:id */
 export async function handleUnsaveProgram(
   userId: string,
   programId: string,
@@ -122,6 +137,7 @@ export async function handleUnsaveProgram(
   return { status: 200, body: { saved: false } };
 }
 
+/** PUT /api/v1/benefits/saved { ids } — 비회원 목록 합치기 */
 export async function handleMergeSaved(
   userId: string,
   body: { ids: string[] },
@@ -130,6 +146,7 @@ export async function handleMergeSaved(
   return { status: 200, body: { ids: await deps.manageSavedPrograms.merge(userId, body.ids) } };
 }
 
+/** GET /api/v1/benefits/programs/:id/calendar — 마감 ICS */
 export async function handleProgramCalendar(
   id: string,
   deps: Pick<BenefitsApiDeps, "getProgramDetail" | "clock">,

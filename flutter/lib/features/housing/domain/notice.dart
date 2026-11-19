@@ -22,6 +22,7 @@ enum Verdict {
       Verdict.values.firstWhere((e) => e.name == code, orElse: () => Verdict.check);
 }
 
+/// 지역(시·도·시군구) 표시 단위.
 @immutable
 class Region {
   const Region({required this.sido, this.sigungu});
@@ -29,10 +30,11 @@ class Region {
   factory Region.fromJson(Map<String, dynamic> json) =>
       Region(sido: asString(json['sido']) ?? '', sigungu: asString(json['sigungu']));
 
-  final String sido;
+  final String sido; // 시·도 필터
   final String? sigungu;
 }
 
+/// 프로필·항목 기준 자격 판정 결과와 사유.
 @immutable
 class Eligibility {
   const Eligibility({required this.verdict, required this.verdictLabel, required this.reasons, required this.notes});
@@ -109,7 +111,7 @@ class NoticeSummary {
     eligibility: json['eligibility'] is Map<String, dynamic> ? Eligibility.fromJson(asMap(json['eligibility'])) : null,
   );
 
-  final String id;
+  final String id; // 항목 식별자
   final String title;
   final String organization;
   final String supplyType;
@@ -140,6 +142,7 @@ class NoticeSummary {
   final Eligibility? eligibility;
 }
 
+/// 단지별 주택형·면적·임대조건 한 줄.
 @immutable
 class UnitType {
   const UnitType({this.name, this.exclusiveAreaM2, this.households, this.deposit, this.monthlyRent});
@@ -161,6 +164,7 @@ class UnitType {
   final int? monthlyRent;
 }
 
+/// 단지(아파트·단지) 묶음과 세대형 목록.
 @immutable
 class Complex {
   const Complex({
@@ -189,6 +193,7 @@ class Complex {
   final List<UnitType> units;
 }
 
+/// 원문·출처 기관 정보.
 @immutable
 class NoticeSource {
   const NoticeSource({required this.sourceLabel, required this.externalId, required this.fetchedAt, this.url});

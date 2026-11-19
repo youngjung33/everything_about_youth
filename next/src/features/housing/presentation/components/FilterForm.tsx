@@ -46,6 +46,7 @@ function TriState(props: { name: string; label: string; yes: string; no: string;
   );
 }
 
+/** 공고 목록 필터·내 조건 입력 폼. */
 export function FilterForm({ parsed }: { parsed: ParsedSearch }) {
   const { form, profile } = parsed;
   const statuses = form.statuses.length > 0 ? form.statuses : (["open", "upcoming"] as const);

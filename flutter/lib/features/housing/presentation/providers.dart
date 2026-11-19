@@ -24,6 +24,7 @@ HousingContainer _container(Ref ref) => ref.watch(housingContainerProvider);
 
 final housingMetaProvider = FutureProvider<HousingMeta>((ref) => _container(ref).loadHousingMeta());
 
+/// 지원자 프로필 입력값과 저장 상태(Riverpod).
 class ProfileNotifier extends Notifier<ApplicantProfile> {
   bool _edited = false;
 
@@ -47,6 +48,7 @@ class ProfileNotifier extends Notifier<ApplicantProfile> {
 
 final profileProvider = NotifierProvider<ProfileNotifier, ApplicantProfile>(ProfileNotifier.new);
 
+/// Filters 상태를 갱신하는 Riverpod Notifier.
 class FiltersNotifier extends Notifier<HousingFilters> {
   @override
   HousingFilters build() => HousingFilters.initial;
@@ -62,6 +64,7 @@ class FiltersNotifier extends Notifier<HousingFilters> {
 
 final filtersProvider = NotifierProvider<FiltersNotifier, HousingFilters>(FiltersNotifier.new);
 
+/// 목록 필터·페이지·검색 세대를 관리하는 Riverpod 컨트롤러.
 class NoticeListController extends AsyncNotifier<NoticeListState> {
   @override
   Future<NoticeListState> build() async {
@@ -102,6 +105,7 @@ final noticeDetailProvider = FutureProvider.family<NoticeDetail, String>((ref, i
   return _container(ref).getNoticeDetail(id, profile: profile);
 });
 
+/// SavedNotices 상태를 갱신하는 Riverpod Notifier.
 class SavedNoticesNotifier extends AsyncNotifier<List<String>> {
   @override
   Future<List<String>> build() async {

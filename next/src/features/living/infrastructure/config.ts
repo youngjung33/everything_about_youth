@@ -3,6 +3,7 @@ import { emptyToUndefined } from "@/common/infrastructure/config/env";
 import { type SourceId } from "../domain/enums";
 import { parseSourceList } from "../domain/sync-sources";
 
+/** 자동 수집 간격의 최솟값(분). 공공 API 와 기관 사이트에 부담을 주지 않기 위한 하한이다. */
 export const MIN_SYNC_INTERVAL_MINUTES = 30;
 
 const schema = z.object({

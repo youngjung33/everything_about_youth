@@ -2,6 +2,7 @@ import { SOURCE_LABELS } from "@/features/benefits/domain/enums";
 import { getBenefitsContainer } from "@/features/benefits/benefits-container";
 import { BenefitsSyncButton } from "@/features/benefits/presentation/components/SyncButton";
 
+/** 요청마다 최신 데이터·기능 플래그를 반영한다(정적 캐시 없음). */
 export const dynamic = "force-dynamic";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -16,6 +17,7 @@ function formatTime(iso: string | null): string {
   return new Date(iso).toLocaleString("ko-KR", { timeZone: "Asia/Seoul", hour12: false });
 }
 
+/** 청년 혜택 공고·데이터 수집 관리 화면. */
 export default async function BenefitsSyncAdminPage() {
   const container = getBenefitsContainer();
   const [latest, recent] = await Promise.all([container.syncRuns.latestPerSource(), container.syncRuns.listRecent(20)]);
@@ -108,3 +110,5 @@ export default async function BenefitsSyncAdminPage() {
     </div>
   );
 }
+
+

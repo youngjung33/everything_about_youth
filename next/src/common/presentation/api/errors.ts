@@ -50,8 +50,10 @@ export const ERROR_CODES = {
   INTERNAL_ERROR: { status: 500, message: "서버에 문제가 생겼습니다. 잠시 후 다시 시도해 주세요." },
 } as const satisfies Record<string, { status: number; message: string }>;
 
+/** 서버가 내려줄 수 있는 오류 코드 전체. */
 export type ErrorCode = keyof typeof ERROR_CODES;
 
+/** 클라이언트에 내려주는 통합 오류 JSON. */
 export interface ApiErrorBody {
   error: {
     code: ErrorCode;
@@ -80,6 +82,7 @@ export class ApiError extends Error {
   }
 }
 
+/** [ErrorCode]와 optional details 로 응답 본문을 만든다. */
 export function buildErrorBody(
   code: ErrorCode,
   options: { message?: string; requestId?: string | null; details?: Record<string, unknown> } = {},
@@ -126,3 +129,4 @@ export function errorResponseFrom(
   options.onUnexpected?.(thrown);
   return errorResponse("INTERNAL_ERROR", { requestId: options.requestId });
 }
+

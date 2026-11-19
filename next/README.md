@@ -397,7 +397,7 @@ benefits 의 **온통 일자리 분류 정책**은 `jobs` 로 옮기지 않습�
 
 | 소스 | 방식 | 1차 sync |
 | --- | --- | --- |
-| `curated` | repo catalog (`infrastructure/sources/curated/catalog.ts`, **8건**) | **등록됨** · 키 불필요 · `npm run living:sync -- --source=curated` |
+| `curated` | repo catalog (`infrastructure/sources/curated/catalog.ts`, **10건**) | **등록됨** · 키 불필요 · `npm run living:sync -- --source=curated` |
 | 데모 | `npm run living:seed-demo` | sync 아님 · 화면 확인용 `[데모]` |
 
 `container.ts` 의 `allSources`: **`curated`**. `LIVING_SYNC_SOURCES` 가 비우면 등록 소스를 시도합니다.
@@ -415,7 +415,7 @@ benefits 의 **온통 일자리 분류 정책**은 `jobs` 로 옮기지 않습�
 ### 핵심 동작
 
 - **절차 유형(`procedureTypeId`)**: `move_in`, `lease`, `moving`, `utilities`, `registry`, `waste`, `other` — meta·필터·자격 규칙에 사용.
-- **참고 판정**: 거주 시·도 vs 안내 `regions`, 마감, 절차별 `alwaysCheck` 안내(`domain/eligibility/`). meta 에 **`verdicts` 만** 있고 **`standards`(소득 기준표)는 없음** — 내 조건의 소득·가구 필드는 앞으로의 규칙 확장·동형 UX용.
+- **참고 판정**: 거주 시·도 vs 안내 `regions`, 마감, 연령(`rules.ts`), 절차별 `alwaysCheck` (`domain/eligibility/`). meta **`verdicts` + `standards`** (jobs 동형, 앱 소득 hint).
 - **`checklistSteps`**: curated catalog → sync → 상세 API → Flutter 상세 체크리스트 카드.
 
 ## JSON API (Flutter 앱용)

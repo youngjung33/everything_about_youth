@@ -27,6 +27,7 @@ const _accent = ServiceAccent.housing;
 /// 이 너비 이상이면 필터를 왼쪽 사이드바로 보여준다. (웹/태블릿)
 const double kWideLayoutWidth = 960;
 
+/// NoticeList 화면.
 class NoticeListPage extends ConsumerStatefulWidget {
   const NoticeListPage({super.key});
 
@@ -34,6 +35,7 @@ class NoticeListPage extends ConsumerStatefulWidget {
   ConsumerState<NoticeListPage> createState() => _NoticeListPageState();
 }
 
+/// 위젯의 편집·로딩 등 내부 상태.
 class _NoticeListPageState extends ConsumerState<NoticeListPage> {
   final _scroll = ScrollController();
 
@@ -139,6 +141,7 @@ class _NoticeListPageState extends ConsumerState<NoticeListPage> {
   }
 }
 
+/// 목록 화면 레이아웃 조각.
 class _Results extends ConsumerWidget {
   const _Results({required this.scroll});
 
@@ -184,6 +187,7 @@ class _Results extends ConsumerWidget {
   }
 }
 
+/// 목록 화면 레이아웃 조각.
 class _Header extends ConsumerWidget {
   const _Header({required this.total});
 
@@ -330,6 +334,7 @@ class _Header extends ConsumerWidget {
   }
 }
 
+/// 목록 화면 레이아웃 조각.
 class _Footer extends ConsumerWidget {
   const _Footer({required this.list});
 

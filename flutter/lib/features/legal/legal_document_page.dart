@@ -33,6 +33,7 @@ class LegalDocumentPage extends StatelessWidget {
   }
 }
 
+/// 약관·개인정보 본문 한 섹션.
 class LegalSection {
   const LegalSection({required this.heading, required this.body});
 

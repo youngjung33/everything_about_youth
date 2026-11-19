@@ -18,8 +18,10 @@ export const SIDO_LIST = [
   "경남",
   "제주",
 ] as const;
+/** 시·도 이름 리터럴. */
 export type Sido = (typeof SIDO_LIST)[number];
 
+/** 시·도·시·군·구 한 쌍. */
 export interface Region {
   sido: Sido;
   /** 시군구 (예: "강남구", "수원시") */
@@ -69,6 +71,7 @@ const SIDO_BY_CODE: Record<string, Sido> = {
   "50": "제주",
 };
 
+/** 공공데이터 지역 코드 → 시·도명. */
 export function sidoFromCode(code: string | null | undefined): Sido | null {
   if (!code) return null;
   return SIDO_BY_CODE[code.trim().slice(0, 2)] ?? null;
@@ -104,10 +107,12 @@ export function parseRegionFromAddress(address: string | null | undefined): Regi
   return { sido, sigungu };
 }
 
+/** 지역 dedupe·정렬용 키. */
 export function regionKey(region: Region): string {
   return `${region.sido}/${region.sigungu ?? ""}`;
 }
 
+/** 중복 제거된 지역 목록. */
 export function uniqueRegions(regions: Region[]): Region[] {
   const map = new Map<string, Region>();
   for (const r of regions) {
@@ -117,3 +122,4 @@ export function uniqueRegions(regions: Region[]): Region[] {
   // 시군구가 있는 항목이 있으면 같은 시도의 시군구 없는 항목은 제거하지 않는다(시도 단위 검색용으로 유지).
   return [...map.values()];
 }
+

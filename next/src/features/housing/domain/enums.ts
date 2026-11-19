@@ -16,8 +16,9 @@ export const SUPPLY_TYPES = [
   "newlywed_hope_town", // 신혼희망타운
   "other",
 ] as const;
-export type SupplyType = (typeof SUPPLY_TYPES)[number];
+export type SupplyType = (typeof SUPPLY_TYPES)[number]; // 공급유형 코드
 
+/** 공급유형 한글 라벨 */
 export const SUPPLY_TYPE_LABELS: Record<SupplyType, string> = {
   happy_housing: "행복주택",
   youth_purchase_rental: "청년매입임대",
@@ -44,8 +45,9 @@ export const HOUSING_TYPES = [
   "urban_living", // 도시형생활주택·원룸
   "other",
 ] as const;
-export type HousingType = (typeof HOUSING_TYPES)[number];
+export type HousingType = (typeof HOUSING_TYPES)[number]; // 주택유형 코드
 
+/** 주택유형 한글 라벨 */
 export const HOUSING_TYPE_LABELS: Record<HousingType, string> = {
   apartment: "아파트",
   officetel: "오피스텔",
@@ -54,9 +56,11 @@ export const HOUSING_TYPE_LABELS: Record<HousingType, string> = {
   other: "기타",
 };
 
+/** 접수 상태 코드 */
 export const NOTICE_STATUSES = ["upcoming", "open", "closed"] as const;
-export type NoticeStatus = (typeof NOTICE_STATUSES)[number];
+export type NoticeStatus = (typeof NOTICE_STATUSES)[number]; // 접수 상태
 
+/** 접수 상태 한글 라벨 */
 export const NOTICE_STATUS_LABELS: Record<NoticeStatus, string> = {
   upcoming: "접수예정",
   open: "접수중",
@@ -65,8 +69,9 @@ export const NOTICE_STATUS_LABELS: Record<NoticeStatus, string> = {
 
 /** 데이터 소스 식별자 */
 export const SOURCE_IDS = ["lh", "myhome", "applyhome", "sh", "gh", "ih", "demo"] as const;
-export type SourceId = (typeof SOURCE_IDS)[number];
+export type SourceId = (typeof SOURCE_IDS)[number]; // 수집 소스
 
+/** 데이터 소스 표시명 */
 export const SOURCE_LABELS: Record<SourceId, string> = {
   lh: "LH 분양임대공고",
   myhome: "마이홈포털",

@@ -22,6 +22,7 @@ const schema = z.object({
   SSO_KAKAO_CLIENT_SECRET: text,
 });
 
+/** SSO 제공자별 client·secret·scope. */
 export interface SsoConfig {
   /** 로그인 업체가 돌아올 서버의 바깥 주소. 없으면 요청의 origin 을 쓴다. */
   publicBaseUrl: string | null;
@@ -111,3 +112,4 @@ export function loadSsoConfig(env: Record<string, string | undefined> = process.
     ],
   };
 }
+

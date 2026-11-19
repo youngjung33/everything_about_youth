@@ -8,8 +8,9 @@ export const CATEGORY_IDS = [
   "startup",
   "other",
 ] as const;
-export type CategoryId = (typeof CATEGORY_IDS)[number];
+export type CategoryId = (typeof CATEGORY_IDS)[number]; // 정책 분야 코드
 
+/** 분야 한글 라벨 */
 export const CATEGORY_LABELS: Record<CategoryId, string> = {
   housing: "주거",
   employment: "일자리",
@@ -20,20 +21,22 @@ export const CATEGORY_LABELS: Record<CategoryId, string> = {
   other: "기타",
 };
 
+/** 신청 상태 코드 */
 export const PROGRAM_STATUSES = ["upcoming", "open", "closed"] as const;
-export type ProgramStatus = (typeof PROGRAM_STATUSES)[number];
+export type ProgramStatus = (typeof PROGRAM_STATUSES)[number]; // 신청 상태
 
+/** 신청 상태 한글 라벨 */
 export const PROGRAM_STATUS_LABELS: Record<ProgramStatus, string> = {
   upcoming: "신청예정",
   open: "신청중",
   closed: "마감",
 };
 
-/** 데이터 소스 식별자 */
-/** 운영 sync id. 추가 후보는 next/README.md «청년 혜택·정책» */
+/** 데이터 소스 식별자. 추가 후보는 next/README «청년 혜택·정책» */
 export const SOURCE_IDS = ["ontong", "demo"] as const;
-export type SourceId = (typeof SOURCE_IDS)[number];
+export type SourceId = (typeof SOURCE_IDS)[number]; // 수집 소스
 
+/** 데이터 소스 표시명 */
 export const SOURCE_LABELS: Record<SourceId, string> = {
   ontong: "온통청년",
   demo: "데모 데이터",

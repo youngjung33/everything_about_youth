@@ -16,20 +16,24 @@ export function formatWon(won: number | null | undefined): string {
   return `${parts.join(" ")}원`;
 }
 
+/** 최소·최대를 한 줄로 포맷. 둘 다 없으면 "-". */
 export function formatRange<T>(min: T | null, max: T | null, fmt: (v: T) => string): string {
   if (min === null && max === null) return "-";
   if (min === null || max === null || min === max) return fmt((min ?? max) as T);
   return `${fmt(min)} ~ ${fmt(max)}`;
 }
 
+/** 전용면적(㎡). null 이면 "-". */
 export function formatArea(m2: number | null): string {
   return m2 === null ? "-" : `${Number.isInteger(m2) ? m2 : m2.toFixed(2).replace(/\.?0+$/, "")}㎡`;
 }
 
+/** ISO 날짜를 "YYYY.MM.DD" 로 표시. */
 export function formatDate(date: IsoDate | null): string {
   return date ? date.replaceAll("-", ".") : "-";
 }
 
+/** 신청·모집 기간 문구(상시·미정 포함). */
 export function formatPeriod(start: IsoDate | null, end: IsoDate | null): string {
   if (!start && !end) return "일정 미정/상시";
   if (start && end && start === end) return formatDate(start);
@@ -50,3 +54,4 @@ export function formatDday(start: IsoDate | null, end: IsoDate | null, today: Is
   const d = dayDiff(today, end);
   return d === 0 ? "오늘 마감" : `D-${d}`;
 }
+

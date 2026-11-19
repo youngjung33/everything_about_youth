@@ -5,10 +5,12 @@ interface Rule {
   pattern: string;
 }
 
+/** robots.txt 파싱 결과(allow/disallow). */
 export interface RobotsPolicy {
   isAllowed(pathAndQuery: string): boolean;
 }
 
+/** 모듈 상수 ALLOW_ALL. */
 export const ALLOW_ALL: RobotsPolicy = { isAllowed: () => true };
 
 function patternToRegExp(pattern: string): RegExp {
@@ -16,6 +18,7 @@ function patternToRegExp(pattern: string): RegExp {
   return new RegExp(`^${escaped.endsWith("\\$") ? `${escaped.slice(0, -2)}$` : escaped}`);
 }
 
+/** robots.txt 텍스트를 정책 객체로 파싱. */
 export function parseRobots(text: string, userAgent: string): RobotsPolicy {
   const ua = userAgent.toLowerCase();
   const groups: Array<{ agents: string[]; rules: Rule[] }> = [];
@@ -65,3 +68,5 @@ export function parseRobots(text: string, userAgent: string): RobotsPolicy {
     },
   };
 }
+
+

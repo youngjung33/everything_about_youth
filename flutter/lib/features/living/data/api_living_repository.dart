@@ -6,6 +6,7 @@ import '../domain/living_meta.dart';
 import '../domain/living_repository.dart';
 import '../domain/living_guide.dart';
 
+/// REST API 로 domain 저장소 포트를 구현한다.
 class ApiLivingRepository implements LivingRepository {
   ApiLivingRepository(this._client);
 

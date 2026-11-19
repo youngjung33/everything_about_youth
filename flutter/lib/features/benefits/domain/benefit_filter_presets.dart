@@ -3,12 +3,13 @@ import 'package:meta/meta.dart';
 import '../../../core/util/pure_dart.dart';
 import 'benefit_filters.dart';
 
+/// 저장·적용할 수 있는 필터 조합 하나.
 @immutable
 class BenefitFilterPreset {
   const BenefitFilterPreset({required this.id, required this.label, required this.categoryIds});
 
-  final String id;
-  final String label;
+  final String id; // 항목 식별자
+  final String label; // 화면에 보이는 한글 라벨
   final Set<String> categoryIds;
 
   BenefitFilters applyTo(BenefitFilters current) => current.copyWith(categoryIds: categoryIds);

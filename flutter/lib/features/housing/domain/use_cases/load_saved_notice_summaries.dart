@@ -8,8 +8,8 @@ import 'get_notice_detail.dart';
 class LoadSavedNoticeSummariesUseCase {
   LoadSavedNoticeSummariesUseCase(this._repository, this._getDetail);
 
-  final HousingRepository _repository;
-  final GetNoticeDetailUseCase _getDetail;
+  final HousingRepository _repository; // domain 저장소 포트
+  final GetNoticeDetailUseCase _getDetail; // 상세 조회 use case
 
   Future<SavedNoticeList> call({
     required List<String> ids,

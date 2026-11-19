@@ -1,5 +1,7 @@
+/** API·크롤러에서 쓰는 JSON 값. */
 export type Json = Record<string, unknown>;
 
+/** plain object 여부(배열 제외). */
 export function isRecord(v: unknown): v is Json {
   return typeof v === "object" && v !== null && !Array.isArray(v);
 }
@@ -29,6 +31,7 @@ export function toNumber(value: unknown): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+/** JSON 값을 finite number 로 파싱. */
 export function num(obj: Json, ...keys: string[]): number | null {
   for (const key of keys) {
     const n = toNumber(obj[key]);
@@ -37,6 +40,7 @@ export function num(obj: Json, ...keys: string[]): number | null {
   return null;
 }
 
+/** 단일 값·배열을 항상 배열로 통일. */
 export function toArray<T>(v: T | T[] | null | undefined): T[] {
   if (v === null || v === undefined) return [];
   return Array.isArray(v) ? v : [v];
@@ -74,3 +78,5 @@ export function findRecords(root: unknown, ...keys: string[]): Json[] {
 
 /** 원 단위 금액 (만원 → 원 변환 포함) */
 export const manwonToWon = (v: number | null): number | null => (v === null ? null : Math.round(v * 10_000));
+
+

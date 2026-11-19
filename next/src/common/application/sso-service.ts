@@ -18,6 +18,7 @@ import {
 } from "./sso";
 import type { Clock, Logger } from "./system";
 
+/** 제공자 노출·설정 오류. */
 export interface SsoProviderStatus {
   id: SsoProviderId;
   name: string;
@@ -34,6 +35,7 @@ export type CallbackOutcome =
 /** 티켓이 유효한 시간 (로그인 업체에서 돌아온 뒤 앱이 교환하기까지) */
 export const TICKET_TTL_SEC = 120;
 
+/** SsoService 의존성 묶음. */
 export interface SsoDeps {
   providers: SsoProviders;
   state: SsoStateCodec;
@@ -190,3 +192,5 @@ export class SsoService {
     await this.deps.users.delete(client.userId);
   }
 }
+
+

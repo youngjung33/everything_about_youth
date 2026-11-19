@@ -3,6 +3,7 @@ import type { SavedPosting, SavedJobPostingRepository } from "@/features/jobs/ap
 import type { SqliteDb } from "@/common/infrastructure/persistence/sqlite/client";
 import { savedJobPostings } from "./schema";
 
+/** SQLite 관심 채용 공고 저장소 */
 export class SqliteSavedJobPostingRepository implements SavedJobPostingRepository {
   constructor(private readonly db: SqliteDb) {}
 

@@ -1,6 +1,12 @@
 import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { users } from "@/common/infrastructure/persistence/sqlite/schema";
 
+/**
+ * 개념 모델은 Postgres(Supabase)로 그대로 옮길 수 있도록 설계:
+ *  - ID는 문자열, 날짜는 'YYYY-MM-DD' 텍스트, 시각은 ISO 텍스트
+ *  - 배열/JSON 컬럼 대신 조인 테이블 사용
+ *  - 관심 공고(saved_job_postings)만 회원(user_id)에 묶인다. 비회원은 앱 기기에만 둔다.
+ */
 export const jobPostings = sqliteTable(
   "job_postings",
   {

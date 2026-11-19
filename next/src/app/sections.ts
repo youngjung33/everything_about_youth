@@ -4,11 +4,12 @@ import { HOUSING_BASE } from "@/features/housing/presentation/routes";
 import { JOBS_BASE } from "@/features/jobs/presentation/routes";
 import { LIVING_BASE } from "@/features/living/presentation/routes";
 
+/** 루트·네비에 노출할 서비스 섹션 카드. */
 export interface Section {
-  id: string;
-  title: string;
-  description: string;
-  href: string;
+  id: string; // 내부 식별자(features id 와 맞춤)
+  title: string; // 네비·카드 제목
+  description: string; // 목록 페이지 한 줄 소개
+  href: string; // 섹션 진입 경로
 }
 
 /** 사이트의 섹션 목록. 새 섹션(일자리, 금융 등)은 features/<name> 을 만들고 여기에 등록한다. */
@@ -45,3 +46,4 @@ export const SECTIONS: Section[] = [
     href: LIVING_BASE,
   },
 ];
+

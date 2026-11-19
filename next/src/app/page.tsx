@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SECTIONS } from "./sections";
 
+/** 사이트 루트·섹션 카드 목록. */
 export default function HomePage() {
   return (
     <div className="detail">
@@ -19,3 +20,4 @@ export default function HomePage() {
     </div>
   );
 }
+

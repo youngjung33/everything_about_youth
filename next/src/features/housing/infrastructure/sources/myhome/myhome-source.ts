@@ -11,12 +11,14 @@ const BRTC_CODES = ["11", "26", "27", "28", "29", "30", "31", "36", "41", "42", 
 const PAGE_SIZE = 100;
 const MAX_PAGES = 20;
 
+/** 마이홈 소스 옵션 */
 export interface MyhomeSourceOptions {
   serviceKey?: string;
   getText?: (url: string) => Promise<string>;
   delayMs?: number;
 }
 
+/** 마이홈포털 공공주택 모집공고 수집 */
 export class MyhomeSource implements NoticeSourcePort {
   readonly id = "myhome" as const;
   readonly label = "마이홈포털";

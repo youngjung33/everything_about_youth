@@ -8,6 +8,7 @@ import 'package:everything_about_youth/core/network/api_user_message.dart';
 import 'package:everything_about_youth/core/widgets/state_views.dart';
 import 'package:everything_about_youth/features/living/domain/applicant_profile.dart';
 import 'package:everything_about_youth/features/living/domain/living_guide.dart';
+import 'package:everything_about_youth/features/living/domain/living_meta.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -149,15 +150,32 @@ void main() {
   });
 
   testWidgets('내 조건: 기준표(meta standards) 없어도 입력 화면은 동작한다', (tester) async {
+    final meta = livingMetaJson()..remove('standards');
     await pumpLivingApp(
       tester,
-      FakeLivingRepository(pages: [onePage([guideSummaryJson()])]),
+      FakeLivingRepository(meta: LivingMeta.fromJson(meta), pages: [onePage([guideSummaryJson()])]),
       location: '/living/profile',
       size: const Size(600, 3200),
     );
     await tester.tap(find.byKey(const ValueKey('household-2')));
     await tester.pump();
     expect(tester.takeException(), isNull);
+    expect(find.byKey(const ValueKey('income-hint')), findsNothing);
+  });
+
+  testWidgets('내 조건: 가구원수·월 소득을 입력하면 소득 수준을 안내한다', (tester) async {
+    await pumpLivingApp(
+      tester,
+      FakeLivingRepository(pages: [onePage([guideSummaryJson()])]),
+      location: '/living/profile',
+      size: const Size(600, 3200),
+    );
+    final scrollable = _profileScrollable;
+    await tester.scrollUntilVisible(find.byKey(const ValueKey('household-3')), 300, scrollable: scrollable);
+    await tester.enterText(find.widgetWithText(TextField, '가구 월 소득 (세전, 가구원 전체 합계)'), '650');
+    await tester.tap(find.byKey(const ValueKey('household-3')));
+    await tester.pump();
+    expect(find.byKey(const ValueKey('income-hint')), findsOneWidget);
   });
 
   testWidgets('내 조건: 신혼부부로 답했을 때만 맞벌이를 묻는다', (tester) async {

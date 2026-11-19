@@ -17,6 +17,7 @@ export interface CommonContainer {
   close(): void;
 }
 
+/** DI 컨테이너 테스트용 override. */
 export interface CommonOverrides {
   config?: Partial<AppConfig>;
   logger?: Logger;
@@ -24,6 +25,7 @@ export interface CommonOverrides {
   persistence?: AppPersistence;
 }
 
+/** 공통 인프라(root) 컨테이너 조립. */
 export function createCommonContainer(overrides: CommonOverrides = {}): CommonContainer {
   const config = { ...loadConfig(), ...overrides.config };
   const logger = overrides.logger ?? consoleLogger;
@@ -55,3 +57,4 @@ export function getCommonContainer(): CommonContainer {
   if (!g[globalKey]) g[globalKey] = createCommonContainer();
   return g[globalKey]!;
 }
+

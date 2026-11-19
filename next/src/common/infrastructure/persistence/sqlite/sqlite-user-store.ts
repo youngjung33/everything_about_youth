@@ -3,6 +3,7 @@ import type { SsoProviderId, SsoTicketStore, UserStore } from "@/common/applicat
 import type { SqliteDb } from "./client";
 import { ssoTickets, userIdentities, users } from "./schema";
 
+/** SQLite SSO 회원 저장소. */
 export class SqliteUserStore implements UserStore {
   constructor(private readonly db: SqliteDb) {}
 
@@ -32,6 +33,7 @@ export class SqliteUserStore implements UserStore {
   }
 }
 
+/** SQLite SSO 티켓 저장소. */
 export class SqliteSsoTicketStore implements SsoTicketStore {
   constructor(private readonly db: SqliteDb) {}
 
@@ -48,3 +50,5 @@ export class SqliteSsoTicketStore implements SsoTicketStore {
     return { userId: row.userId, challenge: row.challenge };
   }
 }
+
+

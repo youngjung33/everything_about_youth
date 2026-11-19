@@ -23,6 +23,7 @@ const ORG_ALIASES: Array<[RegExp, string]> = [
   [/인천도시공사|^ih(공사)?$/i, "ih"],
 ];
 
+/** 기관명을 병합키용으로 정규화한다. */
 export function normalizeOrganization(org: string): string {
   const compact = org.replace(/\s+/g, "");
   for (const [pattern, name] of ORG_ALIASES) {
@@ -31,6 +32,7 @@ export function normalizeOrganization(org: string): string {
   return compact.toLowerCase();
 }
 
+/** 제목에서 괄호 정정 표기 등을 제거하고 비교용 문자열을 만든다. */
 export function normalizeTitle(title: string): string {
   return title
     .replace(/[\[(（【]\s*(정정|변경|재공고|연장|수정)[^\])）】]*[\])）】]/g, "")
@@ -38,14 +40,17 @@ export function normalizeTitle(title: string): string {
     .toLowerCase();
 }
 
+/** 동일 공고 판별용 병합키 */
 export function buildMergeKey(draft: Pick<NoticeDraft, "title" | "organization" | "applicationEnd">): string {
   return [normalizeTitle(draft.title), normalizeOrganization(draft.organization), draft.applicationEnd ?? ""].join("|");
 }
 
+/** 병합키로부터 안정적인 공고 ID */
 export function buildNoticeId(mergeKey: string): string {
   return `n_${cyrb53(mergeKey).toString(36)}`;
 }
 
+/** 초안에 id·mergeKey 를 부여해 Notice 를 만든다. */
 export function createNotice(draft: NoticeDraft): Notice {
   const mergeKey = buildMergeKey(draft);
   return { ...draft, mergeKey, id: buildNoticeId(mergeKey) };

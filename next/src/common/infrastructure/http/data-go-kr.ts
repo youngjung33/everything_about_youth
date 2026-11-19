@@ -17,6 +17,7 @@ export function normalizeServiceKey(key: string): string {
   return trimmed;
 }
 
+/** 공공데이터포털 API 오류. */
 export class DataGoKrError extends Error {
   constructor(
     message: string,
@@ -90,3 +91,4 @@ export function buildUrl(base: string, params: Record<string, string | number | 
   }
   return `${base}?${qs.toString()}`;
 }
+

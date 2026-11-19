@@ -7,6 +7,7 @@ abstract interface class RemoteConfigReader {
   Future<bool?> getBool(String key);
 }
 
+/// 원격 설정을 읽지 않는 스텁.
 class NoopRemoteConfigReader implements RemoteConfigReader {
   @override
   Future<String?> getString(String key) async => null;

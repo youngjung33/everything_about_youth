@@ -7,10 +7,13 @@ import type { GuideRepository } from "../ports/guide-repository";
 import type { SavedGuideRepository } from "../ports/saved-guide-repository";
 import type { GuideListItem } from "./search-guides";
 
+/** 회원 한 명이 저장할 수 있는 관심 안내 수. 남용과 목록 조회 부담을 막는다. */
 export const MAX_SAVED_GUIDES = 100;
 
+/** 관심 저장 시도 결과 */
 export type SaveGuideResult = { status: "saved" } | { status: "already" } | { status: "not_found" } | { status: "limit"; max: number };
 
+/** 관심 생활·행정 안내 저장·목록·동기화 병합 */
 export class ManageSavedGuides {
   constructor(
     private readonly saved: SavedGuideRepository,

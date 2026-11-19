@@ -15,6 +15,11 @@ import { googleCalendarDeadlineUrl } from "@/features/finance/domain/calendar";
 import type { SchemeListItem, SearchSchemesOutput } from "@/features/finance/application/use-cases/search-schemes";
 import { regionLabel } from "../region-label";
 
+/**
+ * 모바일/웹 앱(Flutter)이 소비하는 JSON 계약.
+ * 값(코드)과 한글 라벨을 함께 내려 클라이언트가 라벨 표를 복제하지 않아도 되게 한다.
+ * 금액은 원, 면적은 ㎡, 날짜는 YYYY-MM-DD(KST 기준) 이다.
+ */
 export interface EligibilityDto {
   verdict: string;
   verdictLabel: string;
@@ -75,6 +80,7 @@ export interface OptionDto {
   label: string;
 }
 
+/** 자격 판정에 쓰는 기준표(참고용). 앱이 입력 화면에서 소득 수준을 안내할 때 쓴다. */
 export interface EligibilityStandardsDto {
   year: number;
   maxHouseholdSize: number;

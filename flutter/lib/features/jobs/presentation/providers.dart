@@ -24,6 +24,7 @@ JobsContainer _container(Ref ref) => ref.watch(jobsContainerProvider);
 
 final jobsMetaProvider = FutureProvider<JobsMeta>((ref) => _container(ref).loadJobsMeta());
 
+/// 지원자 프로필 입력값과 저장 상태(Riverpod).
 class ProfileNotifier extends Notifier<ApplicantProfile> {
   bool _edited = false;
 
@@ -47,6 +48,7 @@ class ProfileNotifier extends Notifier<ApplicantProfile> {
 
 final profileProvider = NotifierProvider<ProfileNotifier, ApplicantProfile>(ProfileNotifier.new);
 
+/// Filters 상태를 갱신하는 Riverpod Notifier.
 class FiltersNotifier extends Notifier<JobsFilters> {
   @override
   JobsFilters build() => JobsFilters.initial;
@@ -62,6 +64,7 @@ class FiltersNotifier extends Notifier<JobsFilters> {
 
 final filtersProvider = NotifierProvider<FiltersNotifier, JobsFilters>(FiltersNotifier.new);
 
+/// 목록 필터·페이지·검색 세대를 관리하는 Riverpod 컨트롤러.
 class PostingListController extends AsyncNotifier<PostingListState> {
   @override
   Future<PostingListState> build() async {
@@ -102,6 +105,7 @@ final postingDetailProvider = FutureProvider.family<PostingDetail, String>((ref,
   return _container(ref).getPostingDetail(id, profile: profile);
 });
 
+/// SavedPostings 상태를 갱신하는 Riverpod Notifier.
 class SavedPostingsNotifier extends AsyncNotifier<List<String>> {
   @override
   Future<List<String>> build() async {

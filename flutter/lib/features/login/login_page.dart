@@ -33,6 +33,7 @@ class LoginPage extends ConsumerStatefulWidget {
   ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
+/// 위젯의 편집·로딩 등 내부 상태.
 class _LoginPageState extends ConsumerState<LoginPage> {
   /// 지금 로그인 창을 열어 둔 업체. null 이면 아무것도 진행 중이 아니다.
   SsoProvider? _busy;
@@ -166,6 +167,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 /// 서버에서 이 로그인 방법을 쓸 수 있는지
 enum _Availability { ready, preparing, unknown }
 
+/// 소셜 로그인 버튼 한 줄(활성·준비 중·로딩).
 class _SsoButton extends StatelessWidget {
   const _SsoButton({
     required this.provider,

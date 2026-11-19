@@ -10,8 +10,8 @@ class Option {
   factory Option.fromJson(Map<String, dynamic> json) =>
       Option(value: asString(json['value']) ?? '', label: asString(json['label']) ?? '');
 
-  final String value;
-  final String label;
+  final String value; // 코드 값
+  final String label; // 화면에 보이는 한글 라벨
 }
 
 /// 자격 판정에 쓰는 소득 기준표(참고용). 서버가 단일 출처이며, 입력 화면에서 소득 수준을 안내할 때만 쓴다.
@@ -32,10 +32,10 @@ class EligibilityStandards {
   }
 
   /// 기준표 적용 연도
-  final int year;
+  final int year; // 기준표 적용 연도
 
   /// 전년도 도시근로자 가구원수별 월평균소득 100% (원). 인덱스 0 = 1인 가구
-  final List<int> urbanWorkerIncome;
+  final List<int> urbanWorkerIncome; // 전년도 도시근로자 가구원수별 월평균소득 100% (원). 인덱스 0 = 1인 가구
 
   /// 가구원수별 도시근로자 월평균소득 100% (원). 표에 없으면 null
   int? urbanWorkerIncomeFor(int householdSize) {
@@ -84,11 +84,11 @@ class HousingMeta {
   final List<Option> statuses;
   final List<Option> verdicts;
   final List<Option> sorts;
-  final List<String> sidos;
+  final List<String> sidos; // 시·도 필터
 
   /// 소득 기준표. 서버가 주지 않으면 null (소득 수준 안내만 생략된다)
-  final EligibilityStandards? standards;
+  final EligibilityStandards? standards; // 소득 기준표. 서버가 주지 않으면 null
 
   /// 공고가 마지막으로 수집된 시각(ISO 8601 UTC). 한 번도 없으면 null
-  final String? dataUpdatedAt;
+  final String? dataUpdatedAt; // 데이터 마지막 수집 시각(ISO 8601 UTC). 없으면 null
 }

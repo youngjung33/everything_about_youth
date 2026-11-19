@@ -12,9 +12,15 @@ import { googleCalendarDeadlineUrl } from "@/features/living/domain/calendar";
 import type { ChecklistStep } from "@/features/living/domain/guide";
 import type { EligibilityResult } from "@/features/living/domain/eligibility/evaluate";
 import { VERDICT_LABELS } from "@/features/living/domain/eligibility/evaluate";
+import { MAX_HOUSEHOLD_SIZE, STANDARDS_YEAR, URBAN_WORKER_INCOME_100 } from "@/features/living/domain/eligibility/standards";
 import type { GuideListItem, SearchGuidesOutput } from "@/features/living/application/use-cases/search-guides";
 import { regionLabel } from "../region-label";
 
+/**
+ * 모바일/웹 앱(Flutter)이 소비하는 JSON 계약.
+ * 값(코드)과 한글 라벨을 함께 내려 클라이언트가 라벨 표를 복제하지 않아도 되게 한다.
+ * 금액은 원, 면적은 ㎡, 날짜는 YYYY-MM-DD(KST 기준) 이다.
+ */
 export interface EligibilityDto {
   verdict: string;
   verdictLabel: string;
@@ -83,6 +89,13 @@ export interface OptionDto {
   label: string;
 }
 
+/** 자격 판정에 쓰는 기준표(참고용). 앱이 입력 화면에서 소득 수준을 안내할 때 쓴다. */
+export interface EligibilityStandardsDto {
+  year: number;
+  maxHouseholdSize: number;
+  urbanWorkerIncome: number[];
+}
+
 export interface LivingMetaDto {
   dataUpdatedAt: string | null;
   procedureTypes: OptionDto[];
@@ -90,6 +103,7 @@ export interface LivingMetaDto {
   verdicts: OptionDto[];
   sorts: OptionDto[];
   sidos: string[];
+  standards: EligibilityStandardsDto;
 }
 
 function toEligibilityDto(result: EligibilityResult | null): EligibilityDto | null {
@@ -181,5 +195,10 @@ export function buildLivingMeta(dataUpdatedAt: string | null = null): LivingMeta
       { value: "latest", label: "최신 안내순" },
     ],
     sidos: [...SIDO_LIST],
+    standards: {
+      year: STANDARDS_YEAR,
+      maxHouseholdSize: MAX_HOUSEHOLD_SIZE,
+      urbanWorkerIncome: [...URBAN_WORKER_INCOME_100],
+    },
   };
 }

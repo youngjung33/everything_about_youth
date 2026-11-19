@@ -5,7 +5,9 @@ import { getHousingContainer } from "@/features/housing/housing-container";
 import { handleSaveNotice, handleUnsaveNotice } from "@/features/housing/presentation/api/handlers";
 import { assertHousingEnabled } from "../../guard";
 
+/** 요청마다 최신 데이터·기능 플래그를 반영한다(정적 캐시 없음). */
 export const dynamic = "force-dynamic";
+/** SQLite 등 네이티브 모듈을 쓰므로 Node.js 런타임. */
 export const runtime = "nodejs";
 
 /** PUT /api/v1/housing/saved/:id — 관심 공고로 저장 */
@@ -23,3 +25,5 @@ export const DELETE = apiHandler(async (request, ctx: RouteContext<"/api/v1/hous
   const { id } = await ctx.params;
   return respond(await handleUnsaveNotice(userId, id, getHousingContainer()));
 });
+
+
