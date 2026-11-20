@@ -10,19 +10,19 @@ import type { SqliteConnection } from "./persistence/sqlite/client";
  * 2차: `persistence.driver === "supabase"` 일 때 Postgres 는 각 섹션 `infrastructure/create-repositories.ts` 등에서 선택한다.
  */
 export interface CommonContainer {
-  config: AppConfig;
-  clock: Clock;
-  logger: Logger;
-  persistence: AppPersistence;
-  close(): void;
+  config: AppConfig; // config
+  clock: Clock; // 시계
+  logger: Logger; // 로거
+  persistence: AppPersistence; // persistence
+  close(): void; // close
 }
 
 /** DI 컨테이너 테스트용 override. */
 export interface CommonOverrides {
-  config?: Partial<AppConfig>;
-  logger?: Logger;
-  clock?: Clock;
-  persistence?: AppPersistence;
+  config?: Partial<AppConfig>; // config
+  logger?: Logger; // 로거
+  clock?: Clock; // 시계
+  persistence?: AppPersistence; // persistence
 }
 
 /** 공통 인프라(root) 컨테이너 조립. */

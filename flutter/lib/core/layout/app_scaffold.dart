@@ -34,20 +34,20 @@ class AppScaffold extends StatelessWidget {
     this.hideBottomBarOnKeyboard = true,
   });
 
-  final AppTopBar? appBar;
-  final Widget body;
+  final AppTopBar? appBar; // appBar
+  final Widget body; // body
 
   /// 화면 아래에 붙는 영역(푸터 등). 안전 영역 처리는 이 위젯이 한다.
-  final Widget? bottomBar;
+  final Widget? bottomBar; // bottomBar
 
   /// [bottomBar] 배경색. 내비게이션바 뒤까지 이 색으로 칠해진다. 없으면 상단바 색.
-  final Color? bottomBarColor;
+  final Color? bottomBarColor; // bottomBarColor
 
   /// 왼쪽에서 열리는 서랍 메뉴
-  final Widget? drawer;
+  final Widget? drawer; // drawer
 
-  final Color? backgroundColor;
-  final bool hideBottomBarOnKeyboard;
+  final Color? backgroundColor; // backgroundColor
+  final bool hideBottomBarOnKeyboard; // hideBottomBarOnKeyboard
 
   /// 테스트에서 영역을 찾는 데 쓴다.
   static const topAreaKey = ValueKey('app-scaffold-top');

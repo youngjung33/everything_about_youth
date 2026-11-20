@@ -2,26 +2,28 @@ import type { Logger } from "@/common/application/system";
 
 /** 타이머. 테스트에서 시간을 직접 움직이려고 뺐다. */
 export interface Timers {
-  set(callback: () => void, delayMs: number): unknown;
-  clear(handle: unknown): void;
+  set(callback: () => void, delayMs: number): unknown; // 지연 후 콜백 예약
+  clear(handle: unknown): void; // 예약 취소
 }
 
+/** 동기화 스케줄러 의존성 */
 export interface SyncSchedulerDeps {
   /** 수집 간격(ms). 한 번 끝난 뒤 이만큼 있다가 다시 한다. */
-  intervalMs: number;
+  intervalMs: number; // 수집 간격(ms). 한 번 끝난 뒤 이만큼 있다가 다시 한다
   /** 서버가 뜬 뒤 첫 수집까지 기다리는 시간(ms). 시작 직후의 부하를 피한다. */
-  startupDelayMs: number;
+  startupDelayMs: number; // 서버가 뜬 뒤 첫 수집까지 기다리는 시간(ms). 시작 직후의 부하를 피한다
   /** 마지막으로 성공한 수집이 끝난 시각. 없으면 null */
-  lastSuccessAt(): Promise<Date | null>;
+  lastSuccessAt(): Promise<Date | null>; // 마지막 성공 수집 시각
   /** 서비스가 꺼져 있으면 수집하지 않는다. */
-  isEnabled(): Promise<boolean>;
+  isEnabled(): Promise<boolean>; // 자동 수집 활성 여부
   /** 실제 수집. 소스 하나가 실패해도 던지지 않는다(결과에 담긴다). 던지면 로그만 남기고 다음 주기를 기다린다. */
-  run(): Promise<void>;
-  now(): Date;
-  logger: Logger;
-  timers: Timers;
+  run(): Promise<void>; // 수집 실행
+  now(): Date; // 현재 시각
+  logger: Logger; // 로거
+  timers: Timers; // 타이머
 }
 
+/** tick 실행 결과 */
 export type TickResult = "ran" | "busy" | "disabled" | "failed";
 
 /**

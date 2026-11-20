@@ -12,7 +12,7 @@ import '../domain/finance_scheme.dart';
 class MappingFinanceRepository implements FinanceRepository {
   MappingFinanceRepository(this._inner);
 
-  final FinanceRepository _inner;
+  final FinanceRepository _inner; // _inner
 
   Future<T> _map<T>(Future<T> run) async {
     try {

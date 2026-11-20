@@ -15,25 +15,25 @@ export interface SearchNoticesInput {
   sort?: NoticeSort; // 정렬
   profile?: ApplicantProfile; // 내 조건
   /** 지정하면 해당 판정 결과의 공고만 남긴다 (profile 필요) */
-  verdicts?: EligibilityVerdict[];
+  verdicts?: EligibilityVerdict[]; // 지정하면 해당 판정 결과의 공고만 남긴다 (profile 필요)
   page?: number; // 1부터
   pageSize?: number; // 건수(상한 100)
 }
 
 /** 목록·상세 한 행 */
 export interface NoticeListItem {
-  notice: Notice;
-  status: NoticeStatus;
-  eligibility: EligibilityResult | null;
+  notice: Notice; // 공고
+  status: NoticeStatus; // 상태
+  eligibility: EligibilityResult | null; // 자격 판정 결과
 }
 
 /** 페이징 포함 목록 결과 */
 export interface SearchNoticesOutput {
-  items: NoticeListItem[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
+  items: NoticeListItem[]; // 결과 목록
+  total: number; // 전체 건수
+  page: number; // 현재 페이지
+  pageSize: number; // 페이지 크기
+  totalPages: number; // 전체 페이지 수
 }
 
 /** 기본 페이지 크기 */

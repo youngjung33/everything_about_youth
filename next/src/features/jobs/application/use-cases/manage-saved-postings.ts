@@ -7,8 +7,10 @@ import type { JobPostingRepository } from "../ports/posting-repository";
 import type { SavedJobPostingRepository } from "../ports/saved-posting-repository";
 import type { PostingListItem } from "./search-job-postings";
 
+/** MAX_SAVED_POSTINGS */
 export const MAX_SAVED_POSTINGS = 100;
 
+/** 저장 시도 결과 */
 export type SavePostingResult =
   | { status: "saved" }
   | { status: "already" }
@@ -24,6 +26,7 @@ export const MAX_SAVED_PROGRAMS = MAX_SAVED_POSTINGS;
 /** @deprecated `SavePostingResult` 사용 */
 export type SaveSchemeResult = SavePostingResult;
 
+/** 저장 채용 공고 관리 */
 export class ManageSavedJobPostings {
   constructor(
     private readonly saved: SavedJobPostingRepository,

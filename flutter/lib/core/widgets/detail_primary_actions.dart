@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class DetailPrimaryActions extends StatelessWidget {
   const DetailPrimaryActions({super.key, required this.children});
 
-  final List<Widget> children;
+  final List<Widget> children; // children
 
   @override
   Widget build(BuildContext context) {

@@ -1,22 +1,24 @@
 import type { SourceId } from "@/features/finance/domain/enums";
 import type { FinanceSchemeDraft } from "@/features/finance/domain/scheme";
 
+/** 소스 호출 컨텍스트 */
 export interface SourceContext {
   /** 수집 시각 (ISO) */
-  fetchedAt: string;
-  signal?: AbortSignal;
+  fetchedAt: string; // 수집 시각 (ISO)
+  signal?: AbortSignal; // signal
 }
 
+/** 소스 가용성 */
 export interface SourceAvailability {
-  available: boolean;
+  available: boolean; // 소스 사용 가능 여부
   /** 사용 불가 사유 (예: API 키 미설정) */
-  reason?: string;
+  reason?: string; // 사용 불가 사유 (예: API 키 미설정)
 }
 
 /** 수집 중 소스가 스스로 "이번엔 건너뛴다"고 알릴 때 던진다. 실패가 아니라 skipped 로 기록된다. */
 export class SourceSkippedError extends Error {
   constructor(reason: string) {
-    super(reason);
+    super(reason); // super
     this.name = "SourceSkippedError";
   }
 }
@@ -25,6 +27,6 @@ export class SourceSkippedError extends Error {
 export interface SchemeSourcePort {
   readonly id: SourceId;
   readonly label: string;
-  checkAvailability(): SourceAvailability;
-  fetchSchemes(ctx: SourceContext): Promise<FinanceSchemeDraft[]>;
+  checkAvailability(): SourceAvailability; // 소스 가용성 확인
+  fetchSchemes(ctx: SourceContext): Promise<FinanceSchemeDraft[]>; // 금융 상품 목록 가져오기
 }

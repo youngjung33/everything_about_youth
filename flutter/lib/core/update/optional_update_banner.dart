@@ -12,7 +12,7 @@ const _dismissPrefix = 'optional_update_dismissed_';
 class OptionalUpdateBanner extends ConsumerStatefulWidget {
   const OptionalUpdateBanner({super.key, required this.child});
 
-  final Widget child;
+  final Widget child; // child
 
   @override
   ConsumerState<OptionalUpdateBanner> createState() => _OptionalUpdateBannerState();

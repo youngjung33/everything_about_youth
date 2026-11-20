@@ -6,15 +6,15 @@
  * 사용자 별 값이면 `housing.profile:<기기 id>` 처럼 id 를 붙인다.
  */
 export interface FieldCipher {
-  encrypt(plain: string, context: string): string;
+  encrypt(plain: string, context: string): string; // 문자열 암호화
   /** 키가 다르거나 변조됐거나 context 가 다르면 FieldCipherError */
-  decrypt(token: string, context: string): string;
+  decrypt(token: string, context: string): string; // 키가 다르거나 변조됐거나 context 가 다르면 FieldCipherError
 }
 
 /** 필드 암·복호화 실패. */
 export class FieldCipherError extends Error {
   constructor(message: string) {
-    super(message);
+    super(message); // super
     this.name = "FieldCipherError";
   }
 }

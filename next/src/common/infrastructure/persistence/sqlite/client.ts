@@ -9,9 +9,9 @@ export type SqliteDb = BetterSQLite3Database;
 
 /** better-sqlite3 연결·마이그레이션. */
 export interface SqliteConnection {
-  db: SqliteDb;
-  raw: Database.Database;
-  close(): void;
+  db: SqliteDb; // db
+  raw: Database.Database; // raw
+  close(): void; // close
 }
 
 /** 모든 섹션의 마이그레이션이 하나의 폴더(drizzle/)에 순서대로 쌓인다. */
@@ -31,6 +31,6 @@ export function openSqlite(filePath: string): SqliteConnection {
 
 /** SQL 마이그레이션 폴더를 순서대로 적용. */
 export function runMigrations(db: SqliteDb, folder: string = MIGRATIONS_FOLDER): void {
-  migrate(db, { migrationsFolder: folder });
+  migrate(db, { migrationsFolder: folder }); // migrate
 }
 

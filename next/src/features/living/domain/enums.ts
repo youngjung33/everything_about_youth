@@ -1,5 +1,6 @@
 /** 이사·생활 절차 유형 */
 export const PROCEDURE_TYPE_IDS = ["move_in", "lease", "moving", "utilities", "registry", "waste", "other"] as const;
+/** 도메인 type: ProcedureTypeId. */
 export type ProcedureTypeId = (typeof PROCEDURE_TYPE_IDS)[number];
 
 export const PROCEDURE_TYPE_LABELS: Record<ProcedureTypeId, string> = {
@@ -13,6 +14,7 @@ export const PROCEDURE_TYPE_LABELS: Record<ProcedureTypeId, string> = {
 };
 
 export const GUIDE_STATUSES = ["upcoming", "open", "closed"] as const;
+/** 도메인 type: GuideStatus. */
 export type GuideStatus = (typeof GUIDE_STATUSES)[number];
 
 export const GUIDE_STATUS_LABELS: Record<GuideStatus, string> = {
@@ -23,6 +25,7 @@ export const GUIDE_STATUS_LABELS: Record<GuideStatus, string> = {
 
 /** 운영 sync id */
 export const SOURCE_IDS = ["curated", "demo"] as const;
+/** 도메인 type: SourceId. */
 export type SourceId = (typeof SOURCE_IDS)[number];
 
 /** 데이터 소스 표시명 */
@@ -31,6 +34,7 @@ export const SOURCE_LABELS: Record<SourceId, string> = {
   demo: "데모 데이터",
 };
 
+/** 도메인 function: inferProcedureTypeFromText. */
 export function inferProcedureTypeFromText(text: string | null | undefined): ProcedureTypeId {
   const t = (text ?? "").replace(/\s+/g, "");
   if (!t) return "other";

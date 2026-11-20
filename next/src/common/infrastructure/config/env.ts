@@ -18,13 +18,13 @@ const schema = z.object({
 
 /** 모든 섹션이 공유하는 설정. 섹션 전용 설정은 각 feature 의 config 에 둔다. */
 export interface AppConfig {
-  dataGoKrServiceKey: string | undefined;
-  dbDriver: "sqlite" | "supabase";
-  sqlitePath: string;
-  crawlDelayMs: number;
-  crawlUserAgent: string;
+  dataGoKrServiceKey: string | undefined; // dataGoKrServiceKey
+  dbDriver: "sqlite" | "supabase"; // dbDriver
+  sqlitePath: string; // sqlitePath
+  crawlDelayMs: number; // crawlDelayMs
+  crawlUserAgent: string; // crawlUserAgent
   /** robots.txt 확인을 건너뛸 호스트 (명시적 opt-in) */
-  crawlIgnoreRobotsHosts: string[];
+  crawlIgnoreRobotsHosts: string[]; // robots.txt 확인을 건너뛸 호스트 (명시적 opt-in)
 }
 
 /** .env·process.env 에서 앱 설정 로드. */

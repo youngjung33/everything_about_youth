@@ -23,23 +23,25 @@ const MAX_PAGES = 30;
 
 const dotted = (iso: string) => iso.replaceAll("-", ".");
 
+/** LhSourceOptions */
 export interface LhSourceOptions {
-  serviceKey?: string;
-  getText?: (url: string) => Promise<string>;
+  serviceKey?: string; // serviceKey
+  getText?: (url: string) => Promise<string>; // getText
   /** 요청 간 대기(ms) */
-  delayMs?: number;
+  delayMs?: number; // 요청 간 대기(ms)
   /** 게시일 조회 시작: 오늘로부터 며칠 전 */
-  lookbackDays?: number;
+  lookbackDays?: number; // 게시일 조회 시작: 오늘로부터 며칠 전
   /** 마감일 조회 종료: 오늘로부터 며칠 후 */
-  lookaheadDays?: number;
+  lookaheadDays?: number; // 마감일 조회 종료: 오늘로부터 며칠 후
   /** 공고별 공급정보(세대수·금액·주택형) 추가 조회. 기본 true */
-  fetchSupply?: boolean;
+  fetchSupply?: boolean; // 공고별 공급정보(세대수·금액·주택형) 추가 조회. 기본 true
   /** 공급정보 동시 조회 수 (기본 4) */
-  supplyConcurrency?: number;
+  supplyConcurrency?: number; // 공급정보 동시 조회 수 (기본 4)
   /** 공고 하나의 공급정보 조회 실패 등 수집을 막지 않는 문제 알림 */
-  onWarn?: (message: string) => void;
+  onWarn?: (message: string) => void; // 공고 하나의 공급정보 조회 실패 등 수집을 막지 않는 문제 알림
 }
 
+/** LhSource */
 export class LhSource implements NoticeSourcePort {
   readonly id = "lh" as const;
   readonly label = "LH 분양임대공고";
@@ -147,10 +149,10 @@ export class LhSource implements NoticeSourcePort {
         try {
           bodies.set(cacheKey, await fetchBody(params));
         } catch (error) {
-          warn(`[lh] 공급정보 조회 실패 (${params.PAN_ID}): ${error instanceof Error ? error.message : String(error)}`);
+          warn(`[lh] 공급정보 조회 실패 (${params.PAN_ID}): ${error instanceof Error ? error.message : String(error)}`); // 경고 로그
           if (error instanceof DataGoKrError && error.code === "22") {
             stopped = true;
-            warn("[lh] 일일 호출 한도를 넘어 나머지 공고의 공급정보 조회를 건너뜁니다.");
+            warn("[lh] 일일 호출 한도를 넘어 나머지 공고의 공급정보 조회를 건너뜁니다."); // 경고 로그
           }
         }
         await sleep(delay);

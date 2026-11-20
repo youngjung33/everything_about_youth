@@ -14,22 +14,23 @@ import { CuratedSource } from "./sources/curated/curated-source";
 
 /** 생활정보 섹션에 주입되는 유스케이스·저장소 묶음 */
 export interface LivingContainer {
-  config: LivingConfig;
-  clock: Clock;
-  logger: Logger;
-  guides: GuideRepository;
-  savedGuides: SavedGuideRepository;
-  syncRuns: SyncRunRepository;
+  config: LivingConfig; // config
+  clock: Clock; // 시계
+  logger: Logger; // 로거
+  guides: GuideRepository; // guides
+  savedGuides: SavedGuideRepository; // savedGuides
+  syncRuns: SyncRunRepository; // syncRuns
   /** 등록된 모든 소스 (활성 여부와 무관) */
-  allSources: GuideSourcePort[];
-  searchGuides: SearchGuides;
-  getGuideDetail: GetGuideDetail;
-  manageSavedGuides: ManageSavedGuides;
-  syncGuides: SyncGuidesFromSource;
+  allSources: GuideSourcePort[]; // 등록된 모든 소스 (활성 여부와 무관)
+  searchGuides: SearchGuides; // searchGuides
+  getGuideDetail: GetGuideDetail; // getGuideDetail
+  manageSavedGuides: ManageSavedGuides; // manageSavedGuides
+  syncGuides: SyncGuidesFromSource; // syncGuides
 }
 
+/** LivingOverrides */
 export interface LivingOverrides {
-  config?: Partial<LivingConfig>;
+  config?: Partial<LivingConfig>; // config
 }
 
 /** 생활정보 섹션의 의존성 조립 지점. 공통 의존성은 CommonContainer 에서 받는다. */

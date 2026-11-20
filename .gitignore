@@ -2,4 +2,5 @@
 local/
 .cursor/rules/testing-failure-first.mdc
 .cursor/rules/testing-test-files.mdc
+.cursor/rules/code-documentation.mdc
 next/vitest.local.config.mts

@@ -5,6 +5,7 @@ import { PRODUCT_TYPE_RULES, YOUTH_MAX_AGE, YOUTH_MIN_AGE } from "./rules";
 import { STANDARDS_YEAR, formatWon, incomeLimitWon } from "./standards";
 import type { ProductTypeId } from "../enums";
 
+/** 도메인 type: EligibilityVerdict. */
 export type EligibilityVerdict = "eligible" | "check" | "ineligible";
 
 export const VERDICT_LABELS: Record<EligibilityVerdict, string> = {
@@ -13,17 +14,20 @@ export const VERDICT_LABELS: Record<EligibilityVerdict, string> = {
   ineligible: "신청 불가",
 };
 
+/** 도메인 interface: EligibilityResult. */
 export interface EligibilityResult {
-  verdict: EligibilityVerdict;
-  reasons: string[];
-  notes: string[];
+  verdict: EligibilityVerdict; // verdict
+  reasons: string[]; // reasons
+  notes: string[]; // notes
 }
 
+/** 도메인 interface: Outcome. */
 interface Outcome {
-  fails: string[];
-  unknowns: string[];
+  fails: string[]; // fails
+  unknowns: string[]; // unknowns
 }
 
+/** 도메인 function: checkIncome. */
 function checkIncome(percent: number, profile: ApplicantProfile): Outcome {
   const out: Outcome = { fails: [], unknowns: [] };
   const { householdSize: size, monthlyIncomeWon: income } = profile;
@@ -119,6 +123,7 @@ export function evaluateEligibility(
   return { verdict: "eligible", reasons: ["입력하신 조건이 일반 청년 정책 기준을 충족합니다."], notes };
 }
 
+/** 도메인 function: ruleForCategory. */
 export function ruleForCategory(productTypeId: ProductTypeId) {
   return PRODUCT_TYPE_RULES[productTypeId];
 }

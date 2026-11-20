@@ -1,16 +1,17 @@
 import type { CategoryId } from "../enums";
 import { YOUTH_MAX_AGE, YOUTH_MIN_AGE } from "./standards";
 
+/** 도메인 interface: CategoryRule. */
 export interface CategoryRule {
-  minAge?: number;
-  maxAge?: number;
+  minAge?: number; // minAge
+  maxAge?: number; // maxAge
   /** 청년(19~39) 대상 여부 */
-  requiresYouth?: boolean;
+  requiresYouth?: boolean; // requiresYouth
   /** 거주 지역이 정책 지역과 같아야 하는지(미입력 시 확인 필요) */
-  requiresResidenceMatch?: boolean;
+  requiresResidenceMatch?: boolean; // requiresResidenceMatch
   /** 도시근로자 월평균소득 대비 상한(%). 없으면 소득 검증 안 함 */
-  incomePercent?: number;
-  alwaysCheck?: string;
+  incomePercent?: number; // incomePercent
+  alwaysCheck?: string; // alwaysCheck
 }
 
 /** 분야별 일반적인 청년 정책 기준(참고용). */

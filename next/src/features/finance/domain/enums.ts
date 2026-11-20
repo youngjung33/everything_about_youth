@@ -7,6 +7,7 @@ export const PRODUCT_TYPE_IDS = [
   "tax_benefit",
   "other",
 ] as const;
+/** 도메인 type: ProductTypeId. */
 export type ProductTypeId = (typeof PRODUCT_TYPE_IDS)[number];
 
 export const PRODUCT_TYPE_LABELS: Record<ProductTypeId, string> = {
@@ -19,6 +20,7 @@ export const PRODUCT_TYPE_LABELS: Record<ProductTypeId, string> = {
 };
 
 export const SCHEME_STATUSES = ["upcoming", "open", "closed"] as const;
+/** 도메인 type: SchemeStatus. */
 export type SchemeStatus = (typeof SCHEME_STATUSES)[number];
 
 export const SCHEME_STATUS_LABELS: Record<SchemeStatus, string> = {
@@ -29,6 +31,7 @@ export const SCHEME_STATUS_LABELS: Record<SchemeStatus, string> = {
 
 /** 운영 sync id. 추가 후보는 next/README.md «청년 주거·자금» */
 export const SOURCE_IDS = ["curated", "ontong-finance", "demo"] as const;
+/** 도메인 type: SourceId. */
 export type SourceId = (typeof SOURCE_IDS)[number];
 
 /** 데이터 소스 표시명 */

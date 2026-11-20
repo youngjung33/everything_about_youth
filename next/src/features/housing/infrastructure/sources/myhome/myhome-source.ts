@@ -13,9 +13,9 @@ const MAX_PAGES = 20;
 
 /** 마이홈 소스 옵션 */
 export interface MyhomeSourceOptions {
-  serviceKey?: string;
-  getText?: (url: string) => Promise<string>;
-  delayMs?: number;
+  serviceKey?: string; // serviceKey
+  getText?: (url: string) => Promise<string>; // getText
+  delayMs?: number; // delayMs
 }
 
 /** 마이홈포털 공공주택 모집공고 수집 */

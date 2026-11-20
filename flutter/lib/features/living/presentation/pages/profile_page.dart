@@ -231,7 +231,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 class _IncomeHint extends ConsumerWidget {
   const _IncomeHint({required this.profile});
 
-  final ApplicantProfile profile;
+  final ApplicantProfile profile; // 현재 프로필
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -261,7 +261,7 @@ class _ResidencePicker extends ConsumerWidget {
   const _ResidencePicker({required this.value, required this.onChanged});
 
   final String? value; // 코드 값
-  final ValueChanged<String?> onChanged;
+  final ValueChanged<String?> onChanged; // 값 변경 콜백
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -286,7 +286,7 @@ class _ResidencePicker extends ConsumerWidget {
 class _SectionTitle extends StatelessWidget {
   const _SectionTitle(this.text);
 
-  final String text;
+  final String text; // 표시 텍스트
 
   @override
   Widget build(BuildContext context) {
@@ -308,12 +308,12 @@ class _AmountField extends StatelessWidget {
     this.helper,
   });
 
-  final TextEditingController controller;
+  final TextEditingController controller; // 텍스트 입력 컨트롤러
   final String label; // 화면에 보이는 한글 라벨
-  final String hint;
-  final String suffix;
-  final String? helper;
-  final VoidCallback onChanged;
+  final String hint; // 입력 힌트
+  final String suffix; // 입력 접미사
+  final String? helper; // 보조 설명
+  final VoidCallback onChanged; // 값 변경 콜백
 
   @override
   Widget build(BuildContext context) {
@@ -343,11 +343,11 @@ class _TriState extends StatelessWidget {
     required this.onChanged,
   });
 
-  final String title;
-  final String yes;
-  final String no;
+  final String title; // 섹션 제목
+  final String yes; // 예 라벨
+  final String no; // 아니오 라벨
   final bool? value; // 코드 값
-  final ValueChanged<bool?> onChanged;
+  final ValueChanged<bool?> onChanged; // 값 변경 콜백
 
   static const _unset = 'unset';
 

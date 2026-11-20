@@ -11,11 +11,11 @@ const schema = z.object({
 
 /** JWT·세션 수명 설정. */
 export interface AuthConfig {
-  secret: string;
-  issuer: string;
-  audience: string;
-  accessTtlSec: number;
-  refreshTtlSec: number;
+  secret: string; // secret
+  issuer: string; // issuer
+  audience: string; // audience
+  accessTtlSec: number; // accessTtlSec
+  refreshTtlSec: number; // refreshTtlSec
 }
 
 /** 모듈 상수 MIN_SECRET_LENGTH. */

@@ -79,11 +79,11 @@ class HousingMeta {
     dataUpdatedAt: asString(json['dataUpdatedAt']),
   );
 
-  final List<Option> supplyTypes;
-  final List<Option> housingTypes;
-  final List<Option> statuses;
-  final List<Option> verdicts;
-  final List<Option> sorts;
+  final List<Option> supplyTypes; // JSON·도메인
+  final List<Option> housingTypes; // JSON·도메인
+  final List<Option> statuses; // JSON·도메인
+  final List<Option> verdicts; // JSON·도메인
+  final List<Option> sorts; // JSON·도메인
   final List<String> sidos; // 시·도 필터
 
   /// 소득 기준표. 서버가 주지 않으면 null (소득 수준 안내만 생략된다)

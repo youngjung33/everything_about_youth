@@ -12,14 +12,14 @@ import type { ChecklistStep, LivingGuideDraft } from "@/features/living/domain/g
  */
 
 export interface CuratedCatalogEntry {
-  slug: string;
-  title: string;
-  organization: string;
-  procedureTypeId: ProcedureTypeId;
-  tags: string[];
-  summary: string;
-  url: string | null;
-  steps: Omit<ChecklistStep, "order">[];
+  slug: string; // slug
+  title: string; // title
+  organization: string; // organization
+  procedureTypeId: ProcedureTypeId; // procedureTypeId
+  tags: string[]; // 태그 필터
+  summary: string; // summary
+  url: string | null; // url
+  steps: Omit<ChecklistStep, "order">[]; // steps
 }
 
 /** 큐레이션 catalog — sync `curated` 소스 단일 출처 */

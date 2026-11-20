@@ -16,13 +16,14 @@ abstract interface class DeadlineNotificationService {
 
 /// 마감 알림을 걸 공고 한 건.
 @immutable
+/// SavedNoticeReminderTarget 앱 코어·데이터 계층.
 class SavedNoticeReminderTarget {
   const SavedNoticeReminderTarget({required this.id, required this.title, this.applicationStart, this.applicationEnd});
 
   final String id; // 항목 식별자
-  final String title;
-  final String? applicationStart;
-  final String? applicationEnd;
+  final String title; // title
+  final String? applicationStart; // applicationStart
+  final String? applicationEnd; // applicationEnd
 }
 
 /// 모바일·데스크톱. 웹은 [NoopDeadlineNotificationService].
@@ -30,7 +31,7 @@ class LocalDeadlineNotificationService implements DeadlineNotificationService {
   LocalDeadlineNotificationService({FlutterLocalNotificationsPlugin? plugin})
     : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
 
-  final FlutterLocalNotificationsPlugin _plugin;
+  final FlutterLocalNotificationsPlugin _plugin; // _plugin
   void Function(String noticeId)? _onOpenNotice;
   var _initialized = false;
 

@@ -11,8 +11,8 @@ import 'app_env.dart';
 class AppConfig {
   const AppConfig({required this.apiBaseUrl, required this.env});
 
-  final String apiBaseUrl;
-  final AppEnv env;
+  final String apiBaseUrl; // apiBaseUrl
+  final AppEnv env; // env
 
   static const String _envBaseUrl = String.fromEnvironment('API_BASE_URL');
   static const String _appEnv = String.fromEnvironment('APP_ENV');

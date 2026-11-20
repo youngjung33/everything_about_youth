@@ -7,6 +7,7 @@ import { SIDO_LIST, type Sido } from "@/common/domain/region";
 import type { ProgramSort } from "@/features/benefits/application/ports/program-repository";
 import type { ProgramFilters } from "@/features/benefits/application/use-cases/search-programs";
 
+/** RawSearchParams */
 export type RawSearchParams = Record<string, string | string[] | undefined>;
 
 /**
@@ -35,20 +36,20 @@ export const VERDICTS: EligibilityVerdict[] = ["eligible", "check", "ineligible"
 
 /** 파싱된 목록 쿼리 */
 export interface ParsedSearch {
-  filters: ProgramFilters;
-  sort: ProgramSort;
-  page: number;
-  profile: ApplicantProfile;
-  hasProfile: boolean;
-  verdicts: EligibilityVerdict[];
+  filters: ProgramFilters; // 검색 필터
+  sort: ProgramSort; // 정렬 기준
+  page: number; // 현재 페이지
+  profile: ApplicantProfile; // 신청자 프로필
+  hasProfile: boolean; // hasProfile
+  verdicts: EligibilityVerdict[]; // 자격 판정 필터
   /** 폼에 다시 채울 값 */
   form: {
-    sidos: Sido[];
-    sigungu: string;
-    categoryIds: CategoryId[];
-    tags: string[];
-    statuses: ProgramStatus[];
-    q: string;
+    sidos: Sido[]; // 시·도 필터
+    sigungu: string; // 시·군·구 필터
+    categoryIds: CategoryId[]; // 카테고리 필터
+    tags: string[]; // 태그 필터
+    statuses: ProgramStatus[]; // 상태 필터
+    q: string; // q
   };
 }
 

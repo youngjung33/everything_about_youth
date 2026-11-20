@@ -7,9 +7,9 @@ import '../bootstrap/bootstrap_task.dart';
 class FeatureEntry {
   const FeatureEntry({required this.title, required this.description, required this.icon});
 
-  final String title;
-  final String description;
-  final IconData icon;
+  final String title; // title
+  final String description; // description
+  final IconData icon; // icon
 }
 
 /// 청년이 혜택을 받을 수 있는 서비스 하나(임대주택, 일자리, 금융 …)가 코어에 꽂히는 규격.

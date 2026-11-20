@@ -56,10 +56,10 @@ export type ErrorCode = keyof typeof ERROR_CODES;
 /** 클라이언트에 내려주는 통합 오류 JSON. */
 export interface ApiErrorBody {
   error: {
-    code: ErrorCode;
-    message: string;
-    requestId?: string;
-    details?: Record<string, unknown>;
+    code: ErrorCode; // 오류 코드
+    message: string; // 안내 문구
+    requestId?: string; // requestId
+    details?: Record<string, unknown>; // details
   };
 }
 
@@ -74,7 +74,7 @@ export class ApiError extends Error {
     code: ErrorCode,
     options: { message?: string; details?: Record<string, unknown>; headers?: Record<string, string> } = {},
   ) {
-    super(options.message ?? ERROR_CODES[code].message);
+    super(options.message ?? ERROR_CODES[code].message); // super
     this.name = "ApiError";
     this.code = code;
     this.details = options.details;
@@ -101,10 +101,10 @@ export function buildErrorBody(
 export function errorResponse(
   code: ErrorCode,
   options: {
-    message?: string;
-    requestId?: string | null;
-    details?: Record<string, unknown>;
-    headers?: Record<string, string>;
+    message?: string; // 안내 문구
+    requestId?: string | null; // requestId
+    details?: Record<string, unknown>; // details
+    headers?: Record<string, string>; // headers
   } = {},
 ): Response {
   return Response.json(buildErrorBody(code, options), {

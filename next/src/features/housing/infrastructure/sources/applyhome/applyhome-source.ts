@@ -15,17 +15,19 @@ const BASE = "https://api.odcloud.kr/api/ApplyhomeInfoDetailSvc/v1";
 const PER_PAGE = 100;
 const MAX_PAGES = 20;
 
+/** ApplyhomeSourceOptions */
 export interface ApplyhomeSourceOptions {
-  serviceKey?: string;
-  getText?: (url: string) => Promise<string>;
-  delayMs?: number;
+  serviceKey?: string; // serviceKey
+  getText?: (url: string) => Promise<string>; // getText
+  delayMs?: number; // delayMs
   /** 모집공고일 조회 시작: 오늘로부터 며칠 전 */
-  lookbackDays?: number;
+  lookbackDays?: number; // 모집공고일 조회 시작: 오늘로부터 며칠 전
   /** 주택형(면적/분양가) 조회를 접수 마감이 지난 공고에도 할지 여부 (기본 false) */
-  includeClosedModels?: boolean;
-  onWarn?: (message: string) => void;
+  includeClosedModels?: boolean; // 주택형(면적/분양가) 조회를 접수 마감이 지난 공고에도 할지 여부 (기본 false)
+  onWarn?: (message: string) => void; // onWarn
 }
 
+/** ApplyhomeSource */
 export class ApplyhomeSource implements NoticeSourcePort {
   readonly id = "applyhome" as const;
   readonly label = "청약홈";

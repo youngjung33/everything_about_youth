@@ -31,7 +31,7 @@ class Region {
       Region(sido: asString(json['sido']) ?? '', sigungu: asString(json['sigungu']));
 
   final String sido; // 시·도 필터
-  final String? sigungu;
+  final String? sigungu; // JSON·도메인
 }
 
 /// 프로필·항목 기준 자격 판정 결과와 사유.
@@ -46,10 +46,10 @@ class Eligibility {
     notes: asStringList(json['notes']),
   );
 
-  final Verdict verdict;
-  final String verdictLabel;
-  final List<String> reasons;
-  final List<String> notes;
+  final Verdict verdict; // JSON·도메인
+  final String verdictLabel; // JSON·도메인
+  final List<String> reasons; // JSON·도메인
+  final List<String> notes; // JSON·도메인
 }
 
 /// 정책 목록에 보여주는 요약 정보
@@ -98,23 +98,23 @@ class ProgramSummary {
   );
 
   final String id; // 항목 식별자
-  final String title;
-  final String organization;
-  final String categoryId;
-  final String categoryLabel;
-  final List<String> tags;
-  final ProgramStatus status;
-  final String statusLabel;
-  final String? dday;
-  final List<Region> regions;
-  final String regionLabel;
-  final String? applicationStart;
-  final String? applicationEnd;
-  final String? announcementDate;
-  final String? summary;
-  final String? url;
-  final List<String> sourceLabels;
-  final Eligibility? eligibility;
+  final String title; // JSON·도메인
+  final String organization; // JSON·도메인
+  final String categoryId; // JSON·도메인
+  final String categoryLabel; // JSON·도메인
+  final List<String> tags; // JSON·도메인
+  final ProgramStatus status; // JSON·도메인
+  final String statusLabel; // JSON·도메인
+  final String? dday; // JSON·도메인
+  final List<Region> regions; // JSON·도메인
+  final String regionLabel; // JSON·도메인
+  final String? applicationStart; // JSON·도메인
+  final String? applicationEnd; // JSON·도메인
+  final String? announcementDate; // JSON·도메인
+  final String? summary; // JSON·도메인
+  final String? url; // JSON·도메인
+  final List<String> sourceLabels; // JSON·도메인
+  final Eligibility? eligibility; // JSON·도메인
 }
 
 /// 원문·출처 기관 정보.
@@ -136,12 +136,11 @@ class ProgramSource {
     fetchedAt: asString(json['fetchedAt']) ?? '',
   );
 
-  final String source;
-  final String sourceLabel;
-  final String externalId;
-  final String? url;
-  final String fetchedAt;
-
+  final String source; // JSON·도메인
+  final String sourceLabel; // JSON·도메인
+  final String externalId; // JSON·도메인
+  final String? url; // JSON·도메인
+  final String fetchedAt; // JSON·도메인
   String? get fetchedDate => fetchedAt.length >= 10 ? fetchedAt.substring(0, 10) : null;
 }
 
@@ -160,9 +159,9 @@ class ProgramDetail {
     googleCalendarUrl: asString(json['googleCalendarUrl']),
   );
 
-  final ProgramSummary summary;
-  final List<ProgramSource> sources;
-  final String? googleCalendarUrl;
+  final ProgramSummary summary; // JSON·도메인
+  final List<ProgramSource> sources; // JSON·도메인
+  final String? googleCalendarUrl; // JSON·도메인
 }
 
 /// API 페이지네이션 응답 한 페이지.
@@ -186,12 +185,12 @@ class ProgramPage {
     today: asString(json['today']) ?? '',
   );
 
-  final List<ProgramSummary> items;
-  final int total;
-  final int page;
-  final int pageSize;
-  final int totalPages;
-  final String today;
+  final List<ProgramSummary> items; // JSON·도메인
+  final int total; // JSON·도메인
+  final int page; // JSON·도메인
+  final int pageSize; // JSON·도메인
+  final int totalPages; // JSON·도메인
+  final String today; // JSON·도메인
 }
 
 /// 관심 저장 목록 API 응답.
@@ -205,7 +204,7 @@ class SavedProgramList {
     today: asString(json['today']) ?? '',
   );
 
-  final List<ProgramSummary> items;
-  final int total;
-  final String today;
+  final List<ProgramSummary> items; // JSON·도메인
+  final int total; // JSON·도메인
+  final String today; // JSON·도메인
 }

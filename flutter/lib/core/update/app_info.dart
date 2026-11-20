@@ -8,10 +8,10 @@ class AppInfo {
   const AppInfo({required this.version, required this.platform});
 
   /// pubspec 의 `version` (빌드 번호 제외). 예: `1.0.0`
-  final String version;
+  final String version; // version
 
   /// `android` | `ios` | `web` | `other`
-  final String platform;
+  final String platform; // platform
 
   /// 버전을 알 수 없는 상태. 헤더를 보내지 않는다. (테스트와 버전 조회 실패)
   static const unknown = AppInfo(version: '', platform: 'other');

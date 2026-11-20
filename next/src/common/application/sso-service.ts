@@ -20,10 +20,10 @@ import type { Clock, Logger } from "./system";
 
 /** 제공자 노출·설정 오류. */
 export interface SsoProviderStatus {
-  id: SsoProviderId;
-  name: string;
+  id: SsoProviderId; // 식별자
+  name: string; // 화면 표시 이름
   /** 설정이 되어 지금 쓸 수 있으면 true. 아니면 앱이 "준비 중"으로 비활성 표시한다. */
-  enabled: boolean;
+  enabled: boolean; // 설정이 되어 지금 쓸 수 있으면 true. 아니면 앱이 "준비 중"으로 비활성 표시한다
 }
 
 /** 로그인 업체에서 돌아온 브라우저를 어디로 보낼지 */
@@ -37,18 +37,18 @@ export const TICKET_TTL_SEC = 120;
 
 /** SsoService 의존성 묶음. */
 export interface SsoDeps {
-  providers: SsoProviders;
-  state: SsoStateCodec;
-  users: UserStore;
-  tickets: SsoTicketStore;
-  clients: AuthClientStore;
-  auth: AuthService;
-  clock: Clock;
-  logger: Logger;
-  redirects: RedirectRules;
-  newId?: () => string;
+  providers: SsoProviders; // 등록된 SSO 제공자
+  state: SsoStateCodec; // OAuth state 코덱
+  users: UserStore; // 회원 저장소
+  tickets: SsoTicketStore; // 일회용 티켓 저장소
+  clients: AuthClientStore; // 세션 저장소
+  auth: AuthService; // 인증 서비스
+  clock: Clock; // 시계
+  logger: Logger; // 로거
+  redirects: RedirectRules; // redirect 허용 규칙
+  newId?: () => string; // id 생성 함수(테스트용 주입)
   /** 추측할 수 없는 일회용 값을 만든다. (테스트에서 고정) */
-  newSecret?: () => string;
+  newSecret?: () => string; // 추측할 수 없는 일회용 값을 만든다. (테스트에서 고정)
 }
 
 /**
@@ -75,11 +75,11 @@ export class SsoService {
 
   /** 1단계: 로그인 주소를 만든다. `callbackBase` 는 로그인 업체가 돌아올 서버의 바깥 주소(origin)다. */
   async start(input: {
-    provider: unknown;
-    redirectUri: unknown;
-    codeChallenge: unknown;
-    callbackBase: string;
-    callbackPath: (provider: SsoProviderId) => string;
+    provider: unknown; // SSO 제공자 id
+    redirectUri: unknown; // 로그인 후 앱 복귀 URI
+    codeChallenge: unknown; // PKCE code challenge
+    callbackBase: string; // 서버 콜백 origin
+    callbackPath: (provider: SsoProviderId) => string; // 제공자별 콜백 경로
   }): Promise<{ authorizationUrl: string }> {
     if (!isSsoProviderId(input.provider)) throw new SsoError("invalid_request", "알 수 없는 로그인 방법입니다.");
     if (typeof input.codeChallenge !== "string" || !PKCE_CHALLENGE_PATTERN.test(input.codeChallenge)) {
@@ -108,10 +108,10 @@ export class SsoService {
    * 브라우저가 보는 요청이라 JSON 오류를 줄 수 없다. 실패는 앱 주소의 `?error=` 로 알린다.
    */
   async handleCallback(input: {
-    provider: SsoProviderId;
-    code: string | null;
-    state: string | null;
-    error: string | null;
+    provider: SsoProviderId; // SSO 제공자 id
+    code: string | null; // 인가 코드
+    state: string | null; // 서명된 state
+    error: string | null; // 제공자 오류 코드
   }): Promise<CallbackOutcome> {
     let state;
     try {

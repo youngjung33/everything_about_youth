@@ -9,9 +9,9 @@ export type ApplyhomeKind = "apt" | "urbty" | "remndr" | "pblPvtRent";
 
 /** 상세·모델 API 경로 쌍 */
 export interface ApplyhomeEndpoint {
-  kind: ApplyhomeKind;
-  detail: string;
-  model: string;
+  kind: ApplyhomeKind; // kind
+  detail: string; // detail
+  model: string; // model
 }
 
 /** 청약홈 분양정보 조회 서비스(ApplyhomeInfoDetailSvc) 의 상세/주택형 오퍼레이션 쌍 */
@@ -64,13 +64,13 @@ function resolveSupplyType(kind: ApplyhomeKind, item: Json, title: string): Supp
 }
 
 function buildApplyhomeEligibilityExcerpt(input: {
-  item: Json;
-  kind: ApplyhomeKind;
-  title: string;
-  supplyLabel: string;
-  regionLabel: string | null;
-  start: IsoDate | null;
-  end: IsoDate | null;
+  item: Json; // item
+  kind: ApplyhomeKind; // kind
+  title: string; // title
+  supplyLabel: string; // supplyLabel
+  regionLabel: string | null; // regionLabel
+  start: IsoDate | null; // 수집 실행 시작
+  end: IsoDate | null; // end
 }): string | null {
   const parts: string[] = [];
   const house = [str(input.item, "HOUSE_SECD_NM"), str(input.item, "HOUSE_DTL_SECD_NM"), str(input.item, "RENT_SECD_NM")]

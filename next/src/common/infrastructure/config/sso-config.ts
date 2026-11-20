@@ -25,16 +25,16 @@ const schema = z.object({
 /** SSO 제공자별 client·secret·scope. */
 export interface SsoConfig {
   /** 로그인 업체가 돌아올 서버의 바깥 주소. 없으면 요청의 origin 을 쓴다. */
-  publicBaseUrl: string | null;
-  redirects: RedirectRules;
+  publicBaseUrl: string | null; // 로그인 업체가 돌아올 서버의 바깥 주소. 없으면 요청의 origin 을 쓴다
+  redirects: RedirectRules; // redirect 허용 규칙
   providers: {
-    google?: { clientId: string; clientSecret: string };
-    apple?: { clientId: string; teamId: string; keyId: string; privateKey: string };
-    naver?: { clientId: string; clientSecret: string };
-    kakao?: { clientId: string; clientSecret: string | null };
+    google?: { clientId: string; clientSecret: string }; // google
+    apple?: { clientId: string; teamId: string; keyId: string; privateKey: string }; // apple
+    naver?: { clientId: string; clientSecret: string }; // naver
+    kakao?: { clientId: string; clientSecret: string | null }; // kakao
   };
   /** 일부만 적힌 설정처럼, 조용히 넘기면 안 되는 문제. 해당 업체는 꺼진다. */
-  problems: string[];
+  problems: string[]; // 일부만 적힌 설정처럼, 조용히 넘기면 안 되는 문제. 해당 업체는 꺼진다
 }
 
 /**

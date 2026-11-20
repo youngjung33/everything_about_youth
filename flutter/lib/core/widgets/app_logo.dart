@@ -10,8 +10,8 @@ class AppLogo extends StatelessWidget {
   const AppLogo({super.key, this.size = 32, this.showName = true});
 
   /// 마크의 한 변 길이
-  final double size;
-  final bool showName;
+  final double size; // size
+  final bool showName; // showName
 
   static const name = '청년의 모든 것';
 
@@ -48,7 +48,7 @@ class AppLogo extends StatelessWidget {
 class _Mark extends StatelessWidget {
   const _Mark({required this.size});
 
-  final double size;
+  final double size; // size
 
   @override
   Widget build(BuildContext context) {

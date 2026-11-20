@@ -10,6 +10,7 @@ import '../network/api_error_code.dart';
 /// 만료 시각은 서버 시계가 아니라 **받은 시점의 기기 시계 + 남은 초**로 계산한다.
 /// (기기 시계가 틀려 있어도 "받은 지 얼마나 됐나"는 맞는다)
 @immutable
+/// AuthTokens 앱 코어·데이터 계층.
 class AuthTokens {
   const AuthTokens({
     required this.accessToken,
@@ -19,13 +20,13 @@ class AuthTokens {
     this.member = false,
   });
 
-  final String accessToken;
-  final DateTime accessExpiresAt;
-  final String refreshToken;
-  final DateTime refreshExpiresAt;
+  final String accessToken; // accessToken
+  final DateTime accessExpiresAt; // accessExpiresAt
+  final String refreshToken; // refreshToken
+  final DateTime refreshExpiresAt; // refreshExpiresAt
 
   /// 소셜 로그인으로 만든 회원 세션인가. false 면 비회원 세션이다.
-  final bool member;
+  final bool member; // member
 
   /// 만료 직전에 보낸 요청이 서버에서 만료되지 않도록 여유를 둔다.
   static const skew = Duration(seconds: 30);

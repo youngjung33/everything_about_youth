@@ -21,11 +21,11 @@ import {
 
 /** HTTP 와 무관한 API 처리 로직. 라우트 파일은 이 결과를 Response 로 감싸기만 한다. */
 export interface FinanceApiDeps {
-  searchSchemes: SearchSchemes;
-  getSchemeDetail: GetSchemeDetail;
-  manageSavedSchemes: ManageSavedSchemes;
-  syncRuns: Pick<SyncRunRepository, "lastSuccessAt">;
-  clock: Clock;
+  searchSchemes: SearchSchemes; // searchSchemes
+  getSchemeDetail: GetSchemeDetail; // getSchemeDetail
+  manageSavedSchemes: ManageSavedSchemes; // manageSavedSchemes
+  syncRuns: Pick<SyncRunRepository, "lastSuccessAt">; // syncRuns
+  clock: Clock; // 시계
 }
 
 /** API 목록 한 페이지 최대 건수 */
@@ -47,6 +47,7 @@ function parsePageSize(searchParams: URLSearchParams): number {
   return Math.min(MAX_API_PAGE_SIZE, Math.floor(n));
 }
 
+/** handleListSchemes 함수 */
 export async function handleListSchemes(
   searchParams: URLSearchParams,
   deps: FinanceApiDeps,
@@ -63,6 +64,7 @@ export async function handleListSchemes(
   return { status: 200, body: toSchemeListDto(result, todayInKst(deps.clock.now())) };
 }
 
+/** handleGetScheme 함수 */
 export async function handleGetScheme(
   id: string,
   searchParams: URLSearchParams,
@@ -79,14 +81,16 @@ export async function handleGetMeta(deps: Pick<FinanceApiDeps, "syncRuns">): Pro
   return { status: 200, body: buildFinanceMeta(await deps.syncRuns.lastSuccessAt()) };
 }
 
+/** SavedIdsDto */
 export interface SavedIdsDto {
-  ids: string[];
+  ids: string[]; // ids
 }
 
+/** SavedListDto */
 export interface SavedListDto {
-  items: SchemeSummaryDto[];
-  total: number;
-  today: string;
+  items: SchemeSummaryDto[]; // 결과 목록
+  total: number; // 전체 건수
+  today: string; // 상태 계산 기준일
 }
 
 /** GET /api/v1/finance/saved/ids  — 목록 하트 표시용 */
@@ -106,6 +110,7 @@ export async function handleListSaved(
   return { status: 200, body: { items: items.map((i) => toSchemeSummaryDto(i, today)), total: items.length, today } };
 }
 
+/** handleSaveScheme 함수 */
 export async function handleSaveScheme(
   userId: string,
   schemeId: string,
@@ -119,6 +124,7 @@ export async function handleSaveScheme(
   return { status: 200, body: { saved: true } };
 }
 
+/** handleUnsaveScheme 함수 */
 export async function handleUnsaveScheme(
   userId: string,
   schemeId: string,
@@ -137,6 +143,7 @@ export async function handleMergeSaved(
   return { status: 200, body: { ids: await deps.manageSavedSchemes.merge(userId, body.ids) } };
 }
 
+/** handleSchemeCalendar 함수 */
 export async function handleSchemeCalendar(
   id: string,
   deps: Pick<FinanceApiDeps, "getSchemeDetail" | "clock">,

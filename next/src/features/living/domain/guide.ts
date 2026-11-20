@@ -2,39 +2,42 @@ import type { IsoDate } from "@/common/domain/date";
 import type { ProcedureTypeId, GuideStatus } from "./enums";
 import type { Region } from "@/common/domain/region";
 
+/** 도메인 interface: ChecklistStep. */
 export interface ChecklistStep {
-  order: number;
-  title: string;
-  summary: string;
-  url: string | null;
+  order: number; // order
+  title: string; // title
+  summary: string; // summary
+  url: string | null; // url
 }
 
 /** 안내의 원본 출처 */
 export interface GuideSourceRef {
-  source: import("./enums").SourceId;
-  externalId: string;
-  url: string | null;
-  raw: unknown;
-  fetchedAt: string;
+  source: import("./enums").SourceId; // source
+  externalId: string; // externalId
+  url: string | null; // url
+  raw: unknown; // raw
+  fetchedAt: string; // fetchedAt
 }
 
+/** 도메인 interface: LivingGuide. */
 export interface LivingGuide {
-  id: string;
-  mergeKey: string;
-  title: string;
-  organization: string;
-  procedureTypeId: ProcedureTypeId;
-  tags: string[];
-  regions: Region[];
-  applicationStart: IsoDate | null;
-  applicationEnd: IsoDate | null;
-  announcementDate: IsoDate | null;
-  summary: string | null;
-  checklistSteps: ChecklistStep[];
-  url: string | null;
-  sources: GuideSourceRef[];
+  id: string; // id
+  mergeKey: string; // mergeKey
+  title: string; // title
+  organization: string; // organization
+  procedureTypeId: ProcedureTypeId; // procedureTypeId
+  tags: string[]; // tags
+  regions: Region[]; // regions
+  applicationStart: IsoDate | null; // applicationStart
+  applicationEnd: IsoDate | null; // applicationEnd
+  announcementDate: IsoDate | null; // announcementDate
+  summary: string | null; // summary
+  checklistSteps: ChecklistStep[]; // checklistSteps
+  url: string | null; // url
+  sources: GuideSourceRef[]; // sources
 }
 
+/** 도메인 type: LivingGuideDraft. */
 export type LivingGuideDraft = Omit<LivingGuide, "id" | "mergeKey">;
 
 /** 접수·진행 상태. 날짜가 없으면 진행중(open)으로 본다. */

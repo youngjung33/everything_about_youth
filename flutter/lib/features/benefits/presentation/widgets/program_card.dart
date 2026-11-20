@@ -16,7 +16,7 @@ class MetaItem extends StatelessWidget {
 
   final String label; // 화면에 보이는 한글 라벨
   final String value; // 코드 값
-  final double width;
+  final double width; // 가로 너비
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +39,8 @@ class MetaItem extends StatelessWidget {
 class ProgramBadges extends StatelessWidget {
   const ProgramBadges({super.key, required this.program, this.largeEligibility = false});
 
-  final ProgramSummary program;
-  final bool largeEligibility;
+  final ProgramSummary program; // 프로그램 요약
+  final bool largeEligibility; // 자격 배지 크게
 
   @override
   Widget build(BuildContext context) {
@@ -69,8 +69,8 @@ class ProgramBadges extends StatelessWidget {
 class ProgramCard extends StatelessWidget {
   const ProgramCard({super.key, required this.program, this.onTap});
 
-  final ProgramSummary program;
-  final VoidCallback? onTap;
+  final ProgramSummary program; // 프로그램 요약
+  final VoidCallback? onTap; // 탭 시 콜백
 
   @override
   Widget build(BuildContext context) {

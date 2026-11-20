@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 class CenteredScrollView extends StatelessWidget {
   const CenteredScrollView({super.key, required this.child, this.padding = const EdgeInsets.all(24)});
 
-  final Widget child;
-  final EdgeInsets padding;
+  final Widget child; // child
+  final EdgeInsets padding; // padding
 
   @override
   Widget build(BuildContext context) {

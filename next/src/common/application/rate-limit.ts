@@ -1,27 +1,27 @@
 /** 같은 키가 `windowMs` 동안 `limit` 번까지 허용되는 규칙 */
 export interface RateLimitPolicy {
   /** 키 이름공간. 정책마다 따로 센다. */
-  name: string;
-  limit: number;
-  windowMs: number;
+  name: string; // 키 이름공간. 정책마다 따로 센다
+  limit: number; // 최대 건수
+  windowMs: number; // windowMs
 }
 
 /** 남은 호출·리셋 시각. */
 export interface RateLimitResult {
-  allowed: boolean;
-  limit: number;
+  allowed: boolean; // 허용 redirect URI 목록
+  limit: number; // 최대 건수
   /** 이번 요청을 센 뒤 남은 횟수 (거절이면 0) */
-  remaining: number;
+  remaining: number; // 이번 요청을 센 뒤 남은 횟수 (거절이면 0)
   /** 창이 끝나(횟수가 초기화되)는 시각 (ms) */
-  resetAtMs: number;
+  resetAtMs: number; // 창이 끝나(횟수가 초기화되)는 시각 (ms)
   /** 거절됐을 때 몇 초 뒤에 다시 보내면 되는지 (허용이면 0) */
-  retryAfterSec: number;
+  retryAfterSec: number; // 거절됐을 때 몇 초 뒤에 다시 보내면 되는지 (허용이면 0)
 }
 
 /** 슬라이딩 윈도 호출 제한. */
 export interface RateLimiter {
   /** 요청 한 번을 세고 허용 여부를 돌려준다. */
-  check(key: string, policy: RateLimitPolicy): RateLimitResult;
+  check(key: string, policy: RateLimitPolicy): RateLimitResult; // 요청 한 번을 세고 허용 여부를 돌려준다
 }
 
 /**

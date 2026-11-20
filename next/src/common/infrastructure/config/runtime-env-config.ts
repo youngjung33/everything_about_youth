@@ -12,7 +12,7 @@ const schema = z.object({
 
 /** APP_ENV·배포 구분. */
 export interface RuntimeEnv {
-  appEnv: AppEnv;
+  appEnv: AppEnv; // appEnv
 }
 
 /**

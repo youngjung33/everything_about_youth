@@ -34,7 +34,7 @@ class SecureTokenStore implements TokenStore {
 
   static const key = 'eay.auth.tokens.v1';
 
-  final FlutterSecureStorage _storage;
+  final FlutterSecureStorage _storage; // _storage
 
   @override
   Future<AuthTokens?> read() async {

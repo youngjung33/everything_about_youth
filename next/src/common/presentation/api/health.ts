@@ -5,18 +5,18 @@ import type { ApiResult } from "./respond";
 /** GET /health 응답. */
 export interface HealthDto {
   /** 프로세스는 살아 있다 */
-  status: "ok";
+  status: "ok"; // 프로세스는 살아 있다
   /** DB 등 준비가 끝났으면 true. false 이면 로드밸런서가 트래픽을 빼야 한다 */
-  ready: boolean;
-  appEnv: string;
+  ready: boolean; // DB 등 준비가 끝났으면 true. false 이면 로드밸런서가 트래픽을 빼야 한다
+  appEnv: string; // appEnv
   checks: {
-    database: "ok" | "fail";
+    database: "ok" | "fail"; // database
   };
 }
 
 function checkDatabase(): "ok" | "fail" {
   try {
-    sqliteOf(getCommonContainer()).raw.prepare("SELECT 1").get();
+    sqliteOf(getCommonContainer()).raw.prepare("SELECT 1").get(); // sqliteOf
     return "ok";
   } catch {
     return "fail";

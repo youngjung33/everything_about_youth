@@ -8,9 +8,9 @@ import { SqliteSyncRunRepository } from "./persistence/sqlite/sqlite-sync-run-re
 
 /** 금융·자금 SQLite 리포지토리. 2차 Postgres 는 이 함수만 finance 쪽에서 분기한다. */
 export function createFinanceRepositories(persistence: AppPersistence): {
-  schemes: SchemeRepository;
-  savedSchemes: SavedSchemeRepository;
-  syncRuns: SyncRunRepository;
+  schemes: SchemeRepository; // schemes
+  savedSchemes: SavedSchemeRepository; // savedSchemes
+  syncRuns: SyncRunRepository; // syncRuns
 } {
   const db = requireSqlite(persistence).db;
   return {

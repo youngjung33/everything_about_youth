@@ -16,7 +16,7 @@ abstract interface class FeatureConfigRemote {
 class ApiFeatureConfigRemote implements FeatureConfigRemote {
   ApiFeatureConfigRemote(this._api);
 
-  final ApiClient _api;
+  final ApiClient _api; // _api
 
   @override
   Future<Map<String, bool>> fetch() async => parseFeatureConfig(await _api.getJson('/features'));
@@ -44,7 +44,7 @@ class SharedPrefsFeatureConfigCache implements FeatureConfigCache {
 
   static const key = 'eay.features.v1';
 
-  final SharedPreferences _prefs;
+  final SharedPreferences _prefs; // _prefs
 
   @override
   Map<String, bool> read() {

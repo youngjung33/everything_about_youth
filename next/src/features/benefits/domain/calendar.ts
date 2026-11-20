@@ -6,10 +6,10 @@ import { buildCalendarEventDetails } from "@/common/domain/calendar-event-detail
 
 /** Google 캘린더 마감 일정 추가 URL */
 export function googleCalendarDeadlineUrl(input: {
-  title: string;
-  applicationEnd: string | null;
-  summary?: string | null;
-  url: string | null;
+  title: string; // title
+  applicationEnd: string | null; // applicationEnd
+  summary?: string | null; // summary
+  url: string | null; // url
 }): string | null {
   const ymd = compactYmd(input.applicationEnd);
   if (!ymd) return null;
@@ -26,12 +26,12 @@ export function googleCalendarDeadlineUrl(input: {
 
 /** 신청 마감 ICS 파일 본문 */
 export function deadlineIcs(input: {
-  programId: string;
-  title: string;
-  applicationEnd: string | null;
-  summary?: string | null;
-  url: string | null;
-  now: Date;
+  programId: string; // programId
+  title: string; // title
+  applicationEnd: string | null; // applicationEnd
+  summary?: string | null; // summary
+  url: string | null; // url
+  now: Date; // now
 }): string | null {
   const ymd = compactYmd(input.applicationEnd);
   if (!ymd) return null;
@@ -61,11 +61,13 @@ export function deadlineIcs(input: {
   return `${lines.join("\r\n")}\r\n`;
 }
 
+/** 도메인 function: compactYmd. */
 function compactYmd(isoDate: string | null): string | null {
   if (!isoDate || !/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) return null;
   return isoDate.replaceAll("-", "");
 }
 
+/** 도메인 function: nextYmd. */
 function nextYmd(isoDate: string): string | null {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoDate);
   if (!match) return null;
@@ -76,11 +78,13 @@ function nextYmd(isoDate: string): string | null {
   return `${y}${m}${d}`;
 }
 
+/** 도메인 function: compactStamp. */
 function compactStamp(now: Date): string {
   const iso = now.toISOString().replace(/[-:]/g, "");
   return `${iso.slice(0, 8)}T${iso.slice(9, 15)}Z`;
 }
 
+/** 도메인 function: icsEscape. */
 function icsEscape(value: string): string {
   return value.replace(/\\/g, "\\\\").replace(/\r?\n/g, "\\n").replace(/,/g, "\\,").replace(/;/g, "\\;");
 }

@@ -6,15 +6,15 @@ export type DbDriver = AppConfig["dbDriver"];
 
 /** 1차: SQLite 파일. 2차: `supabase` = Supabase 호스팅 Postgres(인증·RLS 없음, Next service role). */
 export type SqliteAppPersistence = {
-  driver: "sqlite";
-  sqlite: SqliteConnection;
+  driver: "sqlite"; // driver
+  sqlite: SqliteConnection; // sqlite
 };
 
 /** Supabase 연결 설정. */
 export type SupabaseAppPersistence = {
-  driver: "supabase";
+  driver: "supabase"; // driver
   /** 2차: `SUPABASE_DATABASE_URL` 로 연결. Drizzle Postgres 리포지토리가 여기를 쓴다. */
-  databaseUrl: string;
+  databaseUrl: string; // 2차: `SUPABASE_DATABASE_URL` 로 연결. Drizzle Postgres 리포지토리가 여기를 쓴다
 };
 
 /** SQLite 또는 Supabase 영속화 묶음. */
@@ -44,7 +44,7 @@ export function createPersistence(config: AppConfig, env: Record<string, string 
   }
 
   const sqlite = openSqlite(config.sqlitePath);
-  runMigrations(sqlite.db);
+  runMigrations(sqlite.db); // runMigrations
   return { driver: "sqlite", sqlite };
 }
 

@@ -12,11 +12,12 @@ const LIST_PATH = "/opi/youthPlcyList.do";
 const PAGE_SIZE = 100;
 const MAX_PAGES = 30; // 상한 페이지(과도한 호출 방지)
 
+/** OntongFinanceSourceOptions */
 export interface OntongFinanceSourceOptions {
-  apiKey?: string;
-  logger?: Logger;
-  getText?: (url: string) => Promise<string>;
-  delayMs?: number;
+  apiKey?: string; // apiKey
+  logger?: Logger; // 로거
+  getText?: (url: string) => Promise<string>; // getText
+  delayMs?: number; // delayMs
 }
 
 /** 온통청년 응답 본문을 JSON 으로 파싱 */
@@ -63,7 +64,7 @@ export class OntongFinanceSource implements SchemeSourcePort {
       }
 
       const total =
-        toNumber(findDeep(body, "totalCount")) ?? toNumber(findDeep(body, "totCount")) ?? toNumber(findDeep(body, "total"));
+        toNumber(findDeep(body, "totalCount")) ?? toNumber(findDeep(body, "totCount")) ?? toNumber(findDeep(body, "total")); // toNumber
       if (items.length < PAGE_SIZE || (total !== null && rows.length >= total)) break;
       await sleep(delay);
     }

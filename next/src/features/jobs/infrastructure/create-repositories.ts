@@ -8,9 +8,9 @@ import { SqliteSyncRunRepository } from "./persistence/sqlite/sqlite-sync-run-re
 
 /** 일자리 SQLite 리포지토리. 2차 Postgres 는 이 함수만 jobs 쪽에서 분기한다. */
 export function createJobsRepositories(persistence: AppPersistence): {
-  postings: JobPostingRepository;
-  savedPostings: SavedJobPostingRepository;
-  syncRuns: SyncRunRepository;
+  postings: JobPostingRepository; // postings
+  savedPostings: SavedJobPostingRepository; // savedPostings
+  syncRuns: SyncRunRepository; // syncRuns
 } {
   const db = requireSqlite(persistence).db;
   return {

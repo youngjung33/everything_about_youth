@@ -38,6 +38,7 @@ export const TOTAL_ASSET_LIMIT_WON = {
 /** 자동차 가액 기준 (원) */
 export const CAR_LIMIT_WON = 45_420_000;
 
+/** 도메인 type: IncomeBase. */
 export type IncomeBase = "urban_worker" | "median";
 
 export const INCOME_BASE_LABELS: Record<IncomeBase, string> = {

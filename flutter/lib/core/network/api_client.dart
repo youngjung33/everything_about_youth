@@ -22,20 +22,20 @@ class ApiException implements Exception {
     this.retryAfter,
   });
 
-  final String message;
-  final int? statusCode;
+  final String message; // message
+  final int? statusCode; // statusCode
 
   /// [ApiErrorCode] 의 값
-  final String code;
+  final String code; // code
 
   /// 서버 로그와 대조할 요청 번호. 문의가 오면 이 값을 받는다.
-  final String? requestId;
+  final String? requestId; // requestId
 
   /// 코드별 부가 정보 (예: 업데이트가 필요하면 `storeUrl`)
-  final Map<String, Object?> details;
+  final Map<String, Object?> details; // details
 
   /// 요청이 너무 많아 거절됐을 때, 이만큼 기다렸다가 다시 보내면 된다.
-  final Duration? retryAfter;
+  final Duration? retryAfter; // retryAfter
 
   bool get isNotFound => statusCode == 404;
   bool get isUnauthorized => statusCode == 401;
@@ -72,13 +72,13 @@ class ApiClient {
   }) : _baseUri = Uri.parse(baseUrl),
        _http = httpClient ?? http.Client();
 
-  final Uri _baseUri;
+  final Uri _baseUri; // _baseUri
   final http.Client _http;
-  final Duration timeout;
-  final AuthTokenSource? auth;
-  final String apiPrefix;
-  final Map<String, String> defaultHeaders;
-  final UpdateRequiredCallback? onUpdateRequired;
+  final Duration timeout; // timeout
+  final AuthTokenSource? auth; // auth
+  final String apiPrefix; // apiPrefix
+  final Map<String, String> defaultHeaders; // defaultHeaders
+  final UpdateRequiredCallback? onUpdateRequired; // onUpdateRequired
 
   /// [query] 값이 `Iterable` 이면 같은 키를 반복(`?a=1&a=2`)한다. null/빈 문자열/빈 목록은 보내지 않는다.
   Future<Map<String, dynamic>> getJson(String path, {Map<String, Object?> query = const {}}) =>
@@ -143,7 +143,7 @@ class ApiClient {
   }
 
   Map<String, dynamic> _decode(http.Response response) {
-    final Object? decoded;
+    final Object? decoded; // decoded
     try {
       decoded = jsonDecode(utf8.decode(response.bodyBytes));
     } on FormatException {

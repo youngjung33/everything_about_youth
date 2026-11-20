@@ -33,11 +33,11 @@ export function buildOntongSummaryText(root: Json, existing: string | null | und
     chunks.push(t);
   };
 
-  add(existing?.trim() ?? null);
-  add(deepStr(root, "plcyExplnCn", "plcySmryCn", "expln", "summary"));
-  add(deepStr(root, "sprtQlfcCn", "slctnMthdCn", "rqutCn"));
-  add(deepStr(root, "aplyMthdCn", "aplyMthCn", "aplyMthdExpln"));
-  add(deepStr(root, "sprtCn", "sprtTrgtCn", "bizCn"));
+  add(existing?.trim() ?? null); // add
+  add(deepStr(root, "plcyExplnCn", "plcySmryCn", "expln", "summary")); // add
+  add(deepStr(root, "sprtQlfcCn", "slctnMthdCn", "rqutCn")); // add
+  add(deepStr(root, "aplyMthdCn", "aplyMthCn", "aplyMthdExpln")); // add
+  add(deepStr(root, "sprtCn", "sprtTrgtCn", "bizCn")); // add
 
   const merged = chunks.join("\n\n").trim();
   return merged || null;

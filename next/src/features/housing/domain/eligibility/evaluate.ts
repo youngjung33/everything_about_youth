@@ -4,6 +4,7 @@ import { isProfileEmpty, type ApplicantProfile } from "./applicant";
 import { SUPPLY_RULES, YOUTH_MAX, YOUTH_MIN, type ApplicantGroup, type AssetRule, type IncomeRule, type MoneyRule } from "./rules";
 import { INCOME_BASE_LABELS, STANDARDS_YEAR, formatWon, incomeLimitWon } from "./standards";
 
+/** 도메인 type: EligibilityVerdict. */
 export type EligibilityVerdict = "eligible" | "check" | "ineligible";
 
 export const VERDICT_LABELS: Record<EligibilityVerdict, string> = {
@@ -12,14 +13,16 @@ export const VERDICT_LABELS: Record<EligibilityVerdict, string> = {
   ineligible: "신청 불가",
 };
 
+/** 도메인 interface: EligibilityResult. */
 export interface EligibilityResult {
-  verdict: EligibilityVerdict;
+  verdict: EligibilityVerdict; // verdict
   /** 판정 사유(불가/확인 필요 이유) */
-  reasons: string[];
+  reasons: string[]; // reasons
   /** 항상 참고해야 하는 안내 */
-  notes: string[];
+  notes: string[]; // notes
 }
 
+/** 도메인 type: GroupState. */
 type GroupState = "yes" | "no" | "unknown";
 
 const GROUP_LABELS: Record<ApplicantGroup, string> = {
@@ -28,16 +31,19 @@ const GROUP_LABELS: Record<ApplicantGroup, string> = {
   student: "대학생·취준생",
 };
 
+/** 도메인 function: youthState. */
 function youthState(profile: ApplicantProfile): GroupState {
   if (profile.age === undefined) return "unknown";
   return profile.age >= YOUTH_MIN && profile.age <= YOUTH_MAX ? "yes" : "no";
 }
 
+/** 도메인 function: booleanState. */
 function booleanState(value: boolean | undefined): GroupState {
   if (value === undefined) return "unknown";
   return value ? "yes" : "no";
 }
 
+/** 도메인 function: groupState. */
 function groupState(group: ApplicantGroup, profile: ApplicantProfile): GroupState {
   if (group === "youth") return youthState(profile);
   if (group === "newlywed") return booleanState(profile.isNewlywed);
@@ -46,12 +52,13 @@ function groupState(group: ApplicantGroup, profile: ApplicantProfile): GroupStat
 
 /** 한 묶음의 판정 결과. fails 가 하나라도 있으면 불가, unknowns 만 있으면 확인 필요. */
 interface Outcome {
-  fails: string[];
-  unknowns: string[];
+  fails: string[]; // fails
+  unknowns: string[]; // unknowns
 }
 
 const man = (won: number): string => `${Math.round(won / 10_000).toLocaleString("en-US")}만원`;
 
+/** 도메인 function: checkIncome. */
 function checkIncome(rule: IncomeRule, profile: ApplicantProfile): Outcome {
   const out: Outcome = { fails: [], unknowns: [] };
   const baseLabel = INCOME_BASE_LABELS[rule.base];
@@ -91,6 +98,7 @@ function checkIncome(rule: IncomeRule, profile: ApplicantProfile): Outcome {
   return out;
 }
 
+/** 도메인 function: checkAssets. */
 function checkAssets(rule: AssetRule, profile: ApplicantProfile): Outcome {
   const out: Outcome = { fails: [], unknowns: [] };
 
@@ -115,6 +123,7 @@ function checkAssets(rule: AssetRule, profile: ApplicantProfile): Outcome {
   return out;
 }
 
+/** 도메인 function: checkMoney. */
 function checkMoney(rule: MoneyRule, profile: ApplicantProfile): Outcome {
   const income = rule.income ? checkIncome(rule.income, profile) : { fails: [], unknowns: [] };
   const assets = rule.assets ? checkAssets(rule.assets, profile) : { fails: [], unknowns: [] };

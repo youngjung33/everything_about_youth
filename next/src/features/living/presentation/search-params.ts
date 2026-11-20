@@ -35,20 +35,21 @@ const MAX_MONTHLY_INCOME_MAN = 100_000;
 const MAX_ASSET_MAN = 10_000_000;
 export const VERDICTS: EligibilityVerdict[] = ["eligible", "check", "ineligible"];
 
+/** ParsedSearch */
 export interface ParsedSearch {
-  filters: GuideFilters;
-  sort: GuideSort;
-  page: number;
-  profile: ApplicantProfile;
-  hasProfile: boolean;
-  verdicts: EligibilityVerdict[];
+  filters: GuideFilters; // 검색 필터
+  sort: GuideSort; // 정렬 기준
+  page: number; // 현재 페이지
+  profile: ApplicantProfile; // 신청자 프로필
+  hasProfile: boolean; // hasProfile
+  verdicts: EligibilityVerdict[]; // 자격 판정 필터
   form: {
-    sidos: Sido[];
-    sigungu: string;
-    procedureTypeIds: ProcedureTypeId[];
-    tags: string[];
-    statuses: GuideStatus[];
-    q: string;
+    sidos: Sido[]; // 시·도 필터
+    sigungu: string; // 시·군·구 필터
+    procedureTypeIds: ProcedureTypeId[]; // 절차 유형 필터
+    tags: string[]; // 태그 필터
+    statuses: GuideStatus[]; // 상태 필터
+    q: string; // q
   };
 }
 

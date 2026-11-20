@@ -12,7 +12,7 @@ import '../domain/living_guide.dart';
 class MappingLivingRepository implements LivingRepository {
   MappingLivingRepository(this._inner);
 
-  final LivingRepository _inner;
+  final LivingRepository _inner; // _inner
 
   Future<T> _map<T>(Future<T> run) async {
     try {

@@ -1,27 +1,30 @@
 import type { SourceId } from "@/features/living/domain/enums";
 import type { LivingGuideDraft } from "@/features/living/domain/guide";
 
+/** 소스 호출 컨텍스트 */
 export interface SourceContext {
-  fetchedAt: string;
-  signal?: AbortSignal;
+  fetchedAt: string; // fetchedAt
+  signal?: AbortSignal; // signal
 }
 
+/** 소스 가용성 */
 export interface SourceAvailability {
-  available: boolean;
-  reason?: string;
+  available: boolean; // 소스 사용 가능 여부
+  reason?: string; // 실패 원인
 }
 
 /** 수집 중 소스가 스스로 "이번엔 건너뛴다"고 알릴 때 던진다 (예: robots.txt 가 접근을 금지). 실패가 아니라 skipped 로 기록된다. */
 export class SourceSkippedError extends Error {
   constructor(reason: string) {
-    super(reason);
+    super(reason); // super
     this.name = "SourceSkippedError";
   }
 }
 
+/** 안내 소스 포트 */
 export interface GuideSourcePort {
   readonly id: SourceId;
   readonly label: string;
-  checkAvailability(): SourceAvailability;
-  fetchGuides(ctx: SourceContext): Promise<LivingGuideDraft[]>;
+  checkAvailability(): SourceAvailability; // 소스 가용성 확인
+  fetchGuides(ctx: SourceContext): Promise<LivingGuideDraft[]>; // 안내 목록 가져오기
 }

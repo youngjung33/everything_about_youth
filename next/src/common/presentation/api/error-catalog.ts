@@ -2,9 +2,9 @@ import { ERROR_CODES, type ErrorCode } from "./errors";
 
 /** 서버가 앱에 내려줄 수 있는 오류 코드 목록. `contracts/api/error-codes.json` 과 동기화한다. */
 export interface ServerErrorCodeEntry {
-  code: ErrorCode;
-  status: number;
-  message: string;
+  code: ErrorCode; // 오류 코드
+  status: number; // 상태
+  message: string; // 안내 문구
 }
 
 /** 앱이 표시할 수 있는 서버 오류 코드 카탈로그. */

@@ -16,7 +16,7 @@ class MetaItem extends StatelessWidget {
 
   final String label; // 화면에 보이는 한글 라벨
   final String value; // 코드 값
-  final double width;
+  final double width; // 가로 너비
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +39,8 @@ class MetaItem extends StatelessWidget {
 class SchemeBadges extends StatelessWidget {
   const SchemeBadges({super.key, required this.scheme, this.largeEligibility = false});
 
-  final SchemeSummary scheme;
-  final bool largeEligibility;
+  final SchemeSummary scheme; // 제도 요약
+  final bool largeEligibility; // 자격 배지 크게
 
   @override
   Widget build(BuildContext context) {
@@ -69,8 +69,8 @@ class SchemeBadges extends StatelessWidget {
 class SchemeCard extends StatelessWidget {
   const SchemeCard({super.key, required this.scheme, this.onTap});
 
-  final SchemeSummary scheme;
-  final VoidCallback? onTap;
+  final SchemeSummary scheme; // 제도 요약
+  final VoidCallback? onTap; // 탭 시 콜백
 
   @override
   Widget build(BuildContext context) {

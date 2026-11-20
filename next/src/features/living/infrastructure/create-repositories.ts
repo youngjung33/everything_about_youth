@@ -8,9 +8,9 @@ import { SqliteSyncRunRepository } from "./persistence/sqlite/sqlite-sync-run-re
 
 /** 생활정보 SQLite 리포지토리. 2차 Postgres 는 이 함수만 living 쪽에서 분기한다. */
 export function createLivingRepositories(persistence: AppPersistence): {
-  guides: GuideRepository;
-  savedGuides: SavedGuideRepository;
-  syncRuns: SyncRunRepository;
+  guides: GuideRepository; // guides
+  savedGuides: SavedGuideRepository; // savedGuides
+  syncRuns: SyncRunRepository; // syncRuns
 } {
   const db = requireSqlite(persistence).db;
   return {

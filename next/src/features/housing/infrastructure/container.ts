@@ -20,25 +20,26 @@ import { shStrategy } from "./sources/crawlers/sh/sh-strategy";
 import { LhSource } from "./sources/lh/lh-source";
 import { MyhomeSource } from "./sources/myhome/myhome-source";
 
+/** HousingContainer */
 export interface HousingContainer {
-  config: HousingConfig;
-  clock: Clock;
-  logger: Logger;
-  notices: NoticeRepository;
-  savedNotices: SavedNoticeRepository;
-  syncRuns: SyncRunRepository;
+  config: HousingConfig; // config
+  clock: Clock; // 시계
+  logger: Logger; // 로거
+  notices: NoticeRepository; // notices
+  savedNotices: SavedNoticeRepository; // savedNotices
+  syncRuns: SyncRunRepository; // syncRuns
   /** 등록된 모든 소스 (활성 여부와 무관) */
-  allSources: NoticeSourcePort[];
-  searchNotices: SearchNotices;
-  getNoticeDetail: GetNoticeDetail;
-  evaluateEligibility: EvaluateEligibility;
-  manageSavedNotices: ManageSavedNotices;
-  syncNotices: SyncNoticesFromSource;
+  allSources: NoticeSourcePort[]; // 등록된 모든 소스 (활성 여부와 무관)
+  searchNotices: SearchNotices; // searchNotices
+  getNoticeDetail: GetNoticeDetail; // getNoticeDetail
+  evaluateEligibility: EvaluateEligibility; // evaluateEligibility
+  manageSavedNotices: ManageSavedNotices; // manageSavedNotices
+  syncNotices: SyncNoticesFromSource; // syncNotices
 }
 
 /** 테스트·로컬용 설정 덮어쓰기 */
 export interface HousingOverrides {
-  config?: Partial<HousingConfig>;
+  config?: Partial<HousingConfig>; // config
 }
 
 /** 임대주택 섹션의 의존성 조립 지점. 공통 의존성은 CommonContainer 에서 받는다. */

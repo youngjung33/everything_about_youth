@@ -14,7 +14,7 @@ import '../domain/benefit_program.dart';
 class ApiBenefitsRepository implements BenefitsRepository {
   ApiBenefitsRepository(this._client);
 
-  final ApiClient _client;
+  final ApiClient _client; // _client
 
   static const _base = '/benefits';
 

@@ -19,14 +19,16 @@ import {
   type GuideSummaryDto,
 } from "./dto";
 
+/** LivingApiDeps */
 export interface LivingApiDeps {
-  searchGuides: SearchGuides;
-  getGuideDetail: GetGuideDetail;
-  manageSavedGuides: ManageSavedGuides;
-  syncRuns: Pick<SyncRunRepository, "lastSuccessAt">;
-  clock: Clock;
+  searchGuides: SearchGuides; // searchGuides
+  getGuideDetail: GetGuideDetail; // getGuideDetail
+  manageSavedGuides: ManageSavedGuides; // manageSavedGuides
+  syncRuns: Pick<SyncRunRepository, "lastSuccessAt">; // syncRuns
+  clock: Clock; // 시계
 }
 
+/** MAX_API_PAGE_SIZE */
 export const MAX_API_PAGE_SIZE = 50;
 
 /** `?sido=서울&sido=경기` 처럼 반복된 키를 배열로 유지해 웹 페이지와 같은 파서를 재사용한다. */
@@ -45,6 +47,7 @@ function parsePageSize(searchParams: URLSearchParams): number {
   return Math.min(MAX_API_PAGE_SIZE, Math.floor(n));
 }
 
+/** handleListGuides 함수 */
 export async function handleListGuides(
   searchParams: URLSearchParams,
   deps: LivingApiDeps,
@@ -61,6 +64,7 @@ export async function handleListGuides(
   return { status: 200, body: toGuideListDto(result, todayInKst(deps.clock.now())) };
 }
 
+/** handleGetGuide 함수 */
 export async function handleGetGuide(
   id: string,
   searchParams: URLSearchParams,
@@ -77,14 +81,16 @@ export async function handleGetMeta(deps: Pick<LivingApiDeps, "syncRuns">): Prom
   return { status: 200, body: buildLivingMeta(await deps.syncRuns.lastSuccessAt()) };
 }
 
+/** SavedIdsDto */
 export interface SavedIdsDto {
-  ids: string[];
+  ids: string[]; // ids
 }
 
+/** SavedListDto */
 export interface SavedListDto {
-  items: GuideSummaryDto[];
-  total: number;
-  today: string;
+  items: GuideSummaryDto[]; // 결과 목록
+  total: number; // 전체 건수
+  today: string; // 상태 계산 기준일
 }
 
 /** GET /api/v1/living/saved/ids  — 목록 하트 표시용 */
@@ -104,6 +110,7 @@ export async function handleListSaved(
   return { status: 200, body: { items: items.map((i) => toGuideSummaryDto(i, today)), total: items.length, today } };
 }
 
+/** handleSaveGuide 함수 */
 export async function handleSaveGuide(
   userId: string,
   guideId: string,
@@ -117,6 +124,7 @@ export async function handleSaveGuide(
   return { status: 200, body: { saved: true } };
 }
 
+/** handleUnsaveGuide 함수 */
 export async function handleUnsaveGuide(
   userId: string,
   guideId: string,
@@ -135,6 +143,7 @@ export async function handleMergeSaved(
   return { status: 200, body: { ids: await deps.manageSavedGuides.merge(userId, body.ids) } };
 }
 
+/** handleGuideCalendar 함수 */
 export async function handleGuideCalendar(
   id: string,
   deps: Pick<LivingApiDeps, "getGuideDetail" | "clock">,

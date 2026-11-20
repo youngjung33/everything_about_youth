@@ -8,9 +8,9 @@ import { SqliteSyncRunRepository } from "./persistence/sqlite/sqlite-sync-run-re
 
 /** 임대주택 SQLite 리포지토리. 2차 Postgres 는 이 함수만 housing 쪽에서 분기한다. */
 export function createHousingRepositories(persistence: AppPersistence): {
-  notices: NoticeRepository;
-  savedNotices: SavedNoticeRepository;
-  syncRuns: SyncRunRepository;
+  notices: NoticeRepository; // notices
+  savedNotices: SavedNoticeRepository; // savedNotices
+  syncRuns: SyncRunRepository; // syncRuns
 } {
   const db = requireSqlite(persistence).db;
   return {

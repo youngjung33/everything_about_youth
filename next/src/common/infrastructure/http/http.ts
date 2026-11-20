@@ -3,13 +3,13 @@ export const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(r
 
 /** fetch 래퍼 옵션(timeout·재시도). */
 export interface HttpOptions {
-  headers?: Record<string, string>;
-  timeoutMs?: number;
-  retries?: number;
-  retryDelayMs?: number;
-  signal?: AbortSignal;
+  headers?: Record<string, string>; // headers
+  timeoutMs?: number; // timeoutMs
+  retries?: number; // retries
+  retryDelayMs?: number; // retryDelayMs
+  signal?: AbortSignal; // signal
   /** 응답 본문 디코딩 인코딩 (기본 utf-8). 구형 한국 사이트는 "euc-kr" */
-  encoding?: string;
+  encoding?: string; // 응답 본문 디코딩 인코딩 (기본 utf-8). 구형 한국 사이트는 "euc-kr"
 }
 
 /** HTTP 상태·본문을 담는 fetch 오류. */
@@ -18,7 +18,7 @@ export class HttpError extends Error {
     message: string,
     readonly status?: number,
   ) {
-    super(message);
+    super(message); // super
     this.name = "HttpError";
   }
 }

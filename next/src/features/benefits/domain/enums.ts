@@ -8,6 +8,7 @@ export const CATEGORY_IDS = [
   "startup",
   "other",
 ] as const;
+/** 도메인 type: CategoryId. */
 export type CategoryId = (typeof CATEGORY_IDS)[number]; // 정책 분야 코드
 
 /** 분야 한글 라벨 */
@@ -23,6 +24,7 @@ export const CATEGORY_LABELS: Record<CategoryId, string> = {
 
 /** 신청 상태 코드 */
 export const PROGRAM_STATUSES = ["upcoming", "open", "closed"] as const;
+/** 도메인 type: ProgramStatus. */
 export type ProgramStatus = (typeof PROGRAM_STATUSES)[number]; // 신청 상태
 
 /** 신청 상태 한글 라벨 */
@@ -34,6 +36,7 @@ export const PROGRAM_STATUS_LABELS: Record<ProgramStatus, string> = {
 
 /** 데이터 소스 식별자. 추가 후보는 next/README «청년 혜택·정책» */
 export const SOURCE_IDS = ["ontong", "demo"] as const;
+/** 도메인 type: SourceId. */
 export type SourceId = (typeof SOURCE_IDS)[number]; // 수집 소스
 
 /** 데이터 소스 표시명 */
@@ -45,6 +48,7 @@ export const SOURCE_LABELS: Record<SourceId, string> = {
 const normalizeText = (v: string) => v.replace(/\s+/g, "");
 
 /** 분류 텍스트 → CategoryId */
+/** 도메인 function: parseCategoryId. */
 export function parseCategoryId(text: string | null | undefined): CategoryId {
   const t = normalizeText(text ?? "");
   if (!t) return "other";

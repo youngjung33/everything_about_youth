@@ -1,14 +1,15 @@
 import type { ProductTypeId } from "../enums";
 import { YOUTH_MAX_AGE, YOUTH_MIN_AGE } from "./standards";
 
+/** 도메인 interface: ProductTypeRule. */
 export interface ProductTypeRule {
-  minAge?: number;
-  maxAge?: number;
-  requiresYouth?: boolean;
-  requiresHomeless?: boolean;
-  requiresResidenceMatch?: boolean;
-  incomePercent?: number;
-  alwaysCheck?: string;
+  minAge?: number; // minAge
+  maxAge?: number; // maxAge
+  requiresYouth?: boolean; // requiresYouth
+  requiresHomeless?: boolean; // requiresHomeless
+  requiresResidenceMatch?: boolean; // requiresResidenceMatch
+  incomePercent?: number; // incomePercent
+  alwaysCheck?: string; // alwaysCheck
 }
 
 /** 제도 유형별 참고용 자격 기준 */

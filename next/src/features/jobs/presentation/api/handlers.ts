@@ -20,14 +20,16 @@ import {
   type PostingSummaryDto,
 } from "./dto";
 
+/** JobsApiDeps */
 export interface JobsApiDeps {
-  searchPostings: SearchJobPostings;
-  getJobPostingDetail: GetJobPostingDetail;
-  manageSavedPostings: ManageSavedPostings;
-  syncRuns: Pick<SyncRunRepository, "lastSuccessAt">;
-  clock: Clock;
+  searchPostings: SearchJobPostings; // searchPostings
+  getJobPostingDetail: GetJobPostingDetail; // getJobPostingDetail
+  manageSavedPostings: ManageSavedPostings; // manageSavedPostings
+  syncRuns: Pick<SyncRunRepository, "lastSuccessAt">; // syncRuns
+  clock: Clock; // 시계
 }
 
+/** MAX_API_PAGE_SIZE */
 export const MAX_API_PAGE_SIZE = 50;
 
 /** `?sido=서울&sido=경기` 처럼 반복된 키를 배열로 유지해 웹 페이지와 같은 파서를 재사용한다. */
@@ -46,6 +48,7 @@ function parsePageSize(searchParams: URLSearchParams): number {
   return Math.min(MAX_API_PAGE_SIZE, Math.floor(n));
 }
 
+/** handleListPostings 함수 */
 export async function handleListPostings(
   searchParams: URLSearchParams,
   deps: JobsApiDeps,
@@ -62,6 +65,7 @@ export async function handleListPostings(
   return { status: 200, body: toPostingListDto(result, todayInKst(deps.clock.now())) };
 }
 
+/** handleGetPosting 함수 */
 export async function handleGetPosting(
   id: string,
   searchParams: URLSearchParams,
@@ -78,14 +82,16 @@ export async function handleGetMeta(deps: Pick<JobsApiDeps, "syncRuns">): Promis
   return { status: 200, body: buildJobsMeta(await deps.syncRuns.lastSuccessAt()) };
 }
 
+/** SavedIdsDto */
 export interface SavedIdsDto {
-  ids: string[];
+  ids: string[]; // ids
 }
 
+/** SavedListDto */
 export interface SavedListDto {
-  items: PostingSummaryDto[];
-  total: number;
-  today: string;
+  items: PostingSummaryDto[]; // 결과 목록
+  total: number; // 전체 건수
+  today: string; // 상태 계산 기준일
 }
 
 /** GET /api/v1/jobs/saved/ids  — 목록 하트 표시용 */
@@ -108,6 +114,7 @@ export async function handleListSaved(
   };
 }
 
+/** handleSavePosting 함수 */
 export async function handleSavePosting(
   userId: string,
   postingId: string,
@@ -121,6 +128,7 @@ export async function handleSavePosting(
   return { status: 200, body: { saved: true } };
 }
 
+/** handleUnsavePosting 함수 */
 export async function handleUnsavePosting(
   userId: string,
   postingId: string,
@@ -139,6 +147,7 @@ export async function handleMergeSaved(
   return { status: 200, body: { ids: await deps.manageSavedPostings.merge(userId, body.ids) } };
 }
 
+/** handlePostingCalendar 함수 */
 export async function handlePostingCalendar(
   id: string,
   deps: Pick<JobsApiDeps, "getJobPostingDetail" | "clock">,

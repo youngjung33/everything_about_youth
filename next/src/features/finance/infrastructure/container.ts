@@ -16,23 +16,24 @@ import { OntongFinanceSource } from "./sources/ontong/ontong-finance-source";
 
 /** 금융·자금 섹션에 주입되는 유스케이스·저장소 묶음 */
 export interface FinanceContainer {
-  config: FinanceConfig;
-  clock: Clock;
-  logger: Logger;
-  schemes: SchemeRepository;
-  savedSchemes: SavedSchemeRepository;
-  syncRuns: SyncRunRepository;
+  config: FinanceConfig; // config
+  clock: Clock; // 시계
+  logger: Logger; // 로거
+  schemes: SchemeRepository; // schemes
+  savedSchemes: SavedSchemeRepository; // savedSchemes
+  syncRuns: SyncRunRepository; // syncRuns
   /** 등록된 모든 소스 (활성 여부와 무관) */
-  allSources: SchemeSourcePort[];
-  searchSchemes: SearchSchemes;
-  getSchemeDetail: GetSchemeDetail;
-  evaluateEligibility: EvaluateEligibility;
-  manageSavedSchemes: ManageSavedSchemes;
-  syncSchemes: SyncSchemesFromSource;
+  allSources: SchemeSourcePort[]; // 등록된 모든 소스 (활성 여부와 무관)
+  searchSchemes: SearchSchemes; // searchSchemes
+  getSchemeDetail: GetSchemeDetail; // getSchemeDetail
+  evaluateEligibility: EvaluateEligibility; // evaluateEligibility
+  manageSavedSchemes: ManageSavedSchemes; // manageSavedSchemes
+  syncSchemes: SyncSchemesFromSource; // syncSchemes
 }
 
+/** FinanceOverrides */
 export interface FinanceOverrides {
-  config?: Partial<FinanceConfig>;
+  config?: Partial<FinanceConfig>; // config
 }
 
 /** 금융·자금 섹션의 의존성 조립 지점. 공통 의존성은 CommonContainer 에서 받는다. */

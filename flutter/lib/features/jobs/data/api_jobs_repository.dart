@@ -14,7 +14,7 @@ import '../domain/job_posting.dart';
 class ApiJobsRepository implements JobsRepository {
   ApiJobsRepository(this._client);
 
-  final ApiClient _client;
+  final ApiClient _client; // _client
 
   static const _base = '/jobs';
 

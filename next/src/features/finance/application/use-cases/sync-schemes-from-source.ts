@@ -8,14 +8,15 @@ import type { Clock, Logger } from "@/common/application/system";
 
 /** 소스별 수집 실행 결과 요약 */
 export interface SourceSyncResult {
-  source: SourceId;
-  status: Exclude<SyncRunStatus, "running">;
-  fetched: number;
-  inserted: number;
-  updated: number;
-  error?: string;
+  source: SourceId; // 데이터 소스
+  status: Exclude<SyncRunStatus, "running">; // 상태
+  fetched: number; // fetched
+  inserted: number; // 신규 삽입 건수
+  updated: number; // 기존 갱신 건수
+  error?: string; // 오류 메시지
 }
 
+/** dedupeSchemeBatch 함수 */
 export function dedupeSchemeBatch(schemes: FinanceScheme[]): FinanceScheme[] {
   const result: FinanceScheme[] = [];
   for (const program of schemes) {
@@ -26,6 +27,7 @@ export function dedupeSchemeBatch(schemes: FinanceScheme[]): FinanceScheme[] {
   return result;
 }
 
+/** 소스에서 금융 상품 수집 */
 export class SyncSchemesFromSource {
   constructor(
     private readonly sources: SchemeSourcePort[],

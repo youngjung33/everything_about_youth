@@ -16,9 +16,9 @@ const schema = z.object({
 /** 금융·자금 섹션 전용 설정 */
 export interface FinanceConfig {
   /** 비어 있으면 등록된 모든 소스 */
-  enabledSources: SourceId[];
+  enabledSources: SourceId[]; // 비어 있으면 등록된 모든 소스
   /** 자동 수집 간격(분). 0 이면 끈다. */
-  syncIntervalMinutes: number;
+  syncIntervalMinutes: number; // 자동 수집 간격(분). 0 이면 끈다
   ontongApiKey?: string; // 온통 청년 API 키(선택)
 }
 

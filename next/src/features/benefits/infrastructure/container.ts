@@ -15,24 +15,24 @@ import { OntongSource } from "./sources/ontong/ontong-source";
 
 /** 청년 혜택 섹션 의존성 묶음 */
 export interface BenefitsContainer {
-  config: BenefitsConfig;
-  clock: Clock;
-  logger: Logger;
-  programs: ProgramRepository;
-  savedPrograms: SavedProgramRepository;
-  syncRuns: SyncRunRepository;
+  config: BenefitsConfig; // config
+  clock: Clock; // 시계
+  logger: Logger; // 로거
+  programs: ProgramRepository; // programs
+  savedPrograms: SavedProgramRepository; // savedPrograms
+  syncRuns: SyncRunRepository; // syncRuns
   /** 등록된 모든 소스 (활성 여부 무관) */
-  allSources: ProgramSourcePort[];
-  searchPrograms: SearchPrograms;
-  getProgramDetail: GetProgramDetail;
-  evaluateEligibility: EvaluateEligibility;
-  manageSavedPrograms: ManageSavedPrograms;
-  syncPrograms: SyncProgramsFromSource;
+  allSources: ProgramSourcePort[]; // 등록된 모든 소스 (활성 여부 무관)
+  searchPrograms: SearchPrograms; // searchPrograms
+  getProgramDetail: GetProgramDetail; // getProgramDetail
+  evaluateEligibility: EvaluateEligibility; // evaluateEligibility
+  manageSavedPrograms: ManageSavedPrograms; // manageSavedPrograms
+  syncPrograms: SyncProgramsFromSource; // syncPrograms
 }
 
 /** 테스트·로컬용 설정 덮어쓰기 */
 export interface BenefitsOverrides {
-  config?: Partial<BenefitsConfig>;
+  config?: Partial<BenefitsConfig>; // config
 }
 
 /** 청년 혜택 의존성 조립. 공통 의존성은 CommonContainer 에서 받는다. */

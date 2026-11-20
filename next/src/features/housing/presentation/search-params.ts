@@ -14,6 +14,7 @@ import { SIDO_LIST, type Sido } from "@/common/domain/region";
 import type { NoticeSort } from "@/features/housing/application/ports/notice-repository";
 import type { NoticeFilters } from "@/features/housing/application/use-cases/search-notices";
 
+/** RawSearchParams */
 export type RawSearchParams = Record<string, string | string[] | undefined>;
 
 /**
@@ -42,25 +43,26 @@ const MAX_MONTHLY_INCOME_MAN = 100_000;
 const MAX_ASSET_MAN = 10_000_000;
 export const VERDICTS: EligibilityVerdict[] = ["eligible", "check", "ineligible"];
 
+/** ParsedSearch */
 export interface ParsedSearch {
-  filters: NoticeFilters;
-  sort: NoticeSort;
-  page: number;
-  profile: ApplicantProfile;
-  hasProfile: boolean;
-  verdicts: EligibilityVerdict[];
+  filters: NoticeFilters; // 검색 필터
+  sort: NoticeSort; // 정렬 기준
+  page: number; // 현재 페이지
+  profile: ApplicantProfile; // 신청자 프로필
+  hasProfile: boolean; // hasProfile
+  verdicts: EligibilityVerdict[]; // 자격 판정 필터
   /** 폼에 다시 채워 넣기 위한 값 */
   form: {
-    sidos: Sido[];
-    sigungu: string;
-    supplyTypes: SupplyType[];
-    housingTypes: HousingType[];
-    statuses: NoticeStatus[];
-    q: string;
-    maxDepositMan: string;
-    maxRentMan: string;
-    minArea: string;
-    maxArea: string;
+    sidos: Sido[]; // 시·도 필터
+    sigungu: string; // 시·군·구 필터
+    supplyTypes: SupplyType[]; // 공급 유형 필터
+    housingTypes: HousingType[]; // 주택 유형 필터
+    statuses: NoticeStatus[]; // 상태 필터
+    q: string; // q
+    maxDepositMan: string; // maxDepositMan
+    maxRentMan: string; // maxRentMan
+    minArea: string; // minArea
+    maxArea: string; // maxArea
   };
 }
 

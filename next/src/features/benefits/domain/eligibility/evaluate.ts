@@ -17,18 +17,20 @@ export const VERDICT_LABELS: Record<EligibilityVerdict, string> = {
 
 /** 자격 판정 결과 */
 export interface EligibilityResult {
-  verdict: EligibilityVerdict;
+  verdict: EligibilityVerdict; // verdict
   /** 판정 사유(불가/확인 필요) */
-  reasons: string[];
+  reasons: string[]; // reasons
   /** 항상 참고할 안내 */
-  notes: string[];
+  notes: string[]; // notes
 }
 
+/** 도메인 interface: Outcome. */
 interface Outcome {
-  fails: string[];
-  unknowns: string[];
+  fails: string[]; // fails
+  unknowns: string[]; // unknowns
 }
 
+/** 도메인 function: checkIncome. */
 function checkIncome(percent: number, profile: ApplicantProfile): Outcome {
   const out: Outcome = { fails: [], unknowns: [] };
   const { householdSize: size, monthlyIncomeWon: income } = profile;
@@ -52,6 +54,7 @@ function checkIncome(percent: number, profile: ApplicantProfile): Outcome {
  * 정책과 신청자 조건으로 신청 가능 여부 판정 (순수 함수).
  * 불충족 → ineligible, 입력 부족 → check, 충족 → eligible
  */
+/** 도메인 function: evaluateEligibility. */
 export function evaluateEligibility(
   program: Pick<BenefitProgram, "categoryId" | "applicationStart" | "applicationEnd" | "regions">,
   profile: ApplicantProfile,
@@ -116,6 +119,7 @@ export function evaluateEligibility(
 }
 
 /** 분야별 자격 규칙 조회 */
+/** 도메인 function: ruleForCategory. */
 export function ruleForCategory(categoryId: CategoryId) {
   return CATEGORY_RULES[categoryId];
 }

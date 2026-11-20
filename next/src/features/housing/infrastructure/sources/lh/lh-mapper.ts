@@ -4,10 +4,11 @@ import type { NoticeDraft } from "@/features/housing/domain/notice";
 import { parseSido } from "@/common/domain/region";
 import { str, type Json } from "@/common/infrastructure/http/mapping";
 
+/** LhMapContext */
 export interface LhMapContext {
-  fetchedAt: string;
+  fetchedAt: string; // fetchedAt
   /** 오늘(KST) */
-  today: IsoDate;
+  today: IsoDate; // 오늘(KST)
 }
 
 const LH_APPLY_URL = "https://apply.lh.or.kr";
@@ -15,13 +16,13 @@ const LH_APPLY_URL = "https://apply.lh.or.kr";
 const NON_HOUSING_TYPES = /어린이집|상가|토지|점포|주차/;
 
 function buildLhEligibilityExcerpt(input: {
-  item: Json;
-  status: string;
-  typeName: string;
-  upperName: string;
-  posted: IsoDate | null;
-  end: IsoDate | null;
-  title: string;
+  item: Json; // item
+  status: string; // 상태
+  typeName: string; // typeName
+  upperName: string; // upperName
+  posted: IsoDate | null; // posted
+  end: IsoDate | null; // end
+  title: string; // title
 }): string | null {
   const parts: string[] = [];
   if (input.status) parts.push(`공고 상태: ${input.status}`);

@@ -52,6 +52,7 @@ export function isSameScheme(a: FinanceScheme, b: FinanceScheme): boolean {
   return a.sources.some((sa) => b.sources.some((sb) => sa.source === sb.source && sa.externalId === sb.externalId));
 }
 
+/** 도메인 function: unionSources. */
 function unionSources(existing: SchemeSourceRef[], incoming: SchemeSourceRef[]): SchemeSourceRef[] {
   const map = new Map<string, SchemeSourceRef>();
   for (const s of existing) map.set(`${s.source}:${s.externalId}`, s);

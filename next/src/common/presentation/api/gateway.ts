@@ -12,13 +12,13 @@ import { SUPPORTED_API_VERSIONS, splitApiPath } from "./version";
 
 /** API 프록시 조립 의존성. */
 export interface GatewayDeps {
-  tokens: TokenService;
-  policy: AppPolicy;
+  tokens: TokenService; // tokens
+  policy: AppPolicy; // policy
   /** null 이면 요청 제한을 하지 않는다. (RATE_LIMIT_DISABLED) */
-  limiter: RateLimiter | null;
-  corsOrigin: string;
-  now?: () => number;
-  newRequestId?: () => string;
+  limiter: RateLimiter | null; // null 이면 요청 제한을 하지 않는다. (RATE_LIMIT_DISABLED)
+  corsOrigin: string; // corsOrigin
+  now?: () => number; // 현재 시각
+  newRequestId?: () => string; // newRequestId
 }
 
 /**
@@ -46,7 +46,7 @@ export async function runGateway(request: NextRequest, deps: GatewayDeps): Promi
     "X-Request-Id": requestId,
   };
   const fail = (code: ErrorCode, options: Parameters<typeof errorResponse>[1] = {}) =>
-    errorResponse(code, { ...options, requestId, headers: { ...common, ...options.headers } });
+    errorResponse(code, { ...options, requestId, headers: { ...common, ...options.headers } }); // errorResponse
 
   // 1. API 버전
   const split = splitApiPath(pathname);

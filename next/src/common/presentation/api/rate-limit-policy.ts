@@ -24,9 +24,9 @@ export const RATE_LIMITS = {
 
 /** rate-limit 윈도를 적용할 HTTP 메서드·경로 패턴. */
 export interface RateLimitTarget {
-  policy: RateLimitPolicy;
+  policy: RateLimitPolicy; // policy
   /** 정책 안에서 구분하는 키 (`device:…` 또는 `ip:…`) */
-  key: string;
+  key: string; // 정책 안에서 구분하는 키 (`device:…` 또는 `ip:…`)
 }
 
 /**

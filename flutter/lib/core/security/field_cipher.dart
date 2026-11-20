@@ -24,8 +24,8 @@ abstract interface class FieldCipher {
 class AesGcmFieldCipher implements FieldCipher {
   AesGcmFieldCipher(this._keys, {AesGcm? algorithm}) : _algorithm = algorithm ?? AesGcm.with256bits();
 
-  final CipherKeyStore _keys;
-  final AesGcm _algorithm;
+  final CipherKeyStore _keys; // _keys
+  final AesGcm _algorithm; // _algorithm
 
   static const version = 'v1';
   static const _prefix = '$version.';

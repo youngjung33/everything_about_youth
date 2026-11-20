@@ -10,7 +10,7 @@ import '../domain/living_guide.dart';
 class ApiLivingRepository implements LivingRepository {
   ApiLivingRepository(this._client);
 
-  final ApiClient _client;
+  final ApiClient _client; // _client
 
   static const _base = '/living';
 

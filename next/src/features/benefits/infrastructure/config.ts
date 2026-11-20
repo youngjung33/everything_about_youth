@@ -16,10 +16,10 @@ const schema = z.object({
 /** 청년 혜택 섹션 전용 설정 */
 export interface BenefitsConfig {
   /** 비어 있으면 등록된 모든 소스 */
-  enabledSources: SourceId[];
+  enabledSources: SourceId[]; // 비어 있으면 등록된 모든 소스
   /** 자동 수집 간격(분). 0 이면 끔 */
-  syncIntervalMinutes: number;
-  ontongApiKey?: string;
+  syncIntervalMinutes: number; // 자동 수집 간격(분). 0 이면 끔
+  ontongApiKey?: string; // ontongApiKey
 }
 
 /** 환경 변수에서 설정 로드 */

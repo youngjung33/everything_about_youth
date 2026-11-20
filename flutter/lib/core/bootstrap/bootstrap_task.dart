@@ -18,8 +18,8 @@ class BootstrapTask {
   });
 
   /// 로그에 남길 이름
-  final String name;
-  final BootstrapAction run;
-  final bool critical;
-  final Duration timeout;
+  final String name; // name
+  final BootstrapAction run; // run
+  final bool critical; // critical
+  final Duration timeout; // timeout
 }

@@ -1,6 +1,7 @@
 import type { JobPosting, JobPostingDraft, JobPostingSourceRef } from "./job-posting";
 import { uniqueRegions } from "@/common/domain/region";
 
+/** 도메인 function: cyrb53. */
 function cyrb53(str: string, seed = 0): number {
   let h1 = 0xdeadbeef ^ seed;
   let h2 = 0x41c6ce57 ^ seed;
@@ -34,20 +35,24 @@ export function buildMergeKey(draft: Pick<JobPostingDraft, "sources"> & { mergeK
   return draft.mergeKeyHint ?? "unknown";
 }
 
+/** 도메인 function: buildJobPostingId. */
 export function buildJobPostingId(mergeKey: string): string {
   return `j_${cyrb53(mergeKey).toString(36)}`;
 }
 
+/** 도메인 function: createJobPosting. */
 export function createJobPosting(draft: JobPostingDraft): JobPosting {
   const mergeKey = buildMergeKey(draft);
   return { ...draft, mergeKey, id: buildJobPostingId(mergeKey) };
 }
 
+/** 도메인 function: isSameJobPosting. */
 export function isSameJobPosting(a: JobPosting, b: JobPosting): boolean {
   if (a.mergeKey === b.mergeKey) return true;
   return a.sources.some((sa) => b.sources.some((sb) => sa.source === sb.source && sa.externalId === sb.externalId));
 }
 
+/** 도메인 function: unionSources. */
 function unionSources(existing: JobPostingSourceRef[], incoming: JobPostingSourceRef[]): JobPostingSourceRef[] {
   const map = new Map<string, JobPostingSourceRef>();
   for (const s of existing) map.set(`${s.source}:${s.externalId}`, s);
@@ -55,6 +60,7 @@ function unionSources(existing: JobPostingSourceRef[], incoming: JobPostingSourc
   return [...map.values()];
 }
 
+/** 도메인 function: mergeJobPosting. */
 export function mergeJobPosting(existing: JobPosting, incoming: JobPosting): JobPosting {
   const tags = [...new Set([...existing.tags, ...incoming.tags])];
   return {

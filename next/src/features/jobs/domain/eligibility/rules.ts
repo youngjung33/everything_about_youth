@@ -1,12 +1,13 @@
 import type { HireTypeId } from "../enums";
 import { YOUTH_MAX_AGE, YOUTH_MIN_AGE } from "./standards";
 
+/** 도메인 interface: HireTypeRule. */
 export interface HireTypeRule {
-  minAge?: number;
-  maxAge?: number;
-  requiresYouth?: boolean;
-  requiresResidenceMatch?: boolean;
-  alwaysCheck?: string;
+  minAge?: number; // minAge
+  maxAge?: number; // maxAge
+  requiresYouth?: boolean; // requiresYouth
+  requiresResidenceMatch?: boolean; // requiresResidenceMatch
+  alwaysCheck?: string; // alwaysCheck
 }
 
 /** 공고 유형별 참고용 자격 기준 */

@@ -9,28 +9,31 @@ import type { SchemeRepository, SchemeSearchQuery, SchemeSort } from "../ports/s
 /** 저장소 검색 쿼리에서 페이징·정렬·기준일을 뺀 필터 묶음 */
 export type SchemeFilters = Omit<SchemeSearchQuery, "today" | "sort" | "limit" | "offset">;
 
+/** 목록 검색 입력 */
 export interface SearchSchemesInput {
-  filters: SchemeFilters;
-  sort?: SchemeSort;
-  profile?: ApplicantProfile;
+  filters: SchemeFilters; // 검색 필터
+  sort?: SchemeSort; // 정렬 기준
+  profile?: ApplicantProfile; // 신청자 프로필
   /** 지정하면 해당 판정 결과의 상품만 남긴다 (profile 필요) */
-  verdicts?: EligibilityVerdict[];
-  page?: number;
-  pageSize?: number;
+  verdicts?: EligibilityVerdict[]; // 지정하면 해당 판정 결과의 상품만 남긴다 (profile 필요)
+  page?: number; // 현재 페이지
+  pageSize?: number; // 페이지 크기
 }
 
+/** 목록·상세 한 행 */
 export interface SchemeListItem {
-  program: FinanceScheme;
-  status: SchemeStatus;
-  eligibility: EligibilityResult | null;
+  program: FinanceScheme; // 정책
+  status: SchemeStatus; // 상태
+  eligibility: EligibilityResult | null; // 자격 판정 결과
 }
 
+/** 페이징 포함 목록 결과 */
 export interface SearchSchemesOutput {
-  items: SchemeListItem[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
+  items: SchemeListItem[]; // 결과 목록
+  total: number; // 전체 건수
+  page: number; // 현재 페이지
+  pageSize: number; // 페이지 크기
+  totalPages: number; // 전체 페이지 수
 }
 
 /** 기본 페이지 크기 */

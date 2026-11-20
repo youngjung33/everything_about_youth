@@ -15,10 +15,10 @@ const MAX_PAGES = 30; // 안전 상한
 
 /** 온통청년 소스 옵션 */
 export interface OntongSourceOptions {
-  apiKey?: string;
-  logger?: Logger;
-  getText?: (url: string) => Promise<string>;
-  delayMs?: number;
+  apiKey?: string; // apiKey
+  logger?: Logger; // 로거
+  getText?: (url: string) => Promise<string>; // getText
+  delayMs?: number; // delayMs
 }
 
 function parseBody(text: string): Json {
@@ -64,7 +64,7 @@ export class OntongSource implements ProgramSourcePort {
       }
 
       const total =
-        toNumber(findDeep(body, "totalCount")) ?? toNumber(findDeep(body, "totCount")) ?? toNumber(findDeep(body, "total"));
+        toNumber(findDeep(body, "totalCount")) ?? toNumber(findDeep(body, "totCount")) ?? toNumber(findDeep(body, "total")); // toNumber
       if (items.length < PAGE_SIZE || (total !== null && rows.length >= total)) break;
       await sleep(delay);
     }

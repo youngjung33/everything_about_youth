@@ -8,9 +8,9 @@ import { SqliteSyncRunRepository } from "./persistence/sqlite/sqlite-sync-run-re
 
 /** 청년 혜택 SQLite 리포지토리. 2차 Postgres 는 이 함수만 분기 */
 export function createBenefitsRepositories(persistence: AppPersistence): {
-  programs: ProgramRepository;
-  savedPrograms: SavedProgramRepository;
-  syncRuns: SyncRunRepository;
+  programs: ProgramRepository; // programs
+  savedPrograms: SavedProgramRepository; // savedPrograms
+  syncRuns: SyncRunRepository; // syncRuns
 } {
   const db = requireSqlite(persistence).db;
   return {

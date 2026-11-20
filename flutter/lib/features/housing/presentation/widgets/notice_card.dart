@@ -16,7 +16,7 @@ class MetaItem extends StatelessWidget {
 
   final String label; // 화면에 보이는 한글 라벨
   final String value; // 코드 값
-  final double width;
+  final double width; // 가로 너비
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +39,8 @@ class MetaItem extends StatelessWidget {
 class NoticeBadges extends StatelessWidget {
   const NoticeBadges({super.key, required this.notice, this.largeEligibility = false});
 
-  final NoticeSummary notice;
-  final bool largeEligibility;
+  final NoticeSummary notice; // 공고 요약
+  final bool largeEligibility; // 자격 배지 크게
 
   @override
   Widget build(BuildContext context) {
@@ -69,8 +69,8 @@ class NoticeBadges extends StatelessWidget {
 class NoticeCard extends StatelessWidget {
   const NoticeCard({super.key, required this.notice, this.onTap});
 
-  final NoticeSummary notice;
-  final VoidCallback? onTap;
+  final NoticeSummary notice; // 공고 요약
+  final VoidCallback? onTap; // 탭 시 콜백
 
   @override
   Widget build(BuildContext context) {

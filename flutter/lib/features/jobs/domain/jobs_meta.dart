@@ -78,10 +78,10 @@ class JobsMeta {
     dataUpdatedAt: asString(json['dataUpdatedAt']),
   );
 
-  final List<Option> categories;
-  final List<Option> statuses;
-  final List<Option> verdicts;
-  final List<Option> sorts;
+  final List<Option> categories; // JSON·도메인
+  final List<Option> statuses; // JSON·도메인
+  final List<Option> verdicts; // JSON·도메인
+  final List<Option> sorts; // JSON·도메인
   final List<String> sidos; // 시·도 필터
   final EligibilityStandards? standards; // 소득 기준표. 서버가 주지 않으면 null
   final String? dataUpdatedAt; // 데이터 마지막 수집 시각(ISO 8601 UTC). 없으면 null

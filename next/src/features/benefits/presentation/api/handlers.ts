@@ -21,11 +21,11 @@ import {
 
 /** HTTP 와 무관한 API 처리. 라우트는 Response 로 감싸기만 */
 export interface BenefitsApiDeps {
-  searchPrograms: SearchPrograms;
-  getProgramDetail: GetProgramDetail;
-  manageSavedPrograms: ManageSavedPrograms;
-  syncRuns: Pick<SyncRunRepository, "lastSuccessAt">;
-  clock: Clock;
+  searchPrograms: SearchPrograms; // searchPrograms
+  getProgramDetail: GetProgramDetail; // getProgramDetail
+  manageSavedPrograms: ManageSavedPrograms; // manageSavedPrograms
+  syncRuns: Pick<SyncRunRepository, "lastSuccessAt">; // syncRuns
+  clock: Clock; // 시계
 }
 
 /** 목록 API pageSize 상한 */
@@ -86,14 +86,14 @@ export async function handleGetMeta(deps: Pick<BenefitsApiDeps, "syncRuns">): Pr
 
 /** 관심 ID 목록 */
 export interface SavedIdsDto {
-  ids: string[];
+  ids: string[]; // ids
 }
 
 /** 관심 정책 목록 응답 */
 export interface SavedListDto {
-  items: ProgramSummaryDto[];
-  total: number;
-  today: string;
+  items: ProgramSummaryDto[]; // 결과 목록
+  total: number; // 전체 건수
+  today: string; // 상태 계산 기준일
 }
 
 /** GET /api/v1/benefits/saved/ids — 하트 표시용 */

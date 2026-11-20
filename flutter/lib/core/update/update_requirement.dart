@@ -8,11 +8,11 @@ class UpdateRequirement {
   static const defaultMessage = '앱을 최신 버전으로 업데이트해야 사용할 수 있습니다.';
 
   /// 화면에 보여줄 안내 문구
-  final String message;
+  final String message; // message
 
   /// 업데이트 버튼이 여는 스토어 주소. 모르면 null
-  final String? storeUrl;
-  final String? minVersion;
+  final String? storeUrl; // storeUrl
+  final String? minVersion; // minVersion
 
   /// 서버가 업데이트 필요(또는 API 버전 닫힘)로 거절한 응답에서 만든다.
   factory UpdateRequirement.fromException(ApiException error) {
@@ -53,11 +53,11 @@ enum UpdateStatus {
 class AppUpdateInfo {
   const AppUpdateInfo({required this.status, this.minVersion, this.latestVersion, this.storeUrl, this.message});
 
-  final UpdateStatus status;
-  final String? minVersion;
-  final String? latestVersion;
-  final String? storeUrl;
-  final String? message;
+  final UpdateStatus status; // status
+  final String? minVersion; // minVersion
+  final String? latestVersion; // latestVersion
+  final String? storeUrl; // storeUrl
+  final String? message; // message
 
   factory AppUpdateInfo.fromJson(Map<String, dynamic> json) {
     final update = json['update'];
@@ -91,7 +91,7 @@ abstract interface class AppUpdateRemote {
 class ApiAppUpdateRemote implements AppUpdateRemote {
   ApiAppUpdateRemote(this._api);
 
-  final ApiClient _api;
+  final ApiClient _api; // _api
 
   @override
   Future<AppUpdateInfo> fetch() async => AppUpdateInfo.fromJson(await _api.getJson('/app-config'));

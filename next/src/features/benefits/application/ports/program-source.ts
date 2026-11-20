@@ -4,21 +4,21 @@ import type { BenefitProgramDraft } from "@/features/benefits/domain/program";
 /** 소스 fetch 컨텍스트 */
 export interface SourceContext {
   /** 수집 시각 (ISO) */
-  fetchedAt: string;
-  signal?: AbortSignal;
+  fetchedAt: string; // 수집 시각 (ISO)
+  signal?: AbortSignal; // signal
 }
 
 /** 소스 사용 가능 여부 */
 export interface SourceAvailability {
-  available: boolean;
+  available: boolean; // 소스 사용 가능 여부
   /** 사용 불가 사유 */
-  reason?: string;
+  reason?: string; // 사용 불가 사유
 }
 
 /** 수집 스킵(robots 등). 실패가 아니라 skipped 로 기록 */
 export class SourceSkippedError extends Error {
   constructor(reason: string) {
-    super(reason);
+    super(reason); // super
     this.name = "SourceSkippedError";
   }
 }
@@ -27,6 +27,6 @@ export class SourceSkippedError extends Error {
 export interface ProgramSourcePort {
   readonly id: SourceId;
   readonly label: string;
-  checkAvailability(): SourceAvailability;
-  fetchPrograms(ctx: SourceContext): Promise<BenefitProgramDraft[]>;
+  checkAvailability(): SourceAvailability; // 소스 가용성 확인
+  fetchPrograms(ctx: SourceContext): Promise<BenefitProgramDraft[]>; // 정책 목록 가져오기
 }

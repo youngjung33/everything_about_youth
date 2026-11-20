@@ -25,11 +25,11 @@ BadgeColors verdictColors(Verdict verdict) => switch (verdict) {
 class Pill extends StatelessWidget {
   const Pill({super.key, required this.text, this.background, this.foreground, this.bold = false, this.large = false});
 
-  final String text;
-  final Color? background;
-  final Color? foreground;
-  final bool bold;
-  final bool large;
+  final String text; // 표시 텍스트
+  final Color? background; // 배경색
+  final Color? foreground; // 글자색
+  final bool bold; // 굵게 표시 여부
+  final bool large; // 큰 크기 여부
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +56,7 @@ class Pill extends StatelessWidget {
 class StatusBadge extends StatelessWidget {
   const StatusBadge({super.key, required this.status, required this.label});
 
-  final SchemeStatus status;
+  final SchemeStatus status; // 상태 코드
   final String label; // 화면에 보이는 한글 라벨
 
   @override
@@ -71,8 +71,8 @@ class StatusBadge extends StatelessWidget {
 class EligibilityBadge extends StatelessWidget {
   const EligibilityBadge({super.key, required this.eligibility, this.large = false});
 
-  final Eligibility? eligibility;
-  final bool large;
+  final Eligibility? eligibility; // 자격 판정
+  final bool large; // 큰 크기 여부
 
   @override
   Widget build(BuildContext context) {

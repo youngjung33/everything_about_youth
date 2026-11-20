@@ -7,6 +7,7 @@ export const HIRE_TYPE_IDS = [
   "intern",
   "other",
 ] as const;
+/** 도메인 type: HireTypeId. */
 export type HireTypeId = (typeof HIRE_TYPE_IDS)[number];
 
 export const HIRE_TYPE_LABELS: Record<HireTypeId, string> = {
@@ -19,6 +20,7 @@ export const HIRE_TYPE_LABELS: Record<HireTypeId, string> = {
 };
 
 export const POSTING_STATUSES = ["upcoming", "open", "closed"] as const;
+/** 도메인 type: PostingStatus. */
 export type PostingStatus = (typeof POSTING_STATUSES)[number];
 
 export const POSTING_STATUS_LABELS: Record<PostingStatus, string> = {
@@ -29,6 +31,7 @@ export const POSTING_STATUS_LABELS: Record<PostingStatus, string> = {
 
 /** 운영 sync id. 추가 후보는 next/README.md «청년·공공 일자리» */
 export const SOURCE_IDS = ["curated", "demo"] as const;
+/** 도메인 type: SourceId. */
 export type SourceId = (typeof SOURCE_IDS)[number];
 
 /** 데이터 소스 표시명 */

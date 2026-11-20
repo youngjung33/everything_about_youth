@@ -43,6 +43,7 @@ const ALIASES: Array<{ keyword: string; sigungu: string }> = [
   { keyword: "평촌", sigungu: "안양시" },
 ];
 
+/** guessGhSigungu 함수 */
 export function guessGhSigungu(title: string): string | null {
   // 긴 키워드 우선 (예: '남양주' 가 '양주' 보다 먼저)
   const all = [...GYEONGGI_SIGUNGU, ...ALIASES].sort((a, b) => b.keyword.length - a.keyword.length);

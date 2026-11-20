@@ -21,13 +21,14 @@ import {
 
 /** HTTP 와 무관한 API 처리 로직. 라우트 파일은 이 결과를 Response 로 감싸기만 한다. */
 export interface HousingApiDeps {
-  searchNotices: SearchNotices;
-  getNoticeDetail: GetNoticeDetail;
-  manageSavedNotices: ManageSavedNotices;
-  syncRuns: Pick<SyncRunRepository, "lastSuccessAt">;
-  clock: Clock;
+  searchNotices: SearchNotices; // searchNotices
+  getNoticeDetail: GetNoticeDetail; // getNoticeDetail
+  manageSavedNotices: ManageSavedNotices; // manageSavedNotices
+  syncRuns: Pick<SyncRunRepository, "lastSuccessAt">; // syncRuns
+  clock: Clock; // 시계
 }
 
+/** MAX_API_PAGE_SIZE */
 export const MAX_API_PAGE_SIZE = 50;
 
 /** `?sido=서울&sido=경기` 처럼 반복된 키를 배열로 유지해 웹 페이지와 같은 파서를 재사용한다. */
@@ -83,14 +84,16 @@ export async function handleGetMeta(deps: Pick<HousingApiDeps, "syncRuns">): Pro
   return { status: 200, body: buildMeta(await deps.syncRuns.lastSuccessAt()) };
 }
 
+/** SavedIdsDto */
 export interface SavedIdsDto {
-  ids: string[];
+  ids: string[]; // ids
 }
 
+/** SavedListDto */
 export interface SavedListDto {
-  items: NoticeSummaryDto[];
-  total: number;
-  today: string;
+  items: NoticeSummaryDto[]; // 결과 목록
+  total: number; // 전체 건수
+  today: string; // 상태 계산 기준일
 }
 
 /** GET /api/v1/housing/saved/ids  — 목록 하트 표시용 */

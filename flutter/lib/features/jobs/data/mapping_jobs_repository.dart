@@ -12,7 +12,7 @@ import '../domain/job_posting.dart';
 class MappingJobsRepository implements JobsRepository {
   MappingJobsRepository(this._inner);
 
-  final JobsRepository _inner;
+  final JobsRepository _inner; // _inner
 
   Future<T> _map<T>(Future<T> run) async {
     try {

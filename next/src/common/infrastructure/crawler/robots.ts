@@ -1,13 +1,13 @@
 /** 최소한의 robots.txt 해석기: User-agent 그룹 선택, Allow/Disallow 최장 일치(동률이면 Allow 우선), * 와 $ 지원 */
 
 interface Rule {
-  allow: boolean;
-  pattern: string;
+  allow: boolean; // allow
+  pattern: string; // pattern
 }
 
 /** robots.txt 파싱 결과(allow/disallow). */
 export interface RobotsPolicy {
-  isAllowed(pathAndQuery: string): boolean;
+  isAllowed(pathAndQuery: string): boolean; // isAllowed
 }
 
 /** 모듈 상수 ALLOW_ALL. */

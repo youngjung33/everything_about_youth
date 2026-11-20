@@ -50,6 +50,7 @@ export function isSameProgram(a: BenefitProgram, b: BenefitProgram): boolean {
   return a.sources.some((sa) => b.sources.some((sb) => sa.source === sb.source && sa.externalId === sb.externalId));
 }
 
+/** 도메인 function: unionSources. */
 function unionSources(existing: ProgramSourceRef[], incoming: ProgramSourceRef[]): ProgramSourceRef[] {
   const map = new Map<string, ProgramSourceRef>();
   for (const s of existing) map.set(`${s.source}:${s.externalId}`, s);
@@ -58,6 +59,7 @@ function unionSources(existing: ProgramSourceRef[], incoming: ProgramSourceRef[]
 }
 
 /** 기존 정책에 신규 수집분 병합. id 는 기존 유지 */
+/** 도메인 function: mergeProgram. */
 export function mergeProgram(existing: BenefitProgram, incoming: BenefitProgram): BenefitProgram {
   const tags = [...new Set([...existing.tags, ...incoming.tags])];
   return {

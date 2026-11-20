@@ -6,10 +6,10 @@ import '../copy/service_copy.dart';
 class CollectedSummary extends StatelessWidget {
   const CollectedSummary({super.key, required this.summary, this.style, this.maxLines, this.missingText});
 
-  final String? summary;
-  final TextStyle? style;
-  final int? maxLines;
-  final String? missingText;
+  final String? summary; // summary
+  final TextStyle? style; // style
+  final int? maxLines; // maxLines
+  final String? missingText; // missingText
 
   @override
   Widget build(BuildContext context) {

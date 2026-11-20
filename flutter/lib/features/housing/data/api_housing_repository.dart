@@ -14,7 +14,7 @@ import '../domain/notice.dart';
 class ApiHousingRepository implements HousingRepository {
   ApiHousingRepository(this._client);
 
-  final ApiClient _client;
+  final ApiClient _client; // _client
 
   static const _base = '/housing';
 

@@ -31,7 +31,7 @@ class Region {
       Region(sido: asString(json['sido']) ?? '', sigungu: asString(json['sigungu']));
 
   final String sido; // 시·도 필터
-  final String? sigungu;
+  final String? sigungu; // JSON·도메인
 }
 
 /// 프로필·항목 기준 자격 판정 결과와 사유.
@@ -46,14 +46,12 @@ class Eligibility {
     notes: asStringList(json['notes']),
   );
 
-  final Verdict verdict;
-  final String verdictLabel;
-
+  final Verdict verdict; // JSON·도메인
+  final String verdictLabel; // JSON·도메인
   /// 판정 사유 (불가/확인 필요 이유)
-  final List<String> reasons;
-
+  final List<String> reasons; // JSON·도메인
   /// 항상 참고해야 하는 안내
-  final List<String> notes;
+  final List<String> notes; // JSON·도메인
 }
 
 /// 공고 목록에 보여주는 요약 정보
@@ -112,34 +110,31 @@ class NoticeSummary {
   );
 
   final String id; // 항목 식별자
-  final String title;
-  final String organization;
-  final String supplyType;
-  final String supplyTypeLabel;
-  final List<String> housingTypeLabels;
-  final NoticeStatus status;
-  final String statusLabel;
-
+  final String title; // JSON·도메인
+  final String organization; // JSON·도메인
+  final String supplyType; // JSON·도메인
+  final String supplyTypeLabel; // JSON·도메인
+  final List<String> housingTypeLabels; // JSON·도메인
+  final NoticeStatus status; // JSON·도메인
+  final String statusLabel; // JSON·도메인
   /// "D-3", "오늘 마감", "D-5 시작", "마감" 등
-  final String? dday;
-  final List<Region> regions;
-  final String regionLabel;
-  final String? applicationStart;
-  final String? applicationEnd;
-  final String? announcementDate;
-  final int? totalHouseholds;
-  final int? minDeposit;
-  final int? minMonthlyRent;
-  final double? minAreaM2;
-  final double? maxAreaM2;
-  final String? url;
-  final List<String> sourceLabels;
-
+  final String? dday; // JSON·도메인
+  final List<Region> regions; // JSON·도메인
+  final String regionLabel; // JSON·도메인
+  final String? applicationStart; // JSON·도메인
+  final String? applicationEnd; // JSON·도메인
+  final String? announcementDate; // JSON·도메인
+  final int? totalHouseholds; // JSON·도메인
+  final int? minDeposit; // JSON·도메인
+  final int? minMonthlyRent; // JSON·도메인
+  final double? minAreaM2; // JSON·도메인
+  final double? maxAreaM2; // JSON·도메인
+  final String? url; // JSON·도메인
+  final List<String> sourceLabels; // JSON·도메인
   /// 수집 발췌 본문 (benefits `summary` 와 동형)
-  final String? eligibilityText;
-
+  final String? eligibilityText; // JSON·도메인
   /// '내 조건'을 보냈을 때만 값이 있다.
-  final Eligibility? eligibility;
+  final Eligibility? eligibility; // JSON·도메인
 }
 
 /// 단지별 주택형·면적·임대조건 한 줄.
@@ -155,13 +150,12 @@ class UnitType {
     monthlyRent: asInt(json['monthlyRent']),
   );
 
-  final String? name;
-  final double? exclusiveAreaM2;
-  final int? households;
-
+  final String? name; // JSON·도메인
+  final double? exclusiveAreaM2; // JSON·도메인
+  final int? households; // JSON·도메인
   /// 임대보증금 또는 분양가(원)
-  final int? deposit;
-  final int? monthlyRent;
+  final int? deposit; // JSON·도메인
+  final int? monthlyRent; // JSON·도메인
 }
 
 /// 단지(아파트·단지) 묶음과 세대형 목록.
@@ -185,12 +179,12 @@ class Complex {
     units: asList(json['units'], UnitType.fromJson),
   );
 
-  final String? name;
-  final String? address;
-  final Region? region;
-  final String housingTypeLabel;
-  final int? households;
-  final List<UnitType> units;
+  final String? name; // JSON·도메인
+  final String? address; // JSON·도메인
+  final Region? region; // JSON·도메인
+  final String housingTypeLabel; // JSON·도메인
+  final int? households; // JSON·도메인
+  final List<UnitType> units; // JSON·도메인
 }
 
 /// 원문·출처 기관 정보.
@@ -205,13 +199,11 @@ class NoticeSource {
     fetchedAt: asString(json['fetchedAt']) ?? '',
   );
 
-  final String sourceLabel;
-  final String externalId;
-  final String? url;
-
+  final String sourceLabel; // JSON·도메인
+  final String externalId; // JSON·도메인
+  final String? url; // JSON·도메인
   /// ISO 8601 시각
-  final String fetchedAt;
-
+  final String fetchedAt; // JSON·도메인
   /// 수집일 (YYYY-MM-DD)
   String? get fetchedDate => fetchedAt.length >= 10 ? fetchedAt.substring(0, 10) : null;
 }
@@ -237,16 +229,14 @@ class NoticeDetail {
     googleCalendarUrl: asString(json['googleCalendarUrl']),
   );
 
-  final NoticeSummary summary;
-  final String? winnerAnnouncementDate;
-
+  final NoticeSummary summary; // JSON·도메인
+  final String? winnerAnnouncementDate; // JSON·도메인
   /// 공고 발췌 (문의처 등)
-  final String? eligibilityText;
-  final List<Complex> complexes;
-  final List<NoticeSource> sources;
-
+  final String? eligibilityText; // JSON·도메인
+  final List<Complex> complexes; // JSON·도메인
+  final List<NoticeSource> sources; // JSON·도메인
   /// 접수 마감일을 Google 캘린더에 넣는 주소. 마감일이 없으면 null
-  final String? googleCalendarUrl;
+  final String? googleCalendarUrl; // JSON·도메인
 }
 
 /// 목록 한 페이지
@@ -270,14 +260,13 @@ class NoticePage {
     today: asString(json['today']) ?? '',
   );
 
-  final List<NoticeSummary> items;
-  final int total;
-  final int page;
-  final int pageSize;
-  final int totalPages;
-
+  final List<NoticeSummary> items; // JSON·도메인
+  final int total; // JSON·도메인
+  final int page; // JSON·도메인
+  final int pageSize; // JSON·도메인
+  final int totalPages; // JSON·도메인
   /// 서버(KST) 기준 오늘
-  final String today;
+  final String today; // JSON·도메인
 }
 
 /// 관심 공고 목록. 페이지 없이 최근 저장 순 전체.
@@ -291,7 +280,7 @@ class SavedNoticeList {
     today: asString(json['today']) ?? '',
   );
 
-  final List<NoticeSummary> items;
-  final int total;
-  final String today;
+  final List<NoticeSummary> items; // JSON·도메인
+  final int total; // JSON·도메인
+  final String today; // JSON·도메인
 }

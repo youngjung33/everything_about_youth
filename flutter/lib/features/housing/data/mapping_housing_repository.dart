@@ -12,7 +12,7 @@ import '../domain/notice.dart';
 class MappingHousingRepository implements HousingRepository {
   MappingHousingRepository(this._inner);
 
-  final HousingRepository _inner;
+  final HousingRepository _inner; // _inner
 
   Future<T> _map<T>(Future<T> run) async {
     try {

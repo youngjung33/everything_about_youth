@@ -36,7 +36,7 @@ class GuideListPage extends ConsumerStatefulWidget {
 
 /// 위젯의 편집·로딩 등 내부 상태.
 class _GuideListPageState extends ConsumerState<GuideListPage> {
-  final _scroll = ScrollController();
+  final _scroll = ScrollController(); // 목록 스크롤
 
   @override
   void initState() {
@@ -144,7 +144,7 @@ class _GuideListPageState extends ConsumerState<GuideListPage> {
 class _Results extends ConsumerWidget {
   const _Results({required this.scroll});
 
-  final ScrollController scroll;
+  final ScrollController scroll; // 스크롤 컨트롤러
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -163,7 +163,7 @@ class _Results extends ConsumerWidget {
             // 0: 머리글, 1..n: 안내, n+1: 바닥글
             itemCount: list.items.length + 2,
             itemBuilder: (context, index) {
-              final Widget child;
+              final Widget child; // 섹션 내용
               if (index == 0) {
                 child = _Header(total: list.total);
               } else if (index == list.items.length + 1) {
@@ -190,7 +190,7 @@ class _Results extends ConsumerWidget {
 class _Header extends ConsumerWidget {
   const _Header({required this.total});
 
-  final int total;
+  final int total; // 전체 건수
 
   static Future<void> openFilterSheet(BuildContext context, WidgetRef ref, LivingMeta meta) async {
     await showAppBottomSheet<void>(
@@ -339,7 +339,7 @@ class _Header extends ConsumerWidget {
 class _Footer extends ConsumerWidget {
   const _Footer({required this.list});
 
-  final GuideListState list;
+  final GuideListState list; // 목록 AsyncValue
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

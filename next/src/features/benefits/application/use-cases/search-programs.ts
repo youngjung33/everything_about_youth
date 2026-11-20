@@ -11,29 +11,29 @@ export type ProgramFilters = Omit<ProgramSearchQuery, "today" | "sort" | "limit"
 
 /** 목록 API·화면 입력 */
 export interface SearchProgramsInput {
-  filters: ProgramFilters;
-  sort?: ProgramSort;
-  profile?: ApplicantProfile;
+  filters: ProgramFilters; // 검색 필터
+  sort?: ProgramSort; // 정렬 기준
+  profile?: ApplicantProfile; // 신청자 프로필
   /** 지정하면 해당 판정 결과만 남긴다 (profile 필요) */
-  verdicts?: EligibilityVerdict[];
-  page?: number;
-  pageSize?: number;
+  verdicts?: EligibilityVerdict[]; // 지정하면 해당 판정 결과만 남긴다 (profile 필요)
+  page?: number; // 현재 페이지
+  pageSize?: number; // 페이지 크기
 }
 
 /** 목록·상세 한 행 */
 export interface ProgramListItem {
-  program: BenefitProgram;
-  status: ProgramStatus;
-  eligibility: EligibilityResult | null;
+  program: BenefitProgram; // 정책
+  status: ProgramStatus; // 상태
+  eligibility: EligibilityResult | null; // 자격 판정 결과
 }
 
 /** 페이징 포함 목록 결과 */
 export interface SearchProgramsOutput {
-  items: ProgramListItem[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
+  items: ProgramListItem[]; // 결과 목록
+  total: number; // 전체 건수
+  page: number; // 현재 페이지
+  pageSize: number; // 페이지 크기
+  totalPages: number; // 전체 페이지 수
 }
 
 /** 기본 페이지 크기 */

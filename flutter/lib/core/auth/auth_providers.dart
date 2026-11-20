@@ -42,9 +42,9 @@ final authActionsProvider = Provider<AuthActions>(
 class AuthActions {
   AuthActions({required this.flow, required this.session, required this.api, required this.setMode});
 
-  final SsoSignInFlow flow;
-  final AuthSession session;
-  final ApiClient api;
+  final SsoSignInFlow flow; // flow
+  final AuthSession session; // session
+  final ApiClient api; // api
   final Future<void> Function(AuthMode mode) setMode;
 
   /// "비회원으로 시작하기". 서버 호출 없이 모드만 정한다. (세션은 첫 API 호출 때 서버가 만든다)

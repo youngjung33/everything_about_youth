@@ -14,7 +14,7 @@ import '../domain/finance_scheme.dart';
 class ApiFinanceRepository implements FinanceRepository {
   ApiFinanceRepository(this._client);
 
-  final ApiClient _client;
+  final ApiClient _client; // _client
 
   static const _base = '/finance';
 

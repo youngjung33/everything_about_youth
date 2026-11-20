@@ -8,7 +8,7 @@ class SavedSchemeReminderPrefs implements SavedSchemeReminderPrefsStore {
 
   static const key = 'finance.savedSchemeReminders.enabled';
 
-  final SharedPreferences _prefs;
+  final SharedPreferences _prefs; // _prefs
 
   @override
   bool get enabled => _prefs.getBool(key) ?? true;

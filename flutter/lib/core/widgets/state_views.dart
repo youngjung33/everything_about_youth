@@ -7,7 +7,7 @@ import '../layout/centered_scroll_view.dart';
 class LoadingView extends StatelessWidget {
   const LoadingView({super.key, this.message});
 
-  final String? message;
+  final String? message; // message
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +35,8 @@ class LoadingView extends StatelessWidget {
 class InlineLoading extends StatelessWidget {
   const InlineLoading({super.key, this.size = 22, this.padding = const EdgeInsets.all(24)});
 
-  final double size;
-  final EdgeInsetsGeometry padding;
+  final double size; // size
+  final EdgeInsetsGeometry padding; // padding
 
   @override
   Widget build(BuildContext context) {
@@ -57,8 +57,8 @@ class InlineLoading extends StatelessWidget {
 class ErrorView extends StatelessWidget {
   const ErrorView({super.key, required this.message, this.onRetry});
 
-  final String message;
-  final VoidCallback? onRetry;
+  final String message; // message
+  final VoidCallback? onRetry; // onRetry
 
   @override
   Widget build(BuildContext context) {
@@ -84,10 +84,10 @@ class ErrorView extends StatelessWidget {
 class EmptyView extends StatelessWidget {
   const EmptyView({super.key, required this.message, this.hint, this.actionLabel, this.onAction});
 
-  final String message;
-  final String? hint;
-  final String? actionLabel;
-  final VoidCallback? onAction;
+  final String message; // message
+  final String? hint; // hint
+  final String? actionLabel; // actionLabel
+  final VoidCallback? onAction; // onAction
 
   @override
   Widget build(BuildContext context) {

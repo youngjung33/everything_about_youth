@@ -17,13 +17,13 @@ import type { Complex, NoticeDraft, UnitType } from "@/features/housing/domain/n
  */
 
 interface SupplyRow {
-  complexName: string | null;
-  address: string | null;
-  unitName: string | null;
-  areaM2: number | null;
-  households: number | null;
-  deposit: number | null;
-  monthlyRent: number | null;
+  complexName: string | null; // complexName
+  address: string | null; // address
+  unitName: string | null; // unitName
+  areaM2: number | null; // areaM2
+  households: number | null; // households
+  deposit: number | null; // deposit
+  monthlyRent: number | null; // monthlyRent
 }
 
 /** "12,000" / 12000 / "55.86" 만 숫자로 인정한다. ("공고문 참조", "10~20만원" 같은 문자열은 null) */
@@ -99,9 +99,10 @@ function collectRows(root: unknown, out: Json[] = []): Json[] {
   return out;
 }
 
+/** LhSupply */
 export interface LhSupply {
-  complexes: Complex[];
-  totalHouseholds: number | null;
+  complexes: Complex[]; // complexes
+  totalHouseholds: number | null; // totalHouseholds
 }
 
 /** 공급정보가 없거나 알 수 없는 형식이면 null */

@@ -1,6 +1,7 @@
 import type { LivingGuide, LivingGuideDraft, GuideSourceRef } from "./guide";
 import { uniqueRegions } from "@/common/domain/region";
 
+/** 도메인 function: cyrb53. */
 function cyrb53(str: string, seed = 0): number {
   let h1 = 0xdeadbeef ^ seed;
   let h2 = 0x41c6ce57 ^ seed;
@@ -34,20 +35,24 @@ export function buildMergeKey(draft: Pick<LivingGuideDraft, "sources"> & { merge
   return draft.mergeKeyHint ?? "unknown";
 }
 
+/** 도메인 function: buildGuideId. */
 export function buildGuideId(mergeKey: string): string {
   return `l_${cyrb53(mergeKey).toString(36)}`;
 }
 
+/** 도메인 function: createGuide. */
 export function createGuide(draft: LivingGuideDraft): LivingGuide {
   const mergeKey = buildMergeKey(draft);
   return { ...draft, mergeKey, id: buildGuideId(mergeKey) };
 }
 
+/** 도메인 function: isSameGuide. */
 export function isSameGuide(a: LivingGuide, b: LivingGuide): boolean {
   if (a.mergeKey === b.mergeKey) return true;
   return a.sources.some((sa) => b.sources.some((sb) => sa.source === sb.source && sa.externalId === sb.externalId));
 }
 
+/** 도메인 function: unionSources. */
 function unionSources(existing: GuideSourceRef[], incoming: GuideSourceRef[]): GuideSourceRef[] {
   const map = new Map<string, GuideSourceRef>();
   for (const s of existing) map.set(`${s.source}:${s.externalId}`, s);
@@ -55,6 +60,7 @@ function unionSources(existing: GuideSourceRef[], incoming: GuideSourceRef[]): G
   return [...map.values()];
 }
 
+/** 도메인 function: mergeGuide. */
 export function mergeGuide(existing: LivingGuide, incoming: LivingGuide): LivingGuide {
   const tags = [...new Set([...existing.tags, ...incoming.tags])];
   return {

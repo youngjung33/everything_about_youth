@@ -13,7 +13,7 @@ import 'program_card.dart';
 class EligibilityNextStepsSection extends ConsumerWidget {
   const EligibilityNextStepsSection({super.key, required this.detail});
 
-  final ProgramDetail detail;
+  final ProgramDetail detail; // 상세 모델
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

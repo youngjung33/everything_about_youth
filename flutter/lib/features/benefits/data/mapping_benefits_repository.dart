@@ -12,7 +12,7 @@ import '../domain/benefit_program.dart';
 class MappingBenefitsRepository implements BenefitsRepository {
   MappingBenefitsRepository(this._inner);
 
-  final BenefitsRepository _inner;
+  final BenefitsRepository _inner; // _inner
 
   Future<T> _map<T>(Future<T> run) async {
     try {

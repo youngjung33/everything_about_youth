@@ -31,7 +31,7 @@ class SsoCancelledException implements Exception {
 class SsoFailedException implements Exception {
   const SsoFailedException([this.message = '로그인하지 못했습니다. 잠시 후 다시 시도해 주세요.']);
 
-  final String message;
+  final String message; // message
 
   @override
   String toString() => message;
@@ -49,7 +49,7 @@ abstract interface class SsoLauncher {
 class SsoClient {
   const SsoClient(this._api);
 
-  final ApiClient _api;
+  final ApiClient _api; // _api
 
   /// 지금 쓸 수 있는(서버에 설정이 있는) 로그인 방법의 id 들.
   Future<Set<String>> enabledProviders() async {
@@ -104,11 +104,11 @@ class SsoClient {
 class SsoSignInFlow {
   const SsoSignInFlow({required this.client, required this.launcher, required this.redirectUri});
 
-  final SsoClient client;
-  final SsoLauncher launcher;
+  final SsoClient client; // client
+  final SsoLauncher launcher; // launcher
 
   /// 로그인이 끝나고 서버가 앱으로 돌려보낼 주소. 서버의 허용 목록에 있어야 한다.
-  final String redirectUri;
+  final String redirectUri; // redirectUri
 
   /// 성공하면 회원 세션 JSON 을 돌려준다.
   /// 취소하면 [SsoCancelledException], 실패하면 [SsoFailedException] 또는 [ApiException] 을 던진다.

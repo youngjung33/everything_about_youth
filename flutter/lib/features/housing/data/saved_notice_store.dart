@@ -12,8 +12,8 @@ import '../domain/repositories/saved_notice_local_store.dart';
 class SavedNoticeStore implements SavedNoticeLocalStore {
   SavedNoticeStore(this._prefs, this._cipher);
 
-  final SharedPreferences _prefs;
-  final FieldCipher _cipher;
+  final SharedPreferences _prefs; // _prefs
+  final FieldCipher _cipher; // _cipher
 
   static const storageKey = 'eay.savedNotices.v1';
   static const cipherContext = 'housing.savedNotices';

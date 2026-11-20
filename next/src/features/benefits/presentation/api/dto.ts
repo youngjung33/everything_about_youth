@@ -20,87 +20,91 @@ import { regionLabel } from "../region-label";
  * 금액 원, 날짜 YYYY-MM-DD(KST).
  */
 export interface EligibilityDto {
-  verdict: string;
-  verdictLabel: string;
-  reasons: string[];
-  notes: string[];
+  verdict: string; // 판정 코드
+  verdictLabel: string; // 판정 한글 라벨
+  reasons: string[]; // 판정 사유
+  notes: string[]; // 추가 안내
 }
 
+/** API JSON: RegionDto. */
 export interface RegionDto {
-  sido: string;
-  sigungu: string | null;
+  sido: string; // 시·도
+  sigungu: string | null; // 시·군·구
 }
 
 /** 목록·관심 API용 요약 */
 export interface ProgramSummaryDto {
-  id: string;
-  title: string;
-  organization: string;
-  categoryId: string;
-  categoryLabel: string;
-  tags: string[];
-  status: string;
-  statusLabel: string;
+  id: string; // id
+  title: string; // 제목
+  organization: string; // 기관
+  categoryId: string; // categoryId
+  categoryLabel: string; // 유형 한글
+  tags: string[]; // 태그
+  status: string; // 상태 코드
+  statusLabel: string; // 상태 한글
   /** "D-3", "오늘 마감" 등. 없으면 null */
-  dday: string | null;
-  regions: RegionDto[];
-  regionLabel: string;
-  applicationStart: string | null;
-  applicationEnd: string | null;
-  announcementDate: string | null;
-  summary: string | null;
-  url: string | null;
-  sourceLabels: string[];
+  dday: string | null; // D-day
+  regions: RegionDto[]; // regions
+  regionLabel: string; // 지역 요약
+  applicationStart: string | null; // 접수 시작
+  applicationEnd: string | null; // 접수 종료
+  announcementDate: string | null; // 공고일
+  summary: string | null; // 요약
+  url: string | null; // URL
+  sourceLabels: string[]; // 출처 라벨
   /** 내 조건을 보냈을 때만 */
-  eligibility: EligibilityDto | null;
+  eligibility: EligibilityDto | null; // 참고 판정
 }
 
 /** 수집 출처 한 건 */
 export interface ProgramSourceDto {
-  source: string;
-  sourceLabel: string;
-  externalId: string;
-  url: string | null;
-  fetchedAt: string;
+  source: string; // 소스 id
+  sourceLabel: string; // 소스 한글
+  externalId: string; // 외부 id
+  url: string | null; // URL
+  fetchedAt: string; // 수집 시각
 }
 
 export interface ProgramDetailDto extends ProgramSummaryDto {
-  googleCalendarUrl: string | null;
-  sources: ProgramSourceDto[];
+  googleCalendarUrl: string | null; // 캘린더 URL
+  sources: ProgramSourceDto[]; // 출처
 }
 
 /** 목록 API 페이로드 */
 export interface ProgramListDto {
-  items: ProgramSummaryDto[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  today: string;
+  items: ProgramSummaryDto[]; // 항목
+  total: number; // 총 건수
+  page: number; // 페이지
+  pageSize: number; // pageSize
+  totalPages: number; // 총 페이지
+  today: string; // 기준일
 }
 
+/** API JSON: OptionDto. */
 export interface OptionDto {
-  value: string;
-  label: string;
+  value: string; // 코드
+  label: string; // 한글
 }
 
+/** API JSON: EligibilityStandardsDto. */
 export interface EligibilityStandardsDto {
-  year: number;
-  maxHouseholdSize: number;
-  urbanWorkerIncome: number[];
+  year: number; // 기준 연도
+  maxHouseholdSize: number; // 가구원 상한
+  urbanWorkerIncome: number[]; // 월소득 표
 }
 
 /** GET /meta 응답 */
 export interface BenefitsMetaDto {
-  dataUpdatedAt: string | null;
-  categories: OptionDto[];
-  statuses: OptionDto[];
-  verdicts: OptionDto[];
-  sorts: OptionDto[];
-  sidos: string[];
-  standards: EligibilityStandardsDto;
+  dataUpdatedAt: string | null; // 수집 시각
+  categories: OptionDto[]; // 채용 유형 목록
+  statuses: OptionDto[]; // 상태 목록
+  verdicts: OptionDto[]; // 판정 목록
+  sorts: OptionDto[]; // 정렬 목록
+  sidos: string[]; // 시도 목록
+  standards: EligibilityStandardsDto; // 기준표
 }
 
+/** 판정 DTO 변환. */
 function toEligibilityDto(result: EligibilityResult | null): EligibilityDto | null {
   if (!result) return null;
   return {

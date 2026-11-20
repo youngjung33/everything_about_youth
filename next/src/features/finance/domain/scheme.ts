@@ -4,31 +4,31 @@ import type { Region } from "@/common/domain/region";
 
 /** 프로그램의 원본 출처 */
 export interface SchemeSourceRef {
-  source: SourceId;
-  externalId: string;
-  url: string | null;
-  raw: unknown;
-  fetchedAt: string;
+  source: SourceId; // source
+  externalId: string; // externalId
+  url: string | null; // url
+  raw: unknown; // raw
+  fetchedAt: string; // fetchedAt
 }
 
 /** 금융·자금 지원 상품(정책) 엔티티 */
 export interface FinanceScheme {
-  id: string;
+  id: string; // id
   mergeKey: string; // 중복 병합 키
-  title: string;
-  organization: string;
-  productTypeId: ProductTypeId;
+  title: string; // title
+  organization: string; // organization
+  productTypeId: ProductTypeId; // productTypeId
   /** 검색·필터용 키워드 태그 */
-  tags: string[];
-  regions: Region[];
-  applicationStart: IsoDate | null;
-  applicationEnd: IsoDate | null;
-  announcementDate: IsoDate | null;
+  tags: string[]; // tags
+  regions: Region[]; // regions
+  applicationStart: IsoDate | null; // applicationStart
+  applicationEnd: IsoDate | null; // applicationEnd
+  announcementDate: IsoDate | null; // announcementDate
   /** 지원 내용·자격 요약 */
-  summary: string | null;
+  summary: string | null; // summary
   /** 신청·상세 안내 URL */
-  url: string | null;
-  sources: SchemeSourceRef[];
+  url: string | null; // url
+  sources: SchemeSourceRef[]; // sources
 }
 
 /** 수집 직후 id·mergeKey 가 없는 초안 */

@@ -38,8 +38,8 @@ class SecureCipherKeyStore implements CipherKeyStore {
 
   static const storageKey = 'eay.cipher.key.v1';
 
-  final FlutterSecureStorage _storage;
-  final Random _random;
+  final FlutterSecureStorage _storage; // _storage
+  final Random _random; // _random
   Future<List<int>>? _loading;
 
   @override

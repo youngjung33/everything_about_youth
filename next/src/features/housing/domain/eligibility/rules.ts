@@ -6,25 +6,26 @@ export type ApplicantGroup = "youth" | "newlywed" | "student";
 
 /** 소득 상한. 금액은 기준표(standards.ts)에서 가구원수별로 계산한다. */
 export interface IncomeRule {
-  base: IncomeBase;
+  base: IncomeBase; // base
   /** 기준 소득 대비 상한(%) */
-  percent: number;
+  percent: number; // percent
   /** 맞벌이 신혼부부의 상한(%). 없으면 맞벌이 구분이 없다. */
-  dualIncomePercent?: number;
+  dualIncomePercent?: number; // dualIncomePercent
   /** 1인 가구 +20%p, 2인 가구 +10%p 가산 여부 */
-  smallHouseholdBonus: boolean;
+  smallHouseholdBonus: boolean; // smallHouseholdBonus
 }
 
 /** 자산 상한(원). 없으면 판정하지 않는다. */
 export interface AssetRule {
-  totalWon?: number;
+  totalWon?: number; // totalWon
   /** 0 이면 자동차를 보유하지 않아야 한다. */
-  carWon?: number;
+  carWon?: number; // carWon
 }
 
+/** 도메인 interface: MoneyRule. */
 export interface MoneyRule {
-  income?: IncomeRule;
-  assets?: AssetRule;
+  income?: IncomeRule; // income
+  assets?: AssetRule; // assets
 }
 
 /**
@@ -33,22 +34,22 @@ export interface MoneyRule {
  */
 export interface SupplyRule {
   /** 연령 하한/상한(만 나이). 없으면 제한 없음 */
-  minAge?: number;
-  maxAge?: number;
+  minAge?: number; // minAge
+  maxAge?: number; // maxAge
   /** 무주택 요건 */
-  requiresHomeless: boolean;
+  requiresHomeless: boolean; // requiresHomeless
   /** 미혼 요건 */
-  requiresUnmarried?: boolean;
+  requiresUnmarried?: boolean; // requiresUnmarried
   /** 계층 중 하나 이상 충족해야 하는 유형 */
-  anyOfGroups?: ApplicantGroup[];
+  anyOfGroups?: ApplicantGroup[]; // anyOfGroups
   /** 소득·자산 기준 (계층 구분이 없는 유형) */
-  money?: MoneyRule;
+  money?: MoneyRule; // money
   /** 계층별 소득·자산 기준. 해당 계층이 여럿이면 가장 유리한 쪽으로 판정한다. */
-  groupMoney?: Partial<Record<ApplicantGroup, MoneyRule>>;
+  groupMoney?: Partial<Record<ApplicantGroup, MoneyRule>>; // groupMoney
   /** 청약통장(입주자저축) 가입이 필요한 유형 */
-  requiresSubscriptionAccount?: boolean;
+  requiresSubscriptionAccount?: boolean; // requiresSubscriptionAccount
   /** 판정만으로 부족할 때 안내하는 검증 문구 */
-  alwaysCheck?: string;
+  alwaysCheck?: string; // alwaysCheck
 }
 
 const YOUTH_MIN = 19;

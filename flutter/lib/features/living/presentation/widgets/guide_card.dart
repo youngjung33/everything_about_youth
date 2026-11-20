@@ -15,7 +15,7 @@ class MetaItem extends StatelessWidget {
 
   final String label; // 화면에 보이는 한글 라벨
   final String value; // 코드 값
-  final double width;
+  final double width; // 가로 너비
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +38,8 @@ class MetaItem extends StatelessWidget {
 class GuideBadges extends StatelessWidget {
   const GuideBadges({super.key, required this.guide, this.largeEligibility = false});
 
-  final GuideSummary guide;
-  final bool largeEligibility;
+  final GuideSummary guide; // 가이드 요약
+  final bool largeEligibility; // 자격 배지 크게
 
   @override
   Widget build(BuildContext context) {
@@ -68,8 +68,8 @@ class GuideBadges extends StatelessWidget {
 class GuideCard extends StatelessWidget {
   const GuideCard({super.key, required this.guide, this.onTap});
 
-  final GuideSummary guide;
-  final VoidCallback? onTap;
+  final GuideSummary guide; // 가이드 요약
+  final VoidCallback? onTap; // 탭 시 콜백
 
   @override
   Widget build(BuildContext context) {

@@ -70,7 +70,7 @@ class NoticeDetailPage extends ConsumerWidget {
 class _DetailBody extends StatelessWidget {
   const _DetailBody({required this.detail});
 
-  final NoticeDetail detail;
+  final NoticeDetail detail; // 상세 모델
 
   @override
   Widget build(BuildContext context) {
@@ -152,8 +152,8 @@ class _DetailBody extends StatelessWidget {
 class _Section extends StatelessWidget {
   const _Section({required this.title, required this.child});
 
-  final String title;
-  final Widget child;
+  final String title; // 섹션 제목
+  final Widget child; // 섹션 내용
 
   @override
   Widget build(BuildContext context) {
@@ -180,7 +180,7 @@ class _Section extends StatelessWidget {
 class _EligibilityCard extends StatelessWidget {
   const _EligibilityCard({required this.eligibility});
 
-  final Eligibility eligibility;
+  final Eligibility eligibility; // 자격 판정
 
   @override
   Widget build(BuildContext context) {
@@ -210,8 +210,8 @@ class _EligibilityCard extends StatelessWidget {
 class _Bullet extends StatelessWidget {
   const _Bullet({required this.text, required this.color});
 
-  final String text;
-  final Color color;
+  final String text; // 표시 텍스트
+  final Color color; // 글자·아이콘 색
 
   @override
   Widget build(BuildContext context) {
@@ -234,7 +234,7 @@ class _Bullet extends StatelessWidget {
 class _ComplexView extends StatelessWidget {
   const _ComplexView({required this.complex});
 
-  final Complex complex;
+  final Complex complex; // 단지 정보
 
   @override
   Widget build(BuildContext context) {
@@ -302,7 +302,7 @@ class _ComplexView extends StatelessWidget {
 class _SourceRow extends StatelessWidget {
   const _SourceRow({required this.source});
 
-  final NoticeSource source;
+  final NoticeSource source; // 출처 정보
 
   @override
   Widget build(BuildContext context) {

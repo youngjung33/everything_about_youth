@@ -4,7 +4,7 @@ import type { ApiResult } from "./respond";
 
 /** GET /features 응답. */
 export interface FeaturesDto {
-  features: { id: string; enabled: boolean }[];
+  features: { id: string; enabled: boolean }[]; // features
 }
 
 /**

@@ -5,8 +5,8 @@ export type FetchFn = typeof fetch;
 
 /** SSO 제공자 HTTP·client 설정. */
 export interface ProviderDeps {
-  fetch: FetchFn;
-  now: () => Date;
+  fetch: FetchFn; // fetch
+  now: () => Date; // 현재 시각
 }
 
 const TIMEOUT_MS = 8000;

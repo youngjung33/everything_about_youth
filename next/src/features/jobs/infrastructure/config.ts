@@ -11,11 +11,13 @@ const schema = z.object({
   JOBS_SYNC_INTERVAL_MINUTES: z.preprocess(emptyToUndefined, z.coerce.number().int().min(0).default(0)),
 });
 
+/** JobsConfig */
 export interface JobsConfig {
-  enabledSources: SourceId[];
-  syncIntervalMinutes: number;
+  enabledSources: SourceId[]; // enabledSources
+  syncIntervalMinutes: number; // syncIntervalMinutes
 }
 
+/** loadJobsConfig 함수 */
 export function loadJobsConfig(env: Record<string, string | undefined> = process.env): JobsConfig {
   const parsed = schema.parse(env);
   const interval = parsed.JOBS_SYNC_INTERVAL_MINUTES;

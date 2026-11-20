@@ -107,12 +107,12 @@ export async function requireMemberUserId(request: Request, clients: AuthClientS
 
 /** GET /auth/session 응답. */
 export interface SessionDto {
-  tokenType: "Bearer";
-  accessToken: string;
-  accessExpiresIn: number;
-  refreshToken: string;
-  refreshExpiresIn: number;
-  member: boolean;
+  tokenType: "Bearer"; // 토큰 타입
+  accessToken: string; // 액세스 토큰
+  accessExpiresIn: number; // 액세스 만료까지 초
+  refreshToken: string; // 리프레시 토큰
+  refreshExpiresIn: number; // 리프레시 만료까지 초
+  member: boolean; // 회원 세션 여부
 }
 
 /** [SessionTokens] → API DTO. */

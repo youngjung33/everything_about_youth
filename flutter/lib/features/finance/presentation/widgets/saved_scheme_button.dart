@@ -11,8 +11,8 @@ const _accent = ServiceAccent.finance;
 class SavedSchemeButton extends ConsumerWidget {
   const SavedSchemeButton({super.key, required this.schemeId, this.compact = true});
 
-  final String schemeId;
-  final bool compact;
+  final String schemeId; // 제도 id
+  final bool compact; // 작은 버튼 레이아웃
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

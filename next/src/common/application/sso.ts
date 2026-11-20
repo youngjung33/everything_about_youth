@@ -32,16 +32,16 @@ export function isSsoProviderId(value: unknown): value is SsoProviderId {
 
 /** 로그인 업체가 알려 준 사용자. 개인정보 최소 수집을 위해 업체가 정해 준 고유 번호만 쓴다. (이메일·이름은 받지 않는다) */
 export interface SsoProfile {
-  subject: string;
+  subject: string; // 제공자 측 사용자 식별자
 }
 
 /** 로그인 업체 하나. 설정(키)이 있는 업체만 만들어져서 [SsoProviders] 에 들어간다. */
 export interface SsoProvider {
   readonly id: SsoProviderId;
   /** 사용자가 로그인할 주소. `redirectUri` 는 업체가 로그인 뒤에 돌아올 서버 주소다. */
-  authorizationUrl(input: { state: string; nonce: string; redirectUri: string }): string;
+  authorizationUrl(input: { state: string; nonce: string; redirectUri: string }): string; // 사용자가 로그인할 주소. `redirectUri` 는 업체가 로그인 뒤에 돌아올 서버 주소다
   /** 인가 코드를 업체와 교환해 사용자를 확인한다. 실패하면 던진다. */
-  fetchProfile(input: { code: string; state: string; nonce: string; redirectUri: string }): Promise<SsoProfile>;
+  fetchProfile(input: { code: string; state: string; nonce: string; redirectUri: string }): Promise<SsoProfile>; // 인가 코드를 업체와 교환해 사용자를 확인한다. 실패하면 던진다
 }
 
 /** 쓸 수 있는(설정이 된) 업체만 들어 있다. 없는 업체는 로그인 화면에서 "준비 중"이다. */
@@ -49,21 +49,21 @@ export type SsoProviders = Partial<Record<SsoProviderId, SsoProvider>>;
 
 /** 로그인을 시작할 때 서명해서 업체에 맡기고, 돌아올 때 되돌려받는 값. 서버는 따로 저장하지 않는다. */
 export interface SsoState {
-  provider: SsoProviderId;
-  nonce: string;
+  provider: SsoProviderId; // SSO 제공자
+  nonce: string; // 재생 방지 값
   /** 로그인이 끝나면 브라우저를 돌려보낼 앱 주소 (허용 목록을 통과한 값) */
-  appRedirect: string;
+  appRedirect: string; // 로그인이 끝나면 브라우저를 돌려보낼 앱 주소 (허용 목록을 통과한 값)
   /** 앱이 만든 PKCE challenge */
-  challenge: string;
+  challenge: string; // 앱이 만든 PKCE challenge
   /** 업체가 돌아올 서버 주소. 인가 코드를 교환할 때 똑같은 값을 보내야 한다. */
-  callbackUri: string;
+  callbackUri: string; // 업체가 돌아올 서버 주소. 인가 코드를 교환할 때 똑같은 값을 보내야 한다
 }
 
 /** OAuth state·nonce 암·복호화. */
 export interface SsoStateCodec {
-  sign(state: SsoState): Promise<string>;
+  sign(state: SsoState): Promise<string>; // state 서명
   /** 서명·만료를 검사한다. 실패하면 `SsoError("invalid_state")`. */
-  verify(token: string): Promise<SsoState>;
+  verify(token: string): Promise<SsoState>; // 서명·만료를 검사한다. 실패하면 `SsoError("invalid_state")`
 }
 
 /** SSO 플로우 클라이언트 오류 코드. */
@@ -81,7 +81,7 @@ export class SsoError extends Error {
     public readonly code: SsoErrorCode,
     message: string,
   ) {
-    super(message);
+    super(message); // super
     this.name = "SsoError";
   }
 }
@@ -89,24 +89,24 @@ export class SsoError extends Error {
 /** 회원(사용자). 로그인 업체의 계정 하나가 사용자 하나다. (업체 사이의 계정 합치기는 하지 않는다) */
 export interface UserStore {
   /** 있으면 마지막 로그인 시각만 고치고, 없으면 만든다. */
-  findOrCreate(provider: SsoProviderId, subject: string, at: string, newId: () => string): Promise<string>;
+  findOrCreate(provider: SsoProviderId, subject: string, at: string, newId: () => string): Promise<string>; // 회원 조회 또는 생성
   /** 사용자와 그 로그인 정보를 지운다. */
-  delete(userId: string): Promise<void>;
+  delete(userId: string): Promise<void>; // 사용자와 그 로그인 정보를 지운다
 }
 
 /** 로그인 업체에서 돌아온 직후 만드는 일회용 티켓. 한 번 쓰면 사라지고, 만료되면 쓸 수 없다. */
 export interface SsoTicketStore {
-  create(ticketHash: string, userId: string, challenge: string, expiresAt: string, now: string): Promise<void>;
+  create(ticketHash: string, userId: string, challenge: string, expiresAt: string, now: string): Promise<void>; // 행 생성
   /** 한 번만 돌려준다. 없거나 만료됐으면 null. */
-  consume(ticketHash: string, now: string): Promise<{ userId: string; challenge: string } | null>;
+  consume(ticketHash: string, now: string): Promise<{ userId: string; challenge: string } | null>; // 티켓 1회 사용
 }
 
 /** redirect URI allowlist. */
 export interface RedirectRules {
   /** 정확히 일치해야 하는 주소 (예: `everythingaboutyouth://auth`, `https://app.example.com/auth.html`) */
-  allowed: readonly string[];
+  allowed: readonly string[]; // 정확히 일치해야 하는 주소 (예: `everythingaboutyouth://auth`, `https://app.example.com/auth.html`)
   /** 개발 편의: `http://localhost:<아무 포트>/auth.html` 허용 */
-  allowLocalhost: boolean;
+  allowLocalhost: boolean; // 개발 편의: `http://localhost:<아무 포트>/auth.html` 허용
 }
 
 /**

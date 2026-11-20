@@ -20,7 +20,7 @@ final bootstrapMinDurationProvider = Provider<Duration>((ref) => const Duration(
 class BootstrapResult {
   const BootstrapResult({this.failedFeatures = const {}});
 
-  final Map<String, Object> failedFeatures;
+  final Map<String, Object> failedFeatures; // failedFeatures
 
   BootstrapResult withFailure(String id, Object error) =>
       BootstrapResult(failedFeatures: {...failedFeatures, id: error});

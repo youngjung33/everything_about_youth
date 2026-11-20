@@ -7,6 +7,7 @@ import { SIDO_LIST, type Sido } from "@/common/domain/region";
 import type { PostingSort } from "@/features/jobs/application/ports/posting-repository";
 import type { PostingFilters } from "@/features/jobs/application/use-cases/search-job-postings";
 
+/** RawSearchParams */
 export type RawSearchParams = Record<string, string | string[] | undefined>;
 
 /**
@@ -34,20 +35,21 @@ const MAX_MONTHLY_INCOME_MAN = 100_000;
 const MAX_ASSET_MAN = 10_000_000;
 export const VERDICTS: EligibilityVerdict[] = ["eligible", "check", "ineligible"];
 
+/** ParsedSearch */
 export interface ParsedSearch {
-  filters: PostingFilters;
-  sort: PostingSort;
-  page: number;
-  profile: ApplicantProfile;
-  hasProfile: boolean;
-  verdicts: EligibilityVerdict[];
+  filters: PostingFilters; // 검색 필터
+  sort: PostingSort; // 정렬 기준
+  page: number; // 현재 페이지
+  profile: ApplicantProfile; // 신청자 프로필
+  hasProfile: boolean; // hasProfile
+  verdicts: EligibilityVerdict[]; // 자격 판정 필터
   form: {
-    sidos: Sido[];
-    sigungu: string;
-    hireTypeIds: HireTypeId[];
-    tags: string[];
-    statuses: PostingStatus[];
-    q: string;
+    sidos: Sido[]; // 시·도 필터
+    sigungu: string; // 시·군·구 필터
+    hireTypeIds: HireTypeId[]; // hireTypeIds
+    tags: string[]; // 태그 필터
+    statuses: PostingStatus[]; // 상태 필터
+    q: string; // q
   };
 }
 

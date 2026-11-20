@@ -197,8 +197,8 @@ class _FilterPanelState extends State<FilterPanel> {
 class _Group extends StatelessWidget {
   const _Group({required this.title, required this.child});
 
-  final String title;
-  final Widget child;
+  final String title; // 섹션 제목
+  final Widget child; // 섹션 내용
 
   @override
   Widget build(BuildContext context) {
@@ -220,9 +220,9 @@ class _Group extends StatelessWidget {
 class _Chips extends StatelessWidget {
   const _Chips({required this.options, required this.selected, required this.onChanged});
 
-  final List<Option> options;
-  final Set<String> selected;
-  final void Function(String value, bool selected) onChanged;
+  final List<Option> options; // 선택지 목록
+  final Set<String> selected; // 현재 선택값 집합
+  final void Function(String value, bool selected) onChanged; // 칩 선택 변경 콜백
 
   @override
   Widget build(BuildContext context) {
@@ -246,10 +246,10 @@ class _Chips extends StatelessWidget {
 class _Field extends StatelessWidget {
   const _Field({required this.controller, required this.label, this.hint, this.number = false});
 
-  final TextEditingController controller;
+  final TextEditingController controller; // 텍스트 입력 컨트롤러
   final String label; // 화면에 보이는 한글 라벨
-  final String? hint;
-  final bool number;
+  final String? hint; // 입력 힌트
+  final bool number; // 숫자 입력 여부
 
   @override
   Widget build(BuildContext context) {

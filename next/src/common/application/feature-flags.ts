@@ -2,30 +2,30 @@ import type { Clock, Logger } from "./system";
 
 /** 서비스(섹션) 하나의 정의. 기본값은 코드에 두고, 운영 중 바꾼 값(override)만 저장소에 둔다. */
 export interface FeatureDefinition {
-  id: string;
-  defaultEnabled: boolean;
+  id: string; // 식별자
+  defaultEnabled: boolean; // 기본 켜짐 여부
 }
 
 /** 운영자가 바꾼 켜짐/꺼짐 값 저장소. 저장소가 없거나 비어 있으면 [FeatureDefinition.defaultEnabled] 를 쓴다. */
 export interface FeatureFlagStore {
-  getOverrides(): Promise<Record<string, boolean>>;
-  setOverride(id: string, enabled: boolean, updatedAt: string): Promise<void>;
-  clearOverride(id: string): Promise<void>;
+  getOverrides(): Promise<Record<string, boolean>>; // 운영자 덮어쓰기 맵 조회
+  setOverride(id: string, enabled: boolean, updatedAt: string): Promise<void>; // 기능 덮어쓰기 설정
+  clearOverride(id: string): Promise<void>; // 기능 덮어쓰기 제거
 }
 
 /** 기능 on/off·사용자 메시지. */
 export interface FeatureState {
-  id: string;
-  enabled: boolean;
-  defaultEnabled: boolean;
+  id: string; // 식별자
+  enabled: boolean; // 켜짐 여부
+  defaultEnabled: boolean; // 기본 켜짐 여부
   /** 기본값이 아니라 운영자가 바꾼 값이면 true */
-  overridden: boolean;
+  overridden: boolean; // 기본값이 아니라 운영자가 바꾼 값이면 true
 }
 
 /** 등록되지 않은 feature id. */
 export class UnknownFeatureError extends Error {
   constructor(public readonly featureId: string, known: string[]) {
-    super(`알 수 없는 서비스입니다: ${featureId} (사용 가능: ${known.join(", ")})`);
+    super(`알 수 없는 서비스입니다: ${featureId} (사용 가능: ${known.join(", ")})`); // super
   }
 }
 

@@ -10,8 +10,10 @@ import type { NoticeListItem } from "./search-notices";
 /** 회원 한 명이 저장할 수 있는 관심 공고 수. 남용과 목록 조회 부담을 막는다. */
 export const MAX_SAVED_NOTICES = 100;
 
+/** SaveNoticeResult 결과 타입 */
 export type SaveNoticeResult = { status: "saved" } | { status: "already" } | { status: "not_found" } | { status: "limit"; max: number };
 
+/** ManageSavedNotices */
 export class ManageSavedNotices {
   constructor(
     private readonly saved: SavedNoticeRepository,

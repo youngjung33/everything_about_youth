@@ -7,7 +7,7 @@ import '../theme/app_fonts.dart';
 class ServiceIntroBanner extends StatelessWidget {
   const ServiceIntroBanner({super.key, required this.accent});
 
-  final ServiceAccent accent;
+  final ServiceAccent accent; // accent
 
   @override
   Widget build(BuildContext context) {

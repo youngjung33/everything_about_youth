@@ -14,12 +14,12 @@ const DETAIL_PATH = "/opi/youthPlcyDetail.do";
 
 /** 온통 상세 HTML 수집 옵션. */
 export interface OntongDetailFetchOptions {
-  apiKey: string;
-  baseUrl?: string;
-  getText: (url: string) => Promise<string>;
-  signal?: AbortSignal;
-  delayMs?: number;
-  logger?: Logger;
+  apiKey: string; // apiKey
+  baseUrl?: string; // baseUrl
+  getText: (url: string) => Promise<string>; // getText
+  signal?: AbortSignal; // signal
+  delayMs?: number; // delayMs
+  logger?: Logger; // 로거
 }
 
 function unwrapOntongItem(node: Json): Json | null {

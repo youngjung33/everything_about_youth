@@ -20,7 +20,7 @@ abstract final class AppTextScale {
 class AppTextScaleClamp extends StatelessWidget {
   const AppTextScaleClamp({super.key, required this.child});
 
-  final Widget child;
+  final Widget child; // child
 
   @override
   Widget build(BuildContext context) {

@@ -8,7 +8,7 @@ class SavedNoticeReminderPrefs implements SavedNoticeReminderPrefsStore {
 
   static const key = 'housing.savedNoticeReminders.enabled';
 
-  final SharedPreferences _prefs;
+  final SharedPreferences _prefs; // _prefs
 
   @override
   bool get enabled => _prefs.getBool(key) ?? true;

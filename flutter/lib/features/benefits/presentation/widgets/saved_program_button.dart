@@ -11,8 +11,8 @@ const _accent = ServiceAccent.benefits;
 class SavedProgramButton extends ConsumerWidget {
   const SavedProgramButton({super.key, required this.programId, this.compact = true});
 
-  final String programId;
-  final bool compact;
+  final String programId; // 프로그램 id
+  final bool compact; // 작은 버튼 레이아웃
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

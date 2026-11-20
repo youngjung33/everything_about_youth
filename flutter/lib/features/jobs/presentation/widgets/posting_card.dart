@@ -16,7 +16,7 @@ class MetaItem extends StatelessWidget {
 
   final String label; // 화면에 보이는 한글 라벨
   final String value; // 코드 값
-  final double width;
+  final double width; // 가로 너비
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +39,8 @@ class MetaItem extends StatelessWidget {
 class PostingBadges extends StatelessWidget {
   const PostingBadges({super.key, required this.posting, this.largeEligibility = false});
 
-  final PostingSummary posting;
-  final bool largeEligibility;
+  final PostingSummary posting; // 채용 공고 요약
+  final bool largeEligibility; // 자격 배지 크게
 
   @override
   Widget build(BuildContext context) {
@@ -69,8 +69,8 @@ class PostingBadges extends StatelessWidget {
 class PostingCard extends StatelessWidget {
   const PostingCard({super.key, required this.posting, this.onTap});
 
-  final PostingSummary posting;
-  final VoidCallback? onTap;
+  final PostingSummary posting; // 채용 공고 요약
+  final VoidCallback? onTap; // 탭 시 콜백
 
   @override
   Widget build(BuildContext context) {

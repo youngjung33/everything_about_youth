@@ -8,7 +8,7 @@ class SavedPostingReminderPrefs implements SavedPostingReminderPrefsStore {
 
   static const key = 'jobs.savedPostingReminders.enabled';
 
-  final SharedPreferences _prefs;
+  final SharedPreferences _prefs; // _prefs
 
   @override
   bool get enabled => _prefs.getBool(key) ?? true;

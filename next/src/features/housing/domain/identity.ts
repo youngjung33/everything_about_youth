@@ -62,6 +62,7 @@ export function isSameNotice(a: Notice, b: Notice): boolean {
   return a.sources.some((sa) => b.sources.some((sb) => sa.source === sb.source && sa.externalId === sb.externalId));
 }
 
+/** 도메인 function: unionSources. */
 function unionSources(existing: NoticeSourceRef[], incoming: NoticeSourceRef[]): NoticeSourceRef[] {
   const map = new Map<string, NoticeSourceRef>();
   for (const s of existing) map.set(`${s.source}:${s.externalId}`, s);
@@ -69,10 +70,12 @@ function unionSources(existing: NoticeSourceRef[], incoming: NoticeSourceRef[]):
   return [...map.values()];
 }
 
+/** 도메인 function: unitCount. */
 function unitCount(complexes: Complex[]): number {
   return complexes.reduce((sum, c) => sum + c.units.length, 0);
 }
 
+/** 도메인 function: pickComplexes. */
 function pickComplexes(existing: Complex[], incoming: Complex[]): Complex[] {
   if (incoming.length === 0) return existing;
   if (existing.length === 0) return incoming;

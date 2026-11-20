@@ -12,40 +12,43 @@ import {
 } from "./board-text";
 import { RobotsDisallowedError, type FetchText } from "@/common/infrastructure/crawler/crawl-fetcher";
 
+/** BoardRow */
 export interface BoardRow {
-  externalId: string;
-  title: string;
-  postedDate: IsoDate | null;
-  detailUrl: string;
+  externalId: string; // externalId
+  title: string; // title
+  postedDate: IsoDate | null; // postedDate
+  detailUrl: string; // detailUrl
 }
 
+/** BoardDetail */
 export interface BoardDetail {
   /** 본문 텍스트(공백 정리 전) */
-  text: string;
+  text: string; // 본문 텍스트(공백 정리 전)
 }
 
 /** 소스(공사)별로 달라지는 부분. 나머지(수집 순서, 필터, 정규화)는 BoardCrawlerSource 가 공통 처리한다. */
 export interface BoardStrategy {
-  id: SourceId;
-  label: string;
-  organization: string;
-  sido: Sido;
+  id: SourceId; // 식별자
+  label: string; // label
+  organization: string; // organization
+  sido: Sido; // sido
   /** 게시판 목록 URL 생성기들 (카테고리별) */
-  lists: Array<{ maxPages: number; url: (page: number) => string }>;
-  parseList(html: string, listUrl: string): BoardRow[];
-  parseDetail(html: string): BoardDetail;
-  guessSigungu?(title: string): string | null;
+  lists: Array<{ maxPages: number; url: (page: number) => string }>; // 게시판 목록 URL 생성기들 (카테고리별)
+  parseList(html: string, listUrl: string): BoardRow[]; // parseList
+  parseDetail(html: string): BoardDetail; // parseDetail
+  guessSigungu?(title: string): string | null; // guessSigungu
   /** 제목 기반 공급유형 보정 (공사별 고유 명칭) */
-  resolveSupplyType?(title: string): SupplyType | null;
+  resolveSupplyType?(title: string): SupplyType | null; // 제목 기반 공급유형 보정 (공사별 고유 명칭)
 }
 
+/** BoardCrawlerOptions */
 export interface BoardCrawlerOptions {
-  fetchText: FetchText;
+  fetchText: FetchText; // fetchText
   /** 오늘로부터 며칠 전 게시글까지 볼지 */
-  lookbackDays?: number;
+  lookbackDays?: number; // 오늘로부터 며칠 전 게시글까지 볼지
   /** 접수기간을 알 수 없는 글을 유효한 것으로 볼 최대 경과일 */
-  undatedMaxAgeDays?: number;
-  onWarn?: (message: string) => void;
+  undatedMaxAgeDays?: number; // 접수기간을 알 수 없는 글을 유효한 것으로 볼 최대 경과일
+  onWarn?: (message: string) => void; // onWarn
 }
 
 function shiftDays(date: IsoDate, days: number): IsoDate {
@@ -54,6 +57,7 @@ function shiftDays(date: IsoDate, days: number): IsoDate {
   return d.toISOString().slice(0, 10);
 }
 
+/** BoardCrawlerSource */
 export class BoardCrawlerSource implements NoticeSourcePort {
   readonly id: SourceId;
   readonly label: string;

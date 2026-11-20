@@ -31,6 +31,7 @@ export const livingGuides = sqliteTable(
   ],
 );
 
+/** livingGuideRegions */
 export const livingGuideRegions = sqliteTable(
   "living_guide_regions",
   {
@@ -43,6 +44,7 @@ export const livingGuideRegions = sqliteTable(
   (t) => [primaryKey({ columns: [t.guideId, t.sido, t.sigungu] }), index("living_guide_regions_sido_idx").on(t.sido, t.sigungu)],
 );
 
+/** livingGuideTags */
 export const livingGuideTags = sqliteTable(
   "living_guide_tags",
   {
@@ -54,6 +56,7 @@ export const livingGuideTags = sqliteTable(
   (t) => [primaryKey({ columns: [t.guideId, t.tag] }), index("living_guide_tags_tag_idx").on(t.tag)],
 );
 
+/** livingGuideSources */
 export const livingGuideSources = sqliteTable(
   "living_guide_sources",
   {
@@ -69,6 +72,7 @@ export const livingGuideSources = sqliteTable(
   (t) => [primaryKey({ columns: [t.source, t.externalId] }), index("living_guide_sources_guide_idx").on(t.guideId)],
 );
 
+/** savedLivingGuides */
 export const savedLivingGuides = sqliteTable(
   "saved_living_guides",
   {
@@ -83,6 +87,7 @@ export const savedLivingGuides = sqliteTable(
   (t) => [primaryKey({ columns: [t.userId, t.guideId] }), index("saved_living_guides_user_idx").on(t.userId, t.createdAt)],
 );
 
+/** livingSyncRuns */
 export const livingSyncRuns = sqliteTable("living_sync_runs", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   source: text("source").notNull(),

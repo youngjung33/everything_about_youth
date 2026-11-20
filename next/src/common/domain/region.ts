@@ -23,9 +23,9 @@ export type Sido = (typeof SIDO_LIST)[number];
 
 /** 시·도·시·군·구 한 쌍. */
 export interface Region {
-  sido: Sido;
+  sido: Sido; // sido
   /** 시군구 (예: "강남구", "수원시") */
-  sigungu: string | null;
+  sigungu: string | null; // 시군구 (예: "강남구", "수원시")
 }
 
 const SIDO_ALIASES: Array<[Sido, string[]]> = [

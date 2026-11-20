@@ -69,7 +69,7 @@ class PostingDetailPage extends ConsumerWidget {
 class _DetailBody extends StatelessWidget {
   const _DetailBody({required this.detail});
 
-  final PostingDetail detail;
+  final PostingDetail detail; // 상세 모델
 
   @override
   Widget build(BuildContext context) {
@@ -138,8 +138,8 @@ class _DetailBody extends StatelessWidget {
 class _Section extends StatelessWidget {
   const _Section({required this.title, required this.child});
 
-  final String title;
-  final Widget child;
+  final String title; // 섹션 제목
+  final Widget child; // 섹션 내용
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +161,7 @@ class _Section extends StatelessWidget {
 class _EligibilityCard extends StatelessWidget {
   const _EligibilityCard({required this.eligibility});
 
-  final Eligibility eligibility;
+  final Eligibility eligibility; // 자격 판정
 
   @override
   Widget build(BuildContext context) {
@@ -194,7 +194,7 @@ class _EligibilityCard extends StatelessWidget {
 class _SourceRow extends StatelessWidget {
   const _SourceRow({required this.source});
 
-  final PostingSource source;
+  final PostingSource source; // 출처 정보
 
   @override
   Widget build(BuildContext context) {

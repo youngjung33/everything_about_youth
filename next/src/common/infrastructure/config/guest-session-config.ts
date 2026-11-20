@@ -9,9 +9,9 @@ const schema = z.object({
 /** 비회원 세션 보존·상한 일수. */
 export interface GuestSessionConfig {
   /** 이 기간보다 오래 접속하지 않은 비회원 세션 행을 지운다. */
-  maxAgeDays: number;
+  maxAgeDays: number; // 이 기간보다 오래 접속하지 않은 비회원 세션 행을 지운다
   /** 비회원 세션 행이 이 수를 넘으면 가장 오래 안 쓴 것부터 지운다. 회원 세션은 건드리지 않는다. */
-  maxRows: number;
+  maxRows: number; // 비회원 세션 행이 이 수를 넘으면 가장 오래 안 쓴 것부터 지운다. 회원 세션은 건드리지 않는다
 }
 
 /** 환경변수에서 비회원 세션 정책 로드. */

@@ -11,8 +11,8 @@ const _accent = ServiceAccent.living;
 class SavedGuideButton extends ConsumerWidget {
   const SavedGuideButton({super.key, required this.guideId, this.compact = true});
 
-  final String guideId;
-  final bool compact;
+  final String guideId; // 가이드 id
+  final bool compact; // 작은 버튼 레이아웃
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

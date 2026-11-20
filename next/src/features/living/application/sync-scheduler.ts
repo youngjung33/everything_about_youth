@@ -2,21 +2,23 @@ import type { Logger } from "@/common/application/system";
 
 /** 타이머. 테스트에서 시간을 직접 움직이려고 뺐다. */
 export interface Timers {
-  set(callback: () => void, delayMs: number): unknown;
-  clear(handle: unknown): void;
+  set(callback: () => void, delayMs: number): unknown; // 지연 후 콜백 예약
+  clear(handle: unknown): void; // 예약 취소
 }
 
+/** 동기화 스케줄러 의존성 */
 export interface SyncSchedulerDeps {
-  intervalMs: number;
-  startupDelayMs: number;
-  lastSuccessAt(): Promise<Date | null>;
-  isEnabled(): Promise<boolean>;
-  run(): Promise<void>;
-  now(): Date;
-  logger: Logger;
-  timers: Timers;
+  intervalMs: number; // 수집 간격(ms)
+  startupDelayMs: number; // 시작 후 첫 수집 대기(ms)
+  lastSuccessAt(): Promise<Date | null>; // 마지막 성공 수집 시각
+  isEnabled(): Promise<boolean>; // 자동 수집 활성 여부
+  run(): Promise<void>; // 수집 실행
+  now(): Date; // 현재 시각
+  logger: Logger; // 로거
+  timers: Timers; // 타이머
 }
 
+/** tick 실행 결과 */
 export type TickResult = "ran" | "busy" | "disabled" | "failed";
 
 /** 청년 혜택 정책을 일정 간격으로 자동 수집한다. */

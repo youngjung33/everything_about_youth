@@ -12,8 +12,8 @@ import '../domain/repositories/saved_scheme_local_store.dart';
 class SavedSchemeStore implements SavedSchemeLocalStore {
   SavedSchemeStore(this._prefs, this._cipher);
 
-  final SharedPreferences _prefs;
-  final FieldCipher _cipher;
+  final SharedPreferences _prefs; // _prefs
+  final FieldCipher _cipher; // _cipher
 
   static const storageKey = 'eay.finance.savedSchemes.v1';
   static const cipherContext = 'finance.savedSchemes';

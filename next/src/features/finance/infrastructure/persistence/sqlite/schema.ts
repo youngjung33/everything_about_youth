@@ -30,6 +30,7 @@ export const financeSchemes = sqliteTable(
   ],
 );
 
+/** financeSchemeRegions */
 export const financeSchemeRegions = sqliteTable(
   "finance_scheme_regions",
   {
@@ -42,6 +43,7 @@ export const financeSchemeRegions = sqliteTable(
   (t) => [primaryKey({ columns: [t.schemeId, t.sido, t.sigungu] }), index("finance_scheme_regions_sido_idx").on(t.sido, t.sigungu)],
 );
 
+/** financeSchemeTags */
 export const financeSchemeTags = sqliteTable(
   "finance_scheme_tags",
   {
@@ -53,6 +55,7 @@ export const financeSchemeTags = sqliteTable(
   (t) => [primaryKey({ columns: [t.schemeId, t.tag] }), index("finance_scheme_tags_tag_idx").on(t.tag)],
 );
 
+/** financeSchemeSources */
 export const financeSchemeSources = sqliteTable(
   "finance_scheme_sources",
   {
@@ -68,6 +71,7 @@ export const financeSchemeSources = sqliteTable(
   (t) => [primaryKey({ columns: [t.source, t.externalId] }), index("finance_scheme_sources_program_idx").on(t.schemeId)],
 );
 
+/** savedFinanceSchemes */
 export const savedFinanceSchemes = sqliteTable(
   "saved_finance_schemes",
   {
@@ -82,6 +86,7 @@ export const savedFinanceSchemes = sqliteTable(
   (t) => [primaryKey({ columns: [t.userId, t.schemeId] }), index("saved_finance_schemes_user_idx").on(t.userId, t.createdAt)],
 );
 
+/** financeSyncRuns */
 export const financeSyncRuns = sqliteTable("finance_sync_runs", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   source: text("source").notNull(),

@@ -5,16 +5,16 @@ import type { ApiResult } from "./respond";
 
 /** GET /app-config 응답. */
 export interface AppConfigDto {
-  api: { version: string };
+  api: { version: string }; // api
   update: {
     /** none: 괜찮음, optional: 업데이트 권장, required: 강제 업데이트 */
-    status: UpdateStatus;
-    minVersion: string;
-    latestVersion: string;
+    status: UpdateStatus; // none: 괜찮음, optional: 업데이트 권장, required: 강제 업데이트
+    minVersion: string; // 최소 허용 앱 버전
+    latestVersion: string; // 스토어 최신 버전
     /** 업데이트 버튼이 여는 스토어 주소. 모르면 null */
-    storeUrl: string | null;
+    storeUrl: string | null; // 업데이트 버튼이 여는 스토어 주소. 모르면 null
     /** 업데이트 화면에 보여줄 문구. 없으면 null (앱의 기본 문구) */
-    message: string | null;
+    message: string | null; // 업데이트 화면에 보여줄 문구. 없으면 null (앱의 기본 문구)
   };
 }
 

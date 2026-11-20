@@ -11,8 +11,8 @@ const _accent = ServiceAccent.housing;
 class SavedNoticeButton extends ConsumerWidget {
   const SavedNoticeButton({super.key, required this.noticeId, this.compact = true});
 
-  final String noticeId;
-  final bool compact;
+  final String noticeId; // 공고 id
+  final bool compact; // 작은 버튼 레이아웃
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

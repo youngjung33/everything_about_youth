@@ -12,17 +12,17 @@ class ServiceQuickAction {
   });
 
   final String label; // 화면에 보이는 한글 라벨
-  final IconData icon;
-  final VoidCallback? onPressed;
-  final String? badge;
+  final IconData icon; // icon
+  final VoidCallback? onPressed; // onPressed
+  final String? badge; // badge
 }
 
 /// 서비스 홈·상세에서 쓰는 빠른 이동 버튼 묶음.
 class ServiceQuickActions extends StatelessWidget {
   const ServiceQuickActions({super.key, required this.actions, this.accent});
 
-  final List<ServiceQuickAction> actions;
-  final Color? accent;
+  final List<ServiceQuickAction> actions; // actions
+  final Color? accent; // accent
 
   @override
   Widget build(BuildContext context) {

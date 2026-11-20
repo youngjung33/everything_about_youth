@@ -6,34 +6,39 @@ import { getJobPostingStatus, type JobPosting } from "@/features/jobs/domain/job
 import type { Clock } from "@/common/application/system";
 import type { JobPostingRepository, PostingSearchQuery, PostingSort } from "../ports/posting-repository";
 
+/** 목록 검색 필터 */
 export type PostingFilters = Omit<PostingSearchQuery, "today" | "sort" | "limit" | "offset">;
 
+/** 목록 검색 입력 */
 export interface SearchJobPostingsInput {
-  filters: PostingFilters;
-  sort?: PostingSort;
-  profile?: ApplicantProfile;
-  verdicts?: EligibilityVerdict[];
-  page?: number;
-  pageSize?: number;
+  filters: PostingFilters; // 검색 필터
+  sort?: PostingSort; // 정렬 기준
+  profile?: ApplicantProfile; // 신청자 프로필
+  verdicts?: EligibilityVerdict[]; // 자격 판정 필터
+  page?: number; // 현재 페이지
+  pageSize?: number; // 페이지 크기
 }
 
+/** PostingListItem */
 export interface PostingListItem {
-  program: JobPosting;
-  status: PostingStatus;
-  eligibility: EligibilityResult | null;
+  program: JobPosting; // 정책
+  status: PostingStatus; // 상태
+  eligibility: EligibilityResult | null; // 자격 판정 결과
 }
 
+/** 페이징 포함 목록 결과 */
 export interface SearchJobPostingsOutput {
-  items: PostingListItem[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
+  items: PostingListItem[]; // 결과 목록
+  total: number; // 전체 건수
+  page: number; // 현재 페이지
+  pageSize: number; // 페이지 크기
+  totalPages: number; // 전체 페이지 수
 }
 
 /** 기본 페이지 크기 */
 export const DEFAULT_PAGE_SIZE = 20;
 
+/** 채용 공고 목록 검색 유스케이스 */
 export class SearchJobPostings {
   constructor(
     private readonly repo: JobPostingRepository,

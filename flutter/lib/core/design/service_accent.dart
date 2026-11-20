@@ -74,17 +74,17 @@ enum ServiceAccent {
   });
 
   final String id; // 항목 식별자
-  final String title;
+  final String title; // title
   /// 헤더 가로 메뉴용 짧은 이름(잘림 방지). 홈 카드 등에는 [title] 을 쓴다.
-  final String navTitle;
-  final String itemNoun;
+  final String navTitle; // navTitle
+  final String itemNoun; // itemNoun
   /// 목록·저장 화면 로딩 문구용 (예: 공고를, 정책을).
-  final String itemAccusative;
+  final String itemAccusative; // itemAccusative
   /// 주어 조사 (이/가). 빈 목록·저장 목록 안내 문구에 쓴다.
-  final String itemSubjectJosa;
-  final String tagline;
-  final Color accent;
-  final IconData icon;
+  final String itemSubjectJosa; // itemSubjectJosa
+  final String tagline; // tagline
+  final Color accent; // accent
+  final IconData icon; // icon
 
   String get listLoadingMessage => '$itemAccusative 불러오는 중…';
 

@@ -23,7 +23,7 @@ export class DataGoKrError extends Error {
     message: string,
     readonly code?: string,
   ) {
-    super(message);
+    super(message); // super
     this.name = "DataGoKrError";
   }
 }
@@ -49,7 +49,7 @@ export function parseDataGoKrBody(text: string): unknown {
     throw new DataGoKrError(trimmed.slice(0, 200));
   }
 
-  assertNoError(parsed);
+  assertNoError(parsed); // assertNoError
   return parsed;
 }
 

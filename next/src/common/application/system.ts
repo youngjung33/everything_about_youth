@@ -1,13 +1,13 @@
 /** 현재 시각 제공(테스트에서 고정 시각 주입). */
 export interface Clock {
-  now(): Date;
+  now(): Date; // 현재 시각
 }
 
 /** API·백그라운드 작업 공통 로깅. */
 export interface Logger {
-  info(message: string, meta?: Record<string, unknown>): void;
-  warn(message: string, meta?: Record<string, unknown>): void;
-  error(message: string, meta?: Record<string, unknown>): void;
+  info(message: string, meta?: Record<string, unknown>): void; // 정보 로그
+  warn(message: string, meta?: Record<string, unknown>): void; // 경고 로그
+  error(message: string, meta?: Record<string, unknown>): void; // 오류 로그
 }
 
 /** 운영·테스트 기본 시계. */

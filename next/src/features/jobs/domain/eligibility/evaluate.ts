@@ -4,6 +4,7 @@ import { isProfileEmpty, type ApplicantProfile } from "./applicant";
 import { HIRE_TYPE_RULES, YOUTH_MAX_AGE, YOUTH_MIN_AGE } from "./rules";
 import type { HireTypeId } from "../enums";
 
+/** 도메인 type: EligibilityVerdict. */
 export type EligibilityVerdict = "eligible" | "check" | "ineligible";
 
 export const VERDICT_LABELS: Record<EligibilityVerdict, string> = {
@@ -12,10 +13,11 @@ export const VERDICT_LABELS: Record<EligibilityVerdict, string> = {
   ineligible: "신청 불가",
 };
 
+/** 도메인 interface: EligibilityResult. */
 export interface EligibilityResult {
-  verdict: EligibilityVerdict;
-  reasons: string[];
-  notes: string[];
+  verdict: EligibilityVerdict; // verdict
+  reasons: string[]; // reasons
+  notes: string[]; // notes
 }
 
 /**
@@ -78,6 +80,7 @@ export function evaluateEligibility(
   return { verdict: "eligible", reasons: ["입력하신 조건이 이 공고의 일반 기준을 충족합니다."], notes };
 }
 
+/** 도메인 function: ruleForCategory. */
 export function ruleForCategory(hireTypeId: HireTypeId) {
   return HIRE_TYPE_RULES[hireTypeId];
 }

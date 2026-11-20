@@ -11,8 +11,8 @@ const _accent = ServiceAccent.jobs;
 class SavedPostingButton extends ConsumerWidget {
   const SavedPostingButton({super.key, required this.postingId, this.compact = true});
 
-  final String postingId;
-  final bool compact;
+  final String postingId; // 공고 id
+  final bool compact; // 작은 버튼 레이아웃
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

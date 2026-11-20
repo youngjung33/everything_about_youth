@@ -1,13 +1,14 @@
 import type { ProcedureTypeId } from "../enums";
 import { YOUTH_MAX_AGE, YOUTH_MIN_AGE } from "./standards";
 
+/** 도메인 interface: ProcedureTypeRule. */
 export interface ProcedureTypeRule {
-  minAge?: number;
-  maxAge?: number;
+  minAge?: number; // minAge
+  maxAge?: number; // maxAge
   /** 청년 전용 지원·안내에 연령 입력을 요구할 때 */
-  requiresYouth?: boolean;
-  requiresResidenceMatch?: boolean;
-  alwaysCheck?: string;
+  requiresYouth?: boolean; // requiresYouth
+  requiresResidenceMatch?: boolean; // requiresResidenceMatch
+  alwaysCheck?: string; // alwaysCheck
 }
 
 export { YOUTH_MAX_AGE, YOUTH_MIN_AGE };
@@ -52,4 +53,5 @@ export const PROCEDURE_TYPE_RULES: Record<ProcedureTypeId, ProcedureTypeRule> = 
 
 // 평가기 호환 별칭
 export const PRODUCT_TYPE_RULES = PROCEDURE_TYPE_RULES;
+/** 도메인 type: ProductTypeRule. */
 export type ProductTypeRule = ProcedureTypeRule;

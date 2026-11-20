@@ -11,11 +11,13 @@ const schema = z.object({
   LIVING_SYNC_INTERVAL_MINUTES: z.preprocess(emptyToUndefined, z.coerce.number().int().min(0).default(0)),
 });
 
+/** LivingConfig */
 export interface LivingConfig {
-  enabledSources: SourceId[];
-  syncIntervalMinutes: number;
+  enabledSources: SourceId[]; // enabledSources
+  syncIntervalMinutes: number; // syncIntervalMinutes
 }
 
+/** loadLivingConfig 함수 */
 export function loadLivingConfig(env: Record<string, string | undefined> = process.env): LivingConfig {
   const parsed = schema.parse(env);
   const interval = parsed.LIVING_SYNC_INTERVAL_MINUTES;

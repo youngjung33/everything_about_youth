@@ -23,7 +23,7 @@ class AuthModeStore {
 
   static const key = 'eay.auth.mode';
 
-  final SharedPreferences _prefs;
+  final SharedPreferences _prefs; // _prefs
 
   /// 저장된 값이 없거나 모르는 값이면 [AuthMode.none]
   AuthMode read() {

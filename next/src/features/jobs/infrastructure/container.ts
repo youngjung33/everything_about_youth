@@ -15,23 +15,24 @@ import { CuratedSource } from "./sources/curated/curated-source";
 
 /** 일자리 섹션에 주입되는 유스케이스·저장소 묶음 */
 export interface JobsContainer {
-  config: JobsConfig;
-  clock: Clock;
-  logger: Logger;
-  postings: JobPostingRepository;
-  savedPostings: SavedJobPostingRepository;
-  syncRuns: SyncRunRepository;
+  config: JobsConfig; // config
+  clock: Clock; // 시계
+  logger: Logger; // 로거
+  postings: JobPostingRepository; // postings
+  savedPostings: SavedJobPostingRepository; // savedPostings
+  syncRuns: SyncRunRepository; // syncRuns
   /** 등록된 모든 소스 (활성 여부와 무관) */
-  allSources: JobPostingSourcePort[];
-  searchPostings: SearchJobPostings;
-  getJobPostingDetail: GetJobPostingDetail;
-  evaluateEligibility: EvaluateEligibility;
-  manageSavedPostings: ManageSavedJobPostings;
-  syncPostings: SyncJobPostingsFromSource;
+  allSources: JobPostingSourcePort[]; // 등록된 모든 소스 (활성 여부와 무관)
+  searchPostings: SearchJobPostings; // searchPostings
+  getJobPostingDetail: GetJobPostingDetail; // getJobPostingDetail
+  evaluateEligibility: EvaluateEligibility; // evaluateEligibility
+  manageSavedPostings: ManageSavedJobPostings; // manageSavedPostings
+  syncPostings: SyncJobPostingsFromSource; // syncPostings
 }
 
+/** JobsOverrides */
 export interface JobsOverrides {
-  config?: Partial<JobsConfig>;
+  config?: Partial<JobsConfig>; // config
 }
 
 /** 일자리 섹션의 의존성 조립 지점. 공통 의존성은 CommonContainer 에서 받는다. */

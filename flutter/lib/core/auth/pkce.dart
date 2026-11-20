@@ -11,10 +11,10 @@ class Pkce {
   const Pkce._(this.verifier, this.challenge);
 
   /// 서버가 받는 길이(43~128자)의 무작위 문자열. 서버로는 교환할 때만 보낸다.
-  final String verifier;
+  final String verifier; // verifier
 
   /// `base64url(sha256(verifier))`, 패딩 없음 (43자)
-  final String challenge;
+  final String challenge; // challenge
 
   static Future<Pkce> generate({Random? random}) async {
     final rng = random ?? Random.secure();

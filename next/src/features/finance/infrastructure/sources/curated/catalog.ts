@@ -1,14 +1,15 @@
 import type { ProductTypeId } from "@/features/finance/domain/enums";
 import type { FinanceSchemeDraft } from "@/features/finance/domain/scheme";
 
+/** CuratedCatalogEntry */
 export interface CuratedCatalogEntry {
-  slug: string;
-  title: string;
-  organization: string;
-  productTypeId: ProductTypeId;
-  tags: string[];
-  summary: string;
-  url: string;
+  slug: string; // slug
+  title: string; // title
+  organization: string; // organization
+  productTypeId: ProductTypeId; // productTypeId
+  tags: string[]; // 태그 필터
+  summary: string; // summary
+  url: string; // url
 }
 
 /** 큐레이션 catalog — sync `curated` 소스 단일 출처 */
@@ -95,6 +96,7 @@ export const CURATED_CATALOG: CuratedCatalogEntry[] = [
   },
 ];
 
+/** curatedDrafts 함수 */
 export function curatedDrafts(fetchedAt: string): FinanceSchemeDraft[] {
   return CURATED_CATALOG.map((e) => ({
     title: e.title,

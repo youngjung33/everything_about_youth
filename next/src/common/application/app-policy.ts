@@ -8,12 +8,12 @@ import { compareAppVersions, parseAppVersion, type AppVersion } from "@/common/d
  */
 export interface AppPolicy {
   /** 이 버전 미만은 모든 API 가 APP_UPDATE_REQUIRED 로 막힌다. */
-  minVersion: AppVersion;
+  minVersion: AppVersion; // 이 버전 미만은 모든 API 가 APP_UPDATE_REQUIRED 로 막힌다
   /** 스토어에 올라간 최신 버전. 이보다 낮으면 "업데이트 권장"이다. */
-  latestVersion: AppVersion;
-  storeUrls: { android: string | null; ios: string | null };
+  latestVersion: AppVersion; // 스토어에 올라간 최신 버전. 이보다 낮으면 "업데이트 권장"이다
+  storeUrls: { android: string | null; ios: string | null }; // 플랫폼별 스토어 URL
   /** 업데이트 화면에 보여줄 안내 문구 (없으면 앱의 기본 문구) */
-  message: string | null;
+  message: string | null; // 업데이트 화면에 보여줄 안내 문구 (없으면 앱의 기본 문구)
 }
 
 /** 클라이언트 OS·플랫폼. */
@@ -30,8 +30,8 @@ export type UpdateStatus = "none" | "optional" | "required";
 
 /** 강제·선택 업데이트 판정. */
 export interface UpdateDecision {
-  status: UpdateStatus;
-  storeUrl: string | null;
+  status: UpdateStatus; // 상태
+  storeUrl: string | null; // 스토어 URL
 }
 
 /**

@@ -4,7 +4,7 @@ import { ALLOW_ALL, parseRobots, type RobotsPolicy } from "./robots";
 /** robots.txt 에 의해 크롤이 금지된 URL. */
 export class RobotsDisallowedError extends Error {
   constructor(url: string) {
-    super(`robots.txt 가 접근을 금지합니다: ${url}`);
+    super(`robots.txt 가 접근을 금지합니다: ${url}`); // super
     this.name = "RobotsDisallowedError";
   }
 }
@@ -14,19 +14,19 @@ export type FetchText = (url: string) => Promise<string>;
 
 /** 크롤 fetcher 지연·User-Agent. */
 export interface CrawlFetcherOptions {
-  userAgent: string;
+  userAgent: string; // userAgent
   /** 같은 호스트에 대한 요청 간 최소 간격(ms) */
-  delayMs: number;
+  delayMs: number; // 같은 호스트에 대한 요청 간 최소 간격(ms)
   /** 테스트용 저수준 GET 대체 */
-  rawGet?: (url: string, headers: Record<string, string>) => Promise<string>;
-  encoding?: string;
-  signal?: AbortSignal;
+  rawGet?: (url: string, headers: Record<string, string>) => Promise<string>; // 테스트용 저수준 GET 대체
+  encoding?: string; // encoding
+  signal?: AbortSignal; // signal
   /**
    * robots.txt 확인을 건너뛸 호스트(명시적으로 허용한 경우만). 기본은 비어 있어 모든 호스트의 robots.txt 를 따른다.
    * User-Agent 를 속이지 않고, 요청 간격(delayMs)도 그대로 적용된다.
    */
-  ignoreRobotsHosts?: string[];
-  onRobotsIgnored?: (host: string) => void;
+  ignoreRobotsHosts?: string[]; // ignoreRobotsHosts
+  onRobotsIgnored?: (host: string) => void; // onRobotsIgnored
 }
 
 /**
@@ -44,7 +44,7 @@ export function createCrawlFetcher(options: CrawlFetcherOptions): FetchText {
   const rawGet =
     options.rawGet ??
     ((url: string, h: Record<string, string>) =>
-      httpGetText(url, { headers: h, encoding: options.encoding, signal: options.signal, retries: 1 }));
+      httpGetText(url, { headers: h, encoding: options.encoding, signal: options.signal, retries: 1 })); // httpGetText
 
   async function throttle(host: string): Promise<void> {
     const last = lastRequestAt.get(host) ?? 0;

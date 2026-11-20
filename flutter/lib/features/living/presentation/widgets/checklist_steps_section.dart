@@ -9,7 +9,7 @@ import '../../domain/living_guide.dart';
 class ChecklistStepsSection extends StatelessWidget {
   const ChecklistStepsSection({super.key, required this.steps});
 
-  final List<ChecklistStep> steps;
+  final List<ChecklistStep> steps; // 체크리스트 단계
 
   @override
   Widget build(BuildContext context) {

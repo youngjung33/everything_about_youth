@@ -36,8 +36,8 @@ class AuthSession implements AuthTokenSource {
   static bool _never() => false;
   static void _ignore() {}
 
-  final ApiClient _api;
-  final TokenStore _store;
+  final ApiClient _api; // _api
+  final TokenStore _store; // _store
   final DateTime Function() _clock;
   final bool Function() _isMember;
   final void Function() _onMemberLost;

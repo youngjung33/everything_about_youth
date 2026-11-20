@@ -6,7 +6,7 @@ export type TokenUse = "access" | "refresh";
 /** JWT payload 에 넣는 공통 클레임. */
 export interface TokenClaims {
   /** 기기(설치) 식별자. 서버가 발급한다. */
-  sub: string;
+  sub: string; // 기기(설치) 식별자. 서버가 발급한다
   use: TokenUse; // access | refresh
   jti: string; // 토큰 인스턴스 id(재사용 추적)
 }
@@ -15,21 +15,21 @@ export interface TokenClaims {
 export interface IssuedToken {
   token: string; // JWT 문자열
   /** 만료까지 남은 초 */
-  expiresIn: number;
+  expiresIn: number; // 만료까지 남은 초
 }
 
 /** verify 실패 원인(만료 vs 서명·형식 오류). */
 export class InvalidTokenError extends Error {
   constructor(public readonly reason: "expired" | "invalid", message?: string) {
-    super(message ?? (reason === "expired" ? "토큰이 만료되었습니다." : "토큰이 올바르지 않습니다."));
+    super(message ?? (reason === "expired" ? "토큰이 만료되었습니다." : "토큰이 올바르지 않습니다.")); // super
   }
 }
 
 /** JWT 발급/검증. 구현(jose)은 infrastructure 에 있고, 검증만 필요한 곳(proxy)은 verify 만 쓴다. */
 export interface TokenService {
-  issue(use: TokenUse, sub: string): Promise<IssuedToken>;
+  issue(use: TokenUse, sub: string): Promise<IssuedToken>; // 토큰 발급
   /** 서명·발급자·대상·만료·종류를 모두 검사한다. 실패하면 [InvalidTokenError]. */
-  verify(token: string, use: TokenUse): Promise<TokenClaims>;
+  verify(token: string, use: TokenUse): Promise<TokenClaims>; // 서명·발급자·대상·만료·종류를 모두 검사한다. 실패하면 [InvalidTokenError]
 }
 
 /** 저장소에 있는 세션(기기) 행. */
@@ -37,39 +37,39 @@ export interface AuthClient {
   id: string; // 세션(클라이언트) id — JWT sub
   revoked: boolean; // true 이면 refresh 거절
   /** SSO 로 로그인한 세션이면 그 회원의 id, 비회원이면 null */
-  userId: string | null;
+  userId: string | null; // SSO 로 로그인한 세션이면 그 회원의 id, 비회원이면 null
 }
 
 /** 서버가 발급한 세션(기기) 식별자 저장소. 폐기(revoke)한 세션은 리프레시가 거절된다. */
 export interface GuestSessionPruneOptions {
   /** last_seen_at 이 이보다 이전인 비회원 행을 삭제한다. */
-  olderThanIso: string;
+  olderThanIso: string; // last_seen_at 이 이보다 이전인 비회원 행을 삭제한다
   /** 비회원 행이 이 수를 넘으면 가장 오래 안 쓴 행부터 삭제한다. */
-  maxRows: number;
+  maxRows: number; // 비회원 행이 이 수를 넘으면 가장 오래 안 쓴 행부터 삭제한다
 }
 
 /** 세션 행 영속화(생성·조회·폐기·비회원 정리). */
 export interface AuthClientStore {
-  create(id: string, at: string, userId?: string): Promise<void>;
-  find(id: string): Promise<AuthClient | null>;
-  touch(id: string, at: string): Promise<void>;
-  revoke(id: string): Promise<boolean>;
+  create(id: string, at: string, userId?: string): Promise<void>; // 행 생성
+  find(id: string): Promise<AuthClient | null>; // 행 조회
+  touch(id: string, at: string): Promise<void>; // 마지막 사용 시각 갱신
+  revoke(id: string): Promise<boolean>; // 세션 폐기
   /** 한 회원의 모든 세션을 폐기한다. (회원 탈퇴) */
-  revokeByUser(userId: string): Promise<number>;
+  revokeByUser(userId: string): Promise<number>; // 한 회원의 모든 세션을 폐기한다. (회원 탈퇴)
   /** 비회원 세션만 정리한다. 회원에 묶인 행은 삭제하지 않는다. */
-  pruneGuestSessions(options: GuestSessionPruneOptions): Promise<number>;
+  pruneGuestSessions(options: GuestSessionPruneOptions): Promise<number>; // 비회원 세션만 정리한다. 회원에 묶인 행은 삭제하지 않는다
 }
 
 /** startSession / refresh 응답 DTO(앱·웹 공통). */
 export interface SessionTokens {
-  tokenType: "Bearer";
-  accessToken: string;
+  tokenType: "Bearer"; // 토큰 타입
+  accessToken: string; // 액세스 토큰
   /** 액세스 토큰 만료까지 남은 초 */
-  accessExpiresIn: number;
-  refreshToken: string;
+  accessExpiresIn: number; // 액세스 토큰 만료까지 남은 초
+  refreshToken: string; // 리프레시 토큰
   refreshExpiresIn: number; // 리프레시 만료까지 초
   /** 로그인한 회원의 세션이면 true, 비회원이면 false. 앱이 "내 세션이 비회원으로 바뀌었는가"를 알아채는 데 쓴다. */
-  member: boolean;
+  member: boolean; // 로그인한 회원의 세션이면 true, 비회원이면 false. 앱이 "내 세션이 비회원으로 바뀌었는가"를 알아채는 데 쓴다
 }
 
 /** refresh 거절 등 클라이언트에 돌려줄 인증 오류 코드. */
@@ -78,7 +78,7 @@ export type AuthErrorCode = "invalid_refresh";
 /** [AuthErrorCode] 를 담는 인증 도메인 오류. */
 export class AuthError extends Error {
   constructor(public readonly code: AuthErrorCode, message: string) {
-    super(message);
+    super(message); // super
   }
 }
 
@@ -95,6 +95,7 @@ export interface GuestSessionMaintenance {
   maxRows: number; // 비회원 행 상한(초과 시 LRU 삭제)
 }
 
+/** AuthService */
 export class AuthService {
   constructor(
     private readonly tokens: TokenService,

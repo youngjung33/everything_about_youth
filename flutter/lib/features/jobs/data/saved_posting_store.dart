@@ -12,8 +12,8 @@ import '../domain/repositories/saved_posting_local_store.dart';
 class SavedPostingStore implements SavedPostingLocalStore {
   SavedPostingStore(this._prefs, this._cipher);
 
-  final SharedPreferences _prefs;
-  final FieldCipher _cipher;
+  final SharedPreferences _prefs; // _prefs
+  final FieldCipher _cipher; // _cipher
 
   static const storageKey = 'eay.jobs.savedPostings.v1';
   static const cipherContext = 'jobs.savedPostings';

@@ -30,6 +30,7 @@ export const jobPostings = sqliteTable(
   ],
 );
 
+/** jobPostingRegions */
 export const jobPostingRegions = sqliteTable(
   "job_posting_regions",
   {
@@ -42,6 +43,7 @@ export const jobPostingRegions = sqliteTable(
   (t) => [primaryKey({ columns: [t.postingId, t.sido, t.sigungu] }), index("job_posting_regions_sido_idx").on(t.sido, t.sigungu)],
 );
 
+/** jobPostingTags */
 export const jobPostingTags = sqliteTable(
   "job_posting_tags",
   {
@@ -53,6 +55,7 @@ export const jobPostingTags = sqliteTable(
   (t) => [primaryKey({ columns: [t.postingId, t.tag] }), index("job_posting_tags_tag_idx").on(t.tag)],
 );
 
+/** jobPostingSources */
 export const jobPostingSources = sqliteTable(
   "job_posting_sources",
   {
@@ -68,6 +71,7 @@ export const jobPostingSources = sqliteTable(
   (t) => [primaryKey({ columns: [t.source, t.externalId] }), index("job_posting_sources_posting_idx").on(t.postingId)],
 );
 
+/** savedJobPostings */
 export const savedJobPostings = sqliteTable(
   "saved_job_postings",
   {
@@ -82,6 +86,7 @@ export const savedJobPostings = sqliteTable(
   (t) => [primaryKey({ columns: [t.userId, t.postingId] }), index("saved_job_postings_user_idx").on(t.userId, t.createdAt)],
 );
 
+/** jobsSyncRuns */
 export const jobsSyncRuns = sqliteTable("jobs_sync_runs", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   source: text("source").notNull(),

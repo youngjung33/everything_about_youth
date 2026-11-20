@@ -15,11 +15,12 @@ const schema = z.object({
 /** 임대주택 섹션 전용 설정 */
 export interface HousingConfig {
   /** 비어 있으면 등록된 모든 소스 */
-  enabledSources: SourceId[];
+  enabledSources: SourceId[]; // 비어 있으면 등록된 모든 소스
   /** 자동 수집 간격(분). 0 이면 끈다. */
-  syncIntervalMinutes: number;
+  syncIntervalMinutes: number; // 자동 수집 간격(분). 0 이면 끈다
 }
 
+/** loadHousingConfig 함수 */
 export function loadHousingConfig(env: Record<string, string | undefined> = process.env): HousingConfig {
   const parsed = schema.parse(env);
   const interval = parsed.HOUSING_SYNC_INTERVAL_MINUTES;
