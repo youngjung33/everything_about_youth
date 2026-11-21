@@ -265,8 +265,14 @@ main.container {
   margin: 8px 0 10px;
   font-size: 1.05rem;
 }
-.card-title a {
+.card-title a,
+.card-title-link {
+  display: inline-block;
   color: var(--text);
+  text-decoration: none;
+}
+.card-title-link:hover {
+  text-decoration: underline;
 }
 .meta {
   margin: 0;

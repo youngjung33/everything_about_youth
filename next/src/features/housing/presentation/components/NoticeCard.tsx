@@ -33,7 +33,9 @@ export function NoticeCard(props: { item: NoticeListItem; today: IsoDate; detail
       </div>
 
       <h3 className="card-title">
-        <Link href={`${noticePath(notice.id)}${props.detailQuery}`}>{notice.title}</Link>
+        <Link className="card-title-link" href={`${noticePath(notice.id)}${props.detailQuery}`}>
+          {notice.title}
+        </Link>
       </h3>
 
       <dl className="meta">
