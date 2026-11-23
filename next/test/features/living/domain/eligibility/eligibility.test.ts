@@ -1,0 +1,46 @@
+import { describe, expect, it } from "vitest";
+import { evaluateEligibility } from "@/features/living/domain/eligibility/evaluate";
+
+const today = "2026-10-12";
+const open = {
+  applicationStart: "2026-10-01",
+  applicationEnd: "2026-10-20",
+  procedureTypeId: "move_in" as const,
+  regions: [{ sido: "서울" as const, sigungu: null }],
+};
+
+describe("evaluateEligibility", () => {
+  it("마감 안내는 ineligible", () => {
+    const r = evaluateEligibility({ ...open, applicationEnd: "2026-10-01" }, { age: 25 }, today);
+    expect(r.verdict).toBe("ineligible");
+  });
+
+  it("프로필 없으면 check", () => {
+    expect(evaluateEligibility(open, {}, today).verdict).toBe("check");
+  });
+
+  it("other 유형은 check", () => {
+    const r = evaluateEligibility({ ...open, procedureTypeId: "other" }, { age: 25 }, today);
+    expect(r.verdict).toBe("check");
+  });
+
+  it("거주 시도가 안내 지역과 다르면 ineligible", () => {
+    const r = evaluateEligibility(open, { residenceSido: "부산" }, today);
+    expect(r.verdict).toBe("ineligible");
+  });
+
+  it("지역 안내가 있는 절차는 거주 시도 없으면 check", () => {
+    const r = evaluateEligibility(
+      { ...open, procedureTypeId: "waste", regions: [{ sido: "서울", sigungu: null }] },
+      { age: 25 },
+      today,
+    );
+    expect(r.verdict).toBe("check");
+    expect(r.reasons).toContain("거주 시도 입력 필요 (지역 안내가 있는 절차)");
+  });
+
+  it("프로필 입력 시 참고 eligible", () => {
+    const r = evaluateEligibility(open, { age: 28, residenceSido: "서울" }, today);
+    expect(r.verdict).toBe("eligible");
+  });
+});

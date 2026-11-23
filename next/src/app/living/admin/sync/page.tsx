@@ -1,3 +1,5 @@
+import { AdminPageShell } from "@/features/admin/presentation/components/AdminPageShell";
+import { adminWebSyncAllowed } from "@/features/admin/presentation/admin-sync-page";
 import { SOURCE_LABELS } from "@/features/living/domain/enums";
 import { getLivingContainer } from "@/features/living/living-container";
 import { LivingSyncButton } from "@/features/living/presentation/components/SyncButtonClient";
@@ -22,9 +24,10 @@ export default async function LivingSyncAdminPage() {
   const container = getLivingContainer();
   const [latest, recent] = await Promise.all([container.syncRuns.latestPerSource(), container.syncRuns.listRecent(20)]);
   const latestBySource = new Map(latest.map((r) => [r.source, r]));
-  const webSyncAllowed = process.env.NODE_ENV !== "production" && !process.env.OPERATOR_TOKEN;
+  const webSyncAllowed = await adminWebSyncAllowed();
 
   return (
+    <AdminPageShell>
     <div className="detail">
       <h1>이사·생활 안내 수집 현황</h1>
       <p className="hint">
@@ -109,6 +112,7 @@ export default async function LivingSyncAdminPage() {
         </table>
       </div>
     </div>
+    </AdminPageShell>
   );
 }
 

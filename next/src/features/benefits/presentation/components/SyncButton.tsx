@@ -21,7 +21,10 @@ export function BenefitsSyncButton(props: { source?: string; label?: string }) {
     setBusy(true);
     setMessage(null);
     try {
-      const res = await fetch(`${BENEFITS_SYNC_API_PATH}${props.source ? `?source=${props.source}` : ""}`, { method: "POST" });
+      const res = await fetch(`${BENEFITS_SYNC_API_PATH}${props.source ? `?source=${props.source}` : ""}`, {
+        method: "POST",
+        credentials: "include",
+      });
       const data = (await res.json()) as SyncResponse;
       if (!res.ok || data.error) {
         setMessage(`실패: ${data.error?.message ?? res.statusText}`);

@@ -1,3 +1,5 @@
+import { AdminPageShell } from "@/features/admin/presentation/components/AdminPageShell";
+import { adminWebSyncAllowed } from "@/features/admin/presentation/admin-sync-page";
 import { SOURCE_LABELS } from "@/features/housing/domain/enums";
 import { getHousingContainer } from "@/features/housing/housing-container";
 import { SyncButton } from "@/features/housing/presentation/components/SyncButton";
@@ -22,10 +24,10 @@ export default async function SyncAdminPage() {
   const container = getHousingContainer();
   const [latest, recent] = await Promise.all([container.syncRuns.latestPerSource(), container.syncRuns.listRecent(20)]);
   const latestBySource = new Map(latest.map((r) => [r.source, r]));
-  // 이 화면의 버튼은 운영자 토큰을 보낼 수 없다. 토큰이 없는 개발 환경에서만 보여 준다.
-  const webSyncAllowed = process.env.NODE_ENV !== "production" && !process.env.OPERATOR_TOKEN;
+  const webSyncAllowed = await adminWebSyncAllowed();
 
   return (
+    <AdminPageShell>
     <div className="detail">
       <h1>수집 현황</h1>
       <p className="hint">
@@ -109,6 +111,7 @@ export default async function SyncAdminPage() {
         </table>
       </div>
     </div>
+    </AdminPageShell>
   );
 }
 

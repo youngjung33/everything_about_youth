@@ -35,6 +35,11 @@ export const ERROR_CODES = {
   LOGIN_REQUIRED: { status: 403, message: "로그인한 회원만 사용할 수 있습니다." },
   FORBIDDEN: { status: 403, message: "허용되지 않은 요청입니다." },
   OPERATOR_DISABLED: { status: 403, message: "운영 환경에서는 웹 수집이 비활성화되어 있습니다." },
+  ADMIN_AUTH_REQUIRED: { status: 401, message: "관리자 로그인이 필요합니다." },
+  ADMIN_INVALID_CREDENTIALS: { status: 401, message: "아이디 또는 비밀번호가 올바르지 않습니다." },
+  ADMIN_ACCOUNT_EXISTS: { status: 409, message: "이미 사용 중인 관리자 아이디입니다." },
+  ADMIN_WEAK_PASSWORD: { status: 400, message: "비밀번호는 6자 이상이어야 합니다." },
+  ADMIN_LAST_SUPER: { status: 403, message: "마지막 최고 관리자는 등급을 내리거나 비활성화할 수 없습니다." },
 
   // 앱 버전과 API 버전
   API_VERSION_UNSUPPORTED: {

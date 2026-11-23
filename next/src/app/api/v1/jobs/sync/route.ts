@@ -1,4 +1,4 @@
-import { assertOperator } from "@/common/presentation/api/operator";
+import { assertSyncOperator } from "@/features/admin/presentation/assert-sync-operator";
 import { apiHandler, respond } from "@/common/presentation/api/respond";
 import { sourcesFromSyncQuery } from "@/features/jobs/presentation/api/sync-query";
 import { getJobsContainer } from "@/features/jobs/jobs-container";
@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 
 /** POST — 일자리 외부·크롤러 수집 트리거. */
 export const POST = apiHandler(async (request) => {
-  assertOperator(request);
+  await assertSyncOperator(request);
 
   const ids = sourcesFromSyncQuery(new URL(request.url).searchParams);
   const results = await getJobsContainer().syncPostings.execute(ids.length > 0 ? ids : undefined);

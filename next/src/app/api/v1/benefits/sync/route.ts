@@ -1,4 +1,4 @@
-import { assertOperator } from "@/common/presentation/api/operator";
+import { assertSyncOperator } from "@/features/admin/presentation/assert-sync-operator";
 import { apiHandler, respond } from "@/common/presentation/api/respond";
 import { sourcesFromSyncQuery } from "@/features/benefits/presentation/api/sync-query";
 import { getBenefitsContainer } from "@/features/benefits/benefits-container";
@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 
 /** POST — 청년 혜택 외부·크롤러 수집 트리거. */
 export const POST = apiHandler(async (request) => {
-  assertOperator(request);
+  await assertSyncOperator(request);
 
   const ids = sourcesFromSyncQuery(new URL(request.url).searchParams);
   const results = await getBenefitsContainer().syncPrograms.execute(ids.length > 0 ? ids : undefined);

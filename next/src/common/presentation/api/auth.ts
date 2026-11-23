@@ -44,8 +44,21 @@ export const HEALTH_PATH = apiPath("/health");
  */
 export const PUBLIC_API_PATHS: readonly string[] = [...AUTH_ENTRY_PATHS, APP_CONFIG_PATH, HEALTH_PATH];
 
-/** 앱이 쓰는 JWT 보호 대상이 아닌 운영자용 경로 */
-export const OPERATOR_API_PATHS: readonly string[] = [apiPath("/housing/sync")];
+/** 앱 JWT 없이 부를 수 있는 운영자·관리자 API (라우트에서 별도 검사). */
+export const OPERATOR_API_PATHS: readonly string[] = [
+  apiPath("/housing/sync"),
+  apiPath("/benefits/sync"),
+  apiPath("/finance/sync"),
+  apiPath("/jobs/sync"),
+  apiPath("/living/sync"),
+];
+
+/** 브라우저 관리자 패널 전용 API (앱 JWT 대신 쿠키 세션). */
+export const ADMIN_API_PREFIX = `${apiPath("/admin")}/`;
+
+export function isAdminApiPath(pathname: string): boolean {
+  return pathname === apiPath("/admin/login") || pathname.startsWith(ADMIN_API_PREFIX);
+}
 
 /** Authorization: Bearer … 헤더에서 토큰만 추출. */
 export function extractBearerToken(header: string | null | undefined): string | null {
@@ -76,7 +89,11 @@ export async function authorizeApiRequest(
   tokens: TokenService,
 ): Promise<AuthorizationResult> {
   if (req.method === "OPTIONS") return { ok: true, clientId: null };
-  if (PUBLIC_API_PATHS.includes(req.pathname) || OPERATOR_API_PATHS.includes(req.pathname)) {
+  if (
+    PUBLIC_API_PATHS.includes(req.pathname) ||
+    OPERATOR_API_PATHS.includes(req.pathname) ||
+    isAdminApiPath(req.pathname)
+  ) {
     return { ok: true, clientId: null };
   }
 

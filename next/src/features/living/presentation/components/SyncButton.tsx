@@ -12,7 +12,10 @@ export function LivingSyncButton(props: { source?: string; label?: string }) {
     setBusy(true);
     setMessage("");
     try {
-      const res = await fetch(`${LIVING_SYNC_API_PATH}${props.source ? `?source=${props.source}` : ""}`, { method: "POST" });
+      const res = await fetch(`${LIVING_SYNC_API_PATH}${props.source ? `?source=${props.source}` : ""}`, {
+        method: "POST",
+        credentials: "include",
+      });
       const json = await res.json().catch(() => null);
       if (!res.ok) {
         setMessage(json?.error?.message ?? `실패 (${res.status})`);

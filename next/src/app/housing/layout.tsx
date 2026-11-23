@@ -16,6 +16,7 @@ export default function HousingLayout({ children }: LayoutProps<"/housing">) {
       <ProfileStorage />
       <nav className="section-nav" aria-label="임대주택 메뉴">
         <Link href={HOUSING_BASE}>공고 목록</Link>
+        <Link href="/admin">관리자</Link>
         <Link href={HOUSING_SYNC_ADMIN_PATH}>수집 현황</Link>
       </nav>
       {children}

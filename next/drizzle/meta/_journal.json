@@ -64,6 +64,13 @@
       "when": 1794062352343,
       "tag": "0008_giant_amazoness",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1795200000000,
+      "tag": "0009_admin_accounts",
+      "breakpoints": true
     }
   ]
 }

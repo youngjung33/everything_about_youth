@@ -1,4 +1,4 @@
-import { assertOperator } from "@/common/presentation/api/operator";
+import { assertSyncOperator } from "@/features/admin/presentation/assert-sync-operator";
 import { apiHandler, respond } from "@/common/presentation/api/respond";
 import { sourcesFromSyncQuery } from "@/features/housing/presentation/api/sync-query";
 import { getHousingContainer } from "@/features/housing/housing-container";
@@ -13,7 +13,7 @@ export const runtime = "nodejs";
  * 운영에서 `OPERATOR_TOKEN` 이 없으면 이 API 는 꺼져 있다. 평소 수집은 `HOUSING_SYNC_INTERVAL_MINUTES` 자동 수집이 한다.
  */
 export const POST = apiHandler(async (request) => {
-  assertOperator(request);
+  await assertSyncOperator(request);
 
   const ids = sourcesFromSyncQuery(new URL(request.url).searchParams);
   const results = await getHousingContainer().syncNotices.execute(ids.length > 0 ? ids : undefined);
