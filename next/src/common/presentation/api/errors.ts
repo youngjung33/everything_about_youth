@@ -40,6 +40,8 @@ export const ERROR_CODES = {
   ADMIN_ACCOUNT_EXISTS: { status: 409, message: "이미 사용 중인 관리자 아이디입니다." },
   ADMIN_WEAK_PASSWORD: { status: 400, message: "비밀번호는 6자 이상이어야 합니다." },
   ADMIN_LAST_SUPER: { status: 403, message: "마지막 최고 관리자는 등급을 내리거나 비활성화할 수 없습니다." },
+  ADMIN_ROOT_PROTECTED: { status: 403, message: "루트 관리자 계정은 변경하거나 비활성화할 수 없습니다." },
+  ADMIN_PERMISSION_EXCEEDS: { status: 403, message: "부여할 수 있는 권한 범위를 넘었습니다." },
 
   // 앱 버전과 API 버전
   API_VERSION_UNSUPPORTED: {

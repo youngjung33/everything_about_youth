@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 
 /** POST — 이사·생활 외부·크롤러 수집 트리거. */
 export const POST = apiHandler(async (request) => {
-  await assertSyncOperator(request);
+  await assertSyncOperator(request, "living");
 
   const ids = sourcesFromSyncQuery(new URL(request.url).searchParams);
   const results = await getLivingContainer().syncGuides.execute(ids.length > 0 ? ids : undefined);

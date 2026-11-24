@@ -1,5 +1,5 @@
 import { AdminPageShell } from "@/features/admin/presentation/components/AdminPageShell";
-import { adminWebSyncAllowed } from "@/features/admin/presentation/admin-sync-page";
+import { guardSyncPage, requireAdminSession, syncPageFlags } from "@/features/admin/presentation/admin-page-access";
 import { SOURCE_LABELS } from "@/features/finance/domain/enums";
 import { getFinanceContainer } from "@/features/finance/finance-container";
 import { FinanceSyncButton } from "@/features/finance/presentation/components/SyncButton";
@@ -21,20 +21,22 @@ function formatTime(iso: string | null): string {
 
 /** 주거·자금 공고·데이터 수집 관리 화면. */
 export default async function FinanceSyncAdminPage() {
+  const session = await requireAdminSession();
+  guardSyncPage(session, "finance");
+  const access = syncPageFlags(session.permissions, "finance");
   const container = getFinanceContainer();
   const [latest, recent] = await Promise.all([container.syncRuns.latestPerSource(), container.syncRuns.listRecent(20)]);
   const latestBySource = new Map(latest.map((r) => [r.source, r]));
-  const webSyncAllowed = await adminWebSyncAllowed();
 
   return (
-    <AdminPageShell>
+    <AdminPageShell session={session}>
     <div className="detail">
       <h1>청년 주거·자금 수집 현황</h1>
       <p className="hint">
         CLI: <code>npm run finance:sync</code> / <code>npm run finance:sync -- --source=curated</code> /{" "}
         <code>npm run finance:sync -- --source=ontong-finance</code>
       </p>
-      {webSyncAllowed && (
+      {access.canTrigger && (
         <p>
           <FinanceSyncButton label="전체 수집" />
         </p>
@@ -50,7 +52,7 @@ export default async function FinanceSyncAdminPage() {
               <th>결과</th>
               <th>수집/신규/갱신</th>
               <th>비고</th>
-              {webSyncAllowed && <th />}
+              {access.canTrigger && <th />}
             </tr>
           </thead>
           <tbody>
@@ -67,7 +69,7 @@ export default async function FinanceSyncAdminPage() {
                   <td>{run ? <span className={`badge run-${run.status}`}>{STATUS_LABEL[run.status]}</span> : "-"}</td>
                   <td>{run ? `${run.fetchedCount} / ${run.insertedCount} / ${run.updatedCount}` : "-"}</td>
                   <td className="note-cell">{availability.available ? (run?.error ?? "") : availability.reason}</td>
-                  {webSyncAllowed && <td>{availability.available && <FinanceSyncButton source={s.id} label="수집" />}</td>}
+                  {access.canTrigger && <td>{availability.available && <FinanceSyncButton source={s.id} label="수집" />}</td>}
                 </tr>
               );
             })}

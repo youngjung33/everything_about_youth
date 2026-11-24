@@ -1,8 +1,14 @@
-import { canAdmin } from "../domain/role";
+import type { AdminSyncSection } from "../domain/permissions";
+import { syncPageFlags } from "./admin-page-access";
 import { getVerifiedAdminSession } from "./admin-auth";
 
-/** 수집 관리 화면에서 웹 수집 버튼 표시 여부 */
-export async function adminWebSyncAllowed(): Promise<boolean> {
+/** 수집 관리 화면에서 표시·버튼 플래그 */
+export async function adminSyncPageAccess(section: AdminSyncSection): Promise<{
+  canViewSources: boolean;
+  canViewRuns: boolean;
+  canTrigger: boolean;
+}> {
   const session = await getVerifiedAdminSession();
-  return session !== null && canAdmin(session.role, "sync_trigger");
+  if (!session) return { canViewSources: false, canViewRuns: false, canTrigger: false };
+  return syncPageFlags(session.permissions, section);
 }

@@ -101,6 +101,16 @@
       "message": "마지막 최고 관리자는 등급을 내리거나 비활성화할 수 없습니다."
     },
     {
+      "code": "ADMIN_ROOT_PROTECTED",
+      "status": 403,
+      "message": "루트 관리자 계정은 변경하거나 비활성화할 수 없습니다."
+    },
+    {
+      "code": "ADMIN_PERMISSION_EXCEEDS",
+      "status": 403,
+      "message": "부여할 수 있는 권한 범위를 넘었습니다."
+    },
+    {
       "code": "API_VERSION_UNSUPPORTED",
       "status": 410,
       "message": "지원하지 않는 버전입니다. 앱을 최신 버전으로 업데이트해 주세요."

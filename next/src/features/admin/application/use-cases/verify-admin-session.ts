@@ -1,3 +1,7 @@
+import {
+  type AdminPermissions,
+  resolveAdminPermissions,
+} from "../../domain/permissions";
 import type { AdminRole } from "../../domain/role";
 import { AdminSessionError } from "../admin-errors";
 import type { AdminAccountRepository, AdminSessionRepository } from "../../infrastructure/persistence/sqlite/admin-repositories";
@@ -6,6 +10,8 @@ export interface AdminSessionView {
   sessionId: string; // sid
   loginId: string; // loginId
   role: AdminRole; // role
+  isRoot: boolean; // root account
+  permissions: AdminPermissions; // effective permissions
 }
 
 /** DB 에 살아 있는 관리자 세션인지 확인한다. */
@@ -21,6 +27,13 @@ export class VerifyAdminSession {
     if (!row) throw new AdminSessionError("expired");
     const account = await this.accounts.findByLoginId(row.loginId);
     if (!account || account.disabled) throw new AdminSessionError("revoked");
-    return { sessionId, loginId: account.loginId, role: account.role };
+    const permissions = resolveAdminPermissions(account.role, account.permissionsOverride, account.isRoot);
+    return {
+      sessionId,
+      loginId: account.loginId,
+      role: account.role,
+      isRoot: account.isRoot,
+      permissions,
+    };
   }
 }

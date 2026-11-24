@@ -17,7 +17,7 @@ export class AdminSessionError extends Error {
 /** 계정 작업 거부 */
 export class AdminAccountError extends Error {
   constructor(
-    readonly reason: "exists" | "not_found" | "forbidden" | "weak_password" | "last_super",
+    readonly reason: "exists" | "not_found" | "forbidden" | "weak_password" | "last_super" | "root_protected" | "permission_exceeds",
   ) {
     super(reason);
     this.name = "AdminAccountError";

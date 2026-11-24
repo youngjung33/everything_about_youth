@@ -2,6 +2,7 @@ import { and, eq, sql } from "drizzle-orm";
 import type { Clock } from "@/common/application/system";
 import type { SqliteDb } from "@/common/infrastructure/persistence/sqlite/client";
 import type { AdminAccount } from "@/features/admin/domain/admin-account";
+import { parsePermissionsOverride, serializePermissionsOverride, type AdminPermissionsOverride } from "@/features/admin/domain/permissions";
 import type { AdminRole } from "@/features/admin/domain/role";
 import { adminAccounts, adminSessions } from "./schema";
 
@@ -14,6 +15,7 @@ export interface AdminAccountRepository {
   updateRole(loginId: string, role: AdminRole, updatedAt: string): Promise<boolean>;
   setDisabled(loginId: string, disabled: boolean, updatedAt: string): Promise<boolean>;
   updatePassword(loginId: string, passwordHash: string, updatedAt: string): Promise<boolean>;
+  updatePermissions(loginId: string, override: AdminPermissionsOverride | null, updatedAt: string): Promise<boolean>;
 }
 
 export interface AdminSessionRepository {
@@ -28,6 +30,8 @@ function mapAccount(row: typeof adminAccounts.$inferSelect): AdminAccount {
     loginId: row.loginId,
     role: row.role as AdminRole,
     disabled: row.disabled,
+    isRoot: row.isRoot,
+    permissionsOverride: parsePermissionsOverride(row.permissionsJson),
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     createdBy: row.createdBy,
@@ -66,6 +70,8 @@ export function createAdminRepositories(db: SqliteDb, clock: Clock): {
           passwordHash,
           role: account.role,
           disabled: account.disabled,
+          isRoot: account.isRoot,
+          permissionsJson: serializePermissionsOverride(account.permissionsOverride),
           createdAt: account.createdAt,
           updatedAt: account.updatedAt,
           createdBy: account.createdBy,
@@ -82,6 +88,14 @@ export function createAdminRepositories(db: SqliteDb, clock: Clock): {
     },
     async updatePassword(loginId, passwordHash, updatedAt) {
       const r = db.update(adminAccounts).set({ passwordHash, updatedAt }).where(eq(adminAccounts.loginId, loginId)).run();
+      return r.changes > 0;
+    },
+    async updatePermissions(loginId, override, updatedAt) {
+      const r = db
+        .update(adminAccounts)
+        .set({ permissionsJson: serializePermissionsOverride(override), updatedAt })
+        .where(eq(adminAccounts.loginId, loginId))
+        .run();
       return r.changes > 0;
     },
   };

@@ -8,6 +8,25 @@ import { hashAdminPassword } from "@/features/admin/domain/password";
 import { createAdminRepositories } from "@/features/admin/infrastructure/persistence/sqlite/admin-repositories";
 
 describe("LoginAdmin", () => {
+  it("빈 아이디·비밀번호는 invalid", async () => {
+    const conn = openSqlite(":memory:");
+    runMigrations(conn.db);
+    const { accounts, sessions } = createAdminRepositories(conn.db, systemClock);
+    const login = new LoginAdmin(accounts, sessions, () => "sid", 60_000);
+    await expect(login.execute("", "secret12", "t", 0)).rejects.toMatchObject({ reason: "invalid" });
+    await expect(login.execute("u", "", "t", 0)).rejects.toMatchObject({ reason: "invalid" });
+    conn.close();
+  });
+
+  it("없는 계정은 invalid", async () => {
+    const conn = openSqlite(":memory:");
+    runMigrations(conn.db);
+    const { accounts, sessions } = createAdminRepositories(conn.db, systemClock);
+    const login = new LoginAdmin(accounts, sessions, () => "sid", 60_000);
+    await expect(login.execute("nobody", "secret12", "t", 0)).rejects.toMatchObject({ reason: "invalid" });
+    conn.close();
+  });
+
   it("비활성 계정은 disabled", async () => {
     const conn = openSqlite(":memory:");
     runMigrations(conn.db);
@@ -17,6 +36,8 @@ describe("LoginAdmin", () => {
         loginId: "x",
         role: "viewer",
         disabled: true,
+        isRoot: false,
+        permissionsOverride: null,
         createdAt: "t",
         updatedAt: "t",
         createdBy: null,
@@ -37,6 +58,8 @@ describe("LoginAdmin", () => {
         loginId: "op1",
         role: "operator",
         disabled: false,
+        isRoot: false,
+        permissionsOverride: null,
         createdAt: "t",
         updatedAt: "t",
         createdBy: null,

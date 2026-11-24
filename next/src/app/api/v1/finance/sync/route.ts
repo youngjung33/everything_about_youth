@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 
 /** POST — 주거·자금 외부·크롤러 수집 트리거. */
 export const POST = apiHandler(async (request) => {
-  await assertSyncOperator(request);
+  await assertSyncOperator(request, "finance");
 
   const ids = sourcesFromSyncQuery(new URL(request.url).searchParams);
   const results = await getFinanceContainer().syncSchemes.execute(ids.length > 0 ? ids : undefined);

@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 
 /** POST — 일자리 외부·크롤러 수집 트리거. */
 export const POST = apiHandler(async (request) => {
-  await assertSyncOperator(request);
+  await assertSyncOperator(request, "jobs");
 
   const ids = sourcesFromSyncQuery(new URL(request.url).searchParams);
   const results = await getJobsContainer().syncPostings.execute(ids.length > 0 ? ids : undefined);

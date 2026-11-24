@@ -6,6 +6,8 @@ export const adminAccounts = sqliteTable("admin_accounts", {
   passwordHash: text("password_hash").notNull(),
   role: text("role").notNull(),
   disabled: integer("disabled", { mode: "boolean" }).notNull().default(false),
+  isRoot: integer("is_root", { mode: "boolean" }).notNull().default(false),
+  permissionsJson: text("permissions_json"),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
   createdBy: text("created_by"),

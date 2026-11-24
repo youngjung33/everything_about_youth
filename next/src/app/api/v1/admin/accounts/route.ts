@@ -1,4 +1,5 @@
 import { ADMIN_ROLE_LABELS, parseAdminRole } from "@/features/admin/domain/role";
+import { resolveAdminPermissions } from "@/features/admin/domain/permissions";
 import { getAdminContainer } from "@/features/admin/admin-container";
 import { getCommonContainer } from "@/common/infrastructure/container";
 import { mapAdminAccountError, requireAdminApi } from "@/features/admin/presentation/admin-auth";
@@ -20,6 +21,9 @@ export const GET = apiHandler(async (request) => {
         role: a.role,
         roleLabel: ADMIN_ROLE_LABELS[a.role],
         disabled: a.disabled,
+        isRoot: a.isRoot,
+        permissionsOverride: a.permissionsOverride,
+        effectivePermissions: resolveAdminPermissions(a.role, a.permissionsOverride, a.isRoot),
         createdAt: a.createdAt,
         createdBy: a.createdBy,
       })),
@@ -31,6 +35,7 @@ const createSchema = z.object({
   loginId: z.string().min(2),
   password: z.string().min(6),
   role: z.string(),
+  permissionsOverride: z.record(z.unknown()).nullable().optional(),
 });
 
 export const POST = apiHandler(async (request) => {
@@ -40,8 +45,14 @@ export const POST = apiHandler(async (request) => {
   if (!role) throw new ApiError("BAD_REQUEST");
   try {
     await getAdminContainer().createAccount.execute(
-      session.role,
-      { loginId: body.loginId, password: body.password, role, createdBy: session.loginId },
+      { loginId: session.loginId, role: session.role, permissions: session.permissions },
+      {
+        loginId: body.loginId,
+        password: body.password,
+        role,
+        createdBy: session.loginId,
+        permissionsOverride: (body.permissionsOverride as import("@/features/admin/domain/permissions").AdminPermissionsOverride) ?? null,
+      },
       getCommonContainer().clock.now().toISOString(),
     );
     return respond({ status: 201, body: { ok: true } });

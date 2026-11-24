@@ -12,6 +12,16 @@ export const ADMIN_ROLE_LABELS: Record<AdminRole, string> = {
   super: "최고 관리자",
 };
 
+import {
+  ADMIN_SYNC_SECTIONS,
+  type AdminPermissions,
+  type AdminSyncSection,
+  canOpenAccountsPage,
+  canOpenPasswordSelf,
+  canTriggerSync,
+  permissionsForRole,
+} from "./permissions";
+
 /** 역할별 허용 작업. */
 export const ADMIN_ACTIONS = [
   "sync_view",
@@ -52,9 +62,38 @@ const ROLE_ACTIONS: Record<AdminRole, ReadonlySet<AdminAction>> = {
   super: new Set(ADMIN_ACTIONS),
 };
 
-/** 이 등급이 작업을 할 수 있는지 */
+/** 이 등급이 작업을 할 수 있는지 (역할 템플릿만; 실제는 effective permissions 사용) */
 export function canAdmin(role: AdminRole, action: AdminAction): boolean {
-  return ROLE_ACTIONS[role].has(action);
+  return canAdminPermission(permissionsForRole(role), action);
+}
+
+/** 세부 권한으로 작업 허용 여부 */
+export function canAdminPermission(
+  perms: AdminPermissions,
+  action: AdminAction,
+  ctx?: { section?: AdminSyncSection },
+): boolean {
+  switch (action) {
+    case "sync_view":
+      if (perms.dashboard !== "none") return true;
+      if (ctx?.section) return perms.sync[ctx.section].page !== "none";
+      return Object.values(perms.sync).some((s) => s.page !== "none");
+    case "sync_trigger":
+      if (ctx?.section) return canTriggerSync(perms, ctx.section);
+      return ADMIN_SYNC_SECTIONS.some((s) => canTriggerSync(perms, s));
+    case "password_change_self":
+      return canOpenPasswordSelf(perms) && perms.passwordSelf === "edit";
+    case "account_list":
+      return canOpenAccountsPage(perms);
+    case "account_create":
+      return perms.accounts.page === "edit" && perms.accounts.create && perms.accounts.fields.loginId === "edit";
+    case "account_update":
+      return perms.accounts.page === "edit";
+    case "password_reset_other":
+      return perms.accounts.page === "edit" && perms.accounts.fields.resetPassword === "edit";
+    default:
+      return false;
+  }
 }
 
 /** actor 가 대상 등급 계정을 만들거나 바꿀 수 있는지 (자기보다 낮은 등급만). */

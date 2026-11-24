@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { ApiError } from "@/common/presentation/api/errors";
-import { canAdmin, type AdminAction, type AdminRole } from "../domain/role";
+import { canAdminPermission, type AdminAction } from "../domain/role";
+import type { AdminSyncSection } from "../domain/permissions";
 import { adminJwtConfig, getAdminContainer } from "../admin-container";
 import { getCommonContainer } from "@/common/infrastructure/container";
 import type { AdminSessionView } from "../application/use-cases/verify-admin-session";
@@ -27,7 +28,11 @@ export async function getVerifiedAdminSession(): Promise<AdminSessionView | null
 }
 
 /** API: 관리자 세션·권한 확인. 실패 시 ApiError */
-export async function requireAdminApi(request: Request, action: AdminAction): Promise<AdminSessionView> {
+export async function requireAdminApi(
+  request: Request,
+  action: AdminAction,
+  ctx?: { section?: AdminSyncSection },
+): Promise<AdminSessionView> {
   const token = request.headers.get("cookie")?.match(new RegExp(`${ADMIN_SESSION_COOKIE}=([^;]+)`))?.[1];
   const { secret, issuer, audience } = adminJwtConfig();
   const payload = await parseAdminSessionCookie(token, secret, issuer, audience);
@@ -37,7 +42,7 @@ export async function requireAdminApi(request: Request, action: AdminAction): Pr
       payload.sid,
       getCommonContainer().clock.now().toISOString(),
     );
-    if (!canAdmin(session.role, action)) throw new ApiError("FORBIDDEN");
+    if (!canAdminPermission(session.permissions, action, ctx)) throw new ApiError("FORBIDDEN");
     return session;
   } catch (e) {
     if (e instanceof AdminSessionError) throw new ApiError("ADMIN_AUTH_REQUIRED");
@@ -60,6 +65,10 @@ export function mapAdminAccountError(e: unknown): never {
         throw new ApiError("ADMIN_WEAK_PASSWORD");
       case "last_super":
         throw new ApiError("ADMIN_LAST_SUPER");
+      case "root_protected":
+        throw new ApiError("ADMIN_ROOT_PROTECTED");
+      case "permission_exceeds":
+        throw new ApiError("ADMIN_PERMISSION_EXCEEDS");
       case "not_found":
         throw new ApiError("NOT_FOUND");
       default:
