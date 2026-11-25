@@ -1,5 +1,7 @@
 import { AdminPageShell } from "@/features/admin/presentation/components/AdminPageShell";
 import { guardSyncPage, requireAdminSession, syncPageFlags } from "@/features/admin/presentation/admin-page-access";
+import { AdminSyncAccessNotices } from "@/features/admin/presentation/components/AdminSyncAccessNotices";
+import { formatAdminSyncErrorText } from "@/features/admin/presentation/admin-sync-presentation";
 import { SOURCE_LABELS } from "@/features/living/domain/enums";
 import { getLivingContainer } from "@/features/living/living-container";
 import { LivingSyncButton } from "@/features/living/presentation/components/SyncButtonClient";
@@ -36,12 +38,14 @@ export default async function LivingSyncAdminPage() {
         CLI: <code>npm run living:sync</code> / <code>npm run living:sync -- --source=curated</code> /{" "}
         <code>npm run living:seed-demo</code>
       </p>
+      <AdminSyncAccessNotices session={session} access={access} />
       {access.canTrigger && (
         <p>
           <LivingSyncButton label="전체 수집" />
         </p>
       )}
 
+      {access.canViewSources && (
       <div className="table-wrap">
         <table>
           <thead>
@@ -68,7 +72,11 @@ export default async function LivingSyncAdminPage() {
                   <td>{formatTime(run?.finishedAt ?? run?.startedAt ?? null)}</td>
                   <td>{run ? <span className={`badge run-${run.status}`}>{STATUS_LABEL[run.status]}</span> : "-"}</td>
                   <td>{run ? `${run.fetchedCount} / ${run.insertedCount} / ${run.updatedCount}` : "-"}</td>
-                  <td className="note-cell">{availability.available ? (run?.error ?? "") : availability.reason}</td>
+                  <td className="note-cell">
+                    {availability.available
+                      ? formatAdminSyncErrorText(run?.error, session, access.canViewRuns)
+                      : availability.reason}
+                  </td>
                   {access.canTrigger && <td>{availability.available && <LivingSyncButton source={s.id} label="수집" />}</td>}
                 </tr>
               );
@@ -76,7 +84,10 @@ export default async function LivingSyncAdminPage() {
           </tbody>
         </table>
       </div>
+      )}
 
+      {access.canViewRuns && (
+      <>
       <h2>최근 실행 이력</h2>
       <div className="table-wrap">
         <table>
@@ -100,7 +111,7 @@ export default async function LivingSyncAdminPage() {
                   <span className={`badge run-${r.status}`}>{STATUS_LABEL[r.status]}</span>
                 </td>
                 <td>{`${r.fetchedCount} / ${r.insertedCount} / ${r.updatedCount}`}</td>
-                <td className="note-cell">{r.error ?? ""}</td>
+                <td className="note-cell">{formatAdminSyncErrorText(r.error, session, access.canViewRuns)}</td>
               </tr>
             ))}
             {recent.length === 0 && (
@@ -113,6 +124,8 @@ export default async function LivingSyncAdminPage() {
           </tbody>
         </table>
       </div>
+      </>
+      )}
     </div>
     </AdminPageShell>
   );

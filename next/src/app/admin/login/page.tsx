@@ -9,9 +9,9 @@ export default async function AdminLoginPage(props: {
   const next = (await props.searchParams).next;
   const nextPath = typeof next === "string" ? next : "/admin";
   return (
-    <div className="detail" style={{ maxWidth: 400, margin: "48px auto" }}>
+    <div className="admin-login-wrap">
       <h1>관리자 로그인</h1>
-      <p className="hint">임대주택 수집·계정 관리는 관리자만 접근할 수 있습니다.</p>
+      <p className="hint">데이터 수집·계정 관리는 관리자만 접근할 수 있습니다.</p>
       <AdminLoginForm nextPath={nextPath} />
     </div>
   );

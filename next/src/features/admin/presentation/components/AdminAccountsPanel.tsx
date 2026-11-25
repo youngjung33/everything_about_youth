@@ -5,6 +5,7 @@ import { ADMIN_API_ACCOUNTS } from "../routes";
 import { ADMIN_ROLE_LABELS, ADMIN_ROLES as ROLES, canManageRole, type AdminRole } from "../../domain/role";
 import type { AdminPermissions, AdminPermissionsOverride } from "../../domain/permissions";
 import { AdminPermissionsEditor } from "./AdminPermissionsEditor";
+import { AdminPermissionNotice } from "./AdminPermissionNotice";
 
 type Row = {
   loginId: string;
@@ -12,13 +13,18 @@ type Row = {
   roleLabel: string;
   disabled: boolean;
   isRoot: boolean;
-  permissionsOverride: AdminPermissionsOverride | null;
-  effectivePermissions: AdminPermissions;
+  hasCustomPermissions?: boolean;
+  permissionsOverride?: AdminPermissionsOverride | null;
+  effectivePermissions?: AdminPermissions;
   createdAt: string;
   createdBy: string | null;
 };
 
-export function AdminAccountsPanel(props: { actorRole: AdminRole; actorPermissions: AdminPermissions }) {
+export function AdminAccountsPanel(props: {
+  actorRole: AdminRole;
+  actorPermissions: AdminPermissions;
+  devDiagnostics?: boolean;
+}) {
   const [items, setItems] = useState<Row[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loginId, setLoginId] = useState("");
@@ -30,20 +36,36 @@ export function AdminAccountsPanel(props: { actorRole: AdminRole; actorPermissio
   const [editRole, setEditRole] = useState<AdminRole>("operator");
   const [editOverride, setEditOverride] = useState<AdminPermissionsOverride | null>(null);
   const [editPassword, setEditPassword] = useState("");
+  const [readOnly, setReadOnly] = useState(false);
+  const [accessDenied, setAccessDenied] = useState(false);
 
   const fields = props.actorPermissions.accounts.fields;
   const canCreate = props.actorPermissions.accounts.page === "edit" && props.actorPermissions.accounts.create;
   const canUpdate = props.actorPermissions.accounts.page === "edit";
 
   const load = useCallback(async () => {
-    const res = await fetch(ADMIN_API_ACCOUNTS, { credentials: "include" });
-    const data = (await res.json()) as { items?: Row[]; error?: { message?: string } };
+    const url =
+      props.devDiagnostics ? `${ADMIN_API_ACCOUNTS}?verbose=1` : ADMIN_API_ACCOUNTS;
+    const res = await fetch(url, { credentials: "include" });
+    const data = (await res.json()) as {
+      items?: Row[];
+      meta?: { readOnly?: boolean };
+      error?: { code?: string; message?: string };
+    };
+    if (res.status === 401 || res.status === 403) {
+      setAccessDenied(true);
+      setError(data.error?.message ?? "권한이 없습니다.");
+      setItems([]);
+      return;
+    }
     if (!res.ok) {
       setError(data.error?.message ?? "목록을 불러오지 못했습니다.");
       return;
     }
+    setAccessDenied(false);
+    setReadOnly(Boolean(data.meta?.readOnly));
     setItems(data.items ?? []);
-  }, []);
+  }, [props.devDiagnostics]);
 
   useEffect(() => {
     void load();
@@ -96,13 +118,30 @@ export function AdminAccountsPanel(props: { actorRole: AdminRole; actorPermissio
   function startEdit(row: Row) {
     setEditing(row.loginId);
     setEditRole(row.role);
-    setEditOverride(row.permissionsOverride);
+    setEditOverride(row.permissionsOverride ?? null);
     setEditPassword("");
   }
 
   return (
     <div className="detail">
       <h1>관리자 계정</h1>
+      {props.devDiagnostics && (
+        <AdminPermissionNotice
+          variant="dev"
+          title="개발자 진단 모드"
+          message="API 에서 타 계정의 권한 템플릿 전체를 불러옵니다. 운영(APP_ENV=prod)에서는 노출되지 않습니다."
+        />
+      )}
+      {accessDenied && (
+        <AdminPermissionNotice
+          variant="denied"
+          title="계정 목록 권한 없음"
+          message="계정 관리 페이지에 들어올 수 있어도 목록 API 권한이 없으면 데이터를 표시하지 않습니다."
+        />
+      )}
+      {readOnly && !accessDenied && (
+        <AdminPermissionNotice title="읽기 전용" message="등급·비활성·권한 변경은 편집 권한이 있는 관리자만 할 수 있습니다." />
+      )}
       {canCreate && fields.loginId === "edit" && (
         <form className="filters" onSubmit={createAccount} style={{ marginBottom: 24 }}>
           <h2>새 계정</h2>
@@ -158,6 +197,7 @@ export function AdminAccountsPanel(props: { actorRole: AdminRole; actorPermissio
             <tr>
               <th>아이디</th>
               <th>등급</th>
+              <th>권한</th>
               <th>상태</th>
               <th>생성</th>
               {canUpdate && <th>작업</th>}
@@ -172,6 +212,13 @@ export function AdminAccountsPanel(props: { actorRole: AdminRole; actorPermissio
                     {row.isRoot ? " (루트)" : ""}
                   </td>
                   <td>{row.roleLabel}</td>
+                  <td>
+                    {row.effectivePermissions
+                      ? "세부 설정 열람 가능"
+                      : row.hasCustomPermissions
+                        ? "맞춤 설정 있음"
+                        : "등급 기본"}
+                  </td>
                   <td>{row.disabled ? "비활성" : "사용 중"}</td>
                   <td>
                     <small>
@@ -204,7 +251,7 @@ export function AdminAccountsPanel(props: { actorRole: AdminRole; actorPermissio
                 </tr>
                 {editing === row.loginId && !row.isRoot && (
                   <tr key={`${row.loginId}-edit`}>
-                    <td colSpan={canUpdate ? 5 : 4}>
+                    <td colSpan={canUpdate ? 6 : 5}>
                       {fields.role === "edit" && (
                         <label className="field">
                           <span>등급</span>

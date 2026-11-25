@@ -1,5 +1,7 @@
 import { AdminPageShell } from "@/features/admin/presentation/components/AdminPageShell";
 import { guardSyncPage, requireAdminSession, syncPageFlags } from "@/features/admin/presentation/admin-page-access";
+import { AdminSyncAccessNotices } from "@/features/admin/presentation/components/AdminSyncAccessNotices";
+import { formatAdminSyncErrorText } from "@/features/admin/presentation/admin-sync-presentation";
 import { SOURCE_LABELS } from "@/features/housing/domain/enums";
 import { getHousingContainer } from "@/features/housing/housing-container";
 import { SyncButton } from "@/features/housing/presentation/components/SyncButton";
@@ -35,6 +37,7 @@ export default async function SyncAdminPage() {
       <p className="hint">
         소스별 마지막 수집 결과입니다. CLI: <code>npm run housing:sync</code> / <code>npm run housing:sync -- --source=sh,ih</code>
       </p>
+      <AdminSyncAccessNotices session={session} access={access} />
       {access.canTrigger && (
         <p>
           <SyncButton label="전체 수집" />
@@ -68,7 +71,11 @@ export default async function SyncAdminPage() {
                   <td>{formatTime(run?.finishedAt ?? run?.startedAt ?? null)}</td>
                   <td>{run ? <span className={`badge run-${run.status}`}>{STATUS_LABEL[run.status]}</span> : "-"}</td>
                   <td>{run ? `${run.fetchedCount} / ${run.insertedCount} / ${run.updatedCount}` : "-"}</td>
-                  <td className="note-cell">{availability.available ? (run?.error ?? "") : availability.reason}</td>
+                  <td className="note-cell">
+                    {availability.available
+                      ? formatAdminSyncErrorText(run?.error, session, access.canViewRuns)
+                      : availability.reason}
+                  </td>
                   {access.canTrigger && <td>{availability.available && <SyncButton source={s.id} label="수집" />}</td>}
                 </tr>
               );
@@ -103,7 +110,7 @@ export default async function SyncAdminPage() {
                   <span className={`badge run-${r.status}`}>{STATUS_LABEL[r.status]}</span>
                 </td>
                 <td>{`${r.fetchedCount} / ${r.insertedCount} / ${r.updatedCount}`}</td>
-                <td className="note-cell">{r.error ?? ""}</td>
+                <td className="note-cell">{formatAdminSyncErrorText(r.error, session, access.canViewRuns)}</td>
               </tr>
             ))}
             {recent.length === 0 && (

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { ProfileStorage } from "@/features/housing/presentation/components/ProfileStorage";
-import { HOUSING_BASE, HOUSING_SYNC_ADMIN_PATH } from "@/features/housing/presentation/routes";
+import { HousingSectionNav } from "@/features/housing/presentation/components/HousingSectionNav";
 
 /** 브라우저 탭 제목·설명(Next Metadata). */
 export const metadata: Metadata = {
@@ -14,11 +13,7 @@ export default function HousingLayout({ children }: LayoutProps<"/housing">) {
   return (
     <>
       <ProfileStorage />
-      <nav className="section-nav" aria-label="임대주택 메뉴">
-        <Link href={HOUSING_BASE}>공고 목록</Link>
-        <Link href="/admin">관리자</Link>
-        <Link href={HOUSING_SYNC_ADMIN_PATH}>수집 현황</Link>
-      </nav>
+      <HousingSectionNav />
       {children}
       <footer className="site-footer">
         개인용 1차 버전 · 자격 판정은 참고용입니다. 앱 본문을 확인한 뒤, 필요하면 기관 공고에서 최종 검증하세요.

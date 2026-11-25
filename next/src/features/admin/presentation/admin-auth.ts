@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { ApiError } from "@/common/presentation/api/errors";
-import { canAdminPermission, type AdminAction } from "../domain/role";
+import { canAdminPermission, type AdminAction, type AdminRole } from "../domain/role";
 import type { AdminSyncSection } from "../domain/permissions";
 import { adminJwtConfig, getAdminContainer } from "../admin-container";
 import { getCommonContainer } from "@/common/infrastructure/container";

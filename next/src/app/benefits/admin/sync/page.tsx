@@ -1,5 +1,7 @@
 import { AdminPageShell } from "@/features/admin/presentation/components/AdminPageShell";
 import { guardSyncPage, requireAdminSession, syncPageFlags } from "@/features/admin/presentation/admin-page-access";
+import { AdminSyncAccessNotices } from "@/features/admin/presentation/components/AdminSyncAccessNotices";
+import { formatAdminSyncErrorText } from "@/features/admin/presentation/admin-sync-presentation";
 import { SOURCE_LABELS } from "@/features/benefits/domain/enums";
 import { getBenefitsContainer } from "@/features/benefits/benefits-container";
 import { BenefitsSyncButton } from "@/features/benefits/presentation/components/SyncButton";
@@ -35,12 +37,14 @@ export default async function BenefitsSyncAdminPage() {
       <p className="hint">
         CLI: <code>npm run benefits:sync</code> / <code>npm run benefits:sync -- --source=ontong</code>
       </p>
+      <AdminSyncAccessNotices session={session} access={access} />
       {access.canTrigger && (
         <p>
           <BenefitsSyncButton label="전체 수집" />
         </p>
       )}
 
+      {access.canViewSources && (
       <div className="table-wrap">
         <table>
           <thead>
@@ -67,7 +71,11 @@ export default async function BenefitsSyncAdminPage() {
                   <td>{formatTime(run?.finishedAt ?? run?.startedAt ?? null)}</td>
                   <td>{run ? <span className={`badge run-${run.status}`}>{STATUS_LABEL[run.status]}</span> : "-"}</td>
                   <td>{run ? `${run.fetchedCount} / ${run.insertedCount} / ${run.updatedCount}` : "-"}</td>
-                  <td className="note-cell">{availability.available ? (run?.error ?? "") : availability.reason}</td>
+                  <td className="note-cell">
+                    {availability.available
+                      ? formatAdminSyncErrorText(run?.error, session, access.canViewRuns)
+                      : availability.reason}
+                  </td>
                   {access.canTrigger && <td>{availability.available && <BenefitsSyncButton source={s.id} label="수집" />}</td>}
                 </tr>
               );
@@ -75,7 +83,10 @@ export default async function BenefitsSyncAdminPage() {
           </tbody>
         </table>
       </div>
+      )}
 
+      {access.canViewRuns && (
+      <>
       <h2>최근 실행 이력</h2>
       <div className="table-wrap">
         <table>
@@ -99,7 +110,7 @@ export default async function BenefitsSyncAdminPage() {
                   <span className={`badge run-${r.status}`}>{STATUS_LABEL[r.status]}</span>
                 </td>
                 <td>{`${r.fetchedCount} / ${r.insertedCount} / ${r.updatedCount}`}</td>
-                <td className="note-cell">{r.error ?? ""}</td>
+                <td className="note-cell">{formatAdminSyncErrorText(r.error, session, access.canViewRuns)}</td>
               </tr>
             ))}
             {recent.length === 0 && (
@@ -112,6 +123,8 @@ export default async function BenefitsSyncAdminPage() {
           </tbody>
         </table>
       </div>
+      </>
+      )}
     </div>
     </AdminPageShell>
   );

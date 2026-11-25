@@ -1,9 +1,12 @@
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import type { RateLimiter } from "@/common/application/rate-limit";
 import { createRateLimiter } from "@/common/infrastructure/rate-limit/create-rate-limiter";
 import { loadAppPolicy } from "@/common/infrastructure/config/app-policy-config";
+import { loadAuthConfig } from "@/common/infrastructure/config/auth-config";
 import { createTokenService } from "@/common/infrastructure/auth/token-service-factory";
 import { runGateway } from "@/common/presentation/api/gateway";
+import { ADMIN_SESSION_COOKIE, parseAdminSessionCookie } from "@/features/admin/presentation/admin-session-cookie";
+import { ADMIN_LOGIN_PATH, isAdminPagePath } from "@/features/admin/presentation/routes";
 
 /**
  * 모든 `/api/*` 요청의 입구. (Next 16 의 proxy; 예전 middleware)
@@ -23,7 +26,29 @@ function rateLimiter(): RateLimiter | null {
   return globalForLimiter.__rateLimiter;
 }
 
+/** 관리자 UI 경로는 세션 쿠키 없으면 로그인으로 보낸다. (API 입구와 분리) */
+async function guardAdminPage(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const token = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
+  const auth = loadAuthConfig();
+  const secret = new TextEncoder().encode(auth.secret);
+  const payload = await parseAdminSessionCookie(token, secret, auth.issuer, `${auth.audience}-admin`);
+  if (!payload) {
+    const login = new URL(ADMIN_LOGIN_PATH, request.url);
+    login.searchParams.set("next", pathname);
+    return NextResponse.redirect(login);
+  }
+  return NextResponse.next();
+}
+
 export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  if (isAdminPagePath(pathname)) {
+    return guardAdminPage(request);
+  }
+  if (!pathname.startsWith("/api/")) {
+    return NextResponse.next();
+  }
   return runGateway(request, {
     tokens: createTokenService(),
     policy: loadAppPolicy(),
@@ -33,5 +58,13 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/api/:path*",
+  matcher: [
+    "/api/:path*",
+    "/admin/:path*",
+    "/housing/admin/:path*",
+    "/benefits/admin/:path*",
+    "/finance/admin/:path*",
+    "/jobs/admin/:path*",
+    "/living/admin/:path*",
+  ],
 };

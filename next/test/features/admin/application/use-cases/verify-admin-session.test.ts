@@ -38,6 +38,18 @@ describe("VerifyAdminSession", () => {
     conn.close();
   });
 
+  it("revoke 된 세션이면 expired", async () => {
+    const conn = openSqlite(":memory:");
+    runMigrations(conn.db);
+    const { accounts, sessions } = createAdminRepositories(conn.db, systemClock);
+    await insertTestAdmin(accounts, "u1", "viewer");
+    await sessions.create("sid-rev", "u1", "2030-01-01T00:00:00.000Z", "2026-01-01T00:00:00.000Z");
+    await sessions.revoke("sid-rev");
+    const verify = new VerifyAdminSession(accounts, sessions);
+    await expect(verify.execute("sid-rev", "2026-01-01T00:00:00.000Z")).rejects.toMatchObject({ reason: "expired" });
+    conn.close();
+  });
+
   it("유효한 세션이면 권한을 포함해 반환", async () => {
     const conn = openSqlite(":memory:");
     runMigrations(conn.db);
