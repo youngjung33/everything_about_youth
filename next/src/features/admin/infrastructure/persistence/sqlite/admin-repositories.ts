@@ -1,4 +1,8 @@
-import { and, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, sql } from "drizzle-orm";
+import {
+  DEFAULT_ADMIN_ACCOUNT_LIST_SORT,
+  type AdminAccountListSort,
+} from "@/features/admin/domain/admin-account-list-sort";
 import type { Clock } from "@/common/application/system";
 import type { SqliteDb } from "@/common/infrastructure/persistence/sqlite/client";
 import type { AdminAccount } from "@/features/admin/domain/admin-account";
@@ -10,7 +14,7 @@ export interface AdminAccountRepository {
   count(): number;
   findByLoginId(loginId: string): Promise<AdminAccount | null>;
   findPasswordHash(loginId: string): Promise<string | null>;
-  list(): Promise<AdminAccount[]>;
+  list(sort?: AdminAccountListSort): Promise<AdminAccount[]>;
   insert(account: AdminAccount, passwordHash: string): Promise<void>;
   updateRole(loginId: string, role: AdminRole, updatedAt: string): Promise<boolean>;
   setDisabled(loginId: string, disabled: boolean, updatedAt: string): Promise<boolean>;
@@ -60,8 +64,20 @@ export function createAdminRepositories(db: SqliteDb, clock: Clock): {
         .get();
       return row?.passwordHash ?? null;
     },
-    async list() {
-      return db.select().from(adminAccounts).all().map(mapAccount);
+    async list(sort = DEFAULT_ADMIN_ACCOUNT_LIST_SORT) {
+      const dir = sort.order === "desc" ? desc : asc;
+      const tie = asc(adminAccounts.loginId);
+      const col =
+        sort.field === "role"
+          ? adminAccounts.role
+          : sort.field === "disabled"
+            ? adminAccounts.disabled
+            : sort.field === "createdAt"
+              ? adminAccounts.createdAt
+              : sort.field === "isRoot"
+                ? adminAccounts.isRoot
+                : adminAccounts.loginId;
+      return db.select().from(adminAccounts).orderBy(dir(col), tie).all().map(mapAccount);
     },
     async insert(account, passwordHash) {
       db.insert(adminAccounts)

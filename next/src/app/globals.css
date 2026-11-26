@@ -639,6 +639,36 @@ th {
   font-weight: 800;
 }
 
+.admin-th-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  cursor: pointer;
+  user-select: none;
+}
+.admin-th-sort:hover {
+  color: var(--primary);
+}
+.admin-th-sort--active {
+  color: var(--primary);
+  font-weight: 700;
+}
+.admin-th-sort__icon {
+  font-size: 0.75rem;
+  opacity: 0.45;
+}
+.admin-th-sort--active .admin-th-sort__icon {
+  opacity: 1;
+}
+
 .admin-login-wrap {
   max-width: 420px;
   margin: 48px auto;

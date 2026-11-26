@@ -6,6 +6,12 @@ import { ADMIN_ROLE_LABELS, ADMIN_ROLES as ROLES, canManageRole, type AdminRole 
 import type { AdminPermissions, AdminPermissionsOverride } from "../../domain/permissions";
 import { AdminPermissionsEditor } from "./AdminPermissionsEditor";
 import { AdminPermissionNotice } from "./AdminPermissionNotice";
+import { AdminSortHeader } from "./AdminSortHeader";
+import {
+  DEFAULT_ADMIN_ACCOUNT_LIST_SORT,
+  type AdminAccountListSort,
+  type AdminAccountSortField,
+} from "../admin-account-list-sort";
 
 type Row = {
   loginId: string;
@@ -38,15 +44,16 @@ export function AdminAccountsPanel(props: {
   const [editPassword, setEditPassword] = useState("");
   const [readOnly, setReadOnly] = useState(false);
   const [accessDenied, setAccessDenied] = useState(false);
+  const [listSort, setListSort] = useState<AdminAccountListSort>(DEFAULT_ADMIN_ACCOUNT_LIST_SORT);
 
   const fields = props.actorPermissions.accounts.fields;
   const canCreate = props.actorPermissions.accounts.page === "edit" && props.actorPermissions.accounts.create;
   const canUpdate = props.actorPermissions.accounts.page === "edit";
 
   const load = useCallback(async () => {
-    const url =
-      props.devDiagnostics ? `${ADMIN_API_ACCOUNTS}?verbose=1` : ADMIN_API_ACCOUNTS;
-    const res = await fetch(url, { credentials: "include" });
+    const params = new URLSearchParams({ sort: listSort.field, order: listSort.order });
+    if (props.devDiagnostics) params.set("verbose", "1");
+    const res = await fetch(`${ADMIN_API_ACCOUNTS}?${params}`, { credentials: "include" });
     const data = (await res.json()) as {
       items?: Row[];
       meta?: { readOnly?: boolean };
@@ -65,11 +72,17 @@ export function AdminAccountsPanel(props: {
     setAccessDenied(false);
     setReadOnly(Boolean(data.meta?.readOnly));
     setItems(data.items ?? []);
-  }, [props.devDiagnostics]);
+  }, [listSort, props.devDiagnostics]);
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  const cycleListSort = (field: AdminAccountSortField) => {
+    setListSort((prev) =>
+      prev.field === field ? { field, order: prev.order === "asc" ? "desc" : "asc" } : { field, order: "asc" },
+    );
+  };
 
   const assignableRoles = ROLES.filter((r) => canManageRole(props.actorRole, r));
 
@@ -195,12 +208,36 @@ export function AdminAccountsPanel(props: {
         <table>
           <thead>
             <tr>
-              <th>아이디</th>
-              <th>등급</th>
-              <th>권한</th>
-              <th>상태</th>
-              <th>생성</th>
-              {canUpdate && <th>작업</th>}
+              <AdminSortHeader
+                column="loginId"
+                label="아이디"
+                sortKey={listSort.field}
+                sortOrder={listSort.order}
+                onSort={cycleListSort}
+              />
+              <AdminSortHeader
+                column="role"
+                label="등급"
+                sortKey={listSort.field}
+                sortOrder={listSort.order}
+                onSort={cycleListSort}
+              />
+              <th scope="col">권한</th>
+              <AdminSortHeader
+                column="disabled"
+                label="상태"
+                sortKey={listSort.field}
+                sortOrder={listSort.order}
+                onSort={cycleListSort}
+              />
+              <AdminSortHeader
+                column="createdAt"
+                label="생성"
+                sortKey={listSort.field}
+                sortOrder={listSort.order}
+                onSort={cycleListSort}
+              />
+              {canUpdate && <th scope="col">작업</th>}
             </tr>
           </thead>
           <tbody>

@@ -5,6 +5,7 @@ import { formatAdminSyncErrorText } from "@/features/admin/presentation/admin-sy
 import { SOURCE_LABELS } from "@/features/housing/domain/enums";
 import { getHousingContainer } from "@/features/housing/housing-container";
 import { SyncButton } from "@/features/housing/presentation/components/SyncButton";
+import { AdminSyncRecentRunsTable } from "@/features/admin/presentation/components/AdminSyncRecentRunsTable";
 
 /** 요청마다 최신 데이터·기능 플래그를 반영한다(정적 캐시 없음). */
 export const dynamic = "force-dynamic";
@@ -86,44 +87,17 @@ export default async function SyncAdminPage() {
       )}
 
       {access.canViewRuns && (
-      <>
-      <h2>최근 실행 이력</h2>
-      <div className="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>소스</th>
-              <th>시작</th>
-              <th>결과</th>
-              <th>수집/신규/갱신</th>
-              <th>오류</th>
-            </tr>
-          </thead>
-          <tbody>
-            {recent.map((r) => (
-              <tr key={r.id}>
-                <td>{r.id}</td>
-                <td>{r.source}</td>
-                <td>{formatTime(r.startedAt)}</td>
-                <td>
-                  <span className={`badge run-${r.status}`}>{STATUS_LABEL[r.status]}</span>
-                </td>
-                <td>{`${r.fetchedCount} / ${r.insertedCount} / ${r.updatedCount}`}</td>
-                <td className="note-cell">{formatAdminSyncErrorText(r.error, session, access.canViewRuns)}</td>
-              </tr>
-            ))}
-            {recent.length === 0 && (
-              <tr>
-                <td colSpan={6} className="hint">
-                  아직 실행 이력이 없습니다.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-      </>
+        <AdminSyncRecentRunsTable
+          rows={recent.map((r) => ({
+            id: r.id,
+            source: r.source,
+            startedAt: formatTime(r.startedAt),
+            status: r.status,
+            statusLabel: STATUS_LABEL[r.status] ?? r.status,
+            counts: `${r.fetchedCount} / ${r.insertedCount} / ${r.updatedCount}`,
+            errorText: formatAdminSyncErrorText(r.error, session, access.canViewRuns),
+          }))}
+        />
       )}
     </div>
     </AdminPageShell>

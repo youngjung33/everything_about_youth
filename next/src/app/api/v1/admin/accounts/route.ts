@@ -4,6 +4,7 @@ import { getCommonContainer } from "@/common/infrastructure/container";
 import { mapAdminAccountError, requireAdminApi } from "@/features/admin/presentation/admin-auth";
 import { toAdminAccountApiItem } from "@/features/admin/presentation/admin-account-api";
 import { adminDevDiagnosticsEnabled } from "@/features/admin/presentation/admin-dev-diagnostics";
+import { parseAdminAccountListSort } from "@/features/admin/presentation/admin-account-list-sort";
 import { apiHandler, respond } from "@/common/presentation/api/respond";
 import { z } from "zod";
 import { ApiError } from "@/common/presentation/api/errors";
@@ -13,14 +14,20 @@ export const runtime = "nodejs";
 
 export const GET = apiHandler(async (request) => {
   const session = await requireAdminApi(request, "account_list");
-  const verbose =
-    new URL(request.url).searchParams.get("verbose") === "1" && adminDevDiagnosticsEnabled(session);
-  const rows = await getAdminContainer().listAccounts.execute();
+  const url = new URL(request.url);
+  const verbose = url.searchParams.get("verbose") === "1" && adminDevDiagnosticsEnabled(session);
+  const listSort = parseAdminAccountListSort(url.searchParams.get("sort"), url.searchParams.get("order"));
+  const rows = await getAdminContainer().listAccounts.execute(listSort);
   return respond({
     status: 200,
     body: {
       items: rows.map((a) => toAdminAccountApiItem(session, a, { verbose })),
-      meta: { readOnly: session.permissions.accounts.page !== "edit", verbose },
+      meta: {
+        readOnly: session.permissions.accounts.page !== "edit",
+        verbose,
+        sort: listSort.field,
+        order: listSort.order,
+      },
     },
   });
 });

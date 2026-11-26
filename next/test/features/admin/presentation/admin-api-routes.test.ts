@@ -82,6 +82,37 @@ describe("admin API routes", () => {
     }
   });
 
+  it("accounts GET 잘못된 sort 는 400", async () => {
+    const h = setupAdminIntegration();
+    try {
+      const cookie = await h.bootstrapAndLogin();
+      const res = await adminAccountsGet(
+        new Request("http://localhost/api/v1/admin/accounts?sort=nope&order=asc", { headers: { cookie } }),
+        undefined,
+      );
+      expect(res.status).toBe(400);
+    } finally {
+      teardownAdminIntegration(h.conn);
+    }
+  });
+
+  it("accounts GET sort·order 가 응답 meta 에 반영된다", async () => {
+    const h = setupAdminIntegration();
+    try {
+      const cookie = await h.bootstrapAndLogin();
+      const res = await adminAccountsGet(
+        new Request("http://localhost/api/v1/admin/accounts?sort=createdAt&order=desc", { headers: { cookie } }),
+        undefined,
+      );
+      expect(res.status).toBe(200);
+      const body = await readBody<{ meta: { sort: string; order: string }; items: { loginId: string }[] }>(res);
+      expect(body.meta).toMatchObject({ sort: "createdAt", order: "desc" });
+      expect(body.items.length).toBeGreaterThan(0);
+    } finally {
+      teardownAdminIntegration(h.conn);
+    }
+  });
+
   it("accounts GET 은 viewer 에게 FORBIDDEN", async () => {
     const h = setupAdminIntegration();
     try {

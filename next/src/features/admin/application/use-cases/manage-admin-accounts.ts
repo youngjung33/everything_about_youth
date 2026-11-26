@@ -9,6 +9,8 @@ import {
 import { canManageRole, type AdminRole } from "../../domain/role";
 import { AdminAccountError } from "../admin-errors";
 import type { AdminAccountRepository } from "../../infrastructure/persistence/sqlite/admin-repositories";
+import type { AdminAccountListSort } from "../../domain/admin-account-list-sort";
+import { DEFAULT_ADMIN_ACCOUNT_LIST_SORT } from "../../domain/admin-account-list-sort";
 
 function assertRoleTemplateAllowed(actor: AdminPermissions, role: AdminRole, override: AdminPermissionsOverride | null): void {
   const effective = resolveAdminPermissions(role, override, false);
@@ -19,8 +21,8 @@ function assertRoleTemplateAllowed(actor: AdminPermissions, role: AdminRole, ove
 export class ListAdminAccounts {
   constructor(private readonly accounts: AdminAccountRepository) {}
 
-  async execute(): Promise<AdminAccount[]> {
-    return this.accounts.list();
+  async execute(sort: AdminAccountListSort = DEFAULT_ADMIN_ACCOUNT_LIST_SORT): Promise<AdminAccount[]> {
+    return this.accounts.list(sort);
   }
 }
 
