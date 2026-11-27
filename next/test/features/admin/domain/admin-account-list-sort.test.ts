@@ -20,4 +20,8 @@ describe("admin account list sort", () => {
   it("createdAt desc 를 파싱한다", () => {
     expect(tryParseAdminAccountListSort("createdAt", "desc")).toEqual({ field: "createdAt", order: "desc" });
   });
+
+  it("createdBy asc 를 파싱한다", () => {
+    expect(tryParseAdminAccountListSort("createdBy", "asc")).toEqual({ field: "createdBy", order: "asc" });
+  });
 });

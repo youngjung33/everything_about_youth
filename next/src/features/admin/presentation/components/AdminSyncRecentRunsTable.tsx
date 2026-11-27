@@ -7,31 +7,46 @@ import { useAdminClientTableSort } from "../admin-client-table-sort";
 export interface AdminSyncRunTableRow {
   id: number; // 실행 번호
   source: string; // 소스 id
-  startedAt: string; // 표시용 시각
+  startedAt: string; // 정렬용 ISO
+  startedAtDisplay: string; // 표시 시각
   status: string; // 상태 코드
   statusLabel: string; // 상태 라벨
+  fetchedCount: number; // 수집 건수(정렬)
   counts: string; // 수집/신규/갱신
   errorText: string; // 마스킹된 오류
 }
 
-type RunSortKey = "id" | "source" | "startedAt" | "status" | "counts";
+type RunSortKey = "id" | "source" | "startedAt" | "status" | "fetchedCount" | "errorText";
 
 function compareRow(row: AdminSyncRunTableRow, key: RunSortKey): string | number {
   switch (key) {
     case "id":
       return row.id;
-    case "counts":
-      return row.counts;
+    case "fetchedCount":
+      return row.fetchedCount;
+    case "startedAt":
+      return row.startedAt;
     default:
       return row[key];
   }
 }
+
+const DEFAULT_ORDER: Partial<Record<RunSortKey, "asc" | "desc">> = {
+  id: "desc",
+  source: "asc",
+  startedAt: "desc",
+  status: "asc",
+  fetchedCount: "desc",
+  errorText: "asc",
+};
 
 /** 최근 수집 실행 표 — 헤더 클릭 정렬(클라이언트) */
 export function AdminSyncRecentRunsTable(props: { title?: string; rows: AdminSyncRunTableRow[] }) {
   const { sort, setSortKey, sorted } = useAdminClientTableSort({
     rows: props.rows,
     defaultKey: "id",
+    defaultOrder: "desc",
+    defaultOrderForKey: DEFAULT_ORDER,
     compare: compareRow,
   });
 
@@ -42,12 +57,12 @@ export function AdminSyncRecentRunsTable(props: { title?: string; rows: AdminSyn
         <table>
           <thead>
             <tr>
-              <AdminSortHeader column="id" label="#" sortKey={sort.key} sortOrder={sort.order} onSort={setSortKey} />
-              <AdminSortHeader column="source" label="소스" sortKey={sort.key} sortOrder={sort.order} onSort={setSortKey} />
-              <AdminSortHeader column="startedAt" label="시작" sortKey={sort.key} sortOrder={sort.order} onSort={setSortKey} />
-              <AdminSortHeader column="status" label="결과" sortKey={sort.key} sortOrder={sort.order} onSort={setSortKey} />
-              <AdminSortHeader column="counts" label="수집/신규/갱신" sortKey={sort.key} sortOrder={sort.order} onSort={setSortKey} />
-              <th scope="col">오류</th>
+              <AdminSortHeader column="id" label="#" sortKey={sort.active ? sort.key : ""} sortOrder={sort.active ? sort.order : "asc"} onSort={setSortKey} />
+              <AdminSortHeader column="source" label="소스" sortKey={sort.active ? sort.key : ""} sortOrder={sort.active ? sort.order : "asc"} onSort={setSortKey} />
+              <AdminSortHeader column="startedAt" label="시작" sortKey={sort.active ? sort.key : ""} sortOrder={sort.active ? sort.order : "asc"} onSort={setSortKey} />
+              <AdminSortHeader column="status" label="결과" sortKey={sort.active ? sort.key : ""} sortOrder={sort.active ? sort.order : "asc"} onSort={setSortKey} />
+              <AdminSortHeader column="fetchedCount" label="수집/신규/갱신" sortKey={sort.active ? sort.key : ""} sortOrder={sort.active ? sort.order : "asc"} onSort={setSortKey} />
+              <AdminSortHeader column="errorText" label="오류" sortKey={sort.active ? sort.key : ""} sortOrder={sort.active ? sort.order : "asc"} onSort={setSortKey} />
             </tr>
           </thead>
           <tbody>
@@ -55,7 +70,7 @@ export function AdminSyncRecentRunsTable(props: { title?: string; rows: AdminSyn
               <tr key={r.id}>
                 <td>{r.id}</td>
                 <td>{r.source}</td>
-                <td>{r.startedAt}</td>
+                <td>{r.startedAtDisplay}</td>
                 <td>
                   <span className={`badge run-${r.status}`}>{r.statusLabel}</span>
                 </td>

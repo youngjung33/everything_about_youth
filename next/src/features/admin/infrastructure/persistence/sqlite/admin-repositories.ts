@@ -76,7 +76,9 @@ export function createAdminRepositories(db: SqliteDb, clock: Clock): {
               ? adminAccounts.createdAt
               : sort.field === "isRoot"
                 ? adminAccounts.isRoot
-                : adminAccounts.loginId;
+                : sort.field === "createdBy"
+                  ? adminAccounts.createdBy
+                  : adminAccounts.loginId;
       return db.select().from(adminAccounts).orderBy(dir(col), tie).all().map(mapAccount);
     },
     async insert(account, passwordHash) {

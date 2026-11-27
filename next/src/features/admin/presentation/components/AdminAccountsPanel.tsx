@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { ADMIN_API_ACCOUNTS } from "../routes";
 import { ADMIN_ROLE_LABELS, ADMIN_ROLES as ROLES, canManageRole, type AdminRole } from "../../domain/role";
 import type { AdminPermissions, AdminPermissionsOverride } from "../../domain/permissions";
@@ -8,10 +8,15 @@ import { AdminPermissionsEditor } from "./AdminPermissionsEditor";
 import { AdminPermissionNotice } from "./AdminPermissionNotice";
 import { AdminSortHeader } from "./AdminSortHeader";
 import {
+  ADMIN_ACCOUNT_SORT_FIELDS,
   DEFAULT_ADMIN_ACCOUNT_LIST_SORT,
-  type AdminAccountListSort,
   type AdminAccountSortField,
+  type AdminSortOrder,
 } from "../admin-account-list-sort";
+import {
+  cycleAdminTableTriSort,
+  type AdminTableTriSortState,
+} from "../admin-table-sort-cycle";
 
 type Row = {
   loginId: string;
@@ -44,7 +49,27 @@ export function AdminAccountsPanel(props: {
   const [editPassword, setEditPassword] = useState("");
   const [readOnly, setReadOnly] = useState(false);
   const [accessDenied, setAccessDenied] = useState(false);
-  const [listSort, setListSort] = useState<AdminAccountListSort>(DEFAULT_ADMIN_ACCOUNT_LIST_SORT);
+  const [listSortUi, setListSortUi] = useState<AdminTableTriSortState<AdminAccountSortField>>({ active: false });
+  const [permSort, setPermSort] = useState<AdminSortOrder | null>(null);
+
+  const listSort = listSortUi.active
+    ? { field: listSortUi.key, order: listSortUi.order }
+    : DEFAULT_ADMIN_ACCOUNT_LIST_SORT;
+
+  const ACCOUNT_SORT_DEFAULT: Partial<Record<AdminAccountSortField, AdminSortOrder>> = {
+    loginId: "asc",
+    role: "asc",
+    disabled: "asc",
+    createdAt: "desc",
+    isRoot: "desc",
+    createdBy: "asc",
+  };
+
+  function permissionSortKey(row: Row): string {
+    if (row.effectivePermissions) return "2";
+    if (row.hasCustomPermissions) return "1";
+    return "0";
+  }
 
   const fields = props.actorPermissions.accounts.fields;
   const canCreate = props.actorPermissions.accounts.page === "edit" && props.actorPermissions.accounts.create;
@@ -75,14 +100,41 @@ export function AdminAccountsPanel(props: {
   }, [listSort, props.devDiagnostics]);
 
   useEffect(() => {
-    void load();
+    // sort·verbose 변경 시 목록 재조회
+    queueMicrotask(() => {
+      void load();
+    });
   }, [load]);
 
   const cycleListSort = (field: AdminAccountSortField) => {
-    setListSort((prev) =>
-      prev.field === field ? { field, order: prev.order === "asc" ? "desc" : "asc" } : { field, order: "asc" },
+    setPermSort(null);
+    setListSortUi((prev) =>
+      cycleAdminTableTriSort(prev, field, (f) => ACCOUNT_SORT_DEFAULT[f] ?? "asc"),
     );
   };
+
+  const cyclePermSort = () => {
+    setPermSort((prev) => (prev === null ? "asc" : prev === "asc" ? "desc" : null));
+  };
+
+  const onAccountHeaderSort = (key: string) => {
+    if (key === "permissions") {
+      cyclePermSort();
+      return;
+    }
+    if ((ADMIN_ACCOUNT_SORT_FIELDS as readonly string[]).includes(key)) {
+      cycleListSort(key as AdminAccountSortField);
+    }
+  };
+
+  const displayItems = useMemo(() => {
+    if (permSort === null) return items;
+    const sign = permSort === "asc" ? 1 : -1;
+    return [...items].sort(
+      (a, b) =>
+        permissionSortKey(a).localeCompare(permissionSortKey(b)) * sign || a.loginId.localeCompare(b.loginId, "ko"),
+    );
+  }, [items, permSort]);
 
   const assignableRoles = ROLES.filter((r) => canManageRole(props.actorRole, r));
 
@@ -211,43 +263,61 @@ export function AdminAccountsPanel(props: {
               <AdminSortHeader
                 column="loginId"
                 label="아이디"
-                sortKey={listSort.field}
-                sortOrder={listSort.order}
-                onSort={cycleListSort}
+                sortKey={listSortUi.active ? listSortUi.key : ""}
+                sortOrder={listSortUi.active ? listSortUi.order : "asc"}
+                onSort={onAccountHeaderSort}
+              />
+              <AdminSortHeader
+                column="isRoot"
+                label="루트"
+                sortKey={listSortUi.active ? listSortUi.key : ""}
+                sortOrder={listSortUi.active ? listSortUi.order : "asc"}
+                onSort={onAccountHeaderSort}
               />
               <AdminSortHeader
                 column="role"
                 label="등급"
-                sortKey={listSort.field}
-                sortOrder={listSort.order}
-                onSort={cycleListSort}
+                sortKey={listSortUi.active ? listSortUi.key : ""}
+                sortOrder={listSortUi.active ? listSortUi.order : "asc"}
+                onSort={onAccountHeaderSort}
               />
-              <th scope="col">권한</th>
+              <AdminSortHeader
+                column="permissions"
+                label="권한"
+                sortKey={permSort !== null ? "permissions" : listSortUi.active ? listSortUi.key : ""}
+                sortOrder={permSort ?? (listSortUi.active ? listSortUi.order : "asc")}
+                onSort={onAccountHeaderSort}
+              />
               <AdminSortHeader
                 column="disabled"
                 label="상태"
-                sortKey={listSort.field}
-                sortOrder={listSort.order}
-                onSort={cycleListSort}
+                sortKey={listSortUi.active ? listSortUi.key : ""}
+                sortOrder={listSortUi.active ? listSortUi.order : "asc"}
+                onSort={onAccountHeaderSort}
               />
               <AdminSortHeader
                 column="createdAt"
-                label="생성"
-                sortKey={listSort.field}
-                sortOrder={listSort.order}
-                onSort={cycleListSort}
+                label="생성일"
+                sortKey={listSortUi.active ? listSortUi.key : ""}
+                sortOrder={listSortUi.active ? listSortUi.order : "asc"}
+                onSort={onAccountHeaderSort}
+              />
+              <AdminSortHeader
+                column="createdBy"
+                label="생성자"
+                sortKey={listSortUi.active ? listSortUi.key : ""}
+                sortOrder={listSortUi.active ? listSortUi.order : "asc"}
+                onSort={onAccountHeaderSort}
               />
               {canUpdate && <th scope="col">작업</th>}
             </tr>
           </thead>
           <tbody>
-            {items.map((row) => (
+            {displayItems.map((row) => (
               <Fragment key={row.loginId}>
                 <tr>
-                  <td>
-                    {row.loginId}
-                    {row.isRoot ? " (루트)" : ""}
-                  </td>
+                  <td>{row.loginId}</td>
+                  <td>{row.isRoot ? "예" : "아니오"}</td>
                   <td>{row.roleLabel}</td>
                   <td>
                     {row.effectivePermissions
@@ -258,11 +328,9 @@ export function AdminAccountsPanel(props: {
                   </td>
                   <td>{row.disabled ? "비활성" : "사용 중"}</td>
                   <td>
-                    <small>
-                      {row.createdBy ? `${row.createdBy} · ` : ""}
-                      {row.createdAt.slice(0, 10)}
-                    </small>
+                    <small>{row.createdAt.slice(0, 10)}</small>
                   </td>
+                  <td>{row.createdBy ?? "—"}</td>
                   {canUpdate && (
                     <td>
                       {!row.isRoot && (
@@ -288,7 +356,7 @@ export function AdminAccountsPanel(props: {
                 </tr>
                 {editing === row.loginId && !row.isRoot && (
                   <tr key={`${row.loginId}-edit`}>
-                    <td colSpan={canUpdate ? 6 : 5}>
+                    <td colSpan={canUpdate ? 8 : 7}>
                       {fields.role === "edit" && (
                         <label className="field">
                           <span>등급</span>

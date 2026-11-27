@@ -1,5 +1,5 @@
 /** GET /admin/accounts 정렬 컬럼 */
-export const ADMIN_ACCOUNT_SORT_FIELDS = ["loginId", "role", "disabled", "createdAt", "isRoot"] as const;
+export const ADMIN_ACCOUNT_SORT_FIELDS = ["loginId", "role", "disabled", "createdAt", "isRoot", "createdBy"] as const;
 
 /** 계정 목록 sort 파라미터 필드 */
 export type AdminAccountSortField = (typeof ADMIN_ACCOUNT_SORT_FIELDS)[number];
